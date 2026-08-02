@@ -20,7 +20,7 @@ func RetireInitiativeLabel(
 	orgWide bool,
 ) (InitiativeLabelSummary, error) {
 	if id == "" {
-		return InitiativeLabelSummary{}, fmt.Errorf("%w: initiative label id is required", ErrWriteInvalid)
+		return InitiativeLabelSummary{}, requiredFieldError("initiative label id")
 	}
 	if err := requireInitiativeLabelOrgWide(orgWide); err != nil {
 		return InitiativeLabelSummary{}, err
@@ -64,7 +64,7 @@ func RestoreInitiativeLabel(
 	orgWide bool,
 ) (InitiativeLabelSummary, error) {
 	if id == "" {
-		return InitiativeLabelSummary{}, fmt.Errorf("%w: initiative label id is required", ErrWriteInvalid)
+		return InitiativeLabelSummary{}, requiredFieldError("initiative label id")
 	}
 	if err := requireInitiativeLabelOrgWide(orgWide); err != nil {
 		return InitiativeLabelSummary{}, err

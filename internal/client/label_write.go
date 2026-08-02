@@ -39,7 +39,7 @@ func CreateLabel(
 	request LabelCreateRequest,
 ) (LabelSummary, error) {
 	if request.Name == "" {
-		return LabelSummary{}, fmt.Errorf("%w: name is required", ErrWriteInvalid)
+		return LabelSummary{}, requiredFieldError("name")
 	}
 
 	guard, err := newGuardedClient(ctx, graphqlClient, expected)
@@ -130,7 +130,7 @@ func RetireLabel(
 	orgWide bool,
 ) (LabelSummary, error) {
 	if id == "" {
-		return LabelSummary{}, fmt.Errorf("%w: label id is required", ErrWriteInvalid)
+		return LabelSummary{}, requiredFieldError("label id")
 	}
 
 	guard, err := newGuardedClient(ctx, graphqlClient, expected)
@@ -167,7 +167,7 @@ func RestoreLabel(
 	orgWide bool,
 ) (LabelSummary, error) {
 	if id == "" {
-		return LabelSummary{}, fmt.Errorf("%w: label id is required", ErrWriteInvalid)
+		return LabelSummary{}, requiredFieldError("label id")
 	}
 
 	guard, err := newGuardedClient(ctx, graphqlClient, expected)
@@ -196,10 +196,10 @@ func (guard *guardedClient) restoreLabel(ctx context.Context, id string, orgWide
 
 func validateLabelUpdateRequest(request LabelUpdateRequest) error {
 	if request.ID == "" {
-		return fmt.Errorf("%w: label id is required", ErrWriteInvalid)
+		return requiredFieldError("label id")
 	}
 	if request.Name == "" && request.Description == "" && request.Color == "" {
-		return fmt.Errorf("%w: name, description, or color is required", ErrWriteInvalid)
+		return requiredFieldError("name, description, or color")
 	}
 
 	return nil

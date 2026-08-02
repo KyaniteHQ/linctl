@@ -59,8 +59,9 @@ representative at an online or offline event.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the maintainers privately through the repository's
-[private reporting channel](https://github.com/KyaniteHQ/linctl/security/advisories/new).
+reported to the maintainers privately through the
+[private reporting channel](https://github.com/KyaniteHQ/linctl/security/advisories/new)
+of this repository.
 All complaints will be reviewed and investigated promptly and fairly.
 
 All community leaders are obligated to respect the privacy and security of the

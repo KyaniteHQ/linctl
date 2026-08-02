@@ -17,8 +17,8 @@ func addTemplateCommand(ctx context.Context, root *cobra.Command, options *rootO
 		LimitHelp: "maximum templates to print",
 		GetUse:    "get TEMPLATE_ID",
 		GetShort:  "Get one template by id",
-		LoadList:  loadTemplateList,
-		LoadGet:   loadTemplate,
+		LoadList:  clientList(client.ListTemplates),
+		LoadGet:   clientGet(client.GetTemplateByID),
 		WriteItem: writeTemplate,
 	})
 }
@@ -40,22 +40,4 @@ func writeTemplate(command *cobra.Command, options *rootOptions, template client
 				scope,
 			)
 		})
-}
-
-func loadTemplateList(
-	ctx context.Context,
-	runtime commandRuntime,
-	_ []string,
-	limit int,
-) (client.TemplateList, []client.TemplateSummary, error) {
-	templates, err := client.ListTemplates(ctx, runtime.graphqlClient, limit)
-	return templates, templates.Templates, err
-}
-
-func loadTemplate(
-	ctx context.Context,
-	runtime commandRuntime,
-	id string,
-) (client.TemplateSummary, error) {
-	return client.GetTemplateByID(ctx, runtime.graphqlClient, id)
 }

@@ -6,11 +6,9 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addOrganizationCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
 	command := newGroupCommand("organization", "Read Linear organization metadata")
 	addOrganizationLabelsCommand(ctx, command, options)
 	addOrganizationProjectLabelsCommand(ctx, command, options)
@@ -18,7 +16,7 @@ func addOrganizationCommand(ctx context.Context, root *cobra.Command, options *r
 	addOrganizationUsersCommand(ctx, command, options)
 	addReadGetCommand(ctx, command, options, readGetSpec[client.OrganizationExistsStatus]{
 		Use:   "exists URL_KEY",
-		Short: "Check whether a Linear organization URL key exists",
+		Short: "Check whether a Linear organization URL key exists already",
 		Load: func(
 			ctx context.Context, runtime commandRuntime, id string,
 		) (client.OrganizationExistsStatus, error) {
@@ -26,113 +24,59 @@ func addOrganizationCommand(ctx context.Context, root *cobra.Command, options *r
 		},
 		Write: writeOrganizationExists,
 	})
-	templatesCommand := &cobra.Command{
-		Use:   "templates",
-		Short: "List organization-level Linear templates",
-		Args:  cobra.NoArgs,
-		RunE: func(command *cobra.Command, _ []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				nil,
-				options,
-				limit,
-				loadOrganizationTemplateList,
-				writeTemplate,
-			)
-		},
-	}
-	templatesCommand.Flags().IntVar(&limit, "limit", limit, "maximum organization templates to return")
-	command.AddCommand(preflightReadListCommand(templatesCommand, loadOrganizationTemplateList))
+	addListCommand(ctx, command, options, listCommandSpec[client.TemplateList, client.TemplateSummary]{
+		Use:       "templates",
+		Short:     "List organization-level Linear templates",
+		LimitHelp: "organization templates",
+		Args:      cobra.NoArgs,
+		Load:      loadOrganizationTemplateList,
+		WriteItem: writeTemplate,
+	})
 	root.AddCommand(command)
 }
 
 func addOrganizationLabelsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "labels",
-		Short: "List organization-level issue labels",
-		Args:  cobra.NoArgs,
-		RunE: func(command *cobra.Command, _ []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				nil,
-				options,
-				limit,
-				loadOrganizationLabels,
-				writeLabel,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum labels to return")
-	root.AddCommand(preflightReadListCommand(command, loadOrganizationLabels))
+	addListCommand(ctx, root, options, listCommandSpec[client.LabelList, client.LabelSummary]{
+		Use:       "labels",
+		Short:     "List organization-level issue labels",
+		LimitHelp: "labels",
+		Args:      cobra.NoArgs,
+		Load:      loadOrganizationLabels,
+		WriteItem: writeLabel,
+	})
 }
 
 func addOrganizationProjectLabelsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "project-labels",
-		Short: "List organization-level project labels",
-		Args:  cobra.NoArgs,
-		RunE: func(command *cobra.Command, _ []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				nil,
-				options,
-				limit,
-				loadOrganizationProjectLabels,
-				writeProjectLabel,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum project labels to return")
-	root.AddCommand(preflightReadListCommand(command, loadOrganizationProjectLabels))
+	addListCommand(ctx, root, options, listCommandSpec[client.ProjectLabelList, client.ProjectLabelSummary]{
+		Use:       "project-labels",
+		Short:     "List organization-level project labels",
+		LimitHelp: "project labels",
+		Args:      cobra.NoArgs,
+		Load:      loadOrganizationProjectLabels,
+		WriteItem: writeProjectLabel,
+	})
 }
 
 func addOrganizationTeamsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "teams",
-		Short: "List teams visible to the authenticated user",
-		Args:  cobra.NoArgs,
-		RunE: func(command *cobra.Command, _ []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				nil,
-				options,
-				limit,
-				loadOrganizationTeams,
-				writeTeam,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum teams to return")
-	root.AddCommand(preflightReadListCommand(command, loadOrganizationTeams))
+	addListCommand(ctx, root, options, listCommandSpec[client.TeamList, client.TeamSummary]{
+		Use:       "teams",
+		Short:     "List teams visible to the authenticated user",
+		LimitHelp: "teams",
+		Args:      cobra.NoArgs,
+		Load:      loadOrganizationTeams,
+		WriteItem: writeTeam,
+	})
 }
 
 func addOrganizationUsersCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "users",
-		Short: "List active users visible to the authenticated user",
-		Args:  cobra.NoArgs,
-		RunE: func(command *cobra.Command, _ []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				nil,
-				options,
-				limit,
-				loadOrganizationUsers,
-				writeUser,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum users to return")
-	root.AddCommand(preflightReadListCommand(command, loadOrganizationUsers))
+	addListCommand(ctx, root, options, listCommandSpec[client.UserList, client.UserSummary]{
+		Use:       "users",
+		Short:     "List active users visible to the authenticated user",
+		LimitHelp: "users",
+		Args:      cobra.NoArgs,
+		Load:      loadOrganizationUsers,
+		WriteItem: writeUser,
+	})
 }
 
 func writeOrganizationExists(
@@ -140,16 +84,10 @@ func writeOrganizationExists(
 	options *rootOptions,
 	status client.OrganizationExistsStatus,
 ) error {
-	return writeItem(command, options, status, status.URLKey,
-		func(command *cobra.Command, _ *rootOptions, status client.OrganizationExistsStatus) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s exists %t success %t",
-				status.URLKey,
-				status.Exists,
-				status.Success,
-			)
-		})
+	return writeItemLine(
+		command, options, status, status.URLKey,
+		"%s exists %t success %t", status.URLKey, status.Exists, status.Success,
+	)
 }
 
 func loadOrganizationLabels(
@@ -157,9 +95,9 @@ func loadOrganizationLabels(
 	runtime commandRuntime,
 	_ []string,
 	limit int,
-) (client.LabelList, []client.LabelSummary, error) {
+) (client.LabelList, error) {
 	labels, err := client.ListOrganizationLabels(ctx, runtime.graphqlClient, limit)
-	return labels, labels.Labels, err
+	return labels, err
 }
 
 func loadOrganizationProjectLabels(
@@ -167,9 +105,9 @@ func loadOrganizationProjectLabels(
 	runtime commandRuntime,
 	_ []string,
 	limit int,
-) (client.ProjectLabelList, []client.ProjectLabelSummary, error) {
+) (client.ProjectLabelList, error) {
 	labels, err := client.ListOrganizationProjectLabels(ctx, runtime.graphqlClient, limit)
-	return labels, labels.ProjectLabels, err
+	return labels, err
 }
 
 func loadOrganizationTeams(
@@ -177,9 +115,9 @@ func loadOrganizationTeams(
 	runtime commandRuntime,
 	_ []string,
 	limit int,
-) (client.TeamList, []client.TeamSummary, error) {
+) (client.TeamList, error) {
 	teams, err := client.ListOrganizationTeams(ctx, runtime.graphqlClient, limit)
-	return teams, teams.Teams, err
+	return teams, err
 }
 
 func loadOrganizationUsers(
@@ -187,9 +125,9 @@ func loadOrganizationUsers(
 	runtime commandRuntime,
 	_ []string,
 	limit int,
-) (client.UserList, []client.UserSummary, error) {
+) (client.UserList, error) {
 	users, err := client.ListOrganizationUsers(ctx, runtime.graphqlClient, limit)
-	return users, users.Users, err
+	return users, err
 }
 
 func loadOrganizationTemplateList(
@@ -197,7 +135,7 @@ func loadOrganizationTemplateList(
 	runtime commandRuntime,
 	_ []string,
 	limit int,
-) (client.TemplateList, []client.TemplateSummary, error) {
+) (client.TemplateList, error) {
 	templates, err := client.ListOrganizationTemplates(ctx, runtime.graphqlClient, limit)
-	return templates, templates.Templates, err
+	return templates, err
 }

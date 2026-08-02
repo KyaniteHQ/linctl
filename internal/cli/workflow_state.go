@@ -1,4 +1,4 @@
-//nolint:dupl // Minimal read-command glue is intentionally uniform across domains via addReadListGetCommand.
+//nolint:dupl // Declarative registration only; addReadListGetCommand and addChildListCommand own the behavior.
 package cli
 
 import (
@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addWorkflowStateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -22,8 +21,8 @@ func addWorkflowStateCommand(ctx context.Context, root *cobra.Command, options *
 			LimitHelp: "maximum workflow states to return",
 			GetUse:    "get WORKFLOW_STATE_ID",
 			GetShort:  "Get one workflow state by id",
-			LoadList:  loadWorkflowStateList,
-			LoadGet:   loadWorkflowState,
+			LoadList:  clientList(client.ListWorkflowStates),
+			LoadGet:   clientGet(client.GetWorkflowStateByID),
 			WriteItem: writeWorkflowState,
 		},
 	)
@@ -31,58 +30,18 @@ func addWorkflowStateCommand(ctx context.Context, root *cobra.Command, options *
 }
 
 func addWorkflowStateIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "issues WORKFLOW_STATE_ID",
-		Short: "List issues currently in one workflow state",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadWorkflowStateIssues,
-				writeIssue,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum issues to return")
-	root.AddCommand(preflightReadListCommand(command, loadWorkflowStateIssues))
+	addChildListCommand(
+		ctx,
+		root,
+		options,
+		"issues WORKFLOW_STATE_ID",
+		"List issues currently in one workflow state",
+		"issues",
+		client.ListWorkflowStateIssues,
+		writeIssue,
+	)
 }
 
 func writeWorkflowState(command *cobra.Command, options *rootOptions, state client.WorkflowStateSummary) error {
-	return writeItem(command, options, state, state.ID,
-		func(command *cobra.Command, _ *rootOptions, state client.WorkflowStateSummary) error {
-			return render.WriteLine(command.OutOrStdout(), "%s %s [%s]", state.ID, state.Name, state.Type)
-		})
-}
-
-func loadWorkflowStateList(
-	ctx context.Context,
-	runtime commandRuntime,
-	_ []string,
-	limit int,
-) (client.WorkflowStateList, []client.WorkflowStateSummary, error) {
-	states, err := client.ListWorkflowStates(ctx, runtime.graphqlClient, limit)
-	return states, states.WorkflowStates, err
-}
-
-func loadWorkflowState(
-	ctx context.Context,
-	runtime commandRuntime,
-	id string,
-) (client.WorkflowStateSummary, error) {
-	return client.GetWorkflowStateByID(ctx, runtime.graphqlClient, id)
-}
-
-func loadWorkflowStateIssues(
-	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
-	limit int,
-) (client.WorkflowStateIssueList, []client.IssueSummary, error) {
-	issues, err := client.ListWorkflowStateIssues(ctx, runtime.graphqlClient, args[0], limit)
-	return issues, issues.Issues, err
+	return writeItemLine(command, options, state, state.ID, "%s %s [%s]", state.ID, state.Name, state.Type)
 }

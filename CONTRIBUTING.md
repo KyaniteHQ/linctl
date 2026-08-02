@@ -1,51 +1,53 @@
 # Contributing
 
-`linctl` is a schema-aligned Go CLI for Linear. Keep changes small, typed, and backed by the generated
-GraphQL schema.
+`linctl` is a schema-aligned Go CLI for Linear. Keep each change small and typed, and back it
+with the generated GraphQL schema.
 
-## Local Checks
+## Local checks
 
-`go tool task ci` is the single local review gate. Run it before opening a PR:
+`go tool task ci` is the one local review gate. Run it before you open a PR.
 
 ```bash
 go tool task ci
 ```
 
-It runs, in order: `deps-check` (module checksums and tidy state), `fmt-check`,
-`generate-check` (generated GraphQL client, command reference, and the
-upstream schema/coverage-ledger checks), `domain-language-check`,
-`browser-login-smoke-check`, `vet`, `test`, a build, `smoke-run`, `lint`,
-`shellcheck`, `actionlint`, and `vuln`. None of these modify source files.
+It runs these steps in order: `deps-check`, `fmt-check`, `generate-check`,
+`domain-language-check`, `browser-login-smoke-check`, `vet`, `test`, a build, `smoke-run`,
+`lint`, `shellcheck`, `actionlint`, and `vuln`. `deps-check` verifies the module checksums and
+the tidy state. `generate-check` verifies the generated GraphQL client, the generated command
+references, and the upstream schema and coverage-ledger checks. None of these steps modifies a
+source file.
 
-`go tool task coverage` is separate from `ci` and enforces 100% hand-written
-statement coverage. Run it on its own for product code changes:
+`go tool task coverage` is separate from `ci`, and it enforces 100% statement coverage on
+hand-written code. Run it on its own after a change to product code.
 
 ```bash
 go tool task coverage
 ```
 
-### Network & offline
+### Network and offline
 
-`go tool task ci` validates local GraphQL operations and
-`docs/internal/linear-api-coverage.md` against the upstream `linear/linear` schema. The
-shared source contract is:
+`go tool task ci` validates the local GraphQL operations and
+`docs/internal/linear-api-coverage.md` against the upstream `linear/linear` schema. The shared
+source contract is:
 
 - Remote: `https://github.com/linear/linear.git`
-- Default checkout: run-local temporary checkout managed by Taskfile
-- Default ref: `master`
+- Default checkout: a run-local temporary checkout that the Taskfile manages
+- Default ref: the commit SHA in `.linear-sdk-ref`. This file is the single source of the pin,
+  and CI reads the same file.
 - Reusable checkout: `LINCTL_LINEAR_SDK_UPSTREAM=/path/to/linear`
-- Override ref: `LINCTL_LINEAR_SDK_REF=<branch-or-tag>`
-- Skip the refresh fetch against an existing reusable checkout: `LINCTL_LINEAR_SDK_OFFLINE=1`
-  (requires `LINCTL_LINEAR_SDK_UPSTREAM` to already point at a checkout; fails loud otherwise)
+- Override the ref: `LINCTL_LINEAR_SDK_REF=<branch-or-tag>`
+- Skip the refresh fetch against a reusable checkout: `LINCTL_LINEAR_SDK_OFFLINE=1`. This needs
+  `LINCTL_LINEAR_SDK_UPSTREAM` to point at a checkout already, and it fails loud otherwise.
 
-Prepare or refresh an explicit reusable checkout with:
+Prepare or refresh a reusable checkout:
 
 ```bash
 LINCTL_LINEAR_SDK_UPSTREAM=/path/to/linear \
 go tool task linear-sdk-upstream-checkout
 ```
 
-Run the gate offline once that checkout exists:
+Run the gate offline after that checkout exists:
 
 ```bash
 LINCTL_LINEAR_SDK_UPSTREAM=/path/to/linear \
@@ -53,18 +55,18 @@ LINCTL_LINEAR_SDK_OFFLINE=1 \
 go tool task ci
 ```
 
-To skip Taskfile and run the helper scripts directly, pass `-upstream`:
+`scripts/upstream-check.sh` runs the upstream checks behind one checkout. Run one check on its
+own with `operations`, `ledger`, `drift`, or `all`:
 
 ```bash
-go run scripts/linear_graphql_operation_check.go -upstream /path/to/linear
-go run scripts/linear_api_coverage*.go -upstream /path/to/linear
+LINCTL_LINEAR_SDK_UPSTREAM=/path/to/linear bash scripts/upstream-check.sh operations
 ```
 
-GitHub-only checks remain separate from `go tool task ci`: dependency review runs only
-on pull requests, coverage stays in `go tool task coverage`, and live OAuth/integration
-checks require disposable fixture credentials.
+GitHub runs three checks outside `go tool task ci`. Dependency review runs only on a pull
+request. Coverage stays in `go tool task coverage`. The live OAuth check and the integration
+check need disposable fixture credentials.
 
-Run live integration tests only with a disposable OAuth app fixture:
+Run a live integration test only with a disposable OAuth app fixture:
 
 ```bash
 LINCTL_OAUTH_CLIENT_ID=<client-id> \
@@ -81,47 +83,48 @@ The full live smoke harness is:
 go tool task live-smoke
 ```
 
-For the project Infisical setup, fixture secrets live under `/linctl`, not the
-root secret path. Use the pinned aliases so the folder is not easy to forget:
+For the Infisical setup of this project, the fixture secrets are under `/linctl`, not under the
+root secret path. Use the pinned aliases, so nobody forgets the folder:
 
 ```bash
 go tool task live-oauth-infisical
 go tool task live-smoke-infisical
 ```
 
-Never run write tests against real project data. Test resources must use a `linctl-it-<runid>` prefix and
-be archived during cleanup.
+Never run a write test against real project data. A test resource must use the name prefix
+`linctl-it-<runid>`, and the cleanup must archive it.
 
-## Schema Changes
+## Schema changes
 
-A nightly `schema-drift` job (`.github/workflows/integration.yml`) reports semantic drift
+A nightly `schema-drift` job (`.github/workflows/integration.yml`) reports the semantic drift
 between the vendored `internal/client/schema.graphql` and the upstream `linear/linear` SDK
-schema: types, fields, and enum values added or removed, and field type changes on types
-present in both. It is read-only and not part of `go tool task ci`, so it never blocks a PR;
-it exists to flag when the vendored snapshot has fallen behind. Run it locally with:
+schema. It reports each type, field, and enum value added or removed, and each field type change
+on a type in both schemas. It is read-only, and it is not part of `go tool task ci`, so it never
+blocks a PR. It exists to show when the vendored snapshot falls behind. Run it locally:
 
 ```bash
 go tool task schema-drift-check
 ```
 
-A companion nightly `schema-refresh` workflow (`.github/workflows/schema-refresh.yml`) opens
-or updates a `chore/schema-refresh` PR when drift is detected: it copies the upstream SDK
-schema, bumps the SDK ref pins, regenerates the client and coverage ledger, and leaves the
-PR for human review (no auto-merge). Prefer merging that PR over a hand-rolled refresh when
+A companion nightly `schema-refresh` workflow (`.github/workflows/schema-refresh.yml`) opens or
+updates a `chore/schema-refresh` PR when it detects drift. That workflow copies the upstream SDK
+schema, bumps `.linear-sdk-ref`, regenerates the client and the coverage ledger, and leaves the
+PR for a human review. It never merges by itself. Prefer that PR over a hand-rolled refresh when
 it is already open.
 
-Optional repo secret `SCHEMA_REFRESH_GITHUB_TOKEN` (fine-grained PAT with contents and
-pull-requests write on this repo): when set, the workflow uses it so the opened PR triggers
-`ci.yml`. With only `GITHUB_TOKEN`, GitHub will not re-trigger workflows on the bot PR.
+The repo secret `SCHEMA_REFRESH_GITHUB_TOKEN` is optional. It is a fine-grained PAT with
+contents and pull-requests write access on this repo. When it is set, the workflow uses it, and
+the opened PR then triggers `ci.yml`. With `GITHUB_TOKEN` alone, GitHub does not trigger a
+workflow on the bot PR.
 
-To refresh manually without OAuth (same path the bot uses):
+To refresh by hand without OAuth, use the same path as the bot:
 
 ```bash
 LINCTL_LINEAR_SDK_REF=master go tool task schema-refresh
 go tool task ci
 ```
 
-Or via live API introspection (requires a token and managed Node deps):
+To refresh through live API introspection, you need a token and the managed Node dependencies:
 
 ```bash
 npm ci
@@ -130,12 +133,11 @@ go generate ./...
 go tool task ci
 ```
 
-Review the generated diff before committing. Drift confined to schema areas linctl doesn't
-use is safe to batch into a routine refresh; drift touching fields or types the current
-operations depend on is urgent, though `go tool task graphql-operation-check` would already
-be failing in that case.
+Review the generated diff before you commit it. Drift in a schema area that linctl does not use
+is safe in a routine refresh. Drift on a field or a type that a current operation depends on is
+urgent, but `go tool task graphql-operation-check` already fails in that case.
 
-Refresh the vendored Linear schema before adding or changing GraphQL operations:
+Refresh the vendored Linear schema before you add or change a GraphQL operation:
 
 ```bash
 npm ci
@@ -143,35 +145,34 @@ npm ci
 go generate ./...
 ```
 
-`scripts/refresh-schema.sh` uses the repo-managed `graphql` dependency from
-`package-lock.json` and requires Node 22 or newer. Set
-`LINCTL_OAUTH_ACCESS_TOKEN` for the command, but never print or paste the token
-value into logs. Generated code must be committed with the operation that
-requires it.
+`scripts/refresh-schema.sh` uses the repo-managed `graphql` dependency from `package-lock.json`,
+and it needs Node 22 or later. Set `LINCTL_OAUTH_ACCESS_TOKEN` for the command, and never print
+or paste the token value into a log. Commit the generated code together with the operation that
+needs it.
 
 ## Releases
 
-A release is triggered by pushing a `v*` tag. The release workflow then runs GoReleaser to
-publish the GitHub artifacts (archives, SBOMs, `checksums.txt`, and a keyless cosign sigstore
-bundle) and update the `KyaniteHQ/homebrew-linctl` tap cask. The tap token must be provided as
+A push of a `v*` tag starts a release. The release workflow then runs GoReleaser, which publishes
+the GitHub artifacts (archives, SBOMs, `checksums.txt`, and a keyless cosign sigstore bundle) and
+updates the `KyaniteHQ/homebrew-linctl` tap cask. The tap token must be
 `HOMEBREW_TAP_GITHUB_TOKEN`.
 
-Before creating or pushing the tag, run the local non-publishing release preflight:
+Run the local non-publishing release preflight before you create and push the tag:
 
 ```bash
 go tool task release-preflight
 ```
 
-The preflight runs the local CI gate, statement coverage, and `goreleaser check`.
-It does not create a tag, push to Git, publish a release, or require release
-secrets. If you want the heavier local artifact build as a final manual check,
-run the snapshot task. It also does not publish anything:
+The preflight runs the local CI gate, the statement coverage, and `goreleaser check`. It creates
+no tag, it pushes nothing to git, it publishes no release, and it needs no release secret. For a
+heavier local artifact build as a final manual check, run the snapshot task. It also publishes
+nothing:
 
 ```bash
 go tool task release-snapshot
 ```
 
-Only create and push the release tag after the preflight passes:
+Create and push the release tag only after the preflight passes:
 
 ```bash
 git tag -a vX.Y.Z -m "vX.Y.Z" && git push origin vX.Y.Z

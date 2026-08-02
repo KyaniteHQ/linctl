@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -17,152 +18,129 @@ var usageTopics = map[string]usagePayload{
 	"overview": {
 		Topic: "overview",
 		Text: "linctl is a schema-aligned Linear CLI for safe daily coordination. " +
-			"Configure a pinned target with org_id, team_key, team_id, and optional project_id in .linctl.toml, " +
-			"then use reads freely and writes fail-closed against that target. " +
+			"Set a pinned target in .linctl.toml with org_id, team_key, team_id, and an optional project_id. " +
+			"Reads are free. Writes fail closed against the pinned target. " +
 			"Core commands: target, doctor, whoami, current, next, done, issue, comment, cycle, sprint, project, " +
 			"project-milestone, organization, rate-limit, document, label, team, user, workflow-state. " +
-			"Use initiative, initiative-to-project, and initiative-update for new strategic planning reads; " +
-			"roadmap and roadmap-to-project are legacy read compatibility for deprecated Linear Roadmap data. " +
-			"Use --json for structured output, --profile for named configs, --org/--team/--project for explicit " +
-			"target overrides, and --timeout for request bounds. " +
-			"For scripts, combine --json with --compact or --fields, use --id-only for chaining, --quiet for " +
-			"successful writes, --fail-on-empty for monitors, --sort/--order for deterministic lists, and " +
-			"--format minimal|compact|full for human output. " +
-			"Write flow: resolve the active OAuth auth state, compare it to the pinned target, " +
-			"perform the mutation only " +
-			"on match, " +
-			"then return the created or updated entity. " +
-			"Start every unfamiliar repo with linctl target --json so the active auth target, org, team, and project " +
-			"are visible " +
-			"before work starts. " +
-			"Use linctl current when the branch carries an issue key, linctl doctor to check config/auth/target " +
-			"health, and linctl next --dry-run to preview the top-ranked unblocked issue without creating a " +
-			"branch or worktree. " +
-			"Use domain guidance before writes: linctl issue usage or linctl project usage. " +
-			"For test runs, create namespaced throwaway resources and archive them after the observable check.",
+			"Use initiative, initiative-to-project, and initiative-update for new strategic planning reads. " +
+			"The roadmap and roadmap-to-project commands read deprecated Linear Roadmap data for compatibility. " +
+			"Use --json for structured output. Use --profile to select a named config. " +
+			"Use --org, --team, and --project to set the target explicitly. Use --timeout to bound one command. " +
+			"For scripts, add --compact or --fields to --json. Use --id-only to chain commands. " +
+			"Use --quiet for a write that succeeds. Use --fail-on-empty for a monitor. " +
+			"Use --sort and --order for a deterministic list. " +
+			"Use --format minimal, compact, or full for human output. " +
+			"A write has four steps. linctl resolves the active OAuth auth state. " +
+			"linctl compares that state with the pinned target. linctl makes the change only on a match. " +
+			"linctl then returns the created or updated entity. " +
+			"Start in an unfamiliar repo with linctl target --json. " +
+			"That command shows the active auth target, the organization, the team, and the project. " +
+			"Use linctl current when the branch carries an issue key. " +
+			"Use linctl doctor to check the health of the config, the auth, and the target. " +
+			"Use linctl next --dry-run to see the top-ranked unblocked issue without a branch or a worktree. " +
+			"Read the domain guidance before a write with linctl issue usage or linctl project usage. " +
+			"For a test run, create namespaced throwaway resources. Archive them after the check.",
 	},
 	"issue": {
 		Topic: "issue",
-		Text: "issue commands cover the safe Linear issue loop. " +
-			"Use linctl issue list --limit 50 to inspect the resolved team, linctl issue list --state started " +
-			"for a workflow state type queue, linctl issue list --project PROJECT_ID for a project queue, " +
-			"linctl issue list --mine for issues assigned to the authenticated user, " +
-			"linctl issue list --assignee USER_ID for issues assigned to a Linear user id, " +
-			"linctl issue list --label LABEL_ID for issues with a Linear label id, " +
-			"linctl issue list --cycle CYCLE_ID for issues attached to a Linear Cycle id, " +
-			"linctl issue list --created-after DATE for issues created on or after a date, " +
-			"linctl issue list --created-since DATE as an alias for created-after, " +
-			"linctl issue list --created-before DATE for issues created on or before a date, " +
-			"linctl issue list --updated-after DATE for issues updated on or after a date, " +
-			"linctl issue list --updated-before DATE for issues updated on or before a date, " +
-			"linctl issue list --has-blockers for issues blocked by another issue, " +
-			"linctl issue list --blocks for issues blocking another issue, " +
-			"linctl issue list --blocked-by ISSUE for issues blocked by that issue, " +
-			"linctl issue list --all-teams for broad read-only issue inspection, " +
-			"linctl issue search \"text\" for resolved-team text search, " +
-			"linctl issue deps ISSUE to inspect parent, child, and blocking relationships, " +
-			"linctl issue pr ISSUE to print a gh pr create title/body plan, " +
-			"and linctl issue get LIT-123 to read one " +
-			"issue by identifier or id. " +
-			"Writes require a pinned org/team target: linctl issue create --title \"...\" --description \"...\" " +
-			"or --description-file FILE; " +
-			"linctl issue update LIT-123 --title \"...\" --description \"...\"; " +
-			"linctl issue update LIT-123 --append \"progress note\" or --append-file FILE; " +
-			"linctl issue start LIT-123 to assign it to a human viewer or delegate it to an assignable app, " +
-			"then move it to started; " +
-			"linctl issue comment LIT-123 --body \"...\" or --body-file FILE; " +
-			"linctl issue reply LIT-123 COMMENT_ID --body \"...\" or --body-file FILE; " +
-			"linctl issue close LIT-123. " +
-			"If .linctl.toml also pins project_id, writes to existing issues compare the issue's resolved project " +
-			"before " +
-			"mutating, so same-team wrong-project writes are refused. " +
-			"Use --json for automation and parse the returned id, identifier, state, url, team, and project fields. " +
-			"For branch-driven work, linctl current derives LIT-123 from the git branch or a jj Linear-issue " +
-			"trailer and " +
-			"then uses the same issue get path; linctl done closes that current issue through the guarded " +
-			"close path. " +
-			"Use --fields identifier,title,state with --json for compact agent queues, --id-only for chaining, " +
-			"and --fail-on-empty --sort title --order asc for monitor-style lists. " +
-			"Recommended agent flow: run linctl target --json, run linctl issue list --json --limit 20, " +
-			"linctl issue list --state started --limit 20, linctl issue list --project PROJECT_ID --limit 20, " +
-			"linctl issue list --mine --limit 20, " +
-			"linctl issue list --assignee USER_ID --limit 20, " +
-			"linctl issue list --label LABEL_ID --limit 20, " +
-			"linctl issue list --cycle CYCLE_ID --limit 20, " +
-			"linctl issue list --created-after 2026-06-01 --limit 20, " +
-			"linctl issue list --created-since 2026-06-01 --limit 20, " +
-			"linctl issue list --created-before 2026-06-30 --limit 20, " +
-			"linctl issue list --updated-after 2026-07-01 --limit 20, " +
-			"linctl issue list --updated-before 2026-07-30 --limit 20, " +
-			"linctl issue list --has-blockers --limit 20, " +
-			"linctl issue list --blocks --limit 20, " +
-			"linctl issue list --blocked-by LIT-123 --limit 20, " +
-			"linctl issue list --all-teams --limit 20, " +
-			"linctl issue deps LIT-123 --limit 20, " +
-			"linctl issue pr LIT-123, " +
-			"linctl next --dry-run, " +
-			"or linctl issue search \"text\" --limit 20 to " +
-			"confirm the " +
-			"visible queue, then perform exactly one write command with a concrete title, body, or status change. " +
-			"If a write fails with target mismatch, do not retry with different auth blindly; inspect the " +
-			"expected and " +
-			"resolved ids and fix the local target configuration first. " +
-			"For temporary QA issues, use a linctl-it-<runid> title prefix, verify via issue get or issue list, " +
-			"then close " +
-			"or archive through the cleanup path used by the test harness. " +
-			"Keep comments concise and avoid pasting secrets, private logs, or unredacted user data.",
+		Text: "The issue commands cover the safe Linear issue loop. " +
+			"Use linctl issue list --limit 50 to inspect the resolved team. " +
+			"Add one filter to that command to narrow the queue. " +
+			"--state started selects one workflow state type. --project PROJECT_ID selects one project. " +
+			"--mine selects the issues assigned to the authenticated user. " +
+			"--assignee USER_ID selects the issues assigned to one Linear user id. " +
+			"--label LABEL_ID selects the issues with one Linear label id. " +
+			"--cycle CYCLE_ID selects the issues attached to one Linear Cycle id. " +
+			"--created-after DATE selects the issues created on or after a date. " +
+			"--created-since DATE is an alias for --created-after. " +
+			"--created-before DATE selects the issues created on or before a date. " +
+			"--updated-after DATE and --updated-before DATE do the same for the update date. " +
+			"--has-blockers selects the issues blocked by another issue. " +
+			"--blocks selects the issues that block another issue. " +
+			"--blocked-by ISSUE selects the issues blocked by that issue. " +
+			"--all-teams reads across every visible team. " +
+			"Use linctl issue search \"text\" to search the text of the resolved team. " +
+			"Use linctl issue deps ISSUE to inspect the parent, the children, and the blocking relations. " +
+			"Use linctl issue pr ISSUE to show a gh pr create plan. " +
+			"Use linctl issue get LIT-123 to read one issue by identifier or by id. " +
+			"A write needs a pinned organization and team. " +
+			"Create an issue with linctl issue create --title \"...\" --description \"...\". " +
+			"Use --description-file FILE to read the description from a file. " +
+			"Update an issue with linctl issue update LIT-123 --title \"...\" --description \"...\". " +
+			"Append to the description with linctl issue update LIT-123 --append \"note\" or --append-file FILE. " +
+			"Use linctl issue start LIT-123 to assign the issue and move it to the started state. " +
+			"That command assigns a human viewer, or delegates the issue to an assignable app. " +
+			"Comment with linctl issue comment LIT-123 --body \"...\" or --body-file FILE. " +
+			"Reply with linctl issue reply LIT-123 COMMENT_ID --body \"...\" or --body-file FILE. " +
+			"Close an issue with linctl issue close LIT-123. " +
+			"If .linctl.toml also pins project_id, a write to an existing issue compares the project of that issue. " +
+			"linctl thus refuses a write to the correct team but the wrong project. " +
+			"Use --json for automation. The result has the id, identifier, state, url, team, and project fields. " +
+			"For branch work, linctl current reads LIT-123 from the git branch or from a jj Linear-issue trailer. " +
+			"linctl current then uses the same path as issue get. " +
+			"linctl done closes that Current Issue through the guarded close path. " +
+			"Use --fields identifier,title,state with --json for a compact agent queue. " +
+			"Use --id-only to chain commands. " +
+			"Use --fail-on-empty --sort title --order asc for a monitor list. " +
+			"The recommended agent flow has three steps. First, run linctl target --json. " +
+			"Second, run linctl issue list --json --limit 20 with the filter that matches the task. " +
+			"Third, run exactly one write command with a concrete title, body, or status change. " +
+			"If a write fails with a target mismatch, do not retry with different auth. " +
+			"Read the expected and resolved ids, then correct the local target configuration. " +
+			"For a temporary QA issue, use a linctl-it-<runid> title prefix. " +
+			"Check the issue with issue get or issue list, then close or archive it through the cleanup path. " +
+			"Keep every comment short. Never write a secret, a private log, or unredacted user data.",
 	},
 	"project": {
 		Topic: "project",
-		Text: "project commands cover the safe Linear project loop. " +
-			"Use linctl project list --limit 50 to list projects attached to the resolved team, " +
-			"linctl project get PROJECT_ID to inspect one project, and linctl project members PROJECT_ID to " +
-			"list current " +
-			"members. " +
-			"Use linctl project updates PROJECT_ID --limit 20 for read-only project status history, and " +
-			"linctl project-milestone list PROJECT_ID --limit 20 for ProjectMilestone context. " +
-			"Project create is team-scoped: linctl project create --name \"linctl-it-<runid>\" " +
-			"--description \"...\"; " +
-			"it compares only org/team because the project does not exist yet. " +
-			"Project update and archive are resource-scoped: linctl project update PROJECT_ID --name \"...\" " +
-			"--description \"...\" and linctl project archive PROJECT_ID both resolve the project first and " +
-			"refuse if " +
-			"the pinned project_id differs. " +
-			"ProjectMilestone create and update are resource-scoped project writes: use " +
-			"linctl project-milestone create PROJECT_ID --name \"...\" and " +
-			"linctl project-milestone update PROJECT_MILESTONE_ID --name \"...\" --target-date YYYY-MM-DD; " +
-			"both compare the resolved project before writing. " +
-			"Prefer namespaced throwaway projects for tests, archive them after verification, and use --json " +
-			"when another " +
-			"agent or script will consume the result. " +
-			"Recommended agent flow: run linctl target --json, run linctl project list --json --limit 20, " +
-			"inspect linctl project updates PROJECT_ID --limit 20 when status context matters, inspect " +
-			"linctl project-milestone list PROJECT_ID --limit 20 when milestone context matters, create the " +
-			"namespaced project, list again and match the returned id, then archive with --project set to that " +
-			"new id if the " +
-			"repo target pins a different fixture project. " +
-			"That explicit override still goes through target comparison; it is not a bypass. " +
-			"Use project members for read-only membership inspection. " +
-			"Do not hard-delete projects in v1; cleanup means archive, and a failed cleanup should be reported " +
-			"with the " +
-			"project id so it can be retried safely.",
+		Text: "The project commands cover the safe Linear project loop. " +
+			"Use linctl project list --limit 50 to list the projects attached to the resolved team. " +
+			"Use linctl project get PROJECT_ID to inspect one project. " +
+			"Use linctl project members PROJECT_ID to list the current members. " +
+			"Use linctl project updates PROJECT_ID --limit 20 to read the project status history. " +
+			"Use linctl project-milestone list PROJECT_ID --limit 20 to read the ProjectMilestone context. " +
+			"Project create is team-scoped. " +
+			"Run linctl project create --name \"linctl-it-<runid>\" --description \"...\". " +
+			"That command compares only the organization and the team, because the project does not exist yet. " +
+			"Project update and archive are resource-scoped. " +
+			"Run linctl project update PROJECT_ID --name \"...\" --description \"...\", " +
+			"or linctl project archive PROJECT_ID. " +
+			"Both commands resolve the project first, then refuse the write when the pinned project_id differs. " +
+			"ProjectMilestone create and update are resource-scoped project writes. " +
+			"Run linctl project-milestone create PROJECT_ID --name \"...\". " +
+			"Run linctl project-milestone update PROJECT_MILESTONE_ID --name \"...\" --target-date YYYY-MM-DD. " +
+			"Both commands compare the resolved project before the write. " +
+			"For a test, create a namespaced throwaway project, then archive it after the check. " +
+			"Use --json when another agent or script reads the result. " +
+			"The recommended agent flow has five steps. First, run linctl target --json. " +
+			"Second, run linctl project list --json --limit 20. " +
+			"Third, read linctl project updates PROJECT_ID --limit 20 when the status matters, " +
+			"and linctl project-milestone list PROJECT_ID --limit 20 when the milestone matters. " +
+			"Fourth, create the namespaced project, list again, and match the returned id. " +
+			"Fifth, archive that project with --project set to the new id " +
+			"when the repo target pins a different fixture project. " +
+			"That explicit override still goes through the target comparison. It is not a bypass. " +
+			"Use project members to inspect the membership without a write. " +
+			"Never hard-delete a project. Cleanup means archive. " +
+			"Report a failed cleanup with the project id, so a person can retry it safely.",
 	},
 	"cycle": {
 		Topic: "cycle",
-		Text: "cycle commands cover Linear Cycles for the resolved team. " +
-			"Use linctl cycle list --limit 20 to list Cycles with derived status, " +
-			"and linctl cycle get CYCLE_ID to inspect one Cycle by id or slug. " +
-			"Cycle writes are team-scoped: linctl cycle create --starts-at START --ends-at END " +
-			"--name \"...\", linctl cycle update CYCLE_ID --name \"...\", and " +
-			"linctl cycle archive CYCLE_ID all compare the pinned team before writing. " +
-			"Use linctl sprint current for the active Cycle report alias, " +
-			"and linctl sprint report CYCLE_ID --limit 20 for Cycle issue status. " +
-			"Sprint is a read-only report alias over Cycle; do not create Sprint mutations.",
+		Text: "The cycle commands cover the Linear Cycles of the resolved team. " +
+			"Use linctl cycle list --limit 20 to list the Cycles with their derived status. " +
+			"Use linctl cycle get CYCLE_ID to inspect one Cycle by id or by slug. " +
+			"Cycle writes are team-scoped. " +
+			"Run linctl cycle create --starts-at START --ends-at END --name \"...\". " +
+			"Run linctl cycle update CYCLE_ID --name \"...\". Run linctl cycle archive CYCLE_ID. " +
+			"All three commands compare the pinned team before the write. " +
+			"Use linctl sprint current to read the active Cycle. " +
+			"Use linctl sprint report CYCLE_ID --limit 20 to read the issue status of one Cycle. " +
+			"Sprint is a read-only report alias over Cycle. Never add a Sprint mutation.",
 	},
 }
 
-func addUsageCommand(root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+func addUsageCommand(_ context.Context, root *cobra.Command, options *rootOptions) {
+	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "usage [overview|issue|project|cycle]",
 		Short: "Show compact linctl usage guidance",
 		Args:  cobra.MaximumNArgs(1),
@@ -178,7 +156,7 @@ func addUsageCommand(root *cobra.Command, options *rootOptions) {
 }
 
 func addDomainUsageCommand(root *cobra.Command, options *rootOptions, topic string) {
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "usage",
 		Short: "Show compact usage guidance for this domain",
 		Args:  cobra.NoArgs,

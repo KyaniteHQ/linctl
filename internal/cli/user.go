@@ -43,7 +43,7 @@ func addUserListCommand(ctx context.Context, root *cobra.Command, options *rootO
 func addUserGetCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addReadGetCommand(ctx, root, options, readGetSpec[client.UserSummary]{
 		Use:   "get USER_ID",
-		Short: "Get one User by id",
+		Short: "Get one user by id",
 		Load: func(ctx context.Context, runtime commandRuntime, id string) (client.UserSummary, error) {
 			return client.GetUserByID(ctx, runtime.graphqlClient, id)
 		},
@@ -52,9 +52,9 @@ func addUserGetCommand(ctx context.Context, root *cobra.Command, options *rootOp
 }
 
 func addUserMeCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "me",
-		Short: "Get the authenticated User",
+		Short: "Get the authenticated user",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
 			runtime, err := buildCommandRuntime(ctx, options)
@@ -74,7 +74,7 @@ func addUserMeCommand(ctx context.Context, root *cobra.Command, options *rootOpt
 func addUserDraftsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.DraftList, client.DraftSummary]{
 		Use:       "drafts",
-		Short:     "List the authenticated user's saved draft metadata",
+		Short:     "List the saved draft metadata of the authenticated user",
 		LimitHelp: "drafts",
 		Args:      cobra.NoArgs,
 		Load:      loadViewerDraftList,
@@ -85,7 +85,7 @@ func addUserDraftsCommand(ctx context.Context, root *cobra.Command, options *roo
 func addUserAssignedIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.IssueList, client.IssueSummary]{
 		Use:       "assigned-issues USER_ID",
-		Short:     "List issues assigned to a User",
+		Short:     "List the issues assigned to a user",
 		LimitHelp: "issues",
 		Args:      cobra.ExactArgs(1),
 		Load:      loadUserAssignedIssues,
@@ -96,7 +96,7 @@ func addUserAssignedIssuesCommand(ctx context.Context, root *cobra.Command, opti
 func addUserCreatedIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.IssueList, client.IssueSummary]{
 		Use:       "created-issues USER_ID",
-		Short:     "List issues created by a User",
+		Short:     "List the issues created by a user",
 		LimitHelp: "issues",
 		Args:      cobra.ExactArgs(1),
 		Load:      loadUserCreatedIssues,
@@ -107,7 +107,7 @@ func addUserCreatedIssuesCommand(ctx context.Context, root *cobra.Command, optio
 func addUserDelegatedIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.IssueList, client.IssueSummary]{
 		Use:       "delegated-issues USER_ID",
-		Short:     "List issues delegated to a User",
+		Short:     "List the issues delegated to a user",
 		LimitHelp: "issues",
 		Args:      cobra.ExactArgs(1),
 		Load:      loadUserDelegatedIssues,
@@ -118,7 +118,7 @@ func addUserDelegatedIssuesCommand(ctx context.Context, root *cobra.Command, opt
 func addUserTeamMembershipsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.TeamMembershipList, client.TeamMembershipSummary]{
 		Use:       "team-memberships USER_ID",
-		Short:     "List a User's team memberships",
+		Short:     "List the team memberships of a user",
 		LimitHelp: "memberships",
 		Args:      cobra.ExactArgs(1),
 		Load:      loadUserTeamMemberships,
@@ -129,7 +129,7 @@ func addUserTeamMembershipsCommand(ctx context.Context, root *cobra.Command, opt
 func addUserTeamsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.TeamList, client.TeamSummary]{
 		Use:       "teams USER_ID",
-		Short:     "List Teams for a User",
+		Short:     "List the teams of a user",
 		LimitHelp: "teams",
 		Args:      cobra.ExactArgs(1),
 		Load:      loadUserTeams,
@@ -140,7 +140,7 @@ func addUserTeamsCommand(ctx context.Context, root *cobra.Command, options *root
 func addViewerAssignedIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.IssueList, client.IssueSummary]{
 		Use:       "my-assigned-issues",
-		Short:     "List issues assigned to the authenticated User",
+		Short:     "List the issues assigned to the authenticated user",
 		LimitHelp: "issues",
 		Args:      cobra.NoArgs,
 		Load:      loadViewerAssignedIssues,
@@ -151,7 +151,7 @@ func addViewerAssignedIssuesCommand(ctx context.Context, root *cobra.Command, op
 func addViewerCreatedIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.IssueList, client.IssueSummary]{
 		Use:       "my-created-issues",
-		Short:     "List issues created by the authenticated User",
+		Short:     "List the issues created by the authenticated user",
 		LimitHelp: "issues",
 		Args:      cobra.NoArgs,
 		Load:      loadViewerCreatedIssues,
@@ -162,7 +162,7 @@ func addViewerCreatedIssuesCommand(ctx context.Context, root *cobra.Command, opt
 func addViewerDelegatedIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.IssueList, client.IssueSummary]{
 		Use:       "my-delegated-issues",
-		Short:     "List issues delegated to the authenticated User",
+		Short:     "List the issues delegated to the authenticated user",
 		LimitHelp: "issues",
 		Args:      cobra.NoArgs,
 		Load:      loadViewerDelegatedIssues,
@@ -173,7 +173,7 @@ func addViewerDelegatedIssuesCommand(ctx context.Context, root *cobra.Command, o
 func addViewerTeamMembershipsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.TeamMembershipList, client.TeamMembershipSummary]{
 		Use:       "my-team-memberships",
-		Short:     "List team memberships for the authenticated User",
+		Short:     "List the team memberships of the authenticated user",
 		LimitHelp: "memberships",
 		Args:      cobra.NoArgs,
 		Load:      loadViewerTeamMemberships,
@@ -184,7 +184,7 @@ func addViewerTeamMembershipsCommand(ctx context.Context, root *cobra.Command, o
 func addViewerTeamsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.TeamList, client.TeamSummary]{
 		Use:       "my-teams",
-		Short:     "List Teams for the authenticated User",
+		Short:     "List the teams of the authenticated user",
 		LimitHelp: "teams",
 		Args:      cobra.NoArgs,
 		Load:      loadViewerTeams,
@@ -193,10 +193,7 @@ func addViewerTeamsCommand(ctx context.Context, root *cobra.Command, options *ro
 }
 
 func writeUser(command *cobra.Command, options *rootOptions, user client.UserSummary) error {
-	return writeItem(command, options, user, user.ID,
-		func(command *cobra.Command, _ *rootOptions, user client.UserSummary) error {
-			return render.WriteLine(command.OutOrStdout(), "%s %s <%s>", user.ID, user.DisplayName, user.Email)
-		})
+	return writeItemLine(command, options, user, user.ID, "%s %s <%s>", user.ID, user.DisplayName, user.Email)
 }
 
 func writeDraft(command *cobra.Command, options *rootOptions, draft client.DraftSummary) error {
@@ -220,9 +217,9 @@ func loadUserList(
 	runtime commandRuntime,
 	_ []string,
 	limit int,
-) (client.UserList, []client.UserSummary, error) {
+) (client.UserList, error) {
 	users, err := client.ListUsers(ctx, runtime.graphqlClient, limit)
-	return users, users.Users, err
+	return users, err
 }
 
 func loadViewerDraftList(
@@ -230,9 +227,9 @@ func loadViewerDraftList(
 	runtime commandRuntime,
 	_ []string,
 	limit int,
-) (client.DraftList, []client.DraftSummary, error) {
+) (client.DraftList, error) {
 	drafts, err := client.ListViewerDrafts(ctx, runtime.graphqlClient, limit)
-	return drafts, drafts.Drafts, err
+	return drafts, err
 }
 
 func loadUserAssignedIssues(
@@ -240,9 +237,9 @@ func loadUserAssignedIssues(
 	runtime commandRuntime,
 	args []string,
 	limit int,
-) (client.IssueList, []client.IssueSummary, error) {
+) (client.IssueList, error) {
 	issues, err := client.ListUserAssignedIssues(ctx, runtime.graphqlClient, args[0], limit)
-	return issues, issues.Issues, err
+	return issues, err
 }
 
 func loadUserCreatedIssues(
@@ -250,9 +247,9 @@ func loadUserCreatedIssues(
 	runtime commandRuntime,
 	args []string,
 	limit int,
-) (client.IssueList, []client.IssueSummary, error) {
+) (client.IssueList, error) {
 	issues, err := client.ListUserCreatedIssues(ctx, runtime.graphqlClient, args[0], limit)
-	return issues, issues.Issues, err
+	return issues, err
 }
 
 func loadUserDelegatedIssues(
@@ -260,9 +257,9 @@ func loadUserDelegatedIssues(
 	runtime commandRuntime,
 	args []string,
 	limit int,
-) (client.IssueList, []client.IssueSummary, error) {
+) (client.IssueList, error) {
 	issues, err := client.ListUserDelegatedIssues(ctx, runtime.graphqlClient, args[0], limit)
-	return issues, issues.Issues, err
+	return issues, err
 }
 
 func loadUserTeamMemberships(
@@ -270,9 +267,9 @@ func loadUserTeamMemberships(
 	runtime commandRuntime,
 	args []string,
 	limit int,
-) (client.TeamMembershipList, []client.TeamMembershipSummary, error) {
+) (client.TeamMembershipList, error) {
 	memberships, err := client.ListUserTeamMemberships(ctx, runtime.graphqlClient, args[0], limit)
-	return memberships, memberships.Memberships, err
+	return memberships, err
 }
 
 func loadUserTeams(
@@ -280,9 +277,9 @@ func loadUserTeams(
 	runtime commandRuntime,
 	args []string,
 	limit int,
-) (client.TeamList, []client.TeamSummary, error) {
+) (client.TeamList, error) {
 	teams, err := client.ListUserTeams(ctx, runtime.graphqlClient, args[0], limit)
-	return teams, teams.Teams, err
+	return teams, err
 }
 
 func loadViewerAssignedIssues(
@@ -290,9 +287,9 @@ func loadViewerAssignedIssues(
 	runtime commandRuntime,
 	_ []string,
 	limit int,
-) (client.IssueList, []client.IssueSummary, error) {
+) (client.IssueList, error) {
 	issues, err := client.ListViewerAssignedIssues(ctx, runtime.graphqlClient, limit)
-	return issues, issues.Issues, err
+	return issues, err
 }
 
 func loadViewerCreatedIssues(
@@ -300,9 +297,9 @@ func loadViewerCreatedIssues(
 	runtime commandRuntime,
 	_ []string,
 	limit int,
-) (client.IssueList, []client.IssueSummary, error) {
+) (client.IssueList, error) {
 	issues, err := client.ListViewerCreatedIssues(ctx, runtime.graphqlClient, limit)
-	return issues, issues.Issues, err
+	return issues, err
 }
 
 func loadViewerDelegatedIssues(
@@ -310,9 +307,9 @@ func loadViewerDelegatedIssues(
 	runtime commandRuntime,
 	_ []string,
 	limit int,
-) (client.IssueList, []client.IssueSummary, error) {
+) (client.IssueList, error) {
 	issues, err := client.ListViewerDelegatedIssues(ctx, runtime.graphqlClient, limit)
-	return issues, issues.Issues, err
+	return issues, err
 }
 
 func loadViewerTeamMemberships(
@@ -320,9 +317,9 @@ func loadViewerTeamMemberships(
 	runtime commandRuntime,
 	_ []string,
 	limit int,
-) (client.TeamMembershipList, []client.TeamMembershipSummary, error) {
+) (client.TeamMembershipList, error) {
 	memberships, err := client.ListViewerTeamMemberships(ctx, runtime.graphqlClient, limit)
-	return memberships, memberships.Memberships, err
+	return memberships, err
 }
 
 func loadViewerTeams(
@@ -330,7 +327,7 @@ func loadViewerTeams(
 	runtime commandRuntime,
 	_ []string,
 	limit int,
-) (client.TeamList, []client.TeamSummary, error) {
+) (client.TeamList, error) {
 	teams, err := client.ListViewerTeams(ctx, runtime.graphqlClient, limit)
-	return teams, teams.Teams, err
+	return teams, err
 }

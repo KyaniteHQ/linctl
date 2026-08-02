@@ -56,16 +56,10 @@ func writeIssueStateSpan(command *cobra.Command, options *rootOptions, span clie
 }
 
 func writeIssueHistory(command *cobra.Command, options *rootOptions, history client.IssueHistorySummary) error {
-	return writeItem(command, options, history, history.ID,
-		func(command *cobra.Command, _ *rootOptions, history client.IssueHistorySummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s issue %s updated_description %t",
-				history.ID,
-				history.IssueID,
-				history.UpdatedDescription,
-			)
-		})
+	return writeItemLine(
+		command, options, history, history.ID,
+		"%s issue %s updated_description %t", history.ID, history.IssueID, history.UpdatedDescription,
+	)
 }
 
 func writeCustomerNeedMetadata(
@@ -73,17 +67,10 @@ func writeCustomerNeedMetadata(
 	options *rootOptions,
 	need client.CustomerNeedMetadataSummary,
 ) error {
-	return writeItem(command, options, need, need.ID,
-		func(command *cobra.Command, _ *rootOptions, need client.CustomerNeedMetadataSummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s %s %s priority %.0f",
-				need.ID,
-				emptyDash(need.CustomerName),
-				emptyDash(need.Issue),
-				need.Priority,
-			)
-		})
+	return writeItemLine(
+		command, options, need, need.ID,
+		"%s %s %s priority %.0f", need.ID, emptyDash(need.CustomerName), emptyDash(need.Issue), need.Priority,
+	)
 }
 
 func writeIssueSharedAccess(
@@ -91,19 +78,16 @@ func writeIssueSharedAccess(
 	options *rootOptions,
 	access client.IssueSharedAccessSummary,
 ) error {
-	return writeItem(command, options, access, access.IssueID,
-		func(command *cobra.Command, _ *rootOptions, access client.IssueSharedAccessSummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s %s shared=%t shared_with=%d viewer_shared_only=%t disallowed=%s",
-				access.IssueID,
-				access.Identifier,
-				access.IsShared,
-				access.SharedWithCount,
-				access.ViewerHasOnlySharedAccess,
-				issueSharedAccessFieldsText(access.DisallowedIssueFields),
-			)
-		})
+	return writeItemLine(
+		command, options, access, access.IssueID,
+		"%s %s shared=%t shared_with=%d viewer_shared_only=%t disallowed=%s",
+		access.IssueID,
+		access.Identifier,
+		access.IsShared,
+		access.SharedWithCount,
+		access.ViewerHasOnlySharedAccess,
+		issueSharedAccessFieldsText(access.DisallowedIssueFields),
+	)
 }
 
 func issueSharedAccessFieldsText(fields []string) string {
@@ -136,15 +120,10 @@ func writeIssueFilterSuggestion(
 	options *rootOptions,
 	suggestion client.IssueFilterSuggestion,
 ) error {
-	return writeItem(command, options, suggestion, suggestion.LogID,
-		func(command *cobra.Command, _ *rootOptions, suggestion client.IssueFilterSuggestion) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"log_id=%s filter=%s",
-				emptyDash(suggestion.LogID),
-				emptyDash(string(suggestion.Filter)),
-			)
-		})
+	return writeItemLine(
+		command, options, suggestion, suggestion.LogID,
+		"log_id=%s filter=%s", emptyDash(suggestion.LogID), emptyDash(string(suggestion.Filter)),
+	)
 }
 
 func writeIssueTitleSuggestion(
@@ -152,15 +131,10 @@ func writeIssueTitleSuggestion(
 	options *rootOptions,
 	suggestion client.IssueTitleSuggestion,
 ) error {
-	return writeItem(command, options, suggestion, suggestion.LogID,
-		func(command *cobra.Command, _ *rootOptions, suggestion client.IssueTitleSuggestion) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"log_id=%s title=%s",
-				emptyDash(suggestion.LogID),
-				emptyDash(suggestion.Title),
-			)
-		})
+	return writeItemLine(
+		command, options, suggestion, suggestion.LogID,
+		"log_id=%s title=%s", emptyDash(suggestion.LogID), emptyDash(suggestion.Title),
+	)
 }
 
 func writeIssues(command *cobra.Command, options *rootOptions, issues []client.IssueSummary) error {

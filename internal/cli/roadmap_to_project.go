@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addRoadmapToProjectCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -33,17 +32,14 @@ func writeRoadmapToProject(
 	options *rootOptions,
 	association client.RoadmapToProjectSummary,
 ) error {
-	return writeItem(command, options, association, association.ID,
-		func(command *cobra.Command, _ *rootOptions, association client.RoadmapToProjectSummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s %s -> %s order %s [legacy]",
-				association.ID,
-				association.RoadmapName,
-				association.ProjectName,
-				association.SortOrder,
-			)
-		})
+	return writeItemLine(
+		command, options, association, association.ID,
+		"%s %s -> %s order %s [legacy]",
+		association.ID,
+		association.RoadmapName,
+		association.ProjectName,
+		association.SortOrder,
+	)
 }
 
 func loadRoadmapToProjectList(
@@ -51,9 +47,9 @@ func loadRoadmapToProjectList(
 	runtime commandRuntime,
 	_ []string,
 	limit int,
-) (client.RoadmapToProjectList, []client.RoadmapToProjectSummary, error) {
+) (client.RoadmapToProjectList, error) {
 	associations, err := client.ListRoadmapToProjects(ctx, runtime.graphqlClient, limit)
-	return associations, associations.Associations, err
+	return associations, err
 }
 
 func loadRoadmapToProject(

@@ -10,12 +10,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type readListLoader[Page any, Item any] func(
+// readListLoader produces one page of a list command. The items are read back
+// out of the page by pageItems, so a loader never restates which field holds
+// them.
+type readListLoader[Page any] func(
 	context.Context,
 	commandRuntime,
 	[]string,
 	int,
-) (Page, []Item, error)
+) (Page, error)
 
 type readListItemWriter[Item any] func(*cobra.Command, *rootOptions, Item) error
 
@@ -28,9 +31,28 @@ type childListFetcher[Page any] func(
 	int,
 ) (Page, error)
 
+// clientList lifts a plain client list call into a readListLoader. Use it when
+// the command reads nothing from the runtime but the GraphQL client.
+func clientList[Page any](
+	list func(context.Context, graphql.Client, int) (Page, error),
+) readListLoader[Page] {
+	return func(ctx context.Context, runtime commandRuntime, _ []string, limit int) (Page, error) {
+		return list(ctx, runtime.graphqlClient, limit)
+	}
+}
+
+// clientGet lifts a plain client get call into a readGetLoader.
+func clientGet[Item any](
+	get func(context.Context, graphql.Client, string) (Item, error),
+) readGetLoader[Item] {
+	return func(ctx context.Context, runtime commandRuntime, id string) (Item, error) {
+		return get(ctx, runtime.graphqlClient, id)
+	}
+}
+
 // addChildListCommand registers a one-argument child listing command: fetch a
-// page for the parent entity id, extract its items, and write them through the
-// shared list pipeline.
+// page for the parent entity id and write its items through the shared list
+// pipeline.
 func addChildListCommand[Page any, Item any](
 	ctx context.Context,
 	root *cobra.Command,
@@ -39,7 +61,6 @@ func addChildListCommand[Page any, Item any](
 	short string,
 	limitHelp string,
 	fetch childListFetcher[Page],
-	items func(Page) []Item,
 	writeItem readListItemWriter[Item],
 ) {
 	addListCommand(ctx, root, options, listCommandSpec[Page, Item]{
@@ -47,22 +68,11 @@ func addChildListCommand[Page any, Item any](
 		Short:     short,
 		LimitHelp: limitHelp,
 		Args:      cobra.ExactArgs(1),
-		Load: func(
-			ctx context.Context, runtime commandRuntime, args []string, limit int,
-		) (Page, []Item, error) {
-			page, err := fetch(ctx, runtime.graphqlClient, args[0], limit)
-			return page, items(page), err
+		Load: func(ctx context.Context, runtime commandRuntime, args []string, limit int) (Page, error) {
+			return fetch(ctx, runtime.graphqlClient, args[0], limit)
 		},
 		WriteItem: writeItem,
 	})
-}
-
-func preflightReadListCommand[Page any, Item any](
-	command *cobra.Command,
-	_ readListLoader[Page, Item],
-) *cobra.Command {
-	annotateReadCollectionCommand(command, mustCollectionKeyForList[Page, Item]())
-	return command
 }
 
 type readListGetSpec[Page any, Item any] struct {
@@ -72,7 +82,7 @@ type readListGetSpec[Page any, Item any] struct {
 	LimitHelp string
 	GetUse    string
 	GetShort  string
-	LoadList  readListLoader[Page, Item]
+	LoadList  readListLoader[Page]
 	LoadGet   readGetLoader[Item]
 	WriteItem readListItemWriter[Item]
 }
@@ -83,7 +93,7 @@ func addReadListGetCommand[Page any, Item any](
 	options *rootOptions,
 	spec readListGetSpec[Page, Item],
 ) *cobra.Command {
-	limit := 50
+	limit := defaultListLimit
 	parentCommand := newGroupCommand(spec.Use, spec.Short)
 
 	listCommand := &cobra.Command{
@@ -169,17 +179,18 @@ func runReadListCommand[Page any, Item any](
 	args []string,
 	options *rootOptions,
 	limit int,
-	loader readListLoader[Page, Item],
+	loader readListLoader[Page],
 	writeOne readListItemWriter[Item],
 ) error {
 	runtime, err := buildCommandRuntime(ctx, options)
 	if err != nil {
 		return err
 	}
-	page, items, err := loader(ctx, runtime, args, limit)
+	page, err := loader(ctx, runtime, args, limit)
 	if err != nil {
 		return err
 	}
+	items := pageItems[Page, Item](page)
 	if err := ensureNonEmpty(options, len(items)); err != nil {
 		return err
 	}
@@ -259,17 +270,36 @@ func pageWithItems[Page any, Item any](page Page, items []Item) (Page, error) {
 	return zero, nil
 }
 
+// pageItems reads the collection field that pageWithItems writes. It is the
+// read twin of that function: both resolve the same field, so no loader has to
+// name it. mustCollectionFieldForList already proved the field holds []Item, so
+// the copy below cannot mismatch.
+func pageItems[Page any, Item any](page Page) []Item {
+	field := mustCollectionFieldForList[Page, Item]()
+	var items []Item
+	reflect.ValueOf(&items).Elem().Set(
+		reflect.Indirect(reflect.ValueOf(page)).FieldByIndex(field.Index),
+	)
+
+	return items
+}
+
 // listCommandSpec describes one read-only list command in the single list
 // pipeline: a loader produces the page and its items, and WriteItem renders one
 // human line. The pipeline puts sorted items back into the page for JSON output.
 type listCommandSpec[Page any, Item any] struct {
 	Use       string
 	Short     string
+	Long      string
 	LimitHelp string
+	// Limit is the default --limit value. Zero means defaultListLimit.
+	Limit     int
 	Args      cobra.PositionalArgs
-	Load      readListLoader[Page, Item]
+	Load      readListLoader[Page]
 	WriteItem readListItemWriter[Item]
 }
+
+const defaultListLimit = 50
 
 // addListCommand registers a list command from its spec. The collection-key
 // and read-safety annotations are applied at registration time so the static
@@ -280,10 +310,14 @@ func addListCommand[Page any, Item any](
 	options *rootOptions,
 	spec listCommandSpec[Page, Item],
 ) {
-	limit := 50
+	limit := spec.Limit
+	if limit == 0 {
+		limit = defaultListLimit
+	}
 	command := &cobra.Command{
 		Use:   spec.Use,
 		Short: spec.Short,
+		Long:  spec.Long,
 		Args:  spec.Args,
 		RunE: func(command *cobra.Command, args []string) error {
 			return runReadListCommand(

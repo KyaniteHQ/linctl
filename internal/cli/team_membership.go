@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addTeamMembershipCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -21,42 +20,21 @@ func addTeamMembershipCommand(ctx context.Context, root *cobra.Command, options 
 			LimitHelp: "maximum team memberships to return",
 			GetUse:    "get TEAM_MEMBERSHIP_ID",
 			GetShort:  "Get one team membership by id",
-			LoadList:  loadTeamMembershipList,
-			LoadGet:   loadTeamMembership,
+			LoadList:  clientList(client.ListTeamMemberships),
+			LoadGet:   clientGet(client.GetTeamMembershipByID),
 			WriteItem: writeTeamMembership,
 		},
 	)
 }
 
 func writeTeamMembership(command *cobra.Command, options *rootOptions, membership client.TeamMembershipSummary) error {
-	return writeItem(command, options, membership, membership.ID,
-		func(command *cobra.Command, _ *rootOptions, membership client.TeamMembershipSummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s %s %s owner %t order %.2f",
-				membership.ID,
-				membership.TeamKey,
-				membership.DisplayName,
-				membership.Owner,
-				membership.SortOrder,
-			)
-		})
-}
-
-func loadTeamMembershipList(
-	ctx context.Context,
-	runtime commandRuntime,
-	_ []string,
-	limit int,
-) (client.TeamMembershipList, []client.TeamMembershipSummary, error) {
-	memberships, err := client.ListTeamMemberships(ctx, runtime.graphqlClient, limit)
-	return memberships, memberships.Memberships, err
-}
-
-func loadTeamMembership(
-	ctx context.Context,
-	runtime commandRuntime,
-	id string,
-) (client.TeamMembershipSummary, error) {
-	return client.GetTeamMembershipByID(ctx, runtime.graphqlClient, id)
+	return writeItemLine(
+		command, options, membership, membership.ID,
+		"%s %s %s owner %t order %.2f",
+		membership.ID,
+		membership.TeamKey,
+		membership.DisplayName,
+		membership.Owner,
+		membership.SortOrder,
+	)
 }

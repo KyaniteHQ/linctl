@@ -13,7 +13,7 @@ func addIssueDepsCommand(ctx context.Context, root *cobra.Command, options *root
 	limit := 50
 	command := &cobra.Command{
 		Use:   "deps ISSUE_ID",
-		Short: "Show issue dependencies",
+		Short: "Show the dependencies of an issue",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
 			runtime, err := buildCommandRuntime(ctx, options)
@@ -32,7 +32,7 @@ func addIssueDepsCommand(ctx context.Context, root *cobra.Command, options *root
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum related issues per section")
-	root.AddCommand(command)
+	addCommandWithSafety(root, CommandSafetyRead, command)
 }
 
 func writeIssueDependencies(

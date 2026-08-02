@@ -184,7 +184,7 @@ func Test_Usage_prints_overview_when_called(t *testing.T) {
 	require.Contains(t, stdout.String(), "linctl is a schema-aligned Linear CLI")
 	require.Contains(t, stdout.String(), "linctl issue usage")
 	require.Contains(t, stdout.String(), "initiative-to-project")
-	require.Contains(t, stdout.String(), "roadmap and roadmap-to-project are legacy read compatibility")
+	require.Contains(t, stdout.String(), "roadmap and roadmap-to-project commands read deprecated Linear Roadmap data")
 }
 
 func Test_Usage_prints_domain_usage_when_called_from_domain(t *testing.T) {

@@ -56,11 +56,9 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+      - uses: ./.github/actions/go-setup
         with:
-          go-version-file: go.mod
-          cache: true
-          cache-dependency-path: go.sum
+          verify-dependencies: "false"
       - name: Release preflight
         run: go tool task release-preflight
 
@@ -78,15 +76,7 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version-file: go.mod
-          cache: true
-          cache-dependency-path: go.sum
-      - name: Verify dependencies
-        run: |
-          go mod download
-          go mod verify
+      - uses: ./.github/actions/go-setup
       - name: Install syft (SBOM generator)
         uses: anchore/sbom-action/download-syft@e22c389904149dbc22b58101806040fa8d37a610 # v0.24.0
       - name: Install cosign

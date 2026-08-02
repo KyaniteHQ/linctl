@@ -17,6 +17,24 @@ updates:
           - minor
           - patch
 
+  # Composite actions are not covered by the `/` entry above; Dependabot needs
+  # the action directory named explicitly to bump the SHAs pinned inside it.
+  - package-ecosystem: github-actions
+    directory: /.github/actions/go-setup
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:05"
+      timezone: Etc/UTC
+    open-pull-requests-limit: 5
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
   - package-ecosystem: gomod
     directory: /
     schedule:

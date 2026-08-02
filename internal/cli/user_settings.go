@@ -27,9 +27,9 @@ func addUserSettingsCommand(ctx context.Context, root *cobra.Command, options *r
 }
 
 func addUserSettingsGetCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "get",
-		Short: "Get authenticated User settings",
+		Short: "Get the settings of the authenticated user",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
 			runtime, err := buildCommandRuntime(ctx, options)
@@ -47,9 +47,9 @@ func addUserSettingsGetCommand(ctx context.Context, root *cobra.Command, options
 }
 
 func addUserSettingsNotificationCategoriesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "notification-categories",
-		Short: "Get User notification category preferences",
+		Short: "Get the category preferences for user notifications",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
 			runtime, err := buildCommandRuntime(ctx, options)
@@ -67,9 +67,9 @@ func addUserSettingsNotificationCategoriesCommand(ctx context.Context, root *cob
 }
 
 func addUserSettingsNotificationCategoryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "notification-category CATEGORY",
-		Short: "Get one User notification category preference",
+		Short: "Get one category preference for user notifications",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
 			runtime, err := buildCommandRuntime(ctx, options)
@@ -87,9 +87,9 @@ func addUserSettingsNotificationCategoryCommand(ctx context.Context, root *cobra
 }
 
 func addUserSettingsNotificationChannelsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "notification-channels",
-		Short: "Get User notification channel preferences",
+		Short: "Get the channel preferences for user notifications",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
 			runtime, err := buildCommandRuntime(ctx, options)
@@ -112,9 +112,9 @@ func addUserSettingsNotificationChannelsCommand(ctx context.Context, root *cobra
 }
 
 func addUserSettingsNotificationDeliveryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "notification-delivery",
-		Short: "Get User notification delivery preferences",
+		Short: "Get the delivery preferences for user notifications",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
 			runtime, err := buildCommandRuntime(ctx, options)
@@ -132,9 +132,9 @@ func addUserSettingsNotificationDeliveryCommand(ctx context.Context, root *cobra
 }
 
 func addUserSettingsMobileDeliveryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "mobile-delivery",
-		Short: "Get User mobile notification delivery preferences",
+		Short: "Get the mobile delivery preferences for user notifications",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
 			runtime, err := buildCommandRuntime(ctx, options)
@@ -152,9 +152,9 @@ func addUserSettingsMobileDeliveryCommand(ctx context.Context, root *cobra.Comma
 }
 
 func addUserSettingsMobileScheduleCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "mobile-schedule",
-		Short: "Get User mobile notification schedule",
+		Short: "Get the mobile schedule for user notifications",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
 			runtime, err := buildCommandRuntime(ctx, options)
@@ -172,9 +172,9 @@ func addUserSettingsMobileScheduleCommand(ctx context.Context, root *cobra.Comma
 }
 
 func addUserSettingsMobileScheduleDayCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "mobile-schedule-day DAY",
-		Short: "Get one User mobile notification schedule day",
+		Short: "Get one mobile schedule day for user notifications",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
 			runtime, err := buildCommandRuntime(ctx, options)
@@ -211,9 +211,12 @@ func addUserSettingsThemeCommand(
 			return runUserSettingsThemeCommand(ctx, command, options, runtime, name, deviceType, mode)
 		},
 	}
-	command.Flags().StringVar(&deviceType, "device-type", deviceType, "theme device type: desktop or mobile-web")
+	command.Flags().StringVar(
+		&deviceType, "device-type", deviceType,
+		"device type for the theme: desktop or mobile-web",
+	)
 	command.Flags().StringVar(&mode, "mode", mode, "theme mode: light or dark")
-	root.AddCommand(command)
+	addCommandWithSafety(root, CommandSafetyRead, command)
 }
 
 func runUserSettingsThemeCommand(

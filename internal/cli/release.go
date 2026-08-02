@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addReleaseCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -21,8 +20,8 @@ func addReleaseCommand(ctx context.Context, root *cobra.Command, options *rootOp
 			LimitHelp: "maximum releases to return",
 			GetUse:    "get RELEASE_ID",
 			GetShort:  "Get one release by id",
-			LoadList:  loadReleaseList,
-			LoadGet:   loadRelease,
+			LoadList:  clientList(client.ListReleases),
+			LoadGet:   clientGet(client.GetReleaseByID),
 			WriteItem: writeRelease,
 		},
 	)
@@ -34,130 +33,71 @@ func addReleaseCommand(ctx context.Context, root *cobra.Command, options *rootOp
 }
 
 func addReleaseSearchCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	var limit int
-	command := &cobra.Command{
-		Use:   "search TERM",
-		Short: "Search Linear releases",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			releases, err := client.SearchReleases(ctx, runtime.graphqlClient, args[0], limit)
-			if err != nil {
-				return err
-			}
-			items := releases.Releases
-			items, err = sortByJSONField(items, options.sortField, options.sortOrder)
-			if err != nil {
-				return err
-			}
-			if err := ensureNonEmpty(options, len(items)); err != nil {
-				return err
-			}
-			if options.json {
-				return writePageJSON(command, options, releases, items)
-			}
-			for _, release := range items {
-				if err := writeRelease(command, options, release); err != nil {
-					return err
-				}
-			}
-			return nil
+	addListCommand(ctx, root, options, listCommandSpec[client.ReleaseList, client.ReleaseSummary]{
+		Use:       "search TERM",
+		Short:     "Search Linear releases",
+		LimitHelp: "releases",
+		Limit:     20,
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.ReleaseList, error) {
+			return client.SearchReleases(ctx, runtime.graphqlClient, args[0], limit)
 		},
-	}
-	command.Flags().IntVar(&limit, "limit", 20, "maximum releases to return")
-	annotateReadCollectionCommand(command, mustCollectionKeyForList[client.ReleaseList, client.ReleaseSummary]())
-	root.AddCommand(command)
+		WriteItem: writeRelease,
+	})
 }
 
 func addReleaseHistoryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "history RELEASE_ID",
-		Short: "List history records associated with one Linear release",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadReleaseHistory,
-				writeReleaseHistory,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum history records to return")
-	root.AddCommand(preflightReadListCommand(command, loadReleaseHistory))
+	addChildListCommand(
+		ctx,
+		root,
+		options,
+		"history RELEASE_ID",
+		"List history records associated with one Linear release",
+		"history records",
+		client.ListReleaseHistory,
+		writeReleaseHistory,
+	)
 }
 
 func addReleaseDocumentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "documents RELEASE_ID",
-		Short: "List documents associated with one Linear release",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadReleaseDocuments,
-				writeDocument,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum documents to return")
-	root.AddCommand(preflightReadListCommand(command, loadReleaseDocuments))
+	addChildListCommand(
+		ctx,
+		root,
+		options,
+		"documents RELEASE_ID",
+		"List documents associated with one Linear release",
+		"documents",
+		client.ListReleaseDocuments,
+		writeDocument,
+	)
 }
 
 func addReleaseIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "issues RELEASE_ID",
-		Short: "List issues associated with one Linear release",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadReleaseIssues,
-				writeIssue,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum issues to return")
-	root.AddCommand(preflightReadListCommand(command, loadReleaseIssues))
+	addChildListCommand(
+		ctx,
+		root,
+		options,
+		"issues RELEASE_ID",
+		"List issues associated with one Linear release",
+		"issues",
+		client.ListReleaseIssues,
+		writeIssue,
+	)
 }
 
 func addReleaseLinksCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "links RELEASE_ID",
-		Short: "List external links associated with one Linear release",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadReleaseLinks,
-				writeEntityExternalLink,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum links to return")
-	root.AddCommand(preflightReadListCommand(command, loadReleaseLinks))
+	addChildListCommand(
+		ctx,
+		root,
+		options,
+		"links RELEASE_ID",
+		"List external links associated with one Linear release",
+		"links",
+		client.ListReleaseLinks,
+		writeEntityExternalLink,
+	)
 }
 
 func addReleaseNoteCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -172,40 +112,31 @@ func addReleaseNoteCommand(ctx context.Context, root *cobra.Command, options *ro
 			LimitHelp: "maximum release notes to return",
 			GetUse:    "get RELEASE_NOTE_ID",
 			GetShort:  "Get one release note by id",
-			LoadList:  loadReleaseNoteList,
-			LoadGet:   loadReleaseNote,
+			LoadList:  clientList(client.ListReleaseNotes),
+			LoadGet:   clientGet(client.GetReleaseNoteByID),
 			WriteItem: writeReleaseNote,
 		},
 	)
 }
 
 func writeRelease(command *cobra.Command, options *rootOptions, release client.ReleaseSummary) error {
-	return writeItem(command, options, release, release.ID,
-		func(command *cobra.Command, _ *rootOptions, release client.ReleaseSummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s %s [%s] pipeline %s stage %s issues %d",
-				release.ID,
-				release.Name,
-				emptyDash(release.Version),
-				release.PipelineName,
-				release.StageName,
-				release.IssueCount,
-			)
-		})
+	return writeItemLine(
+		command, options, release, release.ID,
+		"%s %s [%s] pipeline %s stage %s issues %d",
+		release.ID,
+		release.Name,
+		emptyDash(release.Version),
+		release.PipelineName,
+		release.StageName,
+		release.IssueCount,
+	)
 }
 
 func writeReleaseHistory(command *cobra.Command, options *rootOptions, history client.ReleaseHistorySummary) error {
-	return writeItem(command, options, history, history.ID,
-		func(command *cobra.Command, _ *rootOptions, history client.ReleaseHistorySummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s release %s entries %d",
-				history.ID,
-				history.ReleaseID,
-				history.EntryCount,
-			)
-		})
+	return writeItemLine(
+		command, options, history, history.ID,
+		"%s release %s entries %d", history.ID, history.ReleaseID, history.EntryCount,
+	)
 }
 
 func writeEntityExternalLink(
@@ -213,105 +144,15 @@ func writeEntityExternalLink(
 	options *rootOptions,
 	link client.EntityExternalLinkSummary,
 ) error {
-	return writeItem(command, options, link, link.ID,
-		func(command *cobra.Command, _ *rootOptions, link client.EntityExternalLinkSummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s %s %s order %g",
-				link.ID,
-				link.Label,
-				link.URL,
-				link.SortOrder,
-			)
-		})
+	return writeItemLine(
+		command, options, link, link.ID,
+		"%s %s %s order %g", link.ID, link.Label, link.URL, link.SortOrder,
+	)
 }
 
 func writeReleaseNote(command *cobra.Command, options *rootOptions, note client.ReleaseNoteSummary) error {
-	return writeItem(command, options, note, note.ID,
-		func(command *cobra.Command, _ *rootOptions, note client.ReleaseNoteSummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s %s pipeline %s releases %d",
-				note.ID,
-				emptyDash(note.Title),
-				note.PipelineName,
-				note.ReleaseCount,
-			)
-		})
-}
-
-func loadReleaseList(
-	ctx context.Context,
-	runtime commandRuntime,
-	_ []string,
-	limit int,
-) (client.ReleaseList, []client.ReleaseSummary, error) {
-	releases, err := client.ListReleases(ctx, runtime.graphqlClient, limit)
-	return releases, releases.Releases, err
-}
-
-func loadRelease(
-	ctx context.Context,
-	runtime commandRuntime,
-	id string,
-) (client.ReleaseSummary, error) {
-	return client.GetReleaseByID(ctx, runtime.graphqlClient, id)
-}
-
-func loadReleaseHistory(
-	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
-	limit int,
-) (client.ReleaseHistoryList, []client.ReleaseHistorySummary, error) {
-	history, err := client.ListReleaseHistory(ctx, runtime.graphqlClient, args[0], limit)
-	return history, history.History, err
-}
-
-func loadReleaseDocuments(
-	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
-	limit int,
-) (client.DocumentList, []client.DocumentSummary, error) {
-	documents, err := client.ListReleaseDocuments(ctx, runtime.graphqlClient, args[0], limit)
-	return documents, documents.Documents, err
-}
-
-func loadReleaseIssues(
-	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
-	limit int,
-) (client.IssueList, []client.IssueSummary, error) {
-	issues, err := client.ListReleaseIssues(ctx, runtime.graphqlClient, args[0], limit)
-	return issues, issues.Issues, err
-}
-
-func loadReleaseLinks(
-	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
-	limit int,
-) (client.EntityExternalLinkList, []client.EntityExternalLinkSummary, error) {
-	links, err := client.ListReleaseLinks(ctx, runtime.graphqlClient, args[0], limit)
-	return links, links.Links, err
-}
-
-func loadReleaseNoteList(
-	ctx context.Context,
-	runtime commandRuntime,
-	_ []string,
-	limit int,
-) (client.ReleaseNoteList, []client.ReleaseNoteSummary, error) {
-	notes, err := client.ListReleaseNotes(ctx, runtime.graphqlClient, limit)
-	return notes, notes.ReleaseNotes, err
-}
-
-func loadReleaseNote(
-	ctx context.Context,
-	runtime commandRuntime,
-	id string,
-) (client.ReleaseNoteSummary, error) {
-	return client.GetReleaseNoteByID(ctx, runtime.graphqlClient, id)
+	return writeItemLine(
+		command, options, note, note.ID,
+		"%s %s pipeline %s releases %d", note.ID, emptyDash(note.Title), note.PipelineName, note.ReleaseCount,
+	)
 }

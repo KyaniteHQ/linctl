@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addSLAConfigurationCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -60,18 +59,15 @@ func writeSLAConfiguration(
 	options *rootOptions,
 	configuration client.SLAConfigurationSummary,
 ) error {
-	return writeItem(command, options, configuration, configuration.ID,
-		func(command *cobra.Command, _ *rootOptions, configuration client.SLAConfigurationSummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s %s sla %s type %s removes %t",
-				configuration.ID,
-				configuration.Name,
-				slaValue(configuration.SLA),
-				emptyDash(configuration.SLAType),
-				configuration.RemovesSLA,
-			)
-		})
+	return writeItemLine(
+		command, options, configuration, configuration.ID,
+		"%s %s sla %s type %s removes %t",
+		configuration.ID,
+		configuration.Name,
+		slaValue(configuration.SLA),
+		emptyDash(configuration.SLAType),
+		configuration.RemovesSLA,
+	)
 }
 
 func slaValue(value float64) string {

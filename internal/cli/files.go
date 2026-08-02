@@ -65,7 +65,7 @@ func addFilesUploadCommand(ctx context.Context, root *cobra.Command, options *ro
 	contentType := ""
 	command := &cobra.Command{
 		Use:   "upload PATH",
-		Short: "Upload a file and print its Linear asset URL",
+		Short: "Upload a file and show the Linear asset URL",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
 			return runFileUpload(ctx, command, options, args[0], contentType)
@@ -73,9 +73,9 @@ func addFilesUploadCommand(ctx context.Context, root *cobra.Command, options *ro
 	}
 	command.Flags().StringVar(
 		&contentType, "content-type", "",
-		"MIME type; inferred from the file extension when empty",
+		"MIME type of the file, which linctl infers from the file extension when empty",
 	)
-	addCommandWithSafety(root, CommandSafetyWrite, command)
+	addWriteCommand(root, WriteEffectUnguarded, command)
 }
 
 func runFileUpload(
@@ -170,7 +170,7 @@ func addFilesDownloadCommand(ctx context.Context, root *cobra.Command, options *
 		},
 	}
 	command.Flags().StringVar(&output, "output", "", "local path to write the downloaded file")
-	addCommandWithSafety(root, CommandSafetyWrite, command)
+	addWriteCommand(root, WriteEffectLocal, command)
 }
 
 func runFileDownload(

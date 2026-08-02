@@ -22,69 +22,40 @@ func addProjectMilestoneCommand(ctx context.Context, root *cobra.Command, option
 }
 
 func addProjectMilestoneAllCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "all",
-		Short: "List visible ProjectMilestones across the organization",
-		Args:  cobra.NoArgs,
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadAllProjectMilestones,
-				writeProjectMilestone,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum project milestones to return")
-	root.AddCommand(preflightReadListCommand(command, loadAllProjectMilestones))
+	addListCommand(ctx, root, options, listCommandSpec[client.ProjectMilestoneList, client.ProjectMilestoneSummary]{
+		Use:       "all",
+		Short:     "List visible ProjectMilestones across the organization",
+		LimitHelp: "project milestones",
+		Args:      cobra.NoArgs,
+		Load:      loadAllProjectMilestones,
+		WriteItem: writeProjectMilestone,
+	})
 }
 
 func addProjectMilestoneIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "issues PROJECT_MILESTONE_ID",
-		Short: "List issues for one ProjectMilestone",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadProjectMilestoneIssueList,
-				writeIssue,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum issues to return")
-	root.AddCommand(preflightReadListCommand(command, loadProjectMilestoneIssueList))
+	addChildListCommand(
+		ctx,
+		root,
+		options,
+		"issues PROJECT_MILESTONE_ID",
+		"List issues for one ProjectMilestone",
+		"issues",
+		client.ListProjectMilestoneIssues,
+		writeIssue,
+	)
 }
 
 func addProjectMilestoneListCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "list PROJECT_ID",
-		Short: "List milestones for one project",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadProjectMilestoneList,
-				writeProjectMilestone,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum project milestones to return")
-	root.AddCommand(preflightReadListCommand(command, loadProjectMilestoneList))
+	addChildListCommand(
+		ctx,
+		root,
+		options,
+		"list PROJECT_ID",
+		"List milestones for one project",
+		"project milestones",
+		client.ListProjectMilestones,
+		writeProjectMilestone,
+	)
 }
 
 func addProjectMilestoneGetCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -135,27 +106,7 @@ func loadAllProjectMilestones(
 	runtime commandRuntime,
 	_ []string,
 	limit int,
-) (client.ProjectMilestoneList, []client.ProjectMilestoneSummary, error) {
+) (client.ProjectMilestoneList, error) {
 	milestones, err := client.ListAllProjectMilestones(ctx, runtime.graphqlClient, limit)
-	return milestones, milestones.Milestones, err
-}
-
-func loadProjectMilestoneList(
-	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
-	limit int,
-) (client.ProjectMilestoneList, []client.ProjectMilestoneSummary, error) {
-	milestones, err := client.ListProjectMilestones(ctx, runtime.graphqlClient, args[0], limit)
-	return milestones, milestones.Milestones, err
-}
-
-func loadProjectMilestoneIssueList(
-	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
-	limit int,
-) (client.ProjectMilestoneIssueList, []client.IssueSummary, error) {
-	issues, err := client.ListProjectMilestoneIssues(ctx, runtime.graphqlClient, args[0], limit)
-	return issues, issues.Issues, err
+	return milestones, err
 }

@@ -26,14 +26,14 @@ func Test_ListCommand_covers_pipeline_branches(t *testing.T) {
 	tests := []struct {
 		name        string
 		options     rootOptions
-		load        readListLoader[list, item]
+		load        readListLoader[list]
 		writeItem   readListItemWriter[item]
 		requirement func(*testing.T, string, error)
 	}{
 		{
 			name: "runtime error",
-			load: func(context.Context, commandRuntime, []string, int) (list, []item, error) {
-				return list{}, nil, nil
+			load: func(context.Context, commandRuntime, []string, int) (list, error) {
+				return list{}, nil
 			},
 			writeItem: func(*cobra.Command, *rootOptions, item) error {
 				return nil
@@ -44,8 +44,8 @@ func Test_ListCommand_covers_pipeline_branches(t *testing.T) {
 		},
 		{
 			name: "load error",
-			load: func(context.Context, commandRuntime, []string, int) (list, []item, error) {
-				return list{}, nil, errors.New("fetch failed")
+			load: func(context.Context, commandRuntime, []string, int) (list, error) {
+				return list{}, errors.New("fetch failed")
 			},
 			writeItem: func(*cobra.Command, *rootOptions, item) error {
 				return nil
@@ -57,8 +57,8 @@ func Test_ListCommand_covers_pipeline_branches(t *testing.T) {
 		{
 			name:    "empty error",
 			options: rootOptions{failOnEmpty: true},
-			load: func(context.Context, commandRuntime, []string, int) (list, []item, error) {
-				return list{}, nil, nil
+			load: func(context.Context, commandRuntime, []string, int) (list, error) {
+				return list{}, nil
 			},
 			writeItem: func(*cobra.Command, *rootOptions, item) error {
 				return nil
@@ -70,9 +70,9 @@ func Test_ListCommand_covers_pipeline_branches(t *testing.T) {
 		{
 			name:    "sort error",
 			options: rootOptions{sortField: "missing"},
-			load: func(context.Context, commandRuntime, []string, int) (list, []item, error) {
+			load: func(context.Context, commandRuntime, []string, int) (list, error) {
 				items := []item{{ID: "item-id"}}
-				return list{Items: items}, items, nil
+				return list{Items: items}, nil
 			},
 			writeItem: func(*cobra.Command, *rootOptions, item) error {
 				return nil
@@ -84,8 +84,8 @@ func Test_ListCommand_covers_pipeline_branches(t *testing.T) {
 		{
 			name:    "sorting nil items keeps them empty",
 			options: rootOptions{json: true, sortField: "id"},
-			load: func(context.Context, commandRuntime, []string, int) (list, []item, error) {
-				return list{}, nil, nil
+			load: func(context.Context, commandRuntime, []string, int) (list, error) {
+				return list{}, nil
 			},
 			writeItem: func(*cobra.Command, *rootOptions, item) error {
 				return nil
@@ -98,9 +98,9 @@ func Test_ListCommand_covers_pipeline_branches(t *testing.T) {
 		{
 			name:    "json output",
 			options: rootOptions{json: true},
-			load: func(context.Context, commandRuntime, []string, int) (list, []item, error) {
+			load: func(context.Context, commandRuntime, []string, int) (list, error) {
 				items := []item{{ID: "item-id"}}
-				return list{Items: items}, items, nil
+				return list{Items: items}, nil
 			},
 			writeItem: func(*cobra.Command, *rootOptions, item) error {
 				return nil
@@ -112,9 +112,9 @@ func Test_ListCommand_covers_pipeline_branches(t *testing.T) {
 		},
 		{
 			name: "write error",
-			load: func(context.Context, commandRuntime, []string, int) (list, []item, error) {
+			load: func(context.Context, commandRuntime, []string, int) (list, error) {
 				items := []item{{ID: "item-id"}}
-				return list{Items: items}, items, nil
+				return list{Items: items}, nil
 			},
 			writeItem: func(*cobra.Command, *rootOptions, item) error {
 				return errors.New("write failed")

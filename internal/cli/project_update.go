@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addProjectUpdateReadCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -21,8 +20,8 @@ func addProjectUpdateReadCommand(ctx context.Context, root *cobra.Command, optio
 			LimitHelp: "maximum project updates to return",
 			GetUse:    "get PROJECT_UPDATE_ID",
 			GetShort:  "Get one project update by id",
-			LoadList:  loadProjectUpdateList,
-			LoadGet:   loadProjectUpdate,
+			LoadList:  clientList(client.ListAllProjectUpdates),
+			LoadGet:   clientGet(client.GetProjectUpdateByID),
 			WriteItem: writeProjectUpdate,
 		},
 	)
@@ -36,10 +35,13 @@ func addProjectUpdateCreateCommand(ctx context.Context, root *cobra.Command, opt
 	bodyFile := ""
 	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.ProjectUpdateSummary]{
 		Use:   "create PROJECT_ID",
-		Short: "Post a status update to a project after pinned-target comparison",
+		Short: "Create a status update on a project after pinned-target comparison",
 		Args:  cobra.ExactArgs(1),
 		Configure: func(command *cobra.Command) {
-			command.Flags().StringVar(&request.Body, "body", "", "update body as markdown; use - to read stdin")
+			command.Flags().StringVar(
+				&request.Body, "body", "",
+				"update body as markdown, or - to read the body from stdin",
+			)
 			command.Flags().StringVar(&bodyFile, "body-file", "", "read update body from file")
 			command.Flags().StringVar(&health, "health", "", "project health: on-track, at-risk, or off-track")
 		},
@@ -48,10 +50,7 @@ func addProjectUpdateCreateCommand(ctx context.Context, root *cobra.Command, opt
 		) (client.ProjectUpdateSummary, error) {
 			request.ProjectID = args[0]
 
-			if err := resolveFileFlag(command, &request.Body, bodyFile, "body"); err != nil {
-				return client.ProjectUpdateSummary{}, err
-			}
-			if err := resolveBodyFlag(command, &request.Body); err != nil {
+			if err := resolveBodyOrFileFlag(command, &request.Body, bodyFile, "body"); err != nil {
 				return client.ProjectUpdateSummary{}, err
 			}
 			normalizedHealth, err := normalizeAndNote(command, "health", health, normalizedHealthValue)
@@ -67,65 +66,21 @@ func addProjectUpdateCreateCommand(ctx context.Context, root *cobra.Command, opt
 }
 
 func writeProjectUpdate(command *cobra.Command, options *rootOptions, update client.ProjectUpdateSummary) error {
-	return writeItem(command, options, update, update.ID,
-		func(command *cobra.Command, _ *rootOptions, update client.ProjectUpdateSummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s %s %s %s",
-				update.ID,
-				update.Health,
-				update.DisplayName,
-				update.Body,
-			)
-		})
-}
-
-func loadProjectUpdateList(
-	ctx context.Context,
-	runtime commandRuntime,
-	_ []string,
-	limit int,
-) (client.ProjectUpdateList, []client.ProjectUpdateSummary, error) {
-	updates, err := client.ListAllProjectUpdates(ctx, runtime.graphqlClient, limit)
-	return updates, updates.Updates, err
-}
-
-func loadProjectUpdate(
-	ctx context.Context,
-	runtime commandRuntime,
-	id string,
-) (client.ProjectUpdateSummary, error) {
-	return client.GetProjectUpdateByID(ctx, runtime.graphqlClient, id)
+	return writeItemLine(
+		command, options, update, update.ID,
+		"%s %s %s %s", update.ID, update.Health, update.DisplayName, update.Body,
+	)
 }
 
 func addProjectUpdateCommentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "comments PROJECT_UPDATE_ID",
-		Short: "List project update comments without body content",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadProjectUpdateCommentList,
-				writeCommentMetadata,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum comments to return")
-	root.AddCommand(preflightReadListCommand(command, loadProjectUpdateCommentList))
-}
-
-func loadProjectUpdateCommentList(
-	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
-	limit int,
-) (client.ProjectUpdateCommentList, []client.CommentMetadataSummary, error) {
-	comments, err := client.ListProjectUpdateComments(ctx, runtime.graphqlClient, args[0], limit)
-	return comments, comments.Comments, err
+	addChildListCommand(
+		ctx,
+		root,
+		options,
+		"comments PROJECT_UPDATE_ID",
+		"List project update comments without body content",
+		"comments",
+		client.ListProjectUpdateComments,
+		writeCommentMetadata,
+	)
 }

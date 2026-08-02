@@ -25,6 +25,18 @@ func resolveBodyFlag(command *cobra.Command, body *string) error {
 	return nil
 }
 
+// resolveBodyOrFileFlag resolves a text value that a command accepts through
+// an inline flag or its -file companion. The file flag runs first, so passing
+// both flags always reports the mutual-exclusion error before either one
+// consumes stdin.
+func resolveBodyOrFileFlag(command *cobra.Command, value *string, path string, label string) error {
+	if err := resolveFileFlag(command, value, path, label); err != nil {
+		return err
+	}
+
+	return resolveBodyFlag(command, value)
+}
+
 // resolveFileFlag loads value from path when set, guarding against passing
 // both the inline flag and its -file companion. A path of "-" reads stdin
 // instead of a literal file named "-", matching the inline flag's own "-"

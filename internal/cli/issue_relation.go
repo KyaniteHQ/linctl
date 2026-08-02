@@ -1,4 +1,3 @@
-//nolint:dupl // Minimal read-command glue is intentionally uniform across domains via addReadListGetCommand.
 package cli
 
 import (
@@ -7,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addIssueRelationCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -22,41 +20,16 @@ func addIssueRelationCommand(ctx context.Context, root *cobra.Command, options *
 			LimitHelp: "maximum issue relations to return",
 			GetUse:    "get ISSUE_RELATION_ID",
 			GetShort:  "Get one issue relation by id",
-			LoadList:  loadIssueRelationList,
-			LoadGet:   loadIssueRelation,
+			LoadList:  clientList(client.ListIssueRelations),
+			LoadGet:   clientGet(client.GetIssueRelationByID),
 			WriteItem: writeIssueRelation,
 		},
 	)
 }
 
 func writeIssueRelation(command *cobra.Command, options *rootOptions, relation client.IssueRelationSummary) error {
-	return writeItem(command, options, relation, relation.ID,
-		func(command *cobra.Command, _ *rootOptions, relation client.IssueRelationSummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s %s %s -> %s",
-				relation.ID,
-				relation.Type,
-				relation.IssueIdentifier,
-				relation.RelatedIssueIdentifier,
-			)
-		})
-}
-
-func loadIssueRelationList(
-	ctx context.Context,
-	runtime commandRuntime,
-	_ []string,
-	limit int,
-) (client.IssueRelationList, []client.IssueRelationSummary, error) {
-	relations, err := client.ListIssueRelations(ctx, runtime.graphqlClient, limit)
-	return relations, relations.Relations, err
-}
-
-func loadIssueRelation(
-	ctx context.Context,
-	runtime commandRuntime,
-	id string,
-) (client.IssueRelationSummary, error) {
-	return client.GetIssueRelationByID(ctx, runtime.graphqlClient, id)
+	return writeItemLine(
+		command, options, relation, relation.ID,
+		"%s %s %s -> %s", relation.ID, relation.Type, relation.IssueIdentifier, relation.RelatedIssueIdentifier,
+	)
 }

@@ -25,7 +25,7 @@ func GetIssueTemplateContent(
 	templateID string,
 ) (IssueTemplateContent, error) {
 	if templateID == "" {
-		return IssueTemplateContent{}, fmt.Errorf("%w: template id is required", ErrWriteInvalid)
+		return IssueTemplateContent{}, requiredFieldError("template id")
 	}
 	result, err := gql.XTemplateContent(ctx, graphqlClient, templateID)
 	if err != nil {

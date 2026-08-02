@@ -12,7 +12,7 @@ func addLabelCreateCommand(ctx context.Context, root *cobra.Command, options *ro
 	request := client.LabelCreateRequest{}
 	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.LabelSummary]{
 		Use:   "create",
-		Short: "Create a label in the pinned team, or organization-wide with --org-wide",
+		Short: "Create a label in the pinned team, or in the organization with --org-wide",
 		Args:  cobra.NoArgs,
 		Configure: func(command *cobra.Command) {
 			command.Flags().StringVar(&request.Name, "name", "", "label name")

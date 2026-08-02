@@ -14,7 +14,7 @@ func addIssueVCSBranchSearchCommand(ctx context.Context, root *cobra.Command, op
 
 	addReadGetCommand(ctx, branchCommand, options, readGetSpec[client.IssueSummary]{
 		Use:   "get BRANCH_NAME",
-		Short: "Get the issue matched by a VCS branch",
+		Short: "Get the issue that matches a VCS branch",
 		Load: func(ctx context.Context, runtime commandRuntime, id string) (client.IssueSummary, error) {
 			return client.GetIssueByVCSBranch(ctx, runtime.graphqlClient, id)
 		},
@@ -33,7 +33,6 @@ func addIssueVCSBranchCommentsCommand(ctx context.Context, root *cobra.Command, 
 		"List body-free comments for the issue matched by a VCS branch",
 		"comments",
 		client.ListIssueVCSBranchComments,
-		commentMetadataListItems,
 		writeCommentMetadata,
 	)
 }

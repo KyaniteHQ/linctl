@@ -327,7 +327,7 @@ func addAuthLogoutCommand(ctx context.Context, root *cobra.Command, options *roo
 		},
 	}
 	annotateCommand(command, commandSafetyAnnotation, string(CommandSafetyLocal))
-	command.Flags().BoolVar(&flags.forgetApp, "forget-app", false, "also remove saved OAuth app configuration")
+	command.Flags().BoolVar(&flags.forgetApp, "forget-app", false, "also remove the saved OAuth app configuration")
 	root.AddCommand(command)
 }
 

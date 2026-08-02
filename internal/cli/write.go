@@ -11,13 +11,16 @@ import (
 // guarded client call with the built runtime, and Write renders the result.
 // Pre-call steps (stdin body resolution, normalization, template lookup)
 // belong inside Run, which receives the command and raw args.
+// Irreversible marks a write linctl cannot undo, so generated documentation
+// warns about it without a hand-maintained list.
 type guardedWriteSpec[T any] struct {
-	Use       string
-	Short     string
-	Args      cobra.PositionalArgs
-	Configure func(*cobra.Command)
-	Run       func(context.Context, *cobra.Command, commandRuntime, []string) (T, error)
-	Write     func(*cobra.Command, *rootOptions, T) error
+	Use          string
+	Short        string
+	Args         cobra.PositionalArgs
+	Irreversible bool
+	Configure    func(*cobra.Command)
+	Run          func(context.Context, *cobra.Command, commandRuntime, []string) (T, error)
+	Write        func(*cobra.Command, *rootOptions, T) error
 }
 
 // addGuardedWriteCommand registers a guarded-write command: the shared RunE
@@ -50,5 +53,8 @@ func addGuardedWriteCommand[T any](
 	if spec.Configure != nil {
 		spec.Configure(command)
 	}
-	addCommandWithSafety(root, CommandSafetyWrite, command)
+	if spec.Irreversible {
+		annotateIrreversibleWrite(command)
+	}
+	addWriteCommand(root, WriteEffectGuarded, command)
 }

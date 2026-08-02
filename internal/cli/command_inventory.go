@@ -9,9 +9,35 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// Command metadata rides on cobra annotations. The rule is that a command is
+// stamped where it is registered: addCommandWithSafety, addWriteCommand, or
+// annotateReadCollectionCommand. newGroupCommand is the one exception, because
+// a group command is read by construction and has no registration helper of its
+// own.
 const (
 	commandCollectionKeyAnnotation = "linctl.collection_key"
 	commandSafetyAnnotation        = "linctl.safety"
+	commandIrreversibleAnnotation  = "linctl.irreversible"
+	commandWriteEffectAnnotation   = "linctl.write_effect"
+)
+
+// CommandWriteEffect names what a write-classified command changes. Safety says
+// a command writes; the effect says where the change lands, so generated
+// documentation never has to infer it from prose.
+type CommandWriteEffect string
+
+// Write effect values used by the command metadata inventory.
+const (
+	// WriteEffectNone is the effect of a command that does not write.
+	WriteEffectNone CommandWriteEffect = ""
+	// WriteEffectGuarded changes Linear only after the pinned target matches
+	// the target resolved from the live credential.
+	WriteEffectGuarded CommandWriteEffect = "guarded"
+	// WriteEffectUnguarded changes Linear through an entity that carries no
+	// team or project scope to compare against the pinned target.
+	WriteEffectUnguarded CommandWriteEffect = "unguarded"
+	// WriteEffectLocal writes only on the local machine.
+	WriteEffectLocal CommandWriteEffect = "local"
 )
 
 // CommandSafety classifies a command's behavior for command-surface audits.
@@ -49,6 +75,8 @@ type CommandInfo struct {
 	Entity           string
 	TargetArgs       []string
 	Safety           CommandSafety
+	WriteEffect      CommandWriteEffect
+	Irreversible     bool
 	CollectionKey    string
 	DocCategory      string
 	OperationBacking string
@@ -127,6 +155,8 @@ func commandInfo(command *cobra.Command) CommandInfo {
 		Entity:        commandEntity(command),
 		TargetArgs:    commandTargetArgs(command),
 		Safety:        commandSafety(command),
+		WriteEffect:   commandWriteEffect(command),
+		Irreversible:  commandIrreversible(command),
 		CollectionKey: commandCollectionKey(command),
 		DocCategory:   commandDocCategory(command),
 	}
@@ -162,9 +192,27 @@ func annotateCollectionKey(command *cobra.Command, collectionKey string) {
 	annotateCommand(command, commandCollectionKeyAnnotation, collectionKey)
 }
 
+// annotateReadCollectionCommand stamps both facts a read list command carries:
+// the collection key and the read safety class. List commands that build their
+// own RunE use it instead of addCommandWithSafety, because they also need the
+// key.
 func annotateReadCollectionCommand(command *cobra.Command, collectionKey string) {
 	annotateCollectionKey(command, collectionKey)
 	annotateCommand(command, commandSafetyAnnotation, string(CommandSafetyRead))
+}
+
+// annotateIrreversibleWrite marks a guarded write that linctl cannot undo, so
+// generated documentation warns about it instead of a hand-maintained list.
+func annotateIrreversibleWrite(command *cobra.Command) {
+	annotateCommand(command, commandIrreversibleAnnotation, "true")
+}
+
+// addWriteCommand registers a write command with an explicit write effect.
+// Commands built through the shared guarded-write pipeline get the effect from
+// that pipeline; commands that register their own RunE declare it here.
+func addWriteCommand(root *cobra.Command, effect CommandWriteEffect, command *cobra.Command) {
+	annotateCommand(command, commandWriteEffectAnnotation, string(effect))
+	addCommandWithSafety(root, CommandSafetyWrite, command)
 }
 
 func annotateCommand(command *cobra.Command, key string, value string) {
@@ -177,31 +225,30 @@ func annotateCommand(command *cobra.Command, key string, value string) {
 	command.Annotations[key] = value
 }
 
-func commandCollectionKey(command *cobra.Command) string {
-	if command == nil || command.Annotations == nil {
-		return ""
-	}
+// The four readers below share one contract: the command is registered and
+// non-nil, and the value is whatever the registrar stamped. Only the annotate
+// helpers above write these keys, and they write typed constants, so no reader
+// validates.
 
+func commandCollectionKey(command *cobra.Command) string {
 	return command.Annotations[commandCollectionKeyAnnotation]
 }
 
+func commandWriteEffect(command *cobra.Command) CommandWriteEffect {
+	return CommandWriteEffect(command.Annotations[commandWriteEffectAnnotation])
+}
+
+func commandIrreversible(command *cobra.Command) bool {
+	return command.Annotations[commandIrreversibleAnnotation] == "true"
+}
+
+// commandSafety reads the safety class stamped at registration. Every linctl
+// command carries the annotation, so the prose of a Short string can never
+// reclassify a command. Only the cobra-generated completion subcommands, which
+// linctl does not register, reach the path check.
 func commandSafety(command *cobra.Command) CommandSafety {
-	if command != nil && command.Annotations != nil {
-		switch CommandSafety(command.Annotations[commandSafetyAnnotation]) {
-		case CommandSafetyRead:
-			return CommandSafetyRead
-		case CommandSafetyWrite:
-			return CommandSafetyWrite
-		case CommandSafetyLocal:
-			return CommandSafetyLocal
-		case CommandSafetyUnknown:
-			return CommandSafetyUnknown
-		}
-	}
-	for _, prefix := range []string{"Get ", "List ", "Read ", "Search ", "Show ", "Check ", "Suggest "} {
-		if strings.HasPrefix(command.Short, prefix) {
-			return CommandSafetyRead
-		}
+	if safety, stamped := command.Annotations[commandSafetyAnnotation]; stamped {
+		return CommandSafety(safety)
 	}
 	if strings.HasPrefix(CommandPath(command), "completion ") {
 		return CommandSafetyLocal
@@ -251,7 +298,10 @@ func collectionKeyForPage[Page any]() string {
 	return jsonFieldName(field)
 }
 
-func mustCollectionKeyForList[Page any, Item any]() string {
+// mustCollectionFieldForList resolves the single collection field of Page and
+// proves it holds []Item. It panics at registration, so no command can reach
+// the item pipeline with a page and item type that disagree.
+func mustCollectionFieldForList[Page any, Item any]() reflect.StructField {
 	pageType := reflect.TypeOf((*Page)(nil)).Elem()
 	field, err := pageCollectionField(pageType)
 	if err != nil {
@@ -268,7 +318,11 @@ func mustCollectionKeyForList[Page any, Item any]() string {
 		))
 	}
 
-	return jsonFieldName(field)
+	return field
+}
+
+func mustCollectionKeyForList[Page any, Item any]() string {
+	return jsonFieldName(mustCollectionFieldForList[Page, Item]())
 }
 
 func pageCollectionField(pageType reflect.Type) (reflect.StructField, error) {

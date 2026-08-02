@@ -125,6 +125,23 @@ func writeItem[T any](command *cobra.Command, options *rootOptions, item T, id s
 	return writeItemNoID(command, options, item, human)
 }
 
+// writeItemLine is writeItem for the common case where the human form is one
+// formatted line. The format arguments are evaluated before the output mode is
+// known; every caller passes plain field reads, so that costs nothing.
+func writeItemLine[T any](
+	command *cobra.Command,
+	options *rootOptions,
+	item T,
+	id string,
+	format string,
+	args ...any,
+) error {
+	return writeItem(command, options, item, id,
+		func(command *cobra.Command, _ *rootOptions, _ T) error {
+			return render.WriteLine(command.OutOrStdout(), format, args...)
+		})
+}
+
 // deletionResult is the structured confirmation returned by guarded delete commands.
 type deletionResult struct {
 	ID     string `json:"id"`

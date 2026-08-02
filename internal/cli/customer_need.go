@@ -21,8 +21,8 @@ func addCustomerNeedCommand(ctx context.Context, root *cobra.Command, options *r
 			LimitHelp: "maximum customer needs to return",
 			GetUse:    "get CUSTOMER_NEED_ID",
 			GetShort:  "Get one customer need by id",
-			LoadList:  loadCustomerNeedList,
-			LoadGet:   loadCustomerNeed,
+			LoadList:  clientList(client.ListCustomerNeeds),
+			LoadGet:   clientGet(client.GetCustomerNeedByID),
 			WriteItem: writeCustomerNeed,
 		},
 	)
@@ -32,7 +32,7 @@ func addCustomerNeedCommand(ctx context.Context, root *cobra.Command, options *r
 func addCustomerNeedProjectAttachmentCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addReadGetCommand(ctx, root, options, readGetSpec[client.CustomerNeedProjectAttachment]{
 		Use:   "project-attachment CUSTOMER_NEED_ID",
-		Short: "Get the project attachment linked to one customer need",
+		Short: "Get the project attachment of one customer need",
 		Load: func(
 			ctx context.Context, runtime commandRuntime, id string,
 		) (client.CustomerNeedProjectAttachment, error) {
@@ -43,17 +43,10 @@ func addCustomerNeedProjectAttachmentCommand(ctx context.Context, root *cobra.Co
 }
 
 func writeCustomerNeed(command *cobra.Command, options *rootOptions, need client.CustomerNeedSummary) error {
-	return writeItem(command, options, need, need.ID,
-		func(command *cobra.Command, _ *rootOptions, need client.CustomerNeedSummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s %s %s priority %.0f",
-				need.ID,
-				emptyDash(need.CustomerName),
-				emptyDash(need.Issue),
-				need.Priority,
-			)
-		})
+	return writeItemLine(
+		command, options, need, need.ID,
+		"%s %s %s priority %.0f", need.ID, emptyDash(need.CustomerName), emptyDash(need.Issue), need.Priority,
+	)
 }
 
 func writeCustomerNeedProjectAttachment(
@@ -76,22 +69,4 @@ func writeCustomerNeedProjectAttachment(
 				attachment.Attachment.SourceType,
 			)
 		})
-}
-
-func loadCustomerNeedList(
-	ctx context.Context,
-	runtime commandRuntime,
-	_ []string,
-	limit int,
-) (client.CustomerNeedList, []client.CustomerNeedSummary, error) {
-	needs, err := client.ListCustomerNeeds(ctx, runtime.graphqlClient, limit)
-	return needs, needs.Needs, err
-}
-
-func loadCustomerNeed(
-	ctx context.Context,
-	runtime commandRuntime,
-	id string,
-) (client.CustomerNeedSummary, error) {
-	return client.GetCustomerNeedByID(ctx, runtime.graphqlClient, id)
 }

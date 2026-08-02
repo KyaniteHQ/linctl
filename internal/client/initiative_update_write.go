@@ -39,10 +39,10 @@ func CreateInitiativeUpdate(
 
 func validateInitiativeUpdateCreate(request InitiativeUpdateCreateRequest) error {
 	if request.InitiativeID == "" {
-		return fmt.Errorf("%w: initiative id is required", ErrWriteInvalid)
+		return requiredFieldError("initiative id")
 	}
 	if request.Body == "" && request.Health == "" {
-		return fmt.Errorf("%w: body or health is required", ErrWriteInvalid)
+		return requiredFieldError("body or health")
 	}
 
 	return nil

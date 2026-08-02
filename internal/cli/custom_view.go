@@ -21,8 +21,8 @@ func addCustomViewCommand(ctx context.Context, root *cobra.Command, options *roo
 			LimitHelp: "maximum custom views to return",
 			GetUse:    "get CUSTOM_VIEW_ID",
 			GetShort:  "Get one custom view by id or slug",
-			LoadList:  loadCustomViewList,
-			LoadGet:   loadCustomView,
+			LoadList:  clientList(client.ListCustomViews),
+			LoadGet:   clientGet(client.GetCustomViewByID),
 			WriteItem: writeCustomView,
 		},
 	)
@@ -38,7 +38,7 @@ func addCustomViewCommand(ctx context.Context, root *cobra.Command, options *roo
 func addCustomViewSubscribersCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addReadGetCommand(ctx, root, options, readGetSpec[client.CustomViewSubscriberStatus]{
 		Use:   "subscribers CUSTOM_VIEW_ID",
-		Short: "Report whether a custom view has subscribers",
+		Short: "Show whether a custom view has subscribers",
 		Load: func(ctx context.Context, runtime commandRuntime, id string) (client.CustomViewSubscriberStatus, error) {
 			return client.GetCustomViewSubscriberStatus(ctx, runtime.graphqlClient, id)
 		},
@@ -47,47 +47,29 @@ func addCustomViewSubscribersCommand(ctx context.Context, root *cobra.Command, o
 }
 
 func addCustomViewInitiativesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "initiatives CUSTOM_VIEW_ID",
-		Short: "List initiatives matching a custom view",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadCustomViewInitiatives,
-				writeInitiative,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum initiatives to return")
-	root.AddCommand(preflightReadListCommand(command, loadCustomViewInitiatives))
+	addChildListCommand(
+		ctx,
+		root,
+		options,
+		"initiatives CUSTOM_VIEW_ID",
+		"List initiatives matching a custom view",
+		"initiatives",
+		client.ListCustomViewInitiatives,
+		writeInitiative,
+	)
 }
 
 func addCustomViewIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "issues CUSTOM_VIEW_ID",
-		Short: "List issues matching a custom view",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadCustomViewIssues,
-				writeIssue,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum issues to return")
-	root.AddCommand(preflightReadListCommand(command, loadCustomViewIssues))
+	addChildListCommand(
+		ctx,
+		root,
+		options,
+		"issues CUSTOM_VIEW_ID",
+		"List issues matching a custom view",
+		"issues",
+		client.ListCustomViewIssues,
+		writeIssue,
+	)
 }
 
 func addCustomViewOrganizationPreferencesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -113,25 +95,16 @@ func addCustomViewOrganizationPreferencesCommand(ctx context.Context, root *cobr
 }
 
 func addCustomViewProjectsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "projects CUSTOM_VIEW_ID",
-		Short: "List projects matching a custom view",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadCustomViewProjects,
-				writeProject,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum projects to return")
-	root.AddCommand(preflightReadListCommand(command, loadCustomViewProjects))
+	addChildListCommand(
+		ctx,
+		root,
+		options,
+		"projects CUSTOM_VIEW_ID",
+		"List projects matching a custom view",
+		"projects",
+		client.ListCustomViewProjects,
+		writeProject,
+	)
 }
 
 func addCustomViewUserPreferencesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -172,10 +145,7 @@ func addCustomViewPreferenceValuesCommand(ctx context.Context, root *cobra.Comma
 }
 
 func writeCustomView(command *cobra.Command, options *rootOptions, view client.CustomViewSummary) error {
-	return writeItem(command, options, view, view.ID,
-		func(command *cobra.Command, _ *rootOptions, view client.CustomViewSummary) error {
-			return render.WriteLine(command.OutOrStdout(), "%s %s [%s]", view.ID, view.Name, view.ModelName)
-		})
+	return writeItemLine(command, options, view, view.ID, "%s %s [%s]", view.ID, view.Name, view.ModelName)
 }
 
 func writeCustomViewSubscriberStatus(
@@ -183,15 +153,7 @@ func writeCustomViewSubscriberStatus(
 	options *rootOptions,
 	status client.CustomViewSubscriberStatus,
 ) error {
-	return writeItem(command, options, status, status.ID,
-		func(command *cobra.Command, _ *rootOptions, status client.CustomViewSubscriberStatus) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s has_subscribers %t",
-				status.ID,
-				status.HasSubscribers,
-			)
-		})
+	return writeItemLine(command, options, status, status.ID, "%s has_subscribers %t", status.ID, status.HasSubscribers)
 }
 
 func writeCustomViewPreferences(
@@ -241,52 +203,4 @@ func writeCustomViewPreferenceValues(
 				emptyDash(values.ViewOrdering),
 			)
 		})
-}
-
-func loadCustomViewList(
-	ctx context.Context,
-	runtime commandRuntime,
-	_ []string,
-	limit int,
-) (client.CustomViewList, []client.CustomViewSummary, error) {
-	views, err := client.ListCustomViews(ctx, runtime.graphqlClient, limit)
-	return views, views.CustomViews, err
-}
-
-func loadCustomView(
-	ctx context.Context,
-	runtime commandRuntime,
-	id string,
-) (client.CustomViewSummary, error) {
-	return client.GetCustomViewByID(ctx, runtime.graphqlClient, id)
-}
-
-func loadCustomViewInitiatives(
-	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
-	limit int,
-) (client.InitiativeList, []client.InitiativeSummary, error) {
-	initiatives, err := client.ListCustomViewInitiatives(ctx, runtime.graphqlClient, args[0], limit)
-	return initiatives, initiatives.Initiatives, err
-}
-
-func loadCustomViewIssues(
-	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
-	limit int,
-) (client.IssueList, []client.IssueSummary, error) {
-	issues, err := client.ListCustomViewIssues(ctx, runtime.graphqlClient, args[0], limit)
-	return issues, issues.Issues, err
-}
-
-func loadCustomViewProjects(
-	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
-	limit int,
-) (client.ProjectList, []client.ProjectSummary, error) {
-	projects, err := client.ListCustomViewProjects(ctx, runtime.graphqlClient, args[0], limit)
-	return projects, projects.Projects, err
 }

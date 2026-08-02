@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addTriageResponsibilityCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -22,8 +21,8 @@ func addTriageResponsibilityCommand(ctx context.Context, root *cobra.Command, op
 			LimitHelp: "maximum triage responsibilities to return",
 			GetUse:    "get TRIAGE_RESPONSIBILITY_ID",
 			GetShort:  "Get one triage responsibility by id",
-			LoadList:  loadTriageResponsibilityList,
-			LoadGet:   loadTriageResponsibility,
+			LoadList:  clientList(client.ListTriageResponsibilities),
+			LoadGet:   clientGet(client.GetTriageResponsibilityByID),
 			WriteItem: writeTriageResponsibility,
 		},
 	)
@@ -52,17 +51,14 @@ func writeTriageResponsibility(
 	options *rootOptions,
 	responsibility client.TriageResponsibilitySummary,
 ) error {
-	return writeItem(command, options, responsibility, responsibility.ID,
-		func(command *cobra.Command, _ *rootOptions, responsibility client.TriageResponsibilitySummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s team %s action %s current %s",
-				responsibility.ID,
-				responsibility.TeamKey,
-				responsibility.Action,
-				emptyDash(responsibility.CurrentUserName),
-			)
-		})
+	return writeItemLine(
+		command, options, responsibility, responsibility.ID,
+		"%s team %s action %s current %s",
+		responsibility.ID,
+		responsibility.TeamKey,
+		responsibility.Action,
+		emptyDash(responsibility.CurrentUserName),
+	)
 }
 
 func writeTriageResponsibilityManualSelection(
@@ -70,31 +66,8 @@ func writeTriageResponsibilityManualSelection(
 	options *rootOptions,
 	selection client.TriageResponsibilityManualSelection,
 ) error {
-	return writeItem(command, options, selection, selection.ID,
-		func(command *cobra.Command, _ *rootOptions, selection client.TriageResponsibilityManualSelection) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s manual users %s",
-				selection.ID,
-				emptyDash(strings.Join(selection.UserIDs, ",")),
-			)
-		})
-}
-
-func loadTriageResponsibilityList(
-	ctx context.Context,
-	runtime commandRuntime,
-	_ []string,
-	limit int,
-) (client.TriageResponsibilityList, []client.TriageResponsibilitySummary, error) {
-	responsibilities, err := client.ListTriageResponsibilities(ctx, runtime.graphqlClient, limit)
-	return responsibilities, responsibilities.TriageResponsibilities, err
-}
-
-func loadTriageResponsibility(
-	ctx context.Context,
-	runtime commandRuntime,
-	id string,
-) (client.TriageResponsibilitySummary, error) {
-	return client.GetTriageResponsibilityByID(ctx, runtime.graphqlClient, id)
+	return writeItemLine(
+		command, options, selection, selection.ID,
+		"%s manual users %s", selection.ID, emptyDash(strings.Join(selection.UserIDs, ",")),
+	)
 }

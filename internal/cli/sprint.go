@@ -17,7 +17,7 @@ func addSprintCommand(ctx context.Context, root *cobra.Command, options *rootOpt
 }
 
 func addSprintCurrentCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "current",
 		Short: "Show the active Cycle for the resolved team",
 		Args:  cobra.NoArgs,

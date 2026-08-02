@@ -2,24 +2,23 @@
 
 ## Supported versions
 
-linctl is distributed as a rolling release. Only the latest tagged release
-receives security fixes.
+linctl has a rolling release. Only the latest tagged release gets a security fix.
 
 | Version        | Supported          |
 | -------------- | ------------------ |
 | latest release | :white_check_mark: |
 | older releases | :x:                |
 
-## Reporting a vulnerability
+## Report a vulnerability
 
-Please report security issues privately through GitHub's
+Report a security problem privately through
 [private vulnerability reporting](https://github.com/KyaniteHQ/linctl/security/advisories/new)
-(repository **Security** tab → **Report a vulnerability**).
+on GitHub. Open the **Security** tab of the repository, then select **Report a vulnerability**.
 
 Do **not** open a public issue for a suspected vulnerability.
 
-We aim to acknowledge a report within 72 hours and to provide a remediation
-timeline after triage. Because linctl performs guarded, target-pinned writes
-against Linear, please include the resolved/pinned target details and the exact
-command invocation (with any token value redacted) so the report can be
-reproduced safely.
+We try to acknowledge a report in 72 hours. We give a remediation schedule after the triage.
+
+linctl makes guarded, target-pinned writes against Linear. Add the resolved target and the pinned
+target to your report. Add the exact command that you ran, and redact each token value. We can
+then reproduce the problem safely.

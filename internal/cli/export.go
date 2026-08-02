@@ -12,7 +12,6 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 // exportPageLimit caps the comments and attachments pulled into one export.
@@ -30,7 +29,7 @@ type issueExportResult struct {
 func addIssueExportCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "export ISSUE_ID DIR",
-		Short: "Export an issue's description, comments, and attachment URLs to a directory",
+		Short: "Export the description, the comments, and the attachment URLs of an issue to a directory",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(command *cobra.Command, args []string) error {
 			return runIssueExport(ctx, command, options, args[0], args[1])
@@ -228,12 +227,8 @@ func renderExportAttachments(attachments []client.AttachmentSummary) string {
 }
 
 func writeIssueExport(command *cobra.Command, options *rootOptions, result issueExportResult) error {
-	return writeItem(command, options, result, result.Path,
-		func(command *cobra.Command, _ *rootOptions, result issueExportResult) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s (%d comments, %d attachments)",
-				result.Path, result.Comments, result.Attachments,
-			)
-		})
+	return writeItemLine(
+		command, options, result, result.Path,
+		"%s (%d comments, %d attachments)", result.Path, result.Comments, result.Attachments,
+	)
 }

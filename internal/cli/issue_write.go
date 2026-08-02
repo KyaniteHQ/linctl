@@ -63,24 +63,42 @@ func addIssueCreateCommand(ctx context.Context, root *cobra.Command, options *ro
 	command.Flags().StringVar(&flags.descriptionFile, "description-file", "", "read issue description from file")
 	command.Flags().StringVar(
 		&flags.templateID, "template", "",
-		"apply a Linear template by id for title/description defaults",
+		"apply a Linear template by id to set the default title and description",
 	)
-	command.Flags().StringArrayVar(&flags.sections, "section", nil, "fill a markdown section: NAME=VALUE (repeatable)")
-	command.Flags().BoolVar(&flags.dryRun, "dry-run", false, "render the assembled issue without creating it")
-	command.Flags().StringVar(&flags.state, "state", "", "set workflow state type (e.g. started, completed)")
+	command.Flags().StringArrayVar(
+		&flags.sections, "section", nil,
+		"fill a markdown section with NAME=VALUE, and repeat the flag for more sections",
+	)
+	command.Flags().BoolVar(&flags.dryRun, "dry-run", false, "show the assembled issue, and do not create it")
+	command.Flags().StringVar(
+		&flags.state, "state", "",
+		"set the workflow state type, for example started or completed",
+	)
 	command.Flags().StringVar(&flags.status, "status", "", "alias for --state")
-	command.Flags().StringVar(&flags.priority, "priority", "", "set priority (urgent/high/medium/low/none or 0-4)")
+	command.Flags().StringVar(
+		&flags.priority, "priority", "",
+		"set the priority to urgent, high, medium, low, none, or a number from 0 to 4",
+	)
 	command.Flags().StringVar(&request.AssigneeID, "assignee", "", "assign the issue to a user id")
-	command.Flags().StringArrayVar(&request.LabelIDs, "label", nil, "attach a label by id (repeatable)")
-	command.Flags().StringVar(&request.DueDate, "due-date", "", "set the due date (YYYY-MM-DD)")
-	command.Flags().IntVar(&flags.estimate, "estimate", 0, "set the estimate (validated against team config)")
-	command.Flags().StringVar(&request.ParentID, "parent", "", "create as a sub-issue of a parent issue id")
+	command.Flags().StringArrayVar(
+		&request.LabelIDs, "label", nil,
+		"attach a label by id, and repeat the flag for more labels",
+	)
+	command.Flags().StringVar(&request.DueDate, "due-date", "", "set the due date in YYYY-MM-DD format")
+	command.Flags().IntVar(
+		&flags.estimate, "estimate", 0,
+		"set the estimate, which linctl validates against the team configuration",
+	)
+	command.Flags().StringVar(
+		&request.ParentID, "parent", "",
+		"create the issue as a sub-issue of this parent issue id",
+	)
 	command.Flags().StringVar(
 		&request.ProjectMilestoneID, "milestone", "",
-		"assign to a project milestone id (requires a pinned project)",
+		"assign to a project milestone id, which needs a pinned project",
 	)
 	registerStateCompletion(ctx, command, options)
-	addCommandWithSafety(root, CommandSafetyWrite, command)
+	addWriteCommand(root, WriteEffectGuarded, command)
 }
 
 func issueCreateRequiresRuntime(flags issueCreateFlags) bool {
@@ -141,22 +159,30 @@ func addIssueUpdateCommand(ctx context.Context, root *cobra.Command, options *ro
 			)
 			command.Flags().StringVar(&request.Append, "append", "", "text to append to the issue description")
 			command.Flags().StringVar(&flags.appendFile, "append-file", "", "read text to append from file")
-			command.Flags().StringVar(&flags.state, "state", "", "set workflow state type (e.g. started, completed)")
+			command.Flags().StringVar(
+				&flags.state, "state", "",
+				"set the workflow state type, for example started or completed",
+			)
 			command.Flags().StringVar(&flags.status, "status", "", "alias for --state")
 			command.Flags().StringVar(
-				&flags.priority, "priority", "", "set priority (urgent/high/medium/low/none or 0-4)",
+				&flags.priority, "priority", "",
+				"set the priority to urgent, high, medium, low, none, or a number from 0 to 4",
 			)
 			command.Flags().StringVar(&request.AssigneeID, "assignee", "", "reassign the issue to a user id")
 			command.Flags().StringArrayVar(
-				&request.LabelIDs, "label", nil, "set labels by id (repeatable, replaces existing)",
+				&request.LabelIDs, "label", nil,
+				"replace the labels with these ids, and repeat the flag for more labels",
 			)
-			command.Flags().StringVar(&request.DueDate, "due-date", "", "set the due date (YYYY-MM-DD)")
+			command.Flags().StringVar(&request.DueDate, "due-date", "", "set the due date in YYYY-MM-DD format")
 			command.Flags().BoolVar(&request.ClearDueDate, "clear-due-date", false, "clear the due date")
-			command.Flags().IntVar(&estimate, "estimate", 0, "set the estimate (validated against team config)")
+			command.Flags().IntVar(
+				&estimate, "estimate", 0,
+				"set the estimate, which linctl validates against the team configuration",
+			)
 			command.Flags().BoolVar(&request.ClearEstimate, "clear-estimate", false, "clear the estimate")
 			command.Flags().StringVar(
 				&request.ProjectMilestoneID, "milestone", "",
-				"assign to a project milestone id (requires a pinned project)",
+				"assign to a project milestone id, which needs a pinned project",
 			)
 			command.Flags().BoolVar(&request.ClearMilestone, "clear-milestone", false, "clear the milestone")
 			registerStateCompletion(ctx, command, options)
@@ -185,7 +211,7 @@ func addIssueMoveTeamCommand(ctx context.Context, root *cobra.Command, options *
 	request := client.IssueMoveTeamRequest{}
 	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.IssueSummary]{
 		Use:   "move-team ISSUE_ID",
-		Short: "Move an issue from the pinned team to another team in the same organization",
+		Short: "Move an issue from the pinned team to another team in the organization",
 		Args:  cobra.ExactArgs(1),
 		Configure: func(command *cobra.Command) {
 			command.Flags().StringVar(&request.TeamKey, "to-team", "", "destination team key")
@@ -290,10 +316,7 @@ func runIssueBodyWrite(
 	request client.IssueCommentRequest,
 	bodyFile string,
 ) (client.IssueCommentResult, error) {
-	if err := resolveFileFlag(command, &request.Body, bodyFile, "body"); err != nil {
-		return client.IssueCommentResult{}, err
-	}
-	if err := resolveBodyFlag(command, &request.Body); err != nil {
+	if err := resolveBodyOrFileFlag(command, &request.Body, bodyFile, "body"); err != nil {
 		return client.IssueCommentResult{}, err
 	}
 
@@ -301,10 +324,10 @@ func runIssueBodyWrite(
 }
 
 func writeIssueComment(command *cobra.Command, options *rootOptions, comment client.IssueCommentResult) error {
-	return writeItem(command, options, comment, comment.ID,
-		func(command *cobra.Command, _ *rootOptions, comment client.IssueCommentResult) error {
-			return render.WriteLine(command.OutOrStdout(), "comment %s on %s", comment.ID, comment.Issue.Identifier)
-		})
+	return writeItemLine(
+		command, options, comment, comment.ID,
+		"comment %s on %s", comment.ID, comment.Issue.Identifier,
+	)
 }
 
 func addIssueReplyCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {

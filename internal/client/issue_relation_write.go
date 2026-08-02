@@ -86,7 +86,7 @@ func DeleteIssueRelation(
 	relationID string,
 ) (string, error) {
 	if relationID == "" {
-		return "", fmt.Errorf("%w: relation id is required", ErrWriteInvalid)
+		return "", requiredFieldError("relation id")
 	}
 
 	guard, err := newGuardedClient(ctx, graphqlClient, expected)

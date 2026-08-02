@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addRoadmapCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -16,13 +15,13 @@ func addRoadmapCommand(ctx context.Context, root *cobra.Command, options *rootOp
 		options,
 		readListGetSpec[client.RoadmapList, client.RoadmapSummary]{
 			Use:       "roadmap",
-			Short:     "Read legacy Linear roadmaps; prefer initiative for new planning",
+			Short:     "Read legacy Linear roadmaps, which the initiative commands replace for new planning",
 			ListShort: "List visible legacy Linear roadmaps",
 			LimitHelp: "maximum legacy roadmaps to return",
 			GetUse:    "get ROADMAP_ID",
 			GetShort:  "Get one legacy roadmap by id",
-			LoadList:  loadRoadmapList,
-			LoadGet:   loadRoadmap,
+			LoadList:  clientList(client.ListRoadmaps),
+			LoadGet:   clientGet(client.GetRoadmapByID),
 			WriteItem: writeRoadmap,
 		},
 	)
@@ -32,59 +31,24 @@ func addRoadmapCommand(ctx context.Context, root *cobra.Command, options *rootOp
 }
 
 func addRoadmapProjectsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
+	addListCommand(ctx, root, options, listCommandSpec[client.RoadmapProjectList, client.ProjectSummary]{
 		Use:   "projects ROADMAP_ID",
 		Short: "List projects associated with one legacy roadmap",
 		Long: "List projects associated with one legacy roadmap. " +
 			"Roadmap is Linear's deprecated planning surface. " +
 			"Use `linctl initiative projects` for new planning workflows.",
-		Args: cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadRoadmapProjects,
-				writeProject,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum projects to return")
-	root.AddCommand(preflightReadListCommand(command, loadRoadmapProjects))
+		LimitHelp: "projects",
+		Args:      cobra.ExactArgs(1),
+		Load:      loadRoadmapProjects,
+		WriteItem: writeProject,
+	})
 }
 
 func writeRoadmap(command *cobra.Command, options *rootOptions, roadmap client.RoadmapSummary) error {
-	return writeItem(command, options, roadmap, roadmap.ID,
-		func(command *cobra.Command, _ *rootOptions, roadmap client.RoadmapSummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s %s %s [legacy]",
-				roadmap.ID,
-				roadmap.Name,
-				roadmap.SlugID,
-			)
-		})
-}
-
-func loadRoadmapList(
-	ctx context.Context,
-	runtime commandRuntime,
-	_ []string,
-	limit int,
-) (client.RoadmapList, []client.RoadmapSummary, error) {
-	roadmaps, err := client.ListRoadmaps(ctx, runtime.graphqlClient, limit)
-	return roadmaps, roadmaps.Roadmaps, err
-}
-
-func loadRoadmap(
-	ctx context.Context,
-	runtime commandRuntime,
-	id string,
-) (client.RoadmapSummary, error) {
-	return client.GetRoadmapByID(ctx, runtime.graphqlClient, id)
+	return writeItemLine(
+		command, options, roadmap, roadmap.ID,
+		"%s %s %s [legacy]", roadmap.ID, roadmap.Name, roadmap.SlugID,
+	)
 }
 
 func loadRoadmapProjects(
@@ -92,7 +56,7 @@ func loadRoadmapProjects(
 	runtime commandRuntime,
 	args []string,
 	limit int,
-) (client.RoadmapProjectList, []client.ProjectSummary, error) {
+) (client.RoadmapProjectList, error) {
 	projects, err := client.ListRoadmapProjects(ctx, runtime.graphqlClient, args[0], limit)
-	return projects, projects.Projects, err
+	return projects, err
 }

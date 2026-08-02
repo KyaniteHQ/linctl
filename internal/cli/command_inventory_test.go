@@ -230,10 +230,11 @@ func Test_commandSafety_classifies_annotations_paths_and_descriptions(t *testing
 		require.Equal(t, safety, commandSafety(command))
 	}
 
-	// Writes classify only through an explicit annotation; an unannotated
-	// mutation-looking command is Unknown so the inventory test fails loud.
+	// Every class comes from an explicit annotation. An unannotated command is
+	// Unknown whatever its Short text says, so the inventory test fails loud
+	// instead of trusting prose.
 	require.Equal(t, CommandSafetyUnknown, commandSafety(commandWithPath("document", "create", "Create document")))
-	require.Equal(t, CommandSafetyRead, commandSafety(commandWithPath("issue", "get", "Get issue")))
+	require.Equal(t, CommandSafetyUnknown, commandSafety(commandWithPath("issue", "get", "Get issue")))
 	require.Equal(t, CommandSafetyLocal, commandSafety(commandWithPath("completion", "bash", "Generate completion")))
 	require.Equal(t, CommandSafetyUnknown, commandSafety(commandWithPath("issue", "sync", "Synchronize issue")))
 	require.Empty(t, commandEntity(&cobra.Command{}))
@@ -278,65 +279,40 @@ func Test_list_command_registration_rejects_invalid_page_shapes(t *testing.T) {
 	}
 
 	validRoot := &cobra.Command{Use: "root"}
-	registerTestList(validRoot, validPage{}, []item(nil))
+	registerTestList[validPage, item](validRoot, validPage{})
 	require.Equal(t, "items", commandCollectionKey(validRoot.Commands()[0]))
 	require.PanicsWithError(
 		t,
 		"list page cli.ambiguousPage has multiple exported JSON slice fields \"Items\" and \"Labels\"",
-		func() { registerTestList(&cobra.Command{Use: "root"}, ambiguousPage{}, []item(nil)) },
+		func() { registerTestList[ambiguousPage, item](&cobra.Command{Use: "root"}, ambiguousPage{}) },
 	)
 	require.PanicsWithError(
 		t,
 		"list page cli.wrongItemPage collection field \"Items\" has type []string, not []cli.item",
-		func() { registerTestList(&cobra.Command{Use: "root"}, wrongItemPage{}, []item(nil)) },
+		func() { registerTestList[wrongItemPage, item](&cobra.Command{Use: "root"}, wrongItemPage{}) },
 	)
 }
 
-func Test_direct_list_command_preflight_validates_page_and_item_types(t *testing.T) {
-	type item struct{}
-	type page struct {
-		Items []item `json:"items"`
-	}
-	loader := func(context.Context, commandRuntime, []string, int) (page, []item, error) {
-		return page{}, nil, nil
-	}
-	command := &cobra.Command{Use: "list"}
-
-	require.Same(t, command, preflightReadListCommand(command, loader))
-	require.Equal(t, CommandSafetyRead, commandSafety(command))
-	require.Equal(t, "items", commandCollectionKey(command))
-	wrongLoader := func(context.Context, commandRuntime, []string, int) (page, []string, error) {
-		return page{}, nil, nil
-	}
+func Test_list_command_registration_rejects_pointer_chains(t *testing.T) {
 	require.PanicsWithError(
 		t,
-		"list page cli.page collection field \"Items\" has type []cli.item, not []string",
-		func() { preflightReadListCommand(command, wrongLoader) },
+		"list page **cli.testPage must point directly to a struct",
+		func() { registerTestList[**testPage, testItem](&cobra.Command{Use: "root"}, nil) },
 	)
 }
 
-func Test_direct_list_command_preflight_rejects_pointer_chains(t *testing.T) {
-	type item struct{}
-	type page struct {
-		Items []item `json:"items"`
-	}
-	loader := func(context.Context, commandRuntime, []string, int) (**page, []item, error) {
-		return nil, nil, nil
-	}
+type testItem struct{}
 
-	require.PanicsWithError(
-		t,
-		"list page **cli.page must point directly to a struct",
-		func() { preflightReadListCommand(&cobra.Command{Use: "list"}, loader) },
-	)
+type testPage struct {
+	Items []testItem `json:"items"`
 }
 
-func registerTestList[Page any, Item any](root *cobra.Command, page Page, items []Item) {
+func registerTestList[Page any, Item any](root *cobra.Command, page Page) {
 	addListCommand(context.Background(), root, &rootOptions{}, listCommandSpec[Page, Item]{
 		Use:   "list",
 		Short: "List items",
-		Load: func(context.Context, commandRuntime, []string, int) (Page, []Item, error) {
-			return page, items, nil
+		Load: func(context.Context, commandRuntime, []string, int) (Page, error) {
+			return page, nil
 		},
 		WriteItem: func(*cobra.Command, *rootOptions, Item) error { return nil },
 	})

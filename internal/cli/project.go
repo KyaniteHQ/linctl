@@ -57,14 +57,14 @@ func loadProjectsByTeam(
 	runtime commandRuntime,
 	_ []string,
 	limit int,
-) (client.ProjectList, []client.ProjectSummary, error) {
+) (client.ProjectList, error) {
 	target, err := runtime.resolveTarget(ctx)
 	if err != nil {
-		return client.ProjectList{}, nil, err
+		return client.ProjectList{}, err
 	}
 	projects, err := client.ListProjectsByTeam(ctx, runtime.graphqlClient, target.Team.ID, limit)
 
-	return projects, projects.Projects, err
+	return projects, err
 }
 
 func addProjectAllCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -83,10 +83,10 @@ func loadProjectsAll(
 	runtime commandRuntime,
 	_ []string,
 	limit int,
-) (client.ProjectList, []client.ProjectSummary, error) {
+) (client.ProjectList, error) {
 	projects, err := client.ListProjects(ctx, runtime.graphqlClient, limit)
 
-	return projects, projects.Projects, err
+	return projects, err
 }
 
 func addProjectGetCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -111,9 +111,9 @@ func addProjectAttachmentsCommand(ctx context.Context, root *cobra.Command, opti
 		Args:      cobra.ExactArgs(1),
 		Load: func(
 			ctx context.Context, runtime commandRuntime, args []string, limit int,
-		) (client.ProjectAttachmentList, []client.AttachmentSummary, error) {
+		) (client.ProjectAttachmentList, error) {
 			list, err := client.ListProjectAttachments(ctx, runtime.graphqlClient, args[0], limit)
-			return list, list.Attachments, err
+			return list, err
 		},
 		WriteItem: writeAttachment,
 	})
@@ -127,9 +127,9 @@ func addProjectDocumentsCommand(ctx context.Context, root *cobra.Command, option
 		Args:      cobra.ExactArgs(1),
 		Load: func(
 			ctx context.Context, runtime commandRuntime, args []string, limit int,
-		) (client.ProjectDocumentList, []client.DocumentSummary, error) {
+		) (client.ProjectDocumentList, error) {
 			list, err := client.ListProjectDocuments(ctx, runtime.graphqlClient, args[0], limit)
-			return list, list.Documents, err
+			return list, err
 		},
 		WriteItem: writeDocument,
 	})
@@ -143,9 +143,9 @@ func addProjectExternalLinksCommand(ctx context.Context, root *cobra.Command, op
 		Args:      cobra.ExactArgs(1),
 		Load: func(
 			ctx context.Context, runtime commandRuntime, args []string, limit int,
-		) (client.ProjectExternalLinkList, []client.EntityExternalLinkSummary, error) {
+		) (client.ProjectExternalLinkList, error) {
 			list, err := client.ListProjectExternalLinks(ctx, runtime.graphqlClient, args[0], limit)
-			return list, list.Links, err
+			return list, err
 		},
 		WriteItem: writeEntityExternalLink,
 	}
@@ -155,14 +155,14 @@ func addProjectExternalLinksCommand(ctx context.Context, root *cobra.Command, op
 func addProjectHistoryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.ProjectHistoryList, client.ProjectHistorySummary]{
 		Use:       "history PROJECT_ID",
-		Short:     "List project history",
+		Short:     "List the history of a project",
 		LimitHelp: "history entries",
 		Args:      cobra.ExactArgs(1),
 		Load: func(
 			ctx context.Context, runtime commandRuntime, args []string, limit int,
-		) (client.ProjectHistoryList, []client.ProjectHistorySummary, error) {
+		) (client.ProjectHistoryList, error) {
 			list, err := client.ListProjectHistory(ctx, runtime.graphqlClient, args[0], limit)
-			return list, list.History, err
+			return list, err
 		},
 		WriteItem: writeProjectHistory,
 	})
@@ -176,9 +176,9 @@ func addProjectInitiativeLinksCommand(ctx context.Context, root *cobra.Command, 
 		Args:      cobra.ExactArgs(1),
 		Load: func(
 			ctx context.Context, runtime commandRuntime, args []string, limit int,
-		) (client.ProjectInitiativeToProjectList, []client.InitiativeToProjectSummary, error) {
+		) (client.ProjectInitiativeToProjectList, error) {
 			list, err := client.ListProjectInitiativeToProjects(ctx, runtime.graphqlClient, args[0], limit)
-			return list, list.Associations, err
+			return list, err
 		},
 		WriteItem: writeInitiativeToProject,
 	}
@@ -193,9 +193,9 @@ func addProjectInitiativesCommand(ctx context.Context, root *cobra.Command, opti
 		Args:      cobra.ExactArgs(1),
 		Load: func(
 			ctx context.Context, runtime commandRuntime, args []string, limit int,
-		) (client.ProjectInitiativeList, []client.InitiativeSummary, error) {
+		) (client.ProjectInitiativeList, error) {
 			list, err := client.ListProjectInitiatives(ctx, runtime.graphqlClient, args[0], limit)
-			return list, list.Initiatives, err
+			return list, err
 		},
 		WriteItem: writeInitiative,
 	})
@@ -210,7 +210,6 @@ func addProjectInverseRelationsCommand(ctx context.Context, root *cobra.Command,
 		"List project inverse relations",
 		"inverse relations",
 		client.ListProjectInverseRelations,
-		projectRelationListItems,
 		writeProjectRelation,
 	)
 }
@@ -223,9 +222,9 @@ func addProjectIssuesCommand(ctx context.Context, root *cobra.Command, options *
 		Args:      cobra.ExactArgs(1),
 		Load: func(
 			ctx context.Context, runtime commandRuntime, args []string, limit int,
-		) (client.ProjectIssueList, []client.IssueSummary, error) {
+		) (client.ProjectIssueList, error) {
 			list, err := client.ListProjectIssues(ctx, runtime.graphqlClient, args[0], limit)
-			return list, list.Issues, err
+			return list, err
 		},
 		WriteItem: writeIssue,
 	})
@@ -239,9 +238,9 @@ func addProjectCommentsCommand(ctx context.Context, root *cobra.Command, options
 		Args:      cobra.ExactArgs(1),
 		Load: func(
 			ctx context.Context, runtime commandRuntime, args []string, limit int,
-		) (client.ProjectCommentList, []client.CommentMetadataSummary, error) {
+		) (client.ProjectCommentList, error) {
 			list, err := client.ListProjectComments(ctx, runtime.graphqlClient, args[0], limit)
-			return list, list.Comments, err
+			return list, err
 		},
 		WriteItem: writeCommentMetadata,
 	})
@@ -255,32 +254,23 @@ func addProjectLabelsCommand(ctx context.Context, root *cobra.Command, options *
 		Args:      cobra.ExactArgs(1),
 		Load: func(
 			ctx context.Context, runtime commandRuntime, args []string, limit int,
-		) (client.ProjectProjectLabelList, []client.ProjectLabelSummary, error) {
+		) (client.ProjectProjectLabelList, error) {
 			list, err := client.ListLabelsForProject(ctx, runtime.graphqlClient, args[0], limit)
-			return list, list.ProjectLabels, err
+			return list, err
 		},
 		WriteItem: writeProjectLabel,
 	})
 }
 
 func writeCommentMetadata(command *cobra.Command, options *rootOptions, comment client.CommentMetadataSummary) error {
-	return writeItem(command, options, comment, comment.ID,
-		func(command *cobra.Command, _ *rootOptions, comment client.CommentMetadataSummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s %s %s",
-				comment.ID,
-				emptyDash(comment.DisplayName),
-				comment.CreatedAt,
-			)
-		})
+	return writeItemLine(
+		command, options, comment, comment.ID,
+		"%s %s %s", comment.ID, emptyDash(comment.DisplayName), comment.CreatedAt,
+	)
 }
 
 func writeProjectMember(command *cobra.Command, options *rootOptions, member client.ProjectMember) error {
-	return writeItem(command, options, member, member.ID,
-		func(command *cobra.Command, _ *rootOptions, member client.ProjectMember) error {
-			return render.WriteLine(command.OutOrStdout(), "%s %s", member.ID, member.DisplayName)
-		})
+	return writeItemLine(command, options, member, member.ID, "%s %s", member.ID, member.DisplayName)
 }
 
 func addProjectMembersCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -291,9 +281,9 @@ func addProjectMembersCommand(ctx context.Context, root *cobra.Command, options 
 		Args:      cobra.ExactArgs(1),
 		Load: func(
 			ctx context.Context, runtime commandRuntime, args []string, limit int,
-		) (client.ProjectMemberList, []client.ProjectMember, error) {
+		) (client.ProjectMemberList, error) {
 			list, err := client.ListProjectMembers(ctx, runtime.graphqlClient, args[0], limit)
-			return list, list.Members, err
+			return list, err
 		},
 		WriteItem: writeProjectMember,
 	})
@@ -307,9 +297,9 @@ func addProjectNeedsCommand(ctx context.Context, root *cobra.Command, options *r
 		Args:      cobra.ExactArgs(1),
 		Load: func(
 			ctx context.Context, runtime commandRuntime, args []string, limit int,
-		) (client.ProjectCustomerNeedList, []client.CustomerNeedSummary, error) {
+		) (client.ProjectCustomerNeedList, error) {
 			list, err := client.ListProjectNeeds(ctx, runtime.graphqlClient, args[0], limit)
-			return list, list.Needs, err
+			return list, err
 		},
 		WriteItem: writeCustomerNeed,
 	})
@@ -324,7 +314,6 @@ func addProjectRelationsCommand(ctx context.Context, root *cobra.Command, option
 		"List project relations",
 		"relations",
 		client.ListProjectRelationsForProject,
-		projectRelationListItems,
 		writeProjectRelation,
 	)
 }
@@ -337,9 +326,9 @@ func addProjectTeamsCommand(ctx context.Context, root *cobra.Command, options *r
 		Args:      cobra.ExactArgs(1),
 		Load: func(
 			ctx context.Context, runtime commandRuntime, args []string, limit int,
-		) (client.ProjectTeamList, []client.TeamSummary, error) {
+		) (client.ProjectTeamList, error) {
 			list, err := client.ListProjectTeams(ctx, runtime.graphqlClient, args[0], limit)
-			return list, list.Teams, err
+			return list, err
 		},
 		WriteItem: writeTeam,
 	})
@@ -365,7 +354,7 @@ func addProjectFilterSuggestionCommand(ctx context.Context, root *cobra.Command,
 		},
 	}
 	command.Flags().StringVar(&teamID, "team-id", teamID, "optional team id for team-scoped project views")
-	root.AddCommand(command)
+	addCommandWithSafety(root, CommandSafetyRead, command)
 }
 
 func addProjectUpdatesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -376,19 +365,16 @@ func addProjectUpdatesCommand(ctx context.Context, root *cobra.Command, options 
 		Args:      cobra.ExactArgs(1),
 		Load: func(
 			ctx context.Context, runtime commandRuntime, args []string, limit int,
-		) (client.ProjectUpdateList, []client.ProjectUpdateSummary, error) {
+		) (client.ProjectUpdateList, error) {
 			list, err := client.ListProjectUpdates(ctx, runtime.graphqlClient, args[0], limit)
-			return list, list.Updates, err
+			return list, err
 		},
 		WriteItem: writeProjectChildUpdate,
 	})
 }
 
 func writeProjectChildUpdate(command *cobra.Command, options *rootOptions, update client.ProjectUpdateSummary) error {
-	return writeItem(command, options, update, update.ID,
-		func(command *cobra.Command, _ *rootOptions, update client.ProjectUpdateSummary) error {
-			return render.WriteLine(command.OutOrStdout(), "%s %s %s", update.ID, update.Health, update.DisplayName)
-		})
+	return writeItemLine(command, options, update, update.ID, "%s %s %s", update.ID, update.Health, update.DisplayName)
 }
 
 func writeProjectFilterSuggestion(
@@ -396,32 +382,17 @@ func writeProjectFilterSuggestion(
 	options *rootOptions,
 	suggestion client.ProjectFilterSuggestion,
 ) error {
-	return writeItem(command, options, suggestion, suggestion.LogID,
-		func(command *cobra.Command, _ *rootOptions, suggestion client.ProjectFilterSuggestion) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"log_id=%s filter=%s",
-				emptyDash(suggestion.LogID),
-				emptyDash(string(suggestion.Filter)),
-			)
-		})
-}
-
-func projectRelationListItems(list client.ProjectProjectRelationList) []client.ProjectRelationSummary {
-	return list.Relations
+	return writeItemLine(
+		command, options, suggestion, suggestion.LogID,
+		"log_id=%s filter=%s", emptyDash(suggestion.LogID), emptyDash(string(suggestion.Filter)),
+	)
 }
 
 func writeProjectHistory(command *cobra.Command, options *rootOptions, history client.ProjectHistorySummary) error {
-	return writeItem(command, options, history, history.ID,
-		func(command *cobra.Command, _ *rootOptions, history client.ProjectHistorySummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s project %s entries %d",
-				history.ID,
-				history.ProjectID,
-				history.EntryCount,
-			)
-		})
+	return writeItemLine(
+		command, options, history, history.ID,
+		"%s project %s entries %d", history.ID, history.ProjectID, history.EntryCount,
+	)
 }
 
 func writeProject(command *cobra.Command, options *rootOptions, project client.ProjectSummary) error {

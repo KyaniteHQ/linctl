@@ -268,52 +268,66 @@ func (store Store) Save(ctx context.Context, state State) error {
 	})
 }
 
-// SaveAppConfig writes OAuth app configuration without touching token state.
-func (store Store) SaveAppConfig(ctx context.Context, profile string, app AppConfig) error {
+// mutateAuthFile reloads one auth state file under its cross-process lock,
+// applies mutate, and persists the result. It is the shared shape behind every
+// profile-scoped save and clear. The mutate callback must not call Store
+// persistence methods, because the lock is not reentrant.
+func mutateAuthFile[File any](
+	ctx context.Context,
+	path string,
+	label string,
+	operation string,
+	mutate func(*File),
+) error {
 	if err := ctx.Err(); err != nil {
-		return fmt.Errorf("save auth app config context: %w", err)
+		return fmt.Errorf("%s context: %w", operation, err)
 	}
 
-	return withAuthFileLock(ctx, store.paths.AppConfigPath, "auth app config", "save auth app config", func() error {
-		appState, err := readJSON[appConfigFile](store.paths.AppConfigPath, "auth app config")
+	return withAuthFileLock(ctx, path, label, operation, func() error {
+		state, err := readJSON[File](path, label)
 		if err != nil {
 			return err
 		}
-		if profile == "" {
-			appState.App = persistedAppConfig(app)
-		} else {
+		mutate(&state)
+
+		return writeJSON(path, state, label)
+	})
+}
+
+// SaveAppConfig writes OAuth app configuration without touching token state.
+func (store Store) SaveAppConfig(ctx context.Context, profile string, app AppConfig) error {
+	return mutateAuthFile(
+		ctx, store.paths.AppConfigPath, "auth app config", "save auth app config",
+		func(appState *appConfigFile) {
+			if profile == "" {
+				appState.App = persistedAppConfig(app)
+
+				return
+			}
 			if appState.Profiles == nil {
 				appState.Profiles = map[string]persistedAppConfig{}
 			}
 			appState.Profiles[profile] = persistedAppConfig(app)
-		}
-
-		return writeJSON(store.paths.AppConfigPath, appState, "auth app config")
-	})
+		},
+	)
 }
 
 // SaveTokenState writes OAuth token state without touching app configuration.
 func (store Store) SaveTokenState(ctx context.Context, profile string, token TokenState) error {
-	if err := ctx.Err(); err != nil {
-		return fmt.Errorf("save auth token state context: %w", err)
-	}
+	return mutateAuthFile(
+		ctx, store.paths.TokenPath, "auth token state", "save auth token state",
+		func(tokenState *tokenFile) {
+			if profile == "" {
+				tokenState.Token = persistedTokenState(token)
 
-	return withAuthFileLock(ctx, store.paths.TokenPath, "auth token state", "save auth token state", func() error {
-		tokenState, err := readJSON[tokenFile](store.paths.TokenPath, "auth token state")
-		if err != nil {
-			return err
-		}
-		if profile == "" {
-			tokenState.Token = persistedTokenState(token)
-		} else {
+				return
+			}
 			if tokenState.Profiles == nil {
 				tokenState.Profiles = map[string]persistedTokenState{}
 			}
 			tokenState.Profiles[profile] = persistedTokenState(token)
-		}
-
-		return writeJSON(store.paths.TokenPath, tokenState, "auth token state")
-	})
+		},
+	)
 }
 
 // TransactTokenState reloads, updates, and persists one profile's token under one cross-process lock.
@@ -352,42 +366,32 @@ func (store Store) TransactTokenState(
 
 // ClearTokenState removes saved OAuth token material while preserving app config.
 func (store Store) ClearTokenState(ctx context.Context, profile string) error {
-	if err := ctx.Err(); err != nil {
-		return fmt.Errorf("clear auth token state context: %w", err)
-	}
+	return mutateAuthFile(
+		ctx, store.paths.TokenPath, "auth token state", "clear auth token state",
+		func(tokenState *tokenFile) {
+			if profile == "" {
+				tokenState.Token = persistedTokenState{}
 
-	return withAuthFileLock(ctx, store.paths.TokenPath, "auth token state", "clear auth token state", func() error {
-		tokenState, err := readJSON[tokenFile](store.paths.TokenPath, "auth token state")
-		if err != nil {
-			return err
-		}
-		if profile == "" {
-			tokenState.Token = persistedTokenState{}
-		} else if tokenState.Profiles != nil {
+				return
+			}
 			delete(tokenState.Profiles, profile)
-		}
-		return writeJSON(store.paths.TokenPath, tokenState, "auth token state")
-	})
+		},
+	)
 }
 
 // ClearAppConfig removes saved OAuth app configuration while preserving token state.
 func (store Store) ClearAppConfig(ctx context.Context, profile string) error {
-	if err := ctx.Err(); err != nil {
-		return fmt.Errorf("clear auth app config context: %w", err)
-	}
+	return mutateAuthFile(
+		ctx, store.paths.AppConfigPath, "auth app config", "clear auth app config",
+		func(appState *appConfigFile) {
+			if profile == "" {
+				appState.App = persistedAppConfig{}
 
-	return withAuthFileLock(ctx, store.paths.AppConfigPath, "auth app config", "clear auth app config", func() error {
-		appState, err := readJSON[appConfigFile](store.paths.AppConfigPath, "auth app config")
-		if err != nil {
-			return err
-		}
-		if profile == "" {
-			appState.App = persistedAppConfig{}
-		} else if appState.Profiles != nil {
+				return
+			}
 			delete(appState.Profiles, profile)
-		}
-		return writeJSON(store.paths.AppConfigPath, appState, "auth app config")
-	})
+		},
+	)
 }
 
 func withAuthFileLock(

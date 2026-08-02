@@ -35,16 +35,22 @@ func addNextCommand(ctx context.Context, root *cobra.Command, options *rootOptio
 	limit := 20
 	command := &cobra.Command{
 		Use:   "next",
-		Short: "Pick the next unblocked issue and start it",
+		Short: "Select the next unblocked issue and start it",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
 			return runNext(ctx, command, options, nextFlags{dryRun: dryRun, checkout: checkout, limit: limit})
 		},
 	}
-	command.Flags().BoolVar(&dryRun, "dry-run", dryRun, "preview the pick without starting it or creating a branch")
-	command.Flags().BoolVar(&checkout, "checkout", checkout, "git checkout -b the issue branch before starting it")
+	command.Flags().BoolVar(
+		&dryRun, "dry-run", dryRun,
+		"show the selected issue, and do not start it or create a branch",
+	)
+	command.Flags().BoolVar(
+		&checkout, "checkout", checkout,
+		"create and check out the issue branch before linctl starts the issue",
+	)
 	command.Flags().IntVar(&limit, "limit", limit, "maximum candidate issues to inspect")
-	addCommandWithSafety(root, CommandSafetyWrite, command)
+	addWriteCommand(root, WriteEffectGuarded, command)
 }
 
 // nextFlags collects the inputs of the next command.

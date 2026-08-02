@@ -95,12 +95,12 @@ func addIssueImportCommand(ctx context.Context, root *cobra.Command, options *ro
 			return runIssueImport(ctx, command, options, args[0], dryRun)
 		},
 	}
-	command.Flags().BoolVar(&dryRun, "dry-run", false, "render the rows that would be created without writing")
+	command.Flags().BoolVar(&dryRun, "dry-run", false, "show the rows to create, and do not write them")
 	// The import preview and result envelopes both carry their rows under
 	// "issues"; the collection key is annotated without a read-safety stamp
 	// because import is a guarded write.
 	annotateCollectionKey(command, "issues")
-	addCommandWithSafety(root, CommandSafetyWrite, command)
+	addWriteCommand(root, WriteEffectGuarded, command)
 }
 
 func runIssueImport(
@@ -117,11 +117,7 @@ func runIssueImport(
 	if err != nil {
 		return err
 	}
-	format, err := dataFormat(path)
-	if err != nil {
-		return err
-	}
-	rows, err := parseImportFile(format, path)
+	rows, err := parseImportRows(path)
 	if err != nil {
 		return err
 	}
@@ -139,11 +135,7 @@ func runIssueImportDryRun(
 	options *rootOptions,
 	path string,
 ) error {
-	format, err := dataFormat(path)
-	if err != nil {
-		return err
-	}
-	rows, err := parseImportFile(format, path)
+	rows, err := parseImportRows(path)
 	if err != nil {
 		return err
 	}
@@ -157,6 +149,17 @@ func runIssueImportDryRun(
 	}
 
 	return writeImportPreview(command, options, requests)
+}
+
+// parseImportRows resolves the import encoding from the file extension and
+// parses the file into rows.
+func parseImportRows(path string) ([]issueImportRow, error) {
+	format, err := dataFormat(path)
+	if err != nil {
+		return nil, err
+	}
+
+	return parseImportFile(format, path)
 }
 
 func importDryRunTeamKey(ctx context.Context, options *rootOptions) (string, error) {
@@ -451,14 +454,14 @@ func addIssueBulkExportCommand(ctx context.Context, root *cobra.Command, options
 	limit := defaultBulkExportLimit
 	command := &cobra.Command{
 		Use:   "bulk-export FILE",
-		Short: "Write the resolved team's issues to a CSV or JSON file",
+		Short: "Write the issues of the resolved team to a CSV or JSON file",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
 			return runIssueBulkExport(ctx, command, options, args[0], limit)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum issues to export")
-	addCommandWithSafety(root, CommandSafetyWrite, command)
+	addWriteCommand(root, WriteEffectLocal, command)
 }
 
 func runIssueBulkExport(

@@ -20,7 +20,7 @@ func MarkNotificationRead(
 	notificationID string,
 ) (NotificationSummary, error) {
 	if notificationID == "" {
-		return NotificationSummary{}, fmt.Errorf("%w: notification id is required", ErrWriteInvalid)
+		return NotificationSummary{}, requiredFieldError("notification id")
 	}
 
 	guard, err := newGuardedClient(ctx, graphqlClient, expected)
@@ -40,7 +40,7 @@ func ArchiveNotification(
 	notificationID string,
 ) (NotificationSummary, error) {
 	if notificationID == "" {
-		return NotificationSummary{}, fmt.Errorf("%w: notification id is required", ErrWriteInvalid)
+		return NotificationSummary{}, requiredFieldError("notification id")
 	}
 
 	guard, err := newGuardedClient(ctx, graphqlClient, expected)

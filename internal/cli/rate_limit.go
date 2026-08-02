@@ -13,7 +13,7 @@ func addRateLimitCommand(ctx context.Context, root *cobra.Command, options *root
 	command := newGroupCommand("rate-limit", "Read Linear rate-limit status")
 	addCommandWithSafety(command, CommandSafetyRead, &cobra.Command{
 		Use:   "status",
-		Short: "Print the authenticated Linear rate-limit status",
+		Short: "Show the Linear rate-limit status",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
 			runtime, err := buildCommandRuntime(ctx, options)

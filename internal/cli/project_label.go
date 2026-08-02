@@ -21,8 +21,8 @@ func addProjectLabelCommand(ctx context.Context, root *cobra.Command, options *r
 			LimitHelp: "maximum project labels to return",
 			GetUse:    "get PROJECT_LABEL_ID",
 			GetShort:  "Get one project label by id",
-			LoadList:  loadProjectLabelList,
-			LoadGet:   loadProjectLabel,
+			LoadList:  clientList(client.ListProjectLabels),
+			LoadGet:   clientGet(client.GetProjectLabelByID),
 			WriteItem: writeProjectLabel,
 		},
 	)
@@ -35,47 +35,29 @@ func addProjectLabelCommand(ctx context.Context, root *cobra.Command, options *r
 }
 
 func addProjectLabelChildrenCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "children PROJECT_LABEL_ID",
-		Short: "List child labels for one project label",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadProjectLabelChildrenList,
-				writeProjectLabel,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum child project labels to return")
-	root.AddCommand(preflightReadListCommand(command, loadProjectLabelChildrenList))
+	addChildListCommand(
+		ctx,
+		root,
+		options,
+		"children PROJECT_LABEL_ID",
+		"List child labels for one project label",
+		"child project labels",
+		client.ListProjectLabelChildren,
+		writeProjectLabel,
+	)
 }
 
 func addProjectLabelProjectsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "projects PROJECT_LABEL_ID",
-		Short: "List projects associated with one project label",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadProjectLabelProjectsList,
-				writeProject,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum projects to return")
-	root.AddCommand(preflightReadListCommand(command, loadProjectLabelProjectsList))
+	addChildListCommand(
+		ctx,
+		root,
+		options,
+		"projects PROJECT_LABEL_ID",
+		"List projects associated with one project label",
+		"projects",
+		client.ListProjectLabelProjects,
+		writeProject,
+	)
 }
 
 func writeProjectLabel(command *cobra.Command, options *rootOptions, label client.ProjectLabelSummary) error {
@@ -102,42 +84,4 @@ func writeProjectLabel(command *cobra.Command, options *rootOptions, label clien
 
 			return render.WriteLine(command.OutOrStdout(), "%s %s %s", label.ID, label.Name, label.Color)
 		})
-}
-
-func loadProjectLabelList(
-	ctx context.Context,
-	runtime commandRuntime,
-	_ []string,
-	limit int,
-) (client.ProjectLabelList, []client.ProjectLabelSummary, error) {
-	labels, err := client.ListProjectLabels(ctx, runtime.graphqlClient, limit)
-	return labels, labels.ProjectLabels, err
-}
-
-func loadProjectLabel(
-	ctx context.Context,
-	runtime commandRuntime,
-	id string,
-) (client.ProjectLabelSummary, error) {
-	return client.GetProjectLabelByID(ctx, runtime.graphqlClient, id)
-}
-
-func loadProjectLabelChildrenList(
-	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
-	limit int,
-) (client.ProjectLabelChildrenList, []client.ProjectLabelSummary, error) {
-	labels, err := client.ListProjectLabelChildren(ctx, runtime.graphqlClient, args[0], limit)
-	return labels, labels.ProjectLabels, err
-}
-
-func loadProjectLabelProjectsList(
-	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
-	limit int,
-) (client.ProjectLabelProjectsList, []client.ProjectSummary, error) {
-	projects, err := client.ListProjectLabelProjects(ctx, runtime.graphqlClient, args[0], limit)
-	return projects, projects.Projects, err
 }

@@ -5,17 +5,17 @@ description: Use linctl as the Linear control surface for agent-safe issue, proj
 
 # linctl
 
-`linctl` is the Linear control surface. Reads are broad. Writes are guarded:
-the CLI resolves the active OAuth credential, compares it to the pinned target, and fails
-closed on Target Mismatch.
+`linctl` is the Linear control surface. Reads are wide. Writes are guarded: the CLI resolves the
+active OAuth credential, compares it with the pinned target, and fails closed on a Target
+Mismatch.
 
 ## Resolve
 
-Choose one command prefix and use it for every Linear operation:
+Select one command prefix, then use that prefix for every Linear operation.
 
 1. If `command -v linctl` succeeds, use `linctl`.
-2. Else, inside a checkout containing `cmd/linctl/main.go`, use `go run ./cmd/linctl`.
-3. Else stop and report that `linctl` is unavailable.
+2. If it does not, and the checkout has `cmd/linctl/main.go`, use `go run ./cmd/linctl`.
+3. If neither works, stop and report that `linctl` is not available.
 
 Helper:
 
@@ -24,31 +24,35 @@ prefix="$(bash skills/linctl/scripts/linctl-resolve.sh)" || exit 1
 $prefix doctor --json
 ```
 
-Completion criterion: every Linear operation in the task runs through `linctl`,
-never through MCP, raw GraphQL, or an ad hoc script.
+Completion criterion: every Linear operation in the task goes through `linctl`, and none goes
+through MCP, raw GraphQL, or an ad hoc script.
 
 ## Discover
 
-Before any write:
+Do this before each write.
 
-1. Read `.linctl.toml` if present; it overlays `~/.config/linctl/config.toml`.
-2. If the pin is missing, run `linctl init` (or `linctl init --team KEY` when multiple
-   teams are visible). Never put auth material in `.linctl.toml`.
+1. Read `.linctl.toml` if the file exists. It overlays `~/.config/linctl/config.toml`.
+2. If the pin is absent, run `linctl init`. Run `linctl init --team KEY` when more than one team
+   is visible. Never put auth material in `.linctl.toml`.
 3. Run `linctl doctor --json` or `linctl target --json`.
-4. Run `linctl usage`, plus the relevant domain usage command before an unfamiliar write.
-5. Use `--json` when another tool or agent will parse output; see `references/json-output.md`.
+4. Run `linctl usage`. Also run the usage command of the domain before an unfamiliar write.
+5. Use `--json` when another tool or agent parses the output. See `references/json-output.md`.
 
-Completion criterion: command, target, and output format are known before mutation.
+Completion criterion: the command, the target, and the output format are known before the
+mutation.
 
-## Command Surface
+## Command surface
 
-Use the repository docs as the command inventory:
+Use the repository documents as the command inventory.
 
-- `README.md` → current public command examples.
-- `docs/internal/domain-map.md` → GraphQL backing and read/write safety classification.
-- `docs/internal/test-scenarios.md` → named scenario coverage and evidence.
-- `references/json-output.md` → stable JSON shapes for agent parsing.
-- `references/commands.md` → generated full command inventory (every command, its usage and flags); refreshed by `task gen-skill` and drift-checked in CI.
+- `references/commands.md`: **generated.** Every command, with its usage line and its flags.
+  `go tool task gen-skill` refreshes it, and CI checks it for drift.
+- `references/guarded-writes.md`: **generated.** Every command that changes Linear, which ones
+  need `--org-wide`, and which ones linctl cannot undo.
+- `references/json-output.md`: the stable JSON shapes for agent parsing.
+- `docs/internal/domain-map.md`: the GraphQL backing and the read/write safety class.
+- `docs/internal/test-scenarios.md`: the named scenario coverage and its evidence.
+- `README.md`: the current public command examples.
 
 Useful global flags:
 
@@ -61,51 +65,48 @@ Useful global flags:
 --timeout 30s
 ```
 
-Completion criterion: the selected command is documented in the current repo
-surface and matches the requested Linear domain.
+Completion criterion: the selected command is in the current repo surface, and it matches the
+requested Linear domain.
 
 ## Writes
 
-Guarded writes currently cover:
+`references/guarded-writes.md` is the complete write surface. It is generated from the command
+tree, so it is never stale. Read it before a write that you have not run before. It has three
+sections.
 
-- Issues: create, template-backed create, import, update, append, start, comment, reply,
-  close, `done`, `next` start.
-- Issue relations and comments: `issue relate`, `issue unrelate`, `comment update`,
-  `comment delete`.
-- Projects: create, update, archive.
-- Project updates: create.
-- Initiative updates: create (organization comparison on the initiative).
-- Notifications: mark-read, archive (Viewer-Scoped; recipient must match the actor).
-- Documents: create, update.
-- Cycles: create, update, archive.
-- ProjectMilestones: create, update.
+- **Guarded writes**: these change Linear behind the target guard.
+- **Writes to Linear outside the target guard**: `files upload` sends bytes to Linear storage. A
+  file asset has no team and no project, so the guard has nothing to compare.
+- **Writes to this machine only**: `files download` and `issue bulk-export` write a local file.
 
-Helpers outside target-pinned mutations:
-
-- `files upload` prepares and uploads bytes to Linear storage, then prints an asset URL;
-  `files download` fetches a user-supplied URL to a local path.
-- `issue export` and `issue bulk-export` write local files from reads.
-- `issue open` and `project open` resolve URLs and launch the browser.
-- `issue create --dry-run` and `issue import --dry-run` preview locally without mutation.
+Commands that preview a write without a mutation: `issue create --dry-run` and
+`issue import --dry-run`. Commands that only read and then open a browser: `issue open` and
+`project open`. `issue export` writes a local markdown file from reads.
 
 Safety rules:
 
-- Target Mismatch is a hard stop. Do not retry blindly with different auth.
-- Team-scoped writes compare organization and team.
-- Resource-scoped writes resolve the existing resource first and compare pinned `project_id` when configured.
-- `--org`, `--team`, `--team-id`, and `--project` are explicit pinned-target overrides, not bypasses.
-- Scaffold a repo pin with `linctl init` (target-only `.linctl.toml`); configure auth
-  with `linctl auth configure`, `linctl auth app`, or `linctl auth login`.
-- Use `linctl auth status` for readiness, `linctl auth refresh` for explicit diagnosis,
-  and `linctl auth logout` to revoke/remove local token state.
-- Never print secrets. Report OAuth app material as `set` or `missing`.
-- For tests, create `linctl-it-<runid>` resources and clean them up: close disposable issues, archive disposable projects.
+- A Target Mismatch is a hard stop. Do not retry with different auth.
+- A team-scoped write compares the organization and the team.
+- A resource-scoped write resolves the existing resource first. It then compares the pinned
+  `project_id` when the config sets one.
+- A viewer-scoped write, such as a notification write, compares the recipient with the resolved
+  actor.
+- `--org`, `--team`, `--team-id`, and `--project` set the pinned target. They are not bypasses.
+- `--org-wide` compares the organization only, for an entity that has no team. It is not a
+  bypass, and a mismatch is still a hard stop.
+- Create the repo pin with `linctl init`, which writes a target-only `.linctl.toml`. Configure
+  the auth with `linctl auth configure`, `linctl auth app`, or `linctl auth login`.
+- Use `linctl auth status` for readiness. Use `linctl auth refresh` for an explicit diagnosis.
+  Use `linctl auth logout` to revoke the token and remove the local token state.
+- Never print a secret. Report OAuth material as `set` or `missing`.
+- For a test, create `linctl-it-<runid>` resources and clean them up. Close a disposable issue.
+  Archive a disposable project.
 
-If the requested write is not listed above, report the limit instead of bypassing
-`linctl`.
+If `references/guarded-writes.md` does not list the requested write, report the limit. Do not go
+around `linctl`.
 
-Completion criterion: every write has a pinned target and cleanup path, or the
-agent stops before writing.
+Completion criterion: each write has a pinned target and a cleanup path, or the agent stops
+before the write.
 
 ## Patterns
 
@@ -147,77 +148,76 @@ linctl project get <created-id> --json
 linctl --project <created-id> project archive <created-id> --json
 ```
 
-## Smoke & Verify
+## Smoke and verify
 
-Four tiers, cheapest first. Pick the one the task needs.
+There are four tiers. The cheapest tier comes first. Select the tier that the task needs.
 
-1. **No credentials** — prove the binary runs in a headless checkout:
+1. **No credentials**: prove that the binary runs in a headless checkout.
 
    ```bash
    bash skills/linctl/scripts/linctl-offline-smoke.sh
    ```
 
-   Runs only token-free commands (`--version`, `--help`, `usage`, completion);
-   no token, no network. Use this to confirm linctl is wired up before any target work.
+   This runs only the token-free commands: `--version`, `--help`, `usage`, and completion. It
+   uses no token and no network. Run it to confirm that linctl works before any target work.
 
-2. **Read-only, auth** — confirm the OAuth credential and pinned target resolve:
+2. **Read-only, with auth**: confirm that the OAuth credential and the pinned target resolve.
 
    ```bash
    bash skills/linctl/scripts/linctl-smoke.sh
    ```
 
-   Runs `target`, `whoami`, `issue list`, `project list` with `--json`; never writes.
+   This runs `target`, `whoami`, `issue list`, and `project list` with `--json`. It never writes.
 
-3. **Full live smoke** — disposable writes against a test org, inside the checkout:
-
-   ```bash
-   go run github.com/go-task/task/v3/cmd/task@latest live-smoke
-   ```
-
-   Requires disposable OAuth auth state. Use `linctl auth app` for headless app-actor
-   auth when a client secret is available, or `linctl auth login` for browser auth.
-   Do not print secret values.
-
-4. **Browser login smoke** — manually verify PKCE callback login without leaking
-   the callback code:
+3. **Full live smoke**: disposable writes against a test organization, inside the checkout.
 
    ```bash
-   go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke
-   go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke -- app
+   go tool task live-smoke
    ```
 
-   Requires `LINCTL_OAUTH_CLIENT_ID`, `LINCTL_OAUTH_REDIRECT_URI`, a pinned target
-   from `LINCTL_TEST_*` or `test/integration-config.json`, and optional
-   `LINCTL_OAUTH_CLIENT_SECRET`. The script prints the Linear authorization URL,
-   defaults to repeatable user-actor login, captures the localhost callback with
-   a one-shot listener, shows a browser success page, validates redacted JSON,
-   and cleans up temp auth state. Use `-- app` only for a fresh app-actor browser
-   install; use `live-oauth` for repeatable app-actor fixture coverage.
+   This needs a disposable OAuth auth state. Use `linctl auth app` for headless app-actor auth
+   when a client secret is available. Use `linctl auth login` for browser auth. Never print a
+   secret value.
 
-Completion criterion: the chosen smoke passed with redacted command/status evidence,
-or is explicitly blocked on missing credentials or target.
+4. **Browser login smoke**: check the PKCE callback login by hand, without a leak of the
+   callback code.
+
+   ```bash
+   go tool task browser-login-smoke
+   go tool task browser-login-smoke -- app
+   ```
+
+   This needs `LINCTL_OAUTH_CLIENT_ID`, `LINCTL_OAUTH_REDIRECT_URI`, a pinned target from
+   `LINCTL_TEST_*` or `test/integration-config.json`, and an optional
+   `LINCTL_OAUTH_CLIENT_SECRET`. The script prints the Linear authorization URL. It defaults to a
+   repeatable user-actor login. It captures the localhost callback with a one-shot listener,
+   shows a browser success page, validates the redacted JSON, and removes the temporary auth
+   state. Use `-- app` only for a new app-actor browser install. Use `live-oauth` for repeatable
+   app-actor fixture coverage.
+
+Completion criterion: the selected smoke passed, with redacted command and status evidence, or
+the agent reports that a missing credential or a missing target blocks it.
 
 ## Gotchas
 
-- `target`, `doctor`, and `whoami` need auth; they fail closed without it. To prove
-  a checkout runs with no credentials, use the offline smoke (`--version`, `usage`).
-- `target --json` reports `expected` and `resolved` with Go-capitalized keys (`OrgID`,
-  `TeamKey`, `TeamID`, `ProjectID`), not the snake_case used elsewhere. Compare them
-  field by field to explain a mismatch.
-- Target Mismatch is a hard stop. There is no bypass flag; `--org`, `--team`,
-  `--team-id`, and `--project` set the pinned target, they do not relax the guard.
-  Do not retry with different auth.
-- `--body -` reads a comment body from stdin; `--body-file` reads it from a file. Use
-  these instead of inlining multi-line markdown.
-- Keep `$prefix` unquoted when it may be `go run ./cmd/linctl`, so it word-splits into
-  separate arguments.
-- `sla-configuration list` takes a positional team id/key argument, unlike most `list`
-  commands.
-- `roadmap` and `roadmap-to-project` are legacy read-only compatibility; use
-  `initiative*` for new planning.
-- `issue list --limit` defaults to 50; set it explicitly for deterministic output.
+- `target`, `doctor`, and `whoami` need auth. They fail closed without it. To prove that a
+  checkout runs with no credentials, use the offline smoke: `--version` and `usage`.
+- `target --json` reports `expected` and `resolved` with Go-capitalized keys (`OrgID`, `TeamKey`,
+  `TeamID`, `ProjectID`), not the snake_case that the other commands use. Compare the two field
+  by field to explain a mismatch.
+- A Target Mismatch is a hard stop. linctl has no bypass flag. `--org`, `--team`, `--team-id`,
+  and `--project` set the pinned target, and they do not relax the guard. Do not retry with
+  different auth.
+- `--body -` reads a comment body from stdin. `--body-file` reads it from a file. Use these
+  instead of inline multi-line markdown.
+- Keep `$prefix` unquoted when the value can be `go run ./cmd/linctl`, so the shell splits it
+  into separate arguments.
+- `sla-configuration list` takes a positional team id or team key, unlike most `list` commands.
+- `roadmap` and `roadmap-to-project` are legacy read-only compatibility. Use the `initiative`
+  commands for new planning.
+- `issue list --limit` defaults to 50. Set it explicitly for deterministic output.
 
-## Report Shape
+## Report shape
 
 ```markdown
 Known:
@@ -225,26 +225,26 @@ Known:
 - `linctl issue list --json --limit 5` returned parseable JSON.
 
 Changed:
-- Created `LIT-123` with prefix `linctl-it-<runid>`, then closed it.
+- Created `LIT-123` with the prefix `linctl-it-<runid>`, then closed it.
 
 Blocked:
-- Live write smoke not run: disposable OAuth auth missing.
+- The live write smoke did not run: the disposable OAuth auth is missing.
 ```
 
-## AGENTS.md Snippet
+## AGENTS.md block
 
 ```markdown
-## Linear via linctl
+## Linear through linctl
 
-- Use `linctl` for Linear issue/project/Cycle/ProjectMilestone work instead of Linear MCP, ad hoc API calls, or hand-written GraphQL.
-- Resolve the command with `command -v linctl`; inside the linctl checkout use `go run ./cmd/linctl`.
-- Run `linctl doctor --json` or `linctl target --json` before writes and stop on target mismatch.
+- Use `linctl` for Linear issue, project, Cycle, and ProjectMilestone work. Do not use Linear MCP, an ad hoc API call, or hand-written GraphQL.
+- Resolve the command with `command -v linctl`. Inside the linctl checkout, use `go run ./cmd/linctl`.
+- Run `linctl doctor --json` or `linctl target --json` before a write, and stop on a target mismatch.
 - Use `--json` for agent-readable output.
 - Use `linctl current --json` when the branch carries a Linear issue key.
-- Never print secrets; report OAuth material as `set` or `missing`.
-- Keep writes pinned to `.linctl.toml` `[target]` (scaffold with `linctl init`); do not add bypass flags.
-- Name test resources `linctl-it-<runid>` and close or archive them after verification.
-- For live smoke, prefer `go run github.com/go-task/task/v3/cmd/task@latest live-smoke`.
-- For browser auth smoke, use `go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke`.
-- If a Linear domain is unsupported by `linctl`, report that limit instead of calling Linear directly.
+- Never print a secret. Report OAuth material as `set` or `missing`.
+- Keep each write pinned to the `[target]` block of `.linctl.toml`. Create it with `linctl init`. Do not add a bypass flag.
+- Name each test resource `linctl-it-<runid>`, then close it or archive it after the check.
+- For the live smoke, run `go tool task live-smoke`.
+- For the browser auth smoke, run `go tool task browser-login-smoke`.
+- If `linctl` does not support a Linear domain, report that limit. Do not call Linear directly.
 ```

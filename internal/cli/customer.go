@@ -1,4 +1,3 @@
-//nolint:dupl // Minimal read-command glue is intentionally uniform across domains via addReadListGetCommand.
 package cli
 
 import (
@@ -7,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addCustomerCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -18,40 +16,15 @@ func addCustomerCommand(ctx context.Context, root *cobra.Command, options *rootO
 		LimitHelp: "maximum customers to return",
 		GetUse:    "get CUSTOMER_ID",
 		GetShort:  "Get one customer by id or slug",
-		LoadList:  loadCustomerList,
-		LoadGet:   loadCustomer,
+		LoadList:  clientList(client.ListCustomers),
+		LoadGet:   clientGet(client.GetCustomerByID),
 		WriteItem: writeCustomer,
 	})
 }
 
 func writeCustomer(command *cobra.Command, options *rootOptions, customer client.CustomerSummary) error {
-	return writeItem(command, options, customer, customer.ID,
-		func(command *cobra.Command, _ *rootOptions, customer client.CustomerSummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s %s [%s] needs %.0f",
-				customer.ID,
-				customer.Name,
-				customer.StatusName,
-				customer.ApproximateNeedCount,
-			)
-		})
-}
-
-func loadCustomerList(
-	ctx context.Context,
-	runtime commandRuntime,
-	_ []string,
-	limit int,
-) (client.CustomerList, []client.CustomerSummary, error) {
-	customers, err := client.ListCustomers(ctx, runtime.graphqlClient, limit)
-	return customers, customers.Customers, err
-}
-
-func loadCustomer(
-	ctx context.Context,
-	runtime commandRuntime,
-	id string,
-) (client.CustomerSummary, error) {
-	return client.GetCustomerByID(ctx, runtime.graphqlClient, id)
+	return writeItemLine(
+		command, options, customer, customer.ID,
+		"%s %s [%s] needs %.0f", customer.ID, customer.Name, customer.StatusName, customer.ApproximateNeedCount,
+	)
 }

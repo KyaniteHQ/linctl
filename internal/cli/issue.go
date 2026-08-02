@@ -87,17 +87,17 @@ func bindIssueListFlags(command *cobra.Command, limit *int, flags *issueListFlag
 	command.Flags().StringVar(&flags.labelID, "label", flags.labelID, "filter by Linear issue label id")
 	command.Flags().StringVar(&flags.cycleID, "cycle", flags.cycleID, "filter by Linear cycle id")
 	command.Flags().StringVar(
-		&flags.createdAfter, "created-after", flags.createdAfter, "filter by created-at date lower bound",
+		&flags.createdAfter, "created-after", flags.createdAfter, "filter by the earliest created-at date",
 	)
 	command.Flags().StringVar(&flags.createdSince, "created-since", flags.createdSince, "alias for --created-after")
 	command.Flags().StringVar(
-		&flags.createdBefore, "created-before", flags.createdBefore, "filter by created-at date upper bound",
+		&flags.createdBefore, "created-before", flags.createdBefore, "filter by the latest created-at date",
 	)
 	command.Flags().StringVar(
-		&flags.updatedAfter, "updated-after", flags.updatedAfter, "filter by updated-at date lower bound",
+		&flags.updatedAfter, "updated-after", flags.updatedAfter, "filter by the earliest updated-at date",
 	)
 	command.Flags().StringVar(
-		&flags.updatedBefore, "updated-before", flags.updatedBefore, "filter by updated-at date upper bound",
+		&flags.updatedBefore, "updated-before", flags.updatedBefore, "filter by the latest updated-at date",
 	)
 	command.Flags().BoolVar(
 		&flags.hasBlockers, "has-blockers", flags.hasBlockers, "filter to issues blocked by another issue",
@@ -295,25 +295,14 @@ func runIssueSearch(
 }
 
 func addIssueFigmaFileKeySearchCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "figma-file-key-search FILE_KEY",
-		Short: "Search issues linked to a Figma file key",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadIssueFigmaFileKeySearch,
-				writeIssue,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum issues to return")
-	root.AddCommand(preflightReadListCommand(command, loadIssueFigmaFileKeySearch))
+	addListCommand(ctx, root, options, listCommandSpec[client.IssueList, client.IssueSummary]{
+		Use:       "figma-file-key-search FILE_KEY",
+		Short:     "Search issues linked to a Figma file key",
+		LimitHelp: "issues",
+		Args:      cobra.ExactArgs(1),
+		Load:      loadIssueFigmaFileKeySearch,
+		WriteItem: writeIssue,
+	})
 }
 
 func loadIssueFigmaFileKeySearch(
@@ -321,16 +310,16 @@ func loadIssueFigmaFileKeySearch(
 	runtime commandRuntime,
 	args []string,
 	limit int,
-) (client.IssueList, []client.IssueSummary, error) {
+) (client.IssueList, error) {
 	issues, err := client.SearchIssuesByFigmaFileKey(ctx, runtime.graphqlClient, args[0], limit)
 
-	return issues, issues.Issues, err
+	return issues, err
 }
 
 func addIssuePriorityValuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "priority-values",
-		Short: "List issue priority values",
+		Short: "List the issue priority values",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
 			runtime, err := buildCommandRuntime(ctx, options)
@@ -378,11 +367,11 @@ func addIssueFilterSuggestionCommand(ctx context.Context, root *cobra.Command, o
 	}
 	command.Flags().StringVar(&teamID, "team-id", teamID, "optional team id for team-scoped issue views")
 	command.Flags().StringVar(&projectID, "project-id", projectID, "optional project id for project-scoped issue views")
-	root.AddCommand(command)
+	addCommandWithSafety(root, CommandSafetyRead, command)
 }
 
 func addIssueTitleSuggestionCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "title-suggestion REQUEST",
 		Short: "Suggest an issue title from customer request text",
 		Args:  cobra.ExactArgs(1),
@@ -404,7 +393,7 @@ func addIssueTitleSuggestionCommand(ctx context.Context, root *cobra.Command, op
 }
 
 func addIssueGetCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "get ISSUE_ID",
 		Short: "Get one issue by id or identifier",
 		Args:  cobra.ExactArgs(1),
@@ -443,8 +432,4 @@ func issueChildCommandBundleForIssue() issueChildCommandBundle {
 		StateHistory:      client.ListIssueStateHistory,
 		Subscribers:       client.ListIssueSubscribers,
 	}
-}
-
-func commentMetadataListItems(list client.IssueCommentMetadataList) []client.CommentMetadataSummary {
-	return list.Comments
 }

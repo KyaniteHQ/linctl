@@ -37,10 +37,10 @@ func PrepareFileUpload(
 	size int,
 ) (FileUpload, error) {
 	if filename == "" {
-		return FileUpload{}, fmt.Errorf("%w: filename is required", ErrWriteInvalid)
+		return FileUpload{}, requiredFieldError("filename")
 	}
 	if contentType == "" {
-		return FileUpload{}, fmt.Errorf("%w: content type is required", ErrWriteInvalid)
+		return FileUpload{}, requiredFieldError("content type")
 	}
 	if size <= 0 {
 		return FileUpload{}, fmt.Errorf("%w: file size must be positive", ErrWriteInvalid)

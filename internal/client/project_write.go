@@ -33,7 +33,7 @@ func CreateProject(
 	request ProjectCreateRequest,
 ) (ProjectSummary, error) {
 	if request.Name == "" {
-		return ProjectSummary{}, fmt.Errorf("%w: name is required", ErrWriteInvalid)
+		return ProjectSummary{}, requiredFieldError("name")
 	}
 
 	guard, err := newGuardedClient(ctx, graphqlClient, expected)
@@ -133,10 +133,10 @@ func (guard *guardedClient) archiveProject(ctx context.Context, projectID string
 
 func validateProjectUpdateRequest(request ProjectUpdateRequest) error {
 	if request.ID == "" {
-		return fmt.Errorf("%w: project id is required", ErrWriteInvalid)
+		return requiredFieldError("project id")
 	}
 	if request.Name == "" && request.Description == "" && request.Content == "" {
-		return fmt.Errorf("%w: name, description, or content is required", ErrWriteInvalid)
+		return requiredFieldError("name, description, or content")
 	}
 
 	return nil

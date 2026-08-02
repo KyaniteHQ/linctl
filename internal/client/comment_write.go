@@ -26,10 +26,10 @@ func UpdateComment(
 	request CommentUpdateRequest,
 ) (CommentSummary, error) {
 	if request.ID == "" {
-		return CommentSummary{}, fmt.Errorf("%w: comment id is required", ErrWriteInvalid)
+		return CommentSummary{}, requiredFieldError("comment id")
 	}
 	if request.Body == "" {
-		return CommentSummary{}, fmt.Errorf("%w: body is required", ErrWriteInvalid)
+		return CommentSummary{}, requiredFieldError("body")
 	}
 
 	guard, err := newGuardedClient(ctx, graphqlClient, expected)
@@ -68,7 +68,7 @@ func DeleteComment(
 	commentID string,
 ) (string, error) {
 	if commentID == "" {
-		return "", fmt.Errorf("%w: comment id is required", ErrWriteInvalid)
+		return "", requiredFieldError("comment id")
 	}
 
 	guard, err := newGuardedClient(ctx, graphqlClient, expected)
@@ -104,7 +104,7 @@ func ResolveComment(
 	commentID string,
 ) (CommentSummary, error) {
 	if commentID == "" {
-		return CommentSummary{}, fmt.Errorf("%w: comment id is required", ErrWriteInvalid)
+		return CommentSummary{}, requiredFieldError("comment id")
 	}
 
 	guard, err := newGuardedClient(ctx, graphqlClient, expected)
@@ -140,7 +140,7 @@ func UnresolveComment(
 	commentID string,
 ) (CommentSummary, error) {
 	if commentID == "" {
-		return CommentSummary{}, fmt.Errorf("%w: comment id is required", ErrWriteInvalid)
+		return CommentSummary{}, requiredFieldError("comment id")
 	}
 
 	guard, err := newGuardedClient(ctx, graphqlClient, expected)

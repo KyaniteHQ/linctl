@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addIssueToReleaseCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -27,16 +26,10 @@ func addIssueToReleaseCommand(ctx context.Context, root *cobra.Command, options 
 }
 
 func writeIssueToRelease(command *cobra.Command, options *rootOptions, association client.IssueToReleaseSummary) error {
-	return writeItem(command, options, association, association.ID,
-		func(command *cobra.Command, _ *rootOptions, association client.IssueToReleaseSummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s issue %s -> release %s",
-				association.ID,
-				association.IssueID,
-				association.ReleaseID,
-			)
-		})
+	return writeItemLine(
+		command, options, association, association.ID,
+		"%s issue %s -> release %s", association.ID, association.IssueID, association.ReleaseID,
+	)
 }
 
 func loadIssueToReleaseList(
@@ -44,9 +37,9 @@ func loadIssueToReleaseList(
 	runtime commandRuntime,
 	_ []string,
 	limit int,
-) (client.IssueToReleaseList, []client.IssueToReleaseSummary, error) {
+) (client.IssueToReleaseList, error) {
 	associations, err := client.ListIssueToReleases(ctx, runtime.graphqlClient, limit)
-	return associations, associations.Associations, err
+	return associations, err
 }
 
 func loadIssueToRelease(

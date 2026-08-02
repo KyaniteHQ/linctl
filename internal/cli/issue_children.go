@@ -57,7 +57,7 @@ func addIssueChildCommands(
 ) {
 	addIssueChildListCommand(
 		ctx, root, options, "attachments", bundle.Argument, bundle.Text.Attachments, "attachments",
-		bundle.Attachments, attachmentListItems, writeAttachment,
+		bundle.Attachments, writeAttachment,
 	)
 	addIssueChildValueCommand(
 		ctx, root, options, "bot-actor", bundle.Argument, bundle.Text.BotActor,
@@ -65,43 +65,43 @@ func addIssueChildCommands(
 	)
 	addIssueChildListCommand(
 		ctx, root, options, "children", bundle.Argument, bundle.Text.Children, "child issues",
-		bundle.Children, issueListItems, writeIssue,
+		bundle.Children, writeIssue,
 	)
 	addIssueChildListCommand(
 		ctx, root, options, "documents", bundle.Argument, bundle.Text.Documents, "documents",
-		bundle.Documents, documentListItems, writeDocument,
+		bundle.Documents, writeDocument,
 	)
 	addIssueChildListCommand(
 		ctx, root, options, "former-attachments", bundle.Argument, bundle.Text.FormerAttachments, "former attachments",
-		bundle.FormerAttachments, attachmentListItems, writeAttachment,
+		bundle.FormerAttachments, writeAttachment,
 	)
 	addIssueChildListCommand(
 		ctx, root, options, "former-needs", bundle.Argument, bundle.Text.FormerNeeds, "former customer needs",
-		bundle.FormerNeeds, customerNeedMetadataListItems, writeCustomerNeedMetadata,
+		bundle.FormerNeeds, writeCustomerNeedMetadata,
 	)
 	addIssueChildListCommand(
 		ctx, root, options, "history", bundle.Argument, bundle.Text.History, "history entries",
-		bundle.History, issueHistoryListItems, writeIssueHistory,
+		bundle.History, writeIssueHistory,
 	)
 	addIssueChildListCommand(
 		ctx, root, options, "inverse-relations", bundle.Argument, bundle.Text.InverseRelations, "inverse relations",
-		bundle.InverseRelations, issueRelationListItems, writeIssueRelation,
+		bundle.InverseRelations, writeIssueRelation,
 	)
 	addIssueChildListCommand(
 		ctx, root, options, "labels", bundle.Argument, bundle.Text.Labels, "labels",
-		bundle.Labels, labelListItems, writeLabel,
+		bundle.Labels, writeLabel,
 	)
 	addIssueChildListCommand(
 		ctx, root, options, "needs", bundle.Argument, bundle.Text.Needs, "customer needs",
-		bundle.Needs, customerNeedMetadataListItems, writeCustomerNeedMetadata,
+		bundle.Needs, writeCustomerNeedMetadata,
 	)
 	addIssueChildListCommand(
 		ctx, root, options, "relations", bundle.Argument, bundle.Text.Relations, "relations",
-		bundle.Relations, issueRelationListItems, writeIssueRelation,
+		bundle.Relations, writeIssueRelation,
 	)
 	addIssueChildListCommand(
 		ctx, root, options, "releases", bundle.Argument, bundle.Text.Releases, "releases",
-		bundle.Releases, releaseListItems, writeRelease,
+		bundle.Releases, writeRelease,
 	)
 	addIssueChildValueCommand(
 		ctx, root, options, "shared-access", bundle.Argument, bundle.Text.SharedAccess,
@@ -109,11 +109,11 @@ func addIssueChildCommands(
 	)
 	addIssueChildListCommand(
 		ctx, root, options, "state-history", bundle.Argument, bundle.Text.StateHistory, "state spans",
-		bundle.StateHistory, issueStateHistoryListItems, writeIssueStateSpan,
+		bundle.StateHistory, writeIssueStateSpan,
 	)
 	addIssueChildListCommand(
 		ctx, root, options, "subscribers", bundle.Argument, bundle.Text.Subscribers, "subscribers",
-		bundle.Subscribers, userListItems, writeUser,
+		bundle.Subscribers, writeUser,
 	)
 }
 
@@ -126,10 +126,9 @@ func addIssueChildListCommand[Page any, Item any](
 	short string,
 	limitHelp string,
 	fetch childListFetcher[Page],
-	items func(Page) []Item,
 	writeItem readListItemWriter[Item],
 ) {
-	addChildListCommand(ctx, root, options, name+" "+argument, short, limitHelp, fetch, items, writeItem)
+	addChildListCommand(ctx, root, options, name+" "+argument, short, limitHelp, fetch, writeItem)
 }
 
 func addIssueChildValueCommand[Value any](
@@ -190,46 +189,4 @@ func scopedIssueChildCommandText(scope string) issueChildCommandText {
 		StateHistory:      "List workflow state history for " + scope,
 		Subscribers:       "List subscribers for " + scope,
 	}
-}
-
-func attachmentListItems(list client.AttachmentList) []client.AttachmentSummary {
-	return list.Attachments
-}
-
-func issueListItems(list client.IssueList) []client.IssueSummary {
-	return list.Issues
-}
-
-func documentListItems(list client.DocumentList) []client.DocumentSummary {
-	return list.Documents
-}
-
-func customerNeedMetadataListItems(
-	list client.IssueCustomerNeedMetadataList,
-) []client.CustomerNeedMetadataSummary {
-	return list.Needs
-}
-
-func issueHistoryListItems(list client.IssueHistoryList) []client.IssueHistorySummary {
-	return list.History
-}
-
-func issueRelationListItems(list client.IssueRelationList) []client.IssueRelationSummary {
-	return list.Relations
-}
-
-func labelListItems(list client.LabelList) []client.LabelSummary {
-	return list.Labels
-}
-
-func releaseListItems(list client.ReleaseList) []client.ReleaseSummary {
-	return list.Releases
-}
-
-func issueStateHistoryListItems(list client.IssueStateHistoryList) []client.IssueStateSpanSummary {
-	return list.Spans
-}
-
-func userListItems(list client.UserList) []client.UserSummary {
-	return list.Users
 }

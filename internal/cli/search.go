@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addSearchCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -18,96 +17,60 @@ func addSearchCommand(ctx context.Context, root *cobra.Command, options *rootOpt
 }
 
 func addSearchDocumentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 20
-	command := &cobra.Command{
-		Use:   "documents QUERY",
-		Short: "Search Linear documents by text",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadSearchDocuments,
-				writeSearchDocument,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum document search results to return")
-	root.AddCommand(preflightReadListCommand(command, loadSearchDocuments))
+	addListCommand(ctx, root, options, listCommandSpec[client.SearchDocumentList, client.SearchDocumentSummary]{
+		Use:       "documents QUERY",
+		Short:     "Search Linear documents by text",
+		LimitHelp: "document search results",
+		Limit:     20,
+		Args:      cobra.ExactArgs(1),
+		Load:      loadSearchDocuments,
+		WriteItem: writeSearchDocument,
+	})
 }
 
 func addSearchIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 20
-	command := &cobra.Command{
-		Use:   "issues QUERY",
-		Short: "Search Linear issues by text",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadSearchIssues,
-				writeSearchIssue,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum issue search results to return")
-	root.AddCommand(preflightReadListCommand(command, loadSearchIssues))
+	addListCommand(ctx, root, options, listCommandSpec[client.SearchIssueList, client.SearchIssueSummary]{
+		Use:       "issues QUERY",
+		Short:     "Search Linear issues by text",
+		LimitHelp: "issue search results",
+		Limit:     20,
+		Args:      cobra.ExactArgs(1),
+		Load:      loadSearchIssues,
+		WriteItem: writeSearchIssue,
+	})
 }
 
 func addSearchProjectsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 20
-	command := &cobra.Command{
-		Use:   "projects QUERY",
-		Short: "Search Linear projects by text",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadSearchProjects,
-				writeSearchProject,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum project search results to return")
-	root.AddCommand(preflightReadListCommand(command, loadSearchProjects))
+	addListCommand(ctx, root, options, listCommandSpec[client.SearchProjectList, client.SearchProjectSummary]{
+		Use:       "projects QUERY",
+		Short:     "Search Linear projects by text",
+		LimitHelp: "project search results",
+		Limit:     20,
+		Args:      cobra.ExactArgs(1),
+		Load:      loadSearchProjects,
+		WriteItem: writeSearchProject,
+	})
 }
 
 func writeSearchDocument(command *cobra.Command, options *rootOptions, document client.SearchDocumentSummary) error {
-	return writeItem(command, options, document, document.ID,
-		func(command *cobra.Command, _ *rootOptions, document client.SearchDocumentSummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s %s [%s]",
-				document.ID,
-				document.Title,
-				emptyDash(document.ParentType),
-			)
-		})
+	return writeItemLine(
+		command, options, document, document.ID,
+		"%s %s [%s]", document.ID, document.Title, emptyDash(document.ParentType),
+	)
 }
 
 func writeSearchIssue(command *cobra.Command, options *rootOptions, issue client.SearchIssueSummary) error {
-	return writeItem(command, options, issue, issue.ID,
-		func(command *cobra.Command, _ *rootOptions, issue client.SearchIssueSummary) error {
-			return render.WriteLine(command.OutOrStdout(), "%s %s [%s]", issue.Identifier, issue.Title, issue.StateName)
-		})
+	return writeItemLine(
+		command, options, issue, issue.ID,
+		"%s %s [%s]", issue.Identifier, issue.Title, issue.StateName,
+	)
 }
 
 func writeSearchProject(command *cobra.Command, options *rootOptions, project client.SearchProjectSummary) error {
-	return writeItem(command, options, project, project.ID,
-		func(command *cobra.Command, _ *rootOptions, project client.SearchProjectSummary) error {
-			return render.WriteLine(command.OutOrStdout(), "%s %s [%s]", project.ID, project.Name, project.Status.Name)
-		})
+	return writeItemLine(
+		command, options, project, project.ID,
+		"%s %s [%s]", project.ID, project.Name, project.Status.Name,
+	)
 }
 
 func loadSearchDocuments(
@@ -115,9 +78,9 @@ func loadSearchDocuments(
 	runtime commandRuntime,
 	args []string,
 	limit int,
-) (client.SearchDocumentList, []client.SearchDocumentSummary, error) {
+) (client.SearchDocumentList, error) {
 	page, err := client.SearchDocuments(ctx, runtime.graphqlClient, args[0], limit)
-	return page, page.Documents, err
+	return page, err
 }
 
 func loadSearchIssues(
@@ -125,9 +88,9 @@ func loadSearchIssues(
 	runtime commandRuntime,
 	args []string,
 	limit int,
-) (client.SearchIssueList, []client.SearchIssueSummary, error) {
+) (client.SearchIssueList, error) {
 	page, err := client.SearchIssues(ctx, runtime.graphqlClient, args[0], limit)
-	return page, page.Issues, err
+	return page, err
 }
 
 func loadSearchProjects(
@@ -135,7 +98,7 @@ func loadSearchProjects(
 	runtime commandRuntime,
 	args []string,
 	limit int,
-) (client.SearchProjectList, []client.SearchProjectSummary, error) {
+) (client.SearchProjectList, error) {
 	page, err := client.SearchProjects(ctx, runtime.graphqlClient, args[0], limit)
-	return page, page.Projects, err
+	return page, err
 }

@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addLabelCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -23,17 +22,14 @@ func addLabelCommand(ctx context.Context, root *cobra.Command, options *rootOpti
 }
 
 func addLabelListCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "list",
-		Short: "List visible labels",
-		Args:  cobra.NoArgs,
-		RunE: func(command *cobra.Command, _ []string) error {
-			return runReadListCommand(ctx, command, nil, options, limit, loadLabelList, writeLabel)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum labels to return")
-	root.AddCommand(preflightReadListCommand(command, loadLabelList))
+	addListCommand(ctx, root, options, listCommandSpec[client.LabelList, client.LabelSummary]{
+		Use:       "list",
+		Short:     "List visible labels",
+		LimitHelp: "labels",
+		Args:      cobra.NoArgs,
+		Load:      loadLabelList,
+		WriteItem: writeLabel,
+	})
 }
 
 func addLabelGetCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -48,54 +44,33 @@ func addLabelGetCommand(ctx context.Context, root *cobra.Command, options *rootO
 }
 
 func addLabelChildrenCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "children LABEL_ID",
-		Short: "List child labels under one label group",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadLabelChildren,
-				writeLabel,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum labels to return")
-	root.AddCommand(preflightReadListCommand(command, loadLabelChildren))
+	addChildListCommand(
+		ctx,
+		root,
+		options,
+		"children LABEL_ID",
+		"List child labels under one label group",
+		"labels",
+		client.ListLabelChildren,
+		writeLabel,
+	)
 }
 
 func addLabelIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "issues LABEL_ID",
-		Short: "List Issues associated with one label",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadLabelIssues,
-				writeIssue,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum Issues to return")
-	root.AddCommand(preflightReadListCommand(command, loadLabelIssues))
+	addChildListCommand(
+		ctx,
+		root,
+		options,
+		"issues LABEL_ID",
+		"List Issues associated with one label",
+		"Issues",
+		client.ListLabelIssues,
+		writeIssue,
+	)
 }
 
 func writeLabel(command *cobra.Command, options *rootOptions, label client.LabelSummary) error {
-	return writeItem(command, options, label, label.ID,
-		func(command *cobra.Command, _ *rootOptions, label client.LabelSummary) error {
-			return render.WriteLine(command.OutOrStdout(), "%s %s %s", label.ID, label.Name, label.Color)
-		})
+	return writeItemLine(command, options, label, label.ID, "%s %s %s", label.ID, label.Name, label.Color)
 }
 
 func loadLabelList(
@@ -103,27 +78,7 @@ func loadLabelList(
 	runtime commandRuntime,
 	_ []string,
 	limit int,
-) (client.LabelList, []client.LabelSummary, error) {
+) (client.LabelList, error) {
 	labels, err := client.ListLabels(ctx, runtime.graphqlClient, limit)
-	return labels, labels.Labels, err
-}
-
-func loadLabelChildren(
-	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
-	limit int,
-) (client.LabelChildList, []client.LabelSummary, error) {
-	labels, err := client.ListLabelChildren(ctx, runtime.graphqlClient, args[0], limit)
-	return labels, labels.Labels, err
-}
-
-func loadLabelIssues(
-	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
-	limit int,
-) (client.LabelIssueList, []client.IssueSummary, error) {
-	issues, err := client.ListLabelIssues(ctx, runtime.graphqlClient, args[0], limit)
-	return issues, issues.Issues, err
+	return labels, err
 }

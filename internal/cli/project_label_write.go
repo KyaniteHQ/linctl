@@ -15,7 +15,7 @@ func addProjectLabelCreateCommand(ctx context.Context, root *cobra.Command, opti
 	request := client.ProjectLabelCreateRequest{}
 	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.ProjectLabelSummary]{
 		Use:   "create",
-		Short: "Create a project label; requires --org-wide (affects every team and project in the organization)",
+		Short: "Create a project label with --org-wide, which changes every team and project in the organization",
 		Args:  cobra.NoArgs,
 		Configure: func(command *cobra.Command) {
 			command.Flags().StringVar(&request.Name, "name", "", "project label name")
@@ -36,7 +36,7 @@ func addProjectLabelUpdateCommand(ctx context.Context, root *cobra.Command, opti
 	request := client.ProjectLabelUpdateRequest{}
 	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.ProjectLabelSummary]{
 		Use:   "update PROJECT_LABEL_ID",
-		Short: "Update a project label; requires --org-wide (affects every team and project in the organization)",
+		Short: "Update a project label with --org-wide, which changes every team and project in the organization",
 		Args:  cobra.ExactArgs(1),
 		Configure: func(command *cobra.Command) {
 			command.Flags().StringVar(&request.Name, "name", "", "new project label name")
@@ -59,7 +59,7 @@ func addProjectLabelRetireCommand(ctx context.Context, root *cobra.Command, opti
 	orgWide := false
 	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.ProjectLabelSummary]{
 		Use:   "retire PROJECT_LABEL_ID",
-		Short: "Retire a project label; requires --org-wide (affects every team and project in the organization)",
+		Short: "Retire a project label with --org-wide, which changes every team and project in the organization",
 		Args:  cobra.ExactArgs(1),
 		Configure: func(command *cobra.Command) {
 			command.Flags().BoolVar(&orgWide, "org-wide", false, orgWideProjectLabelHelp)
@@ -77,7 +77,7 @@ func addProjectLabelRestoreCommand(ctx context.Context, root *cobra.Command, opt
 	orgWide := false
 	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.ProjectLabelSummary]{
 		Use:   "restore PROJECT_LABEL_ID",
-		Short: "Restore a retired project label; requires --org-wide (affects every team and project)",
+		Short: "Restore a retired project label with --org-wide, which changes every team and project",
 		Args:  cobra.ExactArgs(1),
 		Configure: func(command *cobra.Command) {
 			command.Flags().BoolVar(&orgWide, "org-wide", false, orgWideProjectLabelHelp)

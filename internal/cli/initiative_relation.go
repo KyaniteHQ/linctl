@@ -1,4 +1,3 @@
-//nolint:dupl // Minimal read-command glue is intentionally uniform across domains via addReadListGetCommand.
 package cli
 
 import (
@@ -7,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addInitiativeRelationCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -22,8 +20,8 @@ func addInitiativeRelationCommand(ctx context.Context, root *cobra.Command, opti
 			LimitHelp: "maximum initiative relations to return",
 			GetUse:    "get INITIATIVE_RELATION_ID",
 			GetShort:  "Get one initiative relation by id",
-			LoadList:  loadInitiativeRelationList,
-			LoadGet:   loadInitiativeRelation,
+			LoadList:  clientList(client.ListInitiativeRelations),
+			LoadGet:   clientGet(client.GetInitiativeRelationByID),
 			WriteItem: writeInitiativeRelation,
 		},
 	)
@@ -34,33 +32,12 @@ func writeInitiativeRelation(
 	options *rootOptions,
 	relation client.InitiativeRelationSummary,
 ) error {
-	return writeItem(command, options, relation, relation.ID,
-		func(command *cobra.Command, _ *rootOptions, relation client.InitiativeRelationSummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s %s -> %s order %.2f",
-				relation.ID,
-				relation.ParentInitiativeName,
-				relation.RelatedInitiativeName,
-				relation.SortOrder,
-			)
-		})
-}
-
-func loadInitiativeRelationList(
-	ctx context.Context,
-	runtime commandRuntime,
-	_ []string,
-	limit int,
-) (client.InitiativeRelationList, []client.InitiativeRelationSummary, error) {
-	relations, err := client.ListInitiativeRelations(ctx, runtime.graphqlClient, limit)
-	return relations, relations.Relations, err
-}
-
-func loadInitiativeRelation(
-	ctx context.Context,
-	runtime commandRuntime,
-	id string,
-) (client.InitiativeRelationSummary, error) {
-	return client.GetInitiativeRelationByID(ctx, runtime.graphqlClient, id)
+	return writeItemLine(
+		command, options, relation, relation.ID,
+		"%s %s -> %s order %.2f",
+		relation.ID,
+		relation.ParentInitiativeName,
+		relation.RelatedInitiativeName,
+		relation.SortOrder,
+	)
 }

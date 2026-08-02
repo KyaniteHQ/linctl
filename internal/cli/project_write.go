@@ -45,7 +45,10 @@ func addProjectUpdateCommand(ctx context.Context, root *cobra.Command, options *
 			command.Flags().StringVar(&request.Name, "name", "", "new project name")
 			command.Flags().StringVar(&request.Description, "description", "", "new project description")
 			command.Flags().StringVar(&request.Content, "content", "", "new project content as markdown")
-			command.Flags().StringVar(&contentFile, "content-file", "", "read new project content markdown from a file")
+			command.Flags().StringVar(
+				&contentFile, "content-file", "",
+				"read the new project content markdown from a file",
+			)
 		},
 		Run: func(
 			ctx context.Context, command *cobra.Command, runtime commandRuntime, args []string,
@@ -79,7 +82,7 @@ func addProjectAddTeamCommand(ctx context.Context, root *cobra.Command, options 
 	request := client.ProjectAddTeamRequest{}
 	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.ProjectSummary]{
 		Use:   "add-team PROJECT_ID",
-		Short: "Attach a team to a project without dropping existing teams",
+		Short: "Attach a team to a project and keep the teams already attached",
 		Args:  cobra.ExactArgs(1),
 		Configure: func(command *cobra.Command) {
 			command.Flags().StringVar(&request.TeamKey, "to-team", "", "team key to attach")

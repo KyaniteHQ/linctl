@@ -13,7 +13,7 @@ import (
 func addIssueCurrentCommands(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addCommandWithSafety(root, CommandSafetyLocal, &cobra.Command{
 		Use:   "id",
-		Short: "Print the Current Issue identifier",
+		Short: "Show the identifier of the Current Issue",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
 			identifier, err := gitctx.CurrentIssueIdentifierForTeam(ctx, ".", pinnedTeamKeyHint(ctx, options))
@@ -26,7 +26,7 @@ func addIssueCurrentCommands(ctx context.Context, root *cobra.Command, options *
 	})
 	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "title [ISSUE_ID]",
-		Short: "Print an issue title",
+		Short: "Show the title of an issue",
 		Args:  cobra.MaximumNArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
 			issue, err := resolveIssueArgument(ctx, options, args)
@@ -39,7 +39,7 @@ func addIssueCurrentCommands(ctx context.Context, root *cobra.Command, options *
 	})
 	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "url [ISSUE_ID]",
-		Short: "Print an issue URL",
+		Short: "Show the URL of an issue",
 		Args:  cobra.MaximumNArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
 			issue, err := resolveIssueArgument(ctx, options, args)
@@ -52,7 +52,7 @@ func addIssueCurrentCommands(ctx context.Context, root *cobra.Command, options *
 	})
 	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "branch ISSUE_ID",
-		Short: "Print the issue branch name",
+		Short: "Show the branch name of an issue",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
 			issue, err := resolveIssueArgument(ctx, options, args)

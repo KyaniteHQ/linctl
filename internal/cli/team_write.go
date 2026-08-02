@@ -15,14 +15,14 @@ func addTeamCreateCommand(ctx context.Context, root *cobra.Command, options *roo
 	request := client.TeamCreateRequest{}
 	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.TeamSummary]{
 		Use:   "create",
-		Short: "Create a team; requires --org-wide (the new team is outside the pinned team by definition)",
+		Short: "Create a team with --org-wide, because a new team is always outside the pinned team",
 		Args:  cobra.NoArgs,
 		Configure: func(command *cobra.Command) {
 			command.Flags().StringVar(&request.Name, "name", "", "team name")
 			command.Flags().StringVar(&request.Key, "key", "",
-				"team key (Linear derives one from the name when omitted)")
+				"team key, which Linear derives from the name when you do not set it")
 			command.Flags().StringVar(&request.Description, "description", "", "team description")
-			command.Flags().BoolVar(&request.Private, "private", false, "create the team private")
+			command.Flags().BoolVar(&request.Private, "private", false, "create the team as a private team")
 			command.Flags().BoolVar(&request.OrgWide, "org-wide", false, orgWideTeamHelp)
 		},
 		Run: func(

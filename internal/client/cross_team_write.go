@@ -43,10 +43,10 @@ func AddProjectTeam(
 	request ProjectAddTeamRequest,
 ) (ProjectSummary, error) {
 	if request.ProjectID == "" {
-		return ProjectSummary{}, fmt.Errorf("%w: project id is required", ErrWriteInvalid)
+		return ProjectSummary{}, requiredFieldError("project id")
 	}
 	if request.TeamID == "" && request.TeamKey == "" {
-		return ProjectSummary{}, fmt.Errorf("%w: --to-team or --to-team-id is required", ErrWriteInvalid)
+		return ProjectSummary{}, requiredFieldError("--to-team or --to-team-id")
 	}
 
 	guard, err := newGuardedClient(ctx, graphqlClient, expected)
@@ -125,10 +125,10 @@ func MoveIssueTeam(
 	request IssueMoveTeamRequest,
 ) (IssueSummary, error) {
 	if request.IssueID == "" {
-		return IssueSummary{}, fmt.Errorf("%w: issue id is required", ErrWriteInvalid)
+		return IssueSummary{}, requiredFieldError("issue id")
 	}
 	if request.TeamID == "" && request.TeamKey == "" {
-		return IssueSummary{}, fmt.Errorf("%w: --to-team or --to-team-id is required", ErrWriteInvalid)
+		return IssueSummary{}, requiredFieldError("--to-team or --to-team-id")
 	}
 
 	guard, err := newGuardedClient(ctx, graphqlClient, expected)

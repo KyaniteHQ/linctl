@@ -141,62 +141,55 @@ func (client *Client) RevokeToken(ctx context.Context, request RevocationRequest
 		form.Set("token_type_hint", request.TokenTypeHint)
 	}
 
+	_, err := client.postForm(ctx, client.revocationEndpoint, form, "revoke")
+
+	return err
+}
+
+// postForm posts a form-encoded body to one OAuth endpoint and returns the
+// response bytes. label names the step in a plumbing failure. A non-2xx status
+// becomes a token endpoint error keyed by the form's grant type, which is
+// absent on the revocation endpoint and maps to the same reauth-required code.
+func (client *Client) postForm(
+	ctx context.Context,
+	endpoint string,
+	form url.Values,
+	label string,
+) ([]byte, error) {
 	httpRequest, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodPost,
-		client.revocationEndpoint,
+		endpoint,
 		strings.NewReader(form.Encode()),
 	)
 	if err != nil {
-		return fmt.Errorf("create oauth revoke request: %w", err)
+		return nil, fmt.Errorf("create oauth %s request: %w", label, err)
 	}
 	httpRequest.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	httpResponse, err := client.httpClient.Do(httpRequest)
 	if err != nil {
-		return fmt.Errorf("request oauth revoke: %w", err)
+		return nil, fmt.Errorf("request oauth %s: %w", label, err)
 	}
 	body, readErr := io.ReadAll(io.LimitReader(httpResponse.Body, maxTokenResponseBytes))
 	closeErr := httpResponse.Body.Close()
 	if readErr != nil {
-		return fmt.Errorf("read oauth revoke response: %w", readErr)
+		return nil, fmt.Errorf("read oauth %s response: %w", label, readErr)
 	}
 	if closeErr != nil {
-		return fmt.Errorf("close oauth revoke response: %w", closeErr)
+		return nil, fmt.Errorf("close oauth %s response: %w", label, closeErr)
 	}
 	if httpResponse.StatusCode < http.StatusOK || httpResponse.StatusCode >= http.StatusMultipleChoices {
-		return tokenEndpointError("revocation", httpResponse.StatusCode, body)
+		return nil, tokenEndpointError(form.Get("grant_type"), httpResponse.StatusCode, body)
 	}
 
-	return nil
+	return body, nil
 }
 
 func (client *Client) exchange(ctx context.Context, form url.Values) (auth.TokenState, error) {
-	httpRequest, err := http.NewRequestWithContext(
-		ctx,
-		http.MethodPost,
-		client.endpoint,
-		strings.NewReader(form.Encode()),
-	)
+	body, err := client.postForm(ctx, client.endpoint, form, "token")
 	if err != nil {
-		return auth.TokenState{}, fmt.Errorf("create oauth token request: %w", err)
-	}
-	httpRequest.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-	httpResponse, err := client.httpClient.Do(httpRequest)
-	if err != nil {
-		return auth.TokenState{}, fmt.Errorf("request oauth token: %w", err)
-	}
-	body, readErr := io.ReadAll(io.LimitReader(httpResponse.Body, maxTokenResponseBytes))
-	closeErr := httpResponse.Body.Close()
-	if readErr != nil {
-		return auth.TokenState{}, fmt.Errorf("read oauth token response: %w", readErr)
-	}
-	if closeErr != nil {
-		return auth.TokenState{}, fmt.Errorf("close oauth token response: %w", closeErr)
-	}
-	if httpResponse.StatusCode < http.StatusOK || httpResponse.StatusCode >= http.StatusMultipleChoices {
-		return auth.TokenState{}, tokenEndpointError(form.Get("grant_type"), httpResponse.StatusCode, body)
+		return auth.TokenState{}, err
 	}
 
 	var response tokenEndpointResponse

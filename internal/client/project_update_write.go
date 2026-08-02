@@ -27,10 +27,10 @@ func CreateProjectUpdate(
 	request ProjectUpdateCreateRequest,
 ) (ProjectUpdateSummary, error) {
 	if request.ProjectID == "" {
-		return ProjectUpdateSummary{}, fmt.Errorf("%w: project id is required", ErrWriteInvalid)
+		return ProjectUpdateSummary{}, requiredFieldError("project id")
 	}
 	if request.Body == "" && request.Health == "" {
-		return ProjectUpdateSummary{}, fmt.Errorf("%w: body or health is required", ErrWriteInvalid)
+		return ProjectUpdateSummary{}, requiredFieldError("body or health")
 	}
 
 	guard, err := newGuardedClient(ctx, graphqlClient, expected)
@@ -57,8 +57,8 @@ func (guard *guardedClient) createProjectUpdate(
 	if err != nil {
 		return ProjectUpdateSummary{}, fmt.Errorf("create project update: %w", err)
 	}
-	if !created.ProjectUpdateCreate.Success {
-		return ProjectUpdateSummary{}, fmt.Errorf("%w: projectUpdateCreate returned no update", ErrMutationFailed)
+	if err := mutationSuccess(created.ProjectUpdateCreate.Success, "projectUpdateCreate"); err != nil {
+		return ProjectUpdateSummary{}, err
 	}
 
 	return projectUpdateSummary(created.ProjectUpdateCreate.ProjectUpdate.TopLevelProjectUpdateSummaryFields), nil

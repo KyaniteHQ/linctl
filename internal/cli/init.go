@@ -47,7 +47,7 @@ func addInitCommand(ctx context.Context, root *cobra.Command, options *rootOptio
 	request := initRequest{}
 	command := &cobra.Command{
 		Use:   "init",
-		Short: "Scaffold a target-only .linctl.toml pin from the active credential",
+		Short: "Create a target-only .linctl.toml pin from the active credential",
 		Long: "Write .linctl.toml in the current working directory from the active " +
 			"OAuth credential. The file contains only [target] org_id, team_key, " +
 			"team_id, and optional project_id. Never writes auth material. Refuses " +

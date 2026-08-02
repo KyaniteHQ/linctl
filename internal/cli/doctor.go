@@ -29,7 +29,7 @@ type doctorTargetReport struct {
 }
 
 func addDoctorCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "doctor",
 		Short: "Check linctl config, token, and target health",
 		Args:  cobra.NoArgs,

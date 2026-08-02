@@ -1,4 +1,3 @@
-//nolint:dupl // Minimal read-command glue is intentionally uniform across domains via addReadListGetCommand.
 package cli
 
 import (
@@ -7,51 +6,30 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addAgentSessionCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addReadListGetCommand(ctx, root, options, readListGetSpec[client.AgentSessionList, client.AgentSessionSummary]{
-		Use:       "agent-session",
-		Short:     "Read Linear AgentSessions",
-		ListShort: "List Linear AgentSessions",
-		LimitHelp: "maximum AgentSessions to return",
-		GetUse:    "get AGENT_SESSION_ID",
-		GetShort:  "Get one AgentSession by id",
-		LoadList:  loadAgentSessionList,
-		LoadGet:   loadAgentSession,
-		WriteItem: writeAgentSession,
-	})
+	addReadListGetCommand(
+		ctx,
+		root,
+		options,
+		readListGetSpec[client.AgentSessionList, client.AgentSessionSummary]{
+			Use:       "agent-session",
+			Short:     "Read Linear AgentSessions",
+			ListShort: "List Linear AgentSessions",
+			LimitHelp: "maximum AgentSessions to return",
+			GetUse:    "get AGENT_SESSION_ID",
+			GetShort:  "Get one AgentSession by id",
+			LoadList:  clientList(client.ListAgentSessions),
+			LoadGet:   clientGet(client.GetAgentSessionByID),
+			WriteItem: writeAgentSession,
+		},
+	)
 }
 
 func writeAgentSession(command *cobra.Command, options *rootOptions, session client.AgentSessionSummary) error {
-	return writeItem(command, options, session, session.ID,
-		func(command *cobra.Command, _ *rootOptions, session client.AgentSessionSummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s %s [%s] %s",
-				session.ID,
-				session.SlugID,
-				session.Status,
-				emptyDash(session.IssueIdentifier),
-			)
-		})
-}
-
-func loadAgentSessionList(
-	ctx context.Context,
-	runtime commandRuntime,
-	_ []string,
-	limit int,
-) (client.AgentSessionList, []client.AgentSessionSummary, error) {
-	sessions, err := client.ListAgentSessions(ctx, runtime.graphqlClient, limit)
-	return sessions, sessions.AgentSessions, err
-}
-
-func loadAgentSession(
-	ctx context.Context,
-	runtime commandRuntime,
-	id string,
-) (client.AgentSessionSummary, error) {
-	return client.GetAgentSessionByID(ctx, runtime.graphqlClient, id)
+	return writeItemLine(
+		command, options, session, session.ID,
+		"%s %s [%s] %s", session.ID, session.SlugID, session.Status, emptyDash(session.IssueIdentifier),
+	)
 }

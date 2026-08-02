@@ -5,7 +5,10 @@ vars:
   PKG: ./cmd/linctl
   GOLANGCI_LINT: github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2
   GORELEASER: github.com/goreleaser/goreleaser/v2@v2.16.0
-  LINEAR_SDK_REF: 7ef4c5024f88667b2c85057ff4c905676c4a93c2
+  # Single source of the upstream Linear SDK pin. CI reads the same file, so a
+  # refresh bumps one place instead of two.
+  LINEAR_SDK_REF:
+    sh: cat .linear-sdk-ref
   INFISICAL_ENV: secrets
   INFISICAL_PATH: /linctl
   # Infisical needs a project id. Export INFISICAL_PROJECT_ID to supply one without
@@ -86,27 +89,12 @@ tasks:
     cmds:
       - task: generated-client-check
       - task: gen-skill
-      - git diff --exit-code -- skills/linctl/references/commands.md
-      - go run scripts/linear_api_coverage*.go -h >/dev/null
       - |
-        upstream="${LINCTL_LINEAR_SDK_UPSTREAM:-}"
-        upstream_root=""
-        if [[ -z "$upstream" ]]; then
-          upstream_root="$(mktemp -d)"
-          upstream="$upstream_root/linear"
-        fi
-        tmp="$(mktemp)"
-        cleanup() {
-          rm -f "$tmp"
-          if [[ -n "$upstream_root" ]]; then
-            rm -rf "$upstream_root"
-          fi
-        }
-        trap cleanup EXIT
-        LINCTL_LINEAR_SDK_UPSTREAM="$upstream" go tool task linear-sdk-upstream-checkout
-        go run scripts/linear_graphql_operation_check.go --upstream "$upstream"
-        go run scripts/linear_api_coverage*.go --upstream "$upstream" --output "$tmp"
-        diff -u docs/internal/linear-api-coverage.md "$tmp"
+        git diff --exit-code -- \
+          skills/linctl/references/commands.md \
+          skills/linctl/references/guarded-writes.md
+      - go run scripts/linear_api_coverage*.go -h >/dev/null
+      - task: upstream-schema-checks
 
   linear-sdk-upstream-checkout:
     desc: Clone or refresh the upstream Linear SDK checkout used by schema and coverage checks
@@ -157,66 +145,17 @@ tasks:
   upstream-schema-checks:
     desc: Run GraphQL operation and coverage-ledger checks behind one shared upstream checkout
     cmds:
-      - |
-        upstream="${LINCTL_LINEAR_SDK_UPSTREAM:-}"
-        upstream_root=""
-        if [[ -z "$upstream" ]]; then
-          upstream_root="$(mktemp -d)"
-          upstream="$upstream_root/linear"
-        fi
-        tmp="$(mktemp)"
-        cleanup() {
-          rm -f "$tmp"
-          if [[ -n "$upstream_root" ]]; then
-            rm -rf "$upstream_root"
-          fi
-        }
-        trap cleanup EXIT
-        LINCTL_LINEAR_SDK_UPSTREAM="$upstream" go tool task linear-sdk-upstream-checkout
-        go run scripts/linear_graphql_operation_check.go --upstream "$upstream"
-        go run scripts/linear_api_coverage*.go --upstream "$upstream" --output "$tmp"
-        diff -u docs/internal/linear-api-coverage.md "$tmp"
+      - bash scripts/upstream-check.sh all
 
   coverage-ledger-check:
     desc: Verify the generated Linear API coverage ledger against the upstream SDK checkout
     cmds:
-      - |
-        upstream="${LINCTL_LINEAR_SDK_UPSTREAM:-}"
-        upstream_root=""
-        if [[ -z "$upstream" ]]; then
-          upstream_root="$(mktemp -d)"
-          upstream="$upstream_root/linear"
-        fi
-        tmp="$(mktemp)"
-        cleanup() {
-          rm -f "$tmp"
-          if [[ -n "$upstream_root" ]]; then
-            rm -rf "$upstream_root"
-          fi
-        }
-        trap cleanup EXIT
-        LINCTL_LINEAR_SDK_UPSTREAM="$upstream" go tool task linear-sdk-upstream-checkout
-        go run scripts/linear_api_coverage*.go --upstream "$upstream" --output "$tmp"
-        diff -u docs/internal/linear-api-coverage.md "$tmp"
+      - bash scripts/upstream-check.sh ledger
 
   schema-drift-check:
     desc: Report semantic drift between the vendored Linear schema and the upstream Linear SDK schema (nightly-only, not part of ci)
     cmds:
-      - |
-        upstream="${LINCTL_LINEAR_SDK_UPSTREAM:-}"
-        upstream_root=""
-        if [[ -z "$upstream" ]]; then
-          upstream_root="$(mktemp -d)"
-          upstream="$upstream_root/linear"
-        fi
-        cleanup() {
-          if [[ -n "$upstream_root" ]]; then
-            rm -rf "$upstream_root"
-          fi
-        }
-        trap cleanup EXIT
-        LINCTL_LINEAR_SDK_UPSTREAM="$upstream" go tool task linear-sdk-upstream-checkout
-        go run scripts/linear_schema_drift_check.go --upstream "$upstream"
+      - bash scripts/upstream-check.sh drift
 
   schema-refresh:
     desc: Sync vendored Linear schema, SDK ref pins, generated client, and coverage ledger from upstream (not part of ci)
@@ -226,21 +165,7 @@ tasks:
   graphql-operation-check:
     desc: Validate local GraphQL operations against the upstream Linear SDK schema
     cmds:
-      - |
-        upstream="${LINCTL_LINEAR_SDK_UPSTREAM:-}"
-        upstream_root=""
-        if [[ -z "$upstream" ]]; then
-          upstream_root="$(mktemp -d)"
-          upstream="$upstream_root/linear"
-        fi
-        cleanup() {
-          if [[ -n "$upstream_root" ]]; then
-            rm -rf "$upstream_root"
-          fi
-        }
-        trap cleanup EXIT
-        LINCTL_LINEAR_SDK_UPSTREAM="$upstream" go tool task linear-sdk-upstream-checkout
-        go run scripts/linear_graphql_operation_check.go --upstream "$upstream"
+      - bash scripts/upstream-check.sh operations
 
   domain-language-check:
     desc: Verify user-facing docs and help avoid workspace terminology
@@ -294,35 +219,41 @@ tasks:
     cmds:
       - bash scripts/browser-login-smoke.sh --self-test
 
-  browser-login-smoke-infisical:
-    desc: Run browser OAuth login smoke with Infisical secrets from /linctl
+  # Shared wrapper for the *-infisical aliases: run one task under Infisical
+  # secrets from /linctl. TARGET is the task name, TARGET_ARGS its trailing args.
+  infisical-run:
+    internal: true
+    vars:
+      TARGET_ARGS: ""
     cmds:
       - |
         infisical run {{.INFISICAL_PROJECT_FLAG}} --env {{.INFISICAL_ENV}} --path {{.INFISICAL_PATH}} -- \
           go tool task \
             --taskfile "{{.TASKFILE_DIR}}/Taskfile.yml" \
             --dir "{{.TASKFILE_DIR}}" \
-            browser-login-smoke -- {{.CLI_ARGS}}
+            {{.TARGET}} {{.TARGET_ARGS}}
+
+  browser-login-smoke-infisical:
+    desc: Run browser OAuth login smoke with Infisical secrets from /linctl
+    cmds:
+      - task: infisical-run
+        vars:
+          TARGET: browser-login-smoke
+          TARGET_ARGS: -- {{.CLI_ARGS}}
 
   live-oauth-infisical:
     desc: Verify OAuth auth with Infisical secrets from /linctl
     cmds:
-      - |
-        infisical run {{.INFISICAL_PROJECT_FLAG}} --env {{.INFISICAL_ENV}} --path {{.INFISICAL_PATH}} -- \
-          go tool task \
-            --taskfile "{{.TASKFILE_DIR}}/Taskfile.yml" \
-            --dir "{{.TASKFILE_DIR}}" \
-            live-oauth
+      - task: infisical-run
+        vars:
+          TARGET: live-oauth
 
   live-smoke-infisical:
     desc: Run live smoke with Infisical secrets from /linctl
     cmds:
-      - |
-        infisical run {{.INFISICAL_PROJECT_FLAG}} --env {{.INFISICAL_ENV}} --path {{.INFISICAL_PATH}} -- \
-          go tool task \
-            --taskfile "{{.TASKFILE_DIR}}/Taskfile.yml" \
-            --dir "{{.TASKFILE_DIR}}" \
-            live-smoke
+      - task: infisical-run
+        vars:
+          TARGET: live-smoke
 
   vet:
     desc: Run go vet

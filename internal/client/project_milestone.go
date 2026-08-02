@@ -190,10 +190,10 @@ func CreateProjectMilestone(
 	request ProjectMilestoneCreateRequest,
 ) (ProjectMilestoneSummary, error) {
 	if request.ProjectID == "" {
-		return ProjectMilestoneSummary{}, fmt.Errorf("%w: project id is required", ErrWriteInvalid)
+		return ProjectMilestoneSummary{}, requiredFieldError("project id")
 	}
 	if request.Name == "" {
-		return ProjectMilestoneSummary{}, fmt.Errorf("%w: name is required", ErrWriteInvalid)
+		return ProjectMilestoneSummary{}, requiredFieldError("name")
 	}
 
 	guard, err := newGuardedClient(ctx, graphqlClient, expected)
@@ -221,8 +221,8 @@ func (guard *guardedClient) createProjectMilestone(
 	if err != nil {
 		return ProjectMilestoneSummary{}, fmt.Errorf("create project milestone: %w", err)
 	}
-	if !created.ProjectMilestoneCreate.Success {
-		return ProjectMilestoneSummary{}, fmt.Errorf("%w: projectMilestoneCreate failed", ErrMutationFailed)
+	if err := mutationSuccess(created.ProjectMilestoneCreate.Success, "projectMilestoneCreate"); err != nil {
+		return ProjectMilestoneSummary{}, err
 	}
 
 	return projectMilestoneSummary(
@@ -267,8 +267,8 @@ func (guard *guardedClient) updateProjectMilestone(
 	if err != nil {
 		return ProjectMilestoneSummary{}, fmt.Errorf("update project milestone %s: %w", request.ID, err)
 	}
-	if !updated.ProjectMilestoneUpdate.Success {
-		return ProjectMilestoneSummary{}, fmt.Errorf("%w: projectMilestoneUpdate failed", ErrMutationFailed)
+	if err := mutationSuccess(updated.ProjectMilestoneUpdate.Success, "projectMilestoneUpdate"); err != nil {
+		return ProjectMilestoneSummary{}, err
 	}
 
 	return projectMilestoneSummary(
@@ -286,7 +286,7 @@ func DeleteProjectMilestone(
 	projectMilestoneID string,
 ) (string, error) {
 	if projectMilestoneID == "" {
-		return "", fmt.Errorf("%w: project milestone id is required", ErrWriteInvalid)
+		return "", requiredFieldError("project milestone id")
 	}
 
 	guard, err := newGuardedClient(ctx, graphqlClient, expected)
@@ -306,8 +306,8 @@ func (guard *guardedClient) deleteProjectMilestone(ctx context.Context, projectM
 	if err != nil {
 		return "", fmt.Errorf("delete project milestone %s: %w", projectMilestoneID, err)
 	}
-	if !deleted.ProjectMilestoneDelete.Success {
-		return "", fmt.Errorf("%w: projectMilestoneDelete failed", ErrMutationFailed)
+	if err := mutationSuccess(deleted.ProjectMilestoneDelete.Success, "projectMilestoneDelete"); err != nil {
+		return "", err
 	}
 
 	return deleted.ProjectMilestoneDelete.EntityId, nil
@@ -315,10 +315,10 @@ func (guard *guardedClient) deleteProjectMilestone(ctx context.Context, projectM
 
 func validateProjectMilestoneUpdateRequest(request ProjectMilestoneUpdateRequest) error {
 	if request.ID == "" {
-		return fmt.Errorf("%w: project milestone id is required", ErrWriteInvalid)
+		return requiredFieldError("project milestone id")
 	}
 	if request.Name == "" && request.Description == "" && request.TargetDate == "" {
-		return fmt.Errorf("%w: name, description, or target date is required", ErrWriteInvalid)
+		return requiredFieldError("name, description, or target date")
 	}
 
 	return nil

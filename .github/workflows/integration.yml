@@ -35,20 +35,23 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version-file: go.mod
-          cache: true
-          cache-dependency-path: go.sum
-      - name: Verify dependencies
+      - uses: ./.github/actions/go-setup
+      - name: Detect OAuth fixture
+        id: fixture
         run: |
-          go mod download
-          go mod verify
+          ready=true
+          for name in LINCTL_OAUTH_CLIENT_ID LINCTL_OAUTH_CLIENT_SECRET LINCTL_OAUTH_REDIRECT_URI \
+            LINCTL_OAUTH_SCOPES LINCTL_TEST_ORG_ID LINCTL_TEST_TEAM_KEY LINCTL_TEST_TEAM_ID; do
+            if [[ -z "${!name:-}" ]]; then
+              ready=false
+            fi
+          done
+          echo "ready=$ready" >> "$GITHUB_OUTPUT"
       - name: Skip notice (OAuth fixture absent)
-        if: env.LINCTL_OAUTH_CLIENT_ID == '' || env.LINCTL_OAUTH_CLIENT_SECRET == '' || env.LINCTL_OAUTH_REDIRECT_URI == '' || env.LINCTL_OAUTH_SCOPES == '' || env.LINCTL_TEST_ORG_ID == '' || env.LINCTL_TEST_TEAM_KEY == '' || env.LINCTL_TEST_TEAM_ID == ''
+        if: steps.fixture.outputs.ready != 'true'
         run: echo "OAuth fixture env is not configured, skipping live integration + e2e." >> "$GITHUB_STEP_SUMMARY"
       - name: Write live target config
-        if: env.LINCTL_OAUTH_CLIENT_ID != '' && env.LINCTL_OAUTH_CLIENT_SECRET != '' && env.LINCTL_OAUTH_REDIRECT_URI != '' && env.LINCTL_OAUTH_SCOPES != '' && env.LINCTL_TEST_ORG_ID != '' && env.LINCTL_TEST_TEAM_KEY != '' && env.LINCTL_TEST_TEAM_ID != ''
+        if: steps.fixture.outputs.ready == 'true'
         run: |
           {
             printf '[target]\n'
@@ -58,18 +61,18 @@ jobs:
             printf 'project_id = "%s"\n' "$LINCTL_TEST_PROJECT_ID"
           } > .linctl.toml
       - name: OAuth live gate
-        if: env.LINCTL_OAUTH_CLIENT_ID != '' && env.LINCTL_OAUTH_CLIENT_SECRET != '' && env.LINCTL_OAUTH_REDIRECT_URI != '' && env.LINCTL_OAUTH_SCOPES != '' && env.LINCTL_TEST_ORG_ID != '' && env.LINCTL_TEST_TEAM_KEY != '' && env.LINCTL_TEST_TEAM_ID != ''
+        if: steps.fixture.outputs.ready == 'true'
         run: go tool task live-oauth
       - name: Integration tests
-        if: env.LINCTL_OAUTH_CLIENT_ID != '' && env.LINCTL_OAUTH_CLIENT_SECRET != '' && env.LINCTL_OAUTH_REDIRECT_URI != '' && env.LINCTL_OAUTH_SCOPES != '' && env.LINCTL_TEST_ORG_ID != '' && env.LINCTL_TEST_TEAM_KEY != '' && env.LINCTL_TEST_TEAM_ID != ''
+        if: steps.fixture.outputs.ready == 'true'
         env:
           LINCTL_TEST_ENABLE_WRITES: "1"
         run: go test -count=1 -tags=integration -timeout 120s ./internal/client
       - name: Live smoke (e2e)
-        if: env.LINCTL_OAUTH_CLIENT_ID != '' && env.LINCTL_OAUTH_CLIENT_SECRET != '' && env.LINCTL_OAUTH_REDIRECT_URI != '' && env.LINCTL_OAUTH_SCOPES != '' && env.LINCTL_TEST_ORG_ID != '' && env.LINCTL_TEST_TEAM_KEY != '' && env.LINCTL_TEST_TEAM_ID != ''
+        if: steps.fixture.outputs.ready == 'true'
         run: bash scripts/live-smoke.sh
       - name: Sweep orphaned namespaced resources
-        if: always() && env.LINCTL_OAUTH_CLIENT_ID != '' && env.LINCTL_OAUTH_CLIENT_SECRET != '' && env.LINCTL_OAUTH_REDIRECT_URI != '' && env.LINCTL_OAUTH_SCOPES != '' && env.LINCTL_TEST_ORG_ID != '' && env.LINCTL_TEST_TEAM_KEY != '' && env.LINCTL_TEST_TEAM_ID != ''
+        if: always() && steps.fixture.outputs.ready == 'true'
         run: bash scripts/live-sweep.sh
 
   schema-drift:
@@ -81,15 +84,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version-file: go.mod
-          cache: true
-          cache-dependency-path: go.sum
-      - name: Verify dependencies
-        run: |
-          go mod download
-          go mod verify
+      - uses: ./.github/actions/go-setup
       - name: Schema drift check
         env:
           LINCTL_LINEAR_SDK_REF: master

@@ -29,7 +29,7 @@ func addIssueAddLabelCommand(ctx context.Context, root *cobra.Command, options *
 func addIssueRemoveLabelCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.IssueSummary]{
 		Use:   "remove-label ISSUE_ID LABEL_ID",
-		Short: "Detach a label from an issue after pinned-target comparison",
+		Short: "Remove a label from an issue after pinned-target comparison",
 		Args:  cobra.ExactArgs(2),
 		Run: func(
 			ctx context.Context, _ *cobra.Command, runtime commandRuntime, args []string,

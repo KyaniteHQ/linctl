@@ -12,7 +12,7 @@ import (
 func addTargetCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "target",
-		Short: "Print the resolved Linear target",
+		Short: "Show the resolved Linear target",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
 			runtime, err := buildCommandRuntime(ctx, options)
@@ -46,7 +46,7 @@ func addTargetCommand(ctx context.Context, root *cobra.Command, options *rootOpt
 func addWhoamiCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "whoami",
-		Short: "Print the authenticated Linear user",
+		Short: "Show the authenticated Linear user",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
 			runtime, err := buildCommandRuntime(ctx, options)

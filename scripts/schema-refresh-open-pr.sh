@@ -31,8 +31,7 @@ git add \
   internal/client/schema.graphql \
   internal/client/internal/gql/generated.go \
   docs/internal/linear-api-coverage.md \
-  Taskfile.yml \
-  .github/workflows/ci.yml
+  .linear-sdk-ref
 
 if git diff --cached --quiet; then
   printf 'refresh produced no staged changes; nothing to open\n'
@@ -68,7 +67,7 @@ body="$(cat <<EOF
 Automated refresh of the vendored Linear GraphQL schema against \`linear/linear\` \`${SHORT_SHA}\` (\`${UPSTREAM_SHA}\`).
 
 - \`internal/client/schema.graphql\` synced from \`packages/sdk/src/schema.graphql\`
-- \`LINEAR_SDK_REF\` / \`LINCTL_LINEAR_SDK_REF\` pins bumped
+- \`.linear-sdk-ref\` pin bumped
 - genqlient client regenerated
 - \`docs/internal/linear-api-coverage.md\` regenerated
 

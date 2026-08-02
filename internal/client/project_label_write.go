@@ -41,7 +41,7 @@ func CreateProjectLabel(
 	request ProjectLabelCreateRequest,
 ) (ProjectLabelSummary, error) {
 	if request.Name == "" {
-		return ProjectLabelSummary{}, fmt.Errorf("%w: name is required", ErrWriteInvalid)
+		return ProjectLabelSummary{}, requiredFieldError("name")
 	}
 	if err := requireProjectLabelOrgWide(request.OrgWide); err != nil {
 		return ProjectLabelSummary{}, err
@@ -129,7 +129,7 @@ func RetireProjectLabel(
 	orgWide bool,
 ) (ProjectLabelSummary, error) {
 	if id == "" {
-		return ProjectLabelSummary{}, fmt.Errorf("%w: project label id is required", ErrWriteInvalid)
+		return ProjectLabelSummary{}, requiredFieldError("project label id")
 	}
 	if err := requireProjectLabelOrgWide(orgWide); err != nil {
 		return ProjectLabelSummary{}, err
@@ -170,7 +170,7 @@ func RestoreProjectLabel(
 	orgWide bool,
 ) (ProjectLabelSummary, error) {
 	if id == "" {
-		return ProjectLabelSummary{}, fmt.Errorf("%w: project label id is required", ErrWriteInvalid)
+		return ProjectLabelSummary{}, requiredFieldError("project label id")
 	}
 	if err := requireProjectLabelOrgWide(orgWide); err != nil {
 		return ProjectLabelSummary{}, err
@@ -202,10 +202,10 @@ func (guard *guardedClient) restoreProjectLabel(ctx context.Context, id string) 
 
 func validateProjectLabelUpdateRequest(request ProjectLabelUpdateRequest) error {
 	if request.ID == "" {
-		return fmt.Errorf("%w: project label id is required", ErrWriteInvalid)
+		return requiredFieldError("project label id")
 	}
 	if request.Name == "" && request.Description == "" && request.Color == "" {
-		return fmt.Errorf("%w: name, description, or color is required", ErrWriteInvalid)
+		return requiredFieldError("name, description, or color")
 	}
 
 	return requireProjectLabelOrgWide(request.OrgWide)

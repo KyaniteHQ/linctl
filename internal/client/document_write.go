@@ -31,7 +31,7 @@ func CreateDocument(
 	request DocumentCreateRequest,
 ) (DocumentSummary, error) {
 	if request.Title == "" {
-		return DocumentSummary{}, fmt.Errorf("%w: title is required", ErrWriteInvalid)
+		return DocumentSummary{}, requiredFieldError("title")
 	}
 
 	guard, err := newGuardedClient(ctx, graphqlClient, expected)
@@ -58,8 +58,8 @@ func (guard *guardedClient) createDocument(
 	if err != nil {
 		return DocumentSummary{}, fmt.Errorf("create document: %w", err)
 	}
-	if !created.DocumentCreate.Success {
-		return DocumentSummary{}, fmt.Errorf("%w: documentCreate returned no document", ErrMutationFailed)
+	if err := mutationSuccess(created.DocumentCreate.Success, "documentCreate"); err != nil {
+		return DocumentSummary{}, err
 	}
 
 	return documentSummary(created.DocumentCreate.Document.DocumentSummaryFields), nil
@@ -73,10 +73,10 @@ func UpdateDocument(
 	request DocumentUpdateRequest,
 ) (DocumentSummary, error) {
 	if request.ID == "" {
-		return DocumentSummary{}, fmt.Errorf("%w: document id is required", ErrWriteInvalid)
+		return DocumentSummary{}, requiredFieldError("document id")
 	}
 	if request.Title == "" && request.Content == "" {
-		return DocumentSummary{}, fmt.Errorf("%w: title or content is required", ErrWriteInvalid)
+		return DocumentSummary{}, requiredFieldError("title or content")
 	}
 
 	guard, err := newGuardedClient(ctx, graphqlClient, expected)
@@ -102,8 +102,8 @@ func (guard *guardedClient) updateDocument(
 	if err != nil {
 		return DocumentSummary{}, fmt.Errorf("update document %s: %w", request.ID, err)
 	}
-	if !updated.DocumentUpdate.Success {
-		return DocumentSummary{}, fmt.Errorf("%w: documentUpdate returned no document", ErrMutationFailed)
+	if err := mutationSuccess(updated.DocumentUpdate.Success, "documentUpdate"); err != nil {
+		return DocumentSummary{}, err
 	}
 
 	return documentSummary(updated.DocumentUpdate.Document.DocumentSummaryFields), nil

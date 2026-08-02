@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addProjectStatusCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -21,8 +20,8 @@ func addProjectStatusCommand(ctx context.Context, root *cobra.Command, options *
 			LimitHelp: "maximum project statuses to return",
 			GetUse:    "get PROJECT_STATUS_ID",
 			GetShort:  "Get one project status by id",
-			LoadList:  loadProjectStatusList,
-			LoadGet:   loadProjectStatus,
+			LoadList:  clientList(client.ListProjectStatuses),
+			LoadGet:   clientGet(client.GetProjectStatusByID),
 			WriteItem: writeProjectStatus,
 		},
 	)
@@ -30,23 +29,16 @@ func addProjectStatusCommand(ctx context.Context, root *cobra.Command, options *
 }
 
 func writeProjectStatus(command *cobra.Command, options *rootOptions, status client.ProjectStatusSummary) error {
-	return writeItem(command, options, status, status.ID,
-		func(command *cobra.Command, _ *rootOptions, status client.ProjectStatusSummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s %s [%s] %s",
-				status.ID,
-				status.Name,
-				status.Type,
-				status.Color,
-			)
-		})
+	return writeItemLine(
+		command, options, status, status.ID,
+		"%s %s [%s] %s", status.ID, status.Name, status.Type, status.Color,
+	)
 }
 
 func addProjectStatusProjectCountCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addReadGetCommand(ctx, root, options, readGetSpec[client.ProjectStatusProjectCount]{
 		Use:   "project-count PROJECT_STATUS_ID",
-		Short: "Show project counts for one project status",
+		Short: "Show the project counts of one project status",
 		Load: func(
 			ctx context.Context, runtime commandRuntime, id string,
 		) (client.ProjectStatusProjectCount, error) {
@@ -61,33 +53,12 @@ func writeProjectStatusProjectCount(
 	options *rootOptions,
 	count client.ProjectStatusProjectCount,
 ) error {
-	return writeItem(command, options, count, count.ProjectStatusID,
-		func(command *cobra.Command, _ *rootOptions, count client.ProjectStatusProjectCount) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s count %.0f private %.0f archived_team %.0f",
-				count.ProjectStatusID,
-				count.Count,
-				count.PrivateCount,
-				count.ArchivedTeamCount,
-			)
-		})
-}
-
-func loadProjectStatusList(
-	ctx context.Context,
-	runtime commandRuntime,
-	_ []string,
-	limit int,
-) (client.ProjectStatusList, []client.ProjectStatusSummary, error) {
-	statuses, err := client.ListProjectStatuses(ctx, runtime.graphqlClient, limit)
-	return statuses, statuses.ProjectStatuses, err
-}
-
-func loadProjectStatus(
-	ctx context.Context,
-	runtime commandRuntime,
-	id string,
-) (client.ProjectStatusSummary, error) {
-	return client.GetProjectStatusByID(ctx, runtime.graphqlClient, id)
+	return writeItemLine(
+		command, options, count, count.ProjectStatusID,
+		"%s count %.0f private %.0f archived_team %.0f",
+		count.ProjectStatusID,
+		count.Count,
+		count.PrivateCount,
+		count.ArchivedTeamCount,
+	)
 }

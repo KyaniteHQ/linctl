@@ -1,0 +1,23 @@
+name: Go setup
+description: Install the Go toolchain pinned by go.mod and verify module downloads and checksums.
+
+inputs:
+  verify-dependencies:
+    description: Set to "false" to install the toolchain without running go mod download/verify.
+    required: false
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+      with:
+        go-version-file: go.mod
+        cache: true
+        cache-dependency-path: go.sum
+    - name: Verify dependencies
+      if: inputs.verify-dependencies == 'true'
+      shell: bash
+      run: |
+        go mod download
+        go mod verify

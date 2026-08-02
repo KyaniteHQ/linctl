@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addTeamCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -41,7 +40,7 @@ func addTeamListCommand(ctx context.Context, root *cobra.Command, options *rootO
 func addTeamGetCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addReadGetCommand(ctx, root, options, readGetSpec[client.TeamSummary]{
 		Use:   "get TEAM_ID",
-		Short: "Get one Team by id",
+		Short: "Get one team by id",
 		Configure: func(command *cobra.Command) {
 			command.ValidArgsFunction = firstArgCompletion(ctx, options, teamKeyCandidates)
 		},
@@ -163,10 +162,7 @@ func addTeamTemplatesCommand(ctx context.Context, root *cobra.Command, options *
 }
 
 func writeTeam(command *cobra.Command, options *rootOptions, team client.TeamSummary) error {
-	return writeItem(command, options, team, team.ID,
-		func(command *cobra.Command, _ *rootOptions, team client.TeamSummary) error {
-			return render.WriteLine(command.OutOrStdout(), "%s %s %s", team.ID, team.Key, team.Name)
-		})
+	return writeItemLine(command, options, team, team.ID, "%s %s %s", team.ID, team.Key, team.Name)
 }
 
 func writeGitAutomationState(
@@ -174,17 +170,14 @@ func writeGitAutomationState(
 	options *rootOptions,
 	state client.GitAutomationStateSummary,
 ) error {
-	return writeItem(command, options, state, state.ID,
-		func(command *cobra.Command, _ *rootOptions, state client.GitAutomationStateSummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s %s state %s target %s",
-				state.ID,
-				state.Event,
-				emptyDash(state.StateName),
-				emptyDash(state.TargetBranchPattern),
-			)
-		})
+	return writeItemLine(
+		command, options, state, state.ID,
+		"%s %s state %s target %s",
+		state.ID,
+		state.Event,
+		emptyDash(state.StateName),
+		emptyDash(state.TargetBranchPattern),
+	)
 }
 
 func loadTeamList(
@@ -192,9 +185,9 @@ func loadTeamList(
 	runtime commandRuntime,
 	_ []string,
 	limit int,
-) (client.TeamList, []client.TeamSummary, error) {
+) (client.TeamList, error) {
 	teams, err := client.ListTeams(ctx, runtime.graphqlClient, limit)
-	return teams, teams.Teams, err
+	return teams, err
 }
 
 func loadTeamMemberList(
@@ -202,9 +195,9 @@ func loadTeamMemberList(
 	runtime commandRuntime,
 	args []string,
 	limit int,
-) (client.TeamMemberList, []client.UserSummary, error) {
+) (client.TeamMemberList, error) {
 	members, err := client.ListTeamMembers(ctx, runtime.graphqlClient, args[0], limit)
-	return members, members.Members, err
+	return members, err
 }
 
 func loadTeamCycles(
@@ -212,9 +205,9 @@ func loadTeamCycles(
 	runtime commandRuntime,
 	args []string,
 	limit int,
-) (client.CycleList, []client.CycleSummary, error) {
+) (client.CycleList, error) {
 	cycles, err := client.ListTeamCycles(ctx, runtime.graphqlClient, args[0], limit)
-	return cycles, cycles.Cycles, err
+	return cycles, err
 }
 
 func loadTeamIssues(
@@ -222,9 +215,9 @@ func loadTeamIssues(
 	runtime commandRuntime,
 	args []string,
 	limit int,
-) (client.IssueList, []client.IssueSummary, error) {
+) (client.IssueList, error) {
 	issues, err := client.ListTeamIssues(ctx, runtime.graphqlClient, args[0], limit)
-	return issues, issues.Issues, err
+	return issues, err
 }
 
 func loadTeamLabels(
@@ -232,9 +225,9 @@ func loadTeamLabels(
 	runtime commandRuntime,
 	args []string,
 	limit int,
-) (client.LabelList, []client.LabelSummary, error) {
+) (client.LabelList, error) {
 	labels, err := client.ListTeamLabels(ctx, runtime.graphqlClient, args[0], limit)
-	return labels, labels.Labels, err
+	return labels, err
 }
 
 func loadTeamMemberships(
@@ -242,9 +235,9 @@ func loadTeamMemberships(
 	runtime commandRuntime,
 	args []string,
 	limit int,
-) (client.TeamMembershipList, []client.TeamMembershipSummary, error) {
+) (client.TeamMembershipList, error) {
 	memberships, err := client.ListTeamMembershipsForTeam(ctx, runtime.graphqlClient, args[0], limit)
-	return memberships, memberships.Memberships, err
+	return memberships, err
 }
 
 func loadTeamProjects(
@@ -252,9 +245,9 @@ func loadTeamProjects(
 	runtime commandRuntime,
 	args []string,
 	limit int,
-) (client.ProjectList, []client.ProjectSummary, error) {
+) (client.ProjectList, error) {
 	projects, err := client.ListTeamProjects(ctx, runtime.graphqlClient, args[0], limit)
-	return projects, projects.Projects, err
+	return projects, err
 }
 
 func loadTeamReleasePipelines(
@@ -262,9 +255,9 @@ func loadTeamReleasePipelines(
 	runtime commandRuntime,
 	args []string,
 	limit int,
-) (client.ReleasePipelineList, []client.ReleasePipelineSummary, error) {
+) (client.ReleasePipelineList, error) {
 	pipelines, err := client.ListTeamReleasePipelines(ctx, runtime.graphqlClient, args[0], limit)
-	return pipelines, pipelines.ReleasePipelines, err
+	return pipelines, err
 }
 
 func loadTeamStates(
@@ -272,9 +265,9 @@ func loadTeamStates(
 	runtime commandRuntime,
 	args []string,
 	limit int,
-) (client.WorkflowStateList, []client.WorkflowStateSummary, error) {
+) (client.WorkflowStateList, error) {
 	states, err := client.ListTeamWorkflowStates(ctx, runtime.graphqlClient, args[0], limit)
-	return states, states.WorkflowStates, err
+	return states, err
 }
 
 func loadTeamGitAutomationStates(
@@ -282,9 +275,9 @@ func loadTeamGitAutomationStates(
 	runtime commandRuntime,
 	args []string,
 	limit int,
-) (client.GitAutomationStateList, []client.GitAutomationStateSummary, error) {
+) (client.GitAutomationStateList, error) {
 	states, err := client.ListTeamGitAutomationStates(ctx, runtime.graphqlClient, args[0], limit)
-	return states, states.States, err
+	return states, err
 }
 
 func loadTeamTemplates(
@@ -292,7 +285,7 @@ func loadTeamTemplates(
 	runtime commandRuntime,
 	args []string,
 	limit int,
-) (client.TemplateList, []client.TemplateSummary, error) {
+) (client.TemplateList, error) {
 	templates, err := client.ListTeamTemplates(ctx, runtime.graphqlClient, args[0], limit)
-	return templates, templates.Templates, err
+	return templates, err
 }

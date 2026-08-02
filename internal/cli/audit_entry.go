@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addAuditEntryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -59,8 +58,5 @@ func writeAuditEntryTypes(
 }
 
 func writeAuditEntryType(command *cobra.Command, options *rootOptions, entryType client.AuditEntryTypeSummary) error {
-	return writeItem(command, options, entryType, entryType.Type,
-		func(command *cobra.Command, _ *rootOptions, entryType client.AuditEntryTypeSummary) error {
-			return render.WriteLine(command.OutOrStdout(), "%s %s", entryType.Type, entryType.Description)
-		})
+	return writeItemLine(command, options, entryType, entryType.Type, "%s %s", entryType.Type, entryType.Description)
 }

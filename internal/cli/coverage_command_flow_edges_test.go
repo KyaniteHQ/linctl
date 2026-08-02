@@ -310,7 +310,10 @@ func Test_CommandFlows_cover_issue_comments_error_branches(t *testing.T) {
 		command := &cobra.Command{}
 		command.SetOut(commandFailingWriter{})
 
-		err := writeIssueComments(command, []client.IssueCommentSummary{{ID: "comment-id", DisplayName: "Omer", Body: "body"}})
+		err := writeIssueCommentSummary(
+			command, &rootOptions{},
+			client.IssueCommentSummary{ID: "comment-id", DisplayName: "Omer", Body: "body"},
+		)
 
 		require.ErrorContains(t, err, "write line")
 	})

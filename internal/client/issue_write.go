@@ -80,7 +80,7 @@ func CreateIssue(
 	request IssueCreateRequest,
 ) (IssueSummary, error) {
 	if request.Title == "" {
-		return IssueSummary{}, fmt.Errorf("%w: title is required", ErrWriteInvalid)
+		return IssueSummary{}, requiredFieldError("title")
 	}
 	if err := validateDueDate(request.DueDate); err != nil {
 		return IssueSummary{}, err
@@ -204,7 +204,7 @@ func (guard *guardedClient) createIssueForBatchRow(
 	request IssueCreateRequest,
 ) (IssueSummary, error) {
 	if request.Title == "" {
-		return IssueSummary{}, fmt.Errorf("%w: title is required", ErrWriteInvalid)
+		return IssueSummary{}, requiredFieldError("title")
 	}
 	if err := validateDueDate(request.DueDate); err != nil {
 		return IssueSummary{}, err
@@ -309,13 +309,10 @@ func (guard *guardedClient) updateIssue(ctx context.Context, request IssueUpdate
 
 func validateIssueUpdateRequest(request IssueUpdateRequest) error {
 	if request.ID == "" {
-		return fmt.Errorf("%w: issue id is required", ErrWriteInvalid)
+		return requiredFieldError("issue id")
 	}
 	if issueUpdateHasNoFields(request) {
-		return fmt.Errorf(
-			"%w: title, description, state, priority, assignee, label, due date, or estimate is required",
-			ErrWriteInvalid,
-		)
+		return requiredFieldError("title, description, state, priority, assignee, label, due date, or estimate")
 	}
 	if request.Description != "" && request.Append != "" {
 		return fmt.Errorf("%w: description and append are mutually exclusive", ErrWriteInvalid)
@@ -439,10 +436,10 @@ func CommentOnIssue(
 	request IssueCommentRequest,
 ) (IssueCommentResult, error) {
 	if request.ID == "" {
-		return IssueCommentResult{}, fmt.Errorf("%w: issue id is required", ErrWriteInvalid)
+		return IssueCommentResult{}, requiredFieldError("issue id")
 	}
 	if request.Body == "" {
-		return IssueCommentResult{}, fmt.Errorf("%w: body is required", ErrWriteInvalid)
+		return IssueCommentResult{}, requiredFieldError("body")
 	}
 
 	guard, err := newGuardedClient(ctx, graphqlClient, expected)

@@ -28,7 +28,7 @@ func addProjectAddLabelCommand(ctx context.Context, root *cobra.Command, options
 func addProjectRemoveLabelCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.ProjectSummary]{
 		Use:   "remove-label PROJECT_ID LABEL_ID",
-		Short: "Detach a ProjectLabel from a project after pinned-target comparison",
+		Short: "Remove a ProjectLabel from a project after pinned-target comparison",
 		Args:  cobra.ExactArgs(2),
 		Run: func(
 			ctx context.Context, _ *cobra.Command, runtime commandRuntime, args []string,

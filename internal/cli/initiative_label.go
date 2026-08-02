@@ -1,4 +1,3 @@
-//nolint:dupl // Minimal read-command glue is intentionally uniform across domains via addReadListGetCommand.
 package cli
 
 import (
@@ -22,8 +21,8 @@ func addInitiativeLabelCommand(ctx context.Context, root *cobra.Command, options
 			LimitHelp: "maximum initiative labels to return",
 			GetUse:    "get INITIATIVE_LABEL_ID",
 			GetShort:  "Get one initiative label by id",
-			LoadList:  loadInitiativeLabelList,
-			LoadGet:   loadInitiativeLabel,
+			LoadList:  clientList(client.ListInitiativeLabels),
+			LoadGet:   clientGet(client.GetInitiativeLabelByID),
 			WriteItem: writeInitiativeLabel,
 		},
 	)
@@ -55,22 +54,4 @@ func writeInitiativeLabel(command *cobra.Command, options *rootOptions, label cl
 
 			return render.WriteLine(command.OutOrStdout(), "%s %s %s", label.ID, label.Name, label.Color)
 		})
-}
-
-func loadInitiativeLabelList(
-	ctx context.Context,
-	runtime commandRuntime,
-	_ []string,
-	limit int,
-) (client.InitiativeLabelList, []client.InitiativeLabelSummary, error) {
-	labels, err := client.ListInitiativeLabels(ctx, runtime.graphqlClient, limit)
-	return labels, labels.InitiativeLabels, err
-}
-
-func loadInitiativeLabel(
-	ctx context.Context,
-	runtime commandRuntime,
-	id string,
-) (client.InitiativeLabelSummary, error) {
-	return client.GetInitiativeLabelByID(ctx, runtime.graphqlClient, id)
 }

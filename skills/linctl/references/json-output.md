@@ -1,19 +1,19 @@
 # linctl `--json` output shapes
 
-Pass `--json` to get one 2-space-indented, newline-terminated JSON value.
-Most commands emit an object; a few commands with value-list semantics, such as
-`issue priority-values`, emit an array. Add `--compact` for a single-line JSON value.
-Add `--fields key,nested.key` to project JSON output
-to just the requested keys.
+Pass `--json` to get one JSON value with 2-space indentation and a final newline. Most commands
+emit an object. A few commands have value-list semantics, such as `issue priority-values`, and
+they emit an array. Add `--compact` for a JSON value on one line. Add `--fields key,nested.key`
+to keep only the requested keys.
 
-For list-page commands, projection applies to each item in the command's collection array rather than
-to the scalar pagination fields. Each list command declares its collection key at registration
-(for example `issues` for `issue list`, `releases` for `release search`); every other command,
-including single-entity `get` commands whose payload embeds an incidental array (a project's
-`teams`), projects the whole object and errors on a field that is not present.
+For a list-page command, the projection applies to each item of the collection array, not to the
+scalar pagination fields. Each list command declares its collection key at registration. For
+example, `issue list` declares `issues`, and `release search` declares `releases`. Every other
+command projects the whole object and fails on a field that is not present. This includes a
+single-entity `get` command with an incidental array inside the payload, such as the `teams`
+array of a project.
 
-These are the exact keys (from `internal/client/*.go`). Fields marked *optional* are omitted
-when empty.
+These are the exact keys, from `internal/client/*.go`. linctl omits a field marked *optional*
+when the value is empty.
 
 ## Issue
 
@@ -22,20 +22,20 @@ when empty.
 | key | type | notes |
 | --- | --- | --- |
 | `id` | string | Linear UUID |
-| `identifier` | string | human key, e.g. `LIT-123` |
+| `identifier` | string | the human key, for example `LIT-123` |
 | `title` | string | |
-| `branch_name` | string | Linear's suggested git branch name |
+| `branch_name` | string | the git branch name that Linear suggests |
 | `url` | string | |
 | `priority` | number | 0–4 |
-| `priority_label` | string | e.g. `Medium` |
+| `priority_label` | string | for example `Medium` |
 | `team_id` | string | |
 | `team` | string | team key |
 | `state_id` | string | |
 | `state` | string | workflow state name |
-| `state_type` | string | e.g. `started`, `completed` |
-| `assignee` | string | *optional* — display name |
+| `state_type` | string | for example `started` or `completed` |
+| `assignee` | string | *optional*: the display name |
 | `project_id` | string | *optional* |
-| `project` | string | *optional* — project name |
+| `project` | string | *optional*: the project name |
 
 `issue list` → **IssueList**:
 `{ "issues": [IssueSummary], "has_next_page": bool, "end_cursor": string|absent }`
@@ -58,12 +58,12 @@ when empty.
 `issue import FILE` → **issueImportResult**:
 `{ "count": number, "issues": [IssueSummary], "failures": [{ "row": number, "title": string, "error": string }]|absent }`
 
-`count` and `issues` cover only the rows that created successfully. `failures` is present only
-when at least one row failed — a fully successful import omits it, so the success-path shape is
-unchanged from an import with no failures. Each failure names the 1-based row, the row's title,
-and the error that row hit; rows before and after a failing row still create normally, so a
-partial import is never silently discarded. The command still exits non-zero and writes the error
-envelope when any row fails.
+`count` and `issues` cover only the rows that linctl created. `failures` is present only when at
+least one row failed. An import with no failure omits the key, so the success shape does not
+change. Each failure names the row number counted from 1, the title of that row, and the error.
+A row before or after a failed row still creates normally, so linctl never discards a partial
+import in silence. When any row fails, the command exits non-zero and writes the error
+envelope.
 
 ## Project
 
@@ -78,7 +78,7 @@ envelope when any row fails.
 | `url` | string | |
 | `priority` | number | |
 | `status` | object | `{ "id", "name", "type" }` |
-| `lead` | string | *optional* — display name |
+| `lead` | string | *optional*: the display name |
 | `teams` | array | `[{ "id", "key", "name" }]` |
 
 `project list` → **ProjectList**:
@@ -105,12 +105,12 @@ envelope when any row fails.
 }
 ```
 
-Two things to know when parsing `target --json`:
+Know two facts before you parse `target --json`.
 
-- `project` is omitted when no `project_id` is pinned.
+- linctl omits `project` when the config pins no `project_id`.
 - `expected` and `resolved` use Go-default capitalized keys (`OrgID`, `TeamKey`, `TeamID`,
-  `ProjectID`), not the snake_case used elsewhere — they mirror the config struct. Compare them
-  field by field to explain a target mismatch.
+  `ProjectID`), not the snake_case of the other commands. These keys mirror the config struct.
+  Compare the two objects field by field to explain a target mismatch.
 
 ## Auth
 
@@ -132,8 +132,9 @@ Two things to know when parsing `target --json`:
 }
 ```
 
-Auth readiness succeeds only after linctl proves the token actor, token scopes, and pinned target.
-App config and token material are reported as `set` or `missing`; secret values are never printed.
+Auth readiness succeeds only after linctl proves the token actor, the token scopes, and the
+pinned target. linctl reports the app config and the token material as `set` or `missing`, and
+linctl never prints a secret value.
 
 ## Usage
 
@@ -141,8 +142,8 @@ App config and token material are reported as `set` or `missing`; secret values 
 
 ## Error envelope
 
-On any failure linctl writes one JSON line to **stderr** (in addition to the human-readable
-error), so an agent can branch on a stable code instead of parsing prose:
+On any failure, linctl writes one JSON line to **stderr**, next to the human-readable error. An
+agent can then branch on a stable code instead of a parse of the prose.
 
 ```json
 { "error_code": "TARGET_MISMATCH", "message": "target mismatch: expected team_id=... resolved ..." }
@@ -150,21 +151,21 @@ error), so an agent can branch on a stable code instead of parsing prose:
 
 `error_code` is one of:
 
-- `TARGET_MISMATCH` — resolved target does not match the pinned target (hard stop; do not retry blindly).
-- `TARGET_NOT_CONFIGURED` — no pinned target found; set org_id, team_key, and team_id in .linctl.toml.
-- `RATE_LIMITED` — Linear returned a rate-limit response; back off and retry.
-- `MUTATION_FAILED` — the mutation ran but Linear reported no success/entity.
-- `INVALID_WRITE` — the write request was rejected before any API call (missing/!valid input).
-- `GRAPHQL_ERROR` — the GraphQL request itself failed.
-- `NOT_FOUND` — the referenced entity was not found.
-- `AUTH_NOT_CONFIGURED` — required OAuth app or token state is missing.
-- `AUTH_TOKEN_EXPIRED` — the saved OAuth access token is expired and cannot be used directly.
-- `AUTH_REFRESH_FAILED` — Linear rejected or failed an OAuth refresh request.
-- `AUTH_REAUTH_REQUIRED` — the saved OAuth state cannot be refreshed without a new login.
-- `MISSING_SCOPE` — OAuth token state does not include every configured required scope.
-- `AUTH_ACTOR_MISMATCH` — OAuth readiness could not prove the expected actor.
-- `AUTH_TARGET_MISMATCH` — OAuth readiness could not prove the token can access the pinned target.
-- `AUTH_TARGET_NOT_CONFIGURED` — no pinned target exists; set `org_id`, `team_key`, and `team_id` in `.linctl.toml`.
-- `INTERNAL` — any other error (config, unknown command, decode, etc.).
+- `TARGET_MISMATCH`: the resolved target does not match the pinned target. This is a hard stop. Do not retry with different auth.
+- `TARGET_NOT_CONFIGURED`: there is no pinned target. Set `org_id`, `team_key`, and `team_id` in `.linctl.toml`.
+- `RATE_LIMITED`: Linear returned a rate-limit response. Wait, then retry.
+- `MUTATION_FAILED`: the mutation ran, but Linear reported no success and no entity.
+- `INVALID_WRITE`: linctl rejected the write request before any API call, because an input was absent or not valid.
+- `GRAPHQL_ERROR`: the GraphQL request failed.
+- `NOT_FOUND`: linctl did not find the referenced entity.
+- `AUTH_NOT_CONFIGURED`: a required OAuth app state or token state is absent.
+- `AUTH_TOKEN_EXPIRED`: the saved OAuth access token expired, so linctl cannot use it directly.
+- `AUTH_REFRESH_FAILED`: an OAuth refresh request failed, or Linear rejected it.
+- `AUTH_REAUTH_REQUIRED`: linctl cannot refresh the saved OAuth state without a new login.
+- `MISSING_SCOPE`: the OAuth token state does not have every required scope.
+- `AUTH_ACTOR_MISMATCH`: OAuth readiness could not prove the expected actor.
+- `AUTH_TARGET_MISMATCH`: OAuth readiness could not prove that the token reaches the pinned target.
+- `AUTH_TARGET_NOT_CONFIGURED`: there is no pinned target. Set `org_id`, `team_key`, and `team_id` in `.linctl.toml`.
+- `INTERNAL`: any other error, such as a config error, an unknown command, or a decode error.
 
-Read the JSON line from stderr; the human-readable line follows it on stderr too.
+Read the JSON line from stderr. The human-readable line follows it, also on stderr.

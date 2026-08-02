@@ -205,10 +205,10 @@ func CreateCycle(
 	request CycleCreateRequest,
 ) (CycleSummary, error) {
 	if request.StartsAt == "" {
-		return CycleSummary{}, fmt.Errorf("%w: starts at is required", ErrWriteInvalid)
+		return CycleSummary{}, requiredFieldError("starts at")
 	}
 	if request.EndsAt == "" {
-		return CycleSummary{}, fmt.Errorf("%w: ends at is required", ErrWriteInvalid)
+		return CycleSummary{}, requiredFieldError("ends at")
 	}
 
 	guard, err := newGuardedClient(ctx, graphqlClient, expected)
@@ -287,7 +287,7 @@ func ArchiveCycle(
 	id string,
 ) (CycleSummary, error) {
 	if id == "" {
-		return CycleSummary{}, fmt.Errorf("%w: cycle id is required", ErrWriteInvalid)
+		return CycleSummary{}, requiredFieldError("cycle id")
 	}
 	guard, err := newGuardedClient(ctx, graphqlClient, expected)
 	if err != nil {
@@ -315,14 +315,14 @@ func (guard *guardedClient) archiveCycle(ctx context.Context, id string) (CycleS
 
 func validateCycleUpdateRequest(request CycleUpdateRequest) error {
 	if request.ID == "" {
-		return fmt.Errorf("%w: cycle id is required", ErrWriteInvalid)
+		return requiredFieldError("cycle id")
 	}
 	if request.Name == "" &&
 		request.Description == "" &&
 		request.StartsAt == "" &&
 		request.EndsAt == "" &&
 		request.CompletedAt == "" {
-		return fmt.Errorf("%w: name, description, starts at, ends at, or completed at is required", ErrWriteInvalid)
+		return requiredFieldError("name, description, starts at, ends at, or completed at")
 	}
 
 	return nil

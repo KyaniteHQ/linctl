@@ -50,7 +50,7 @@ func pinnedTeamKeyHint(ctx context.Context, options *rootOptions) string {
 }
 
 func addDoneCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addCommandWithSafety(root, CommandSafetyWrite, &cobra.Command{
+	addWriteCommand(root, WriteEffectGuarded, &cobra.Command{
 		Use:   "done",
 		Short: "Close the current checkout issue",
 		Args:  cobra.NoArgs,

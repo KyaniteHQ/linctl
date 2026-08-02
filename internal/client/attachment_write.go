@@ -27,10 +27,10 @@ func LinkIssueAttachment(
 	request AttachmentLinkRequest,
 ) (AttachmentSummary, error) {
 	if request.IssueID == "" {
-		return AttachmentSummary{}, fmt.Errorf("%w: issue id is required", ErrWriteInvalid)
+		return AttachmentSummary{}, requiredFieldError("issue id")
 	}
 	if request.URL == "" {
-		return AttachmentSummary{}, fmt.Errorf("%w: url is required", ErrWriteInvalid)
+		return AttachmentSummary{}, requiredFieldError("url")
 	}
 
 	guard, err := newGuardedClient(ctx, graphqlClient, expected)

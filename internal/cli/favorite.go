@@ -1,4 +1,4 @@
-//nolint:dupl // Minimal read-command glue is intentionally uniform across domains via addReadListGetCommand.
+//nolint:dupl // Declarative registration only; addReadListGetCommand and addChildListCommand own the behavior.
 package cli
 
 import (
@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addFavoriteCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -18,12 +17,12 @@ func addFavoriteCommand(ctx context.Context, root *cobra.Command, options *rootO
 		readListGetSpec[client.FavoriteList, client.FavoriteSummary]{
 			Use:       "favorite",
 			Short:     "Read Linear favorites",
-			ListShort: "List the authenticated user's favorites",
+			ListShort: "List the favorites of the authenticated user",
 			LimitHelp: "maximum favorites to return",
 			GetUse:    "get FAVORITE_ID",
 			GetShort:  "Get one favorite by id",
-			LoadList:  loadFavoriteList,
-			LoadGet:   loadFavorite,
+			LoadList:  clientList(client.ListFavorites),
+			LoadGet:   clientGet(client.GetFavoriteByID),
 			WriteItem: writeFavorite,
 		},
 	)
@@ -31,58 +30,21 @@ func addFavoriteCommand(ctx context.Context, root *cobra.Command, options *rootO
 }
 
 func addFavoriteChildrenCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "children FAVORITE_ID",
-		Short: "List children of a folder favorite",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadFavoriteChildren,
-				writeFavorite,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum favorites to return")
-	root.AddCommand(preflightReadListCommand(command, loadFavoriteChildren))
+	addChildListCommand(
+		ctx,
+		root,
+		options,
+		"children FAVORITE_ID",
+		"List children of a folder favorite",
+		"favorites",
+		client.ListFavoriteChildren,
+		writeFavorite,
+	)
 }
 
 func writeFavorite(command *cobra.Command, options *rootOptions, favorite client.FavoriteSummary) error {
-	return writeItem(command, options, favorite, favorite.ID,
-		func(command *cobra.Command, _ *rootOptions, favorite client.FavoriteSummary) error {
-			return render.WriteLine(command.OutOrStdout(), "%s [%s] %s", favorite.ID, favorite.Type, favorite.URL)
-		})
-}
-
-func loadFavoriteList(
-	ctx context.Context,
-	runtime commandRuntime,
-	_ []string,
-	limit int,
-) (client.FavoriteList, []client.FavoriteSummary, error) {
-	favorites, err := client.ListFavorites(ctx, runtime.graphqlClient, limit)
-	return favorites, favorites.Favorites, err
-}
-
-func loadFavorite(
-	ctx context.Context,
-	runtime commandRuntime,
-	id string,
-) (client.FavoriteSummary, error) {
-	return client.GetFavoriteByID(ctx, runtime.graphqlClient, id)
-}
-
-func loadFavoriteChildren(
-	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
-	limit int,
-) (client.FavoriteList, []client.FavoriteSummary, error) {
-	favorites, err := client.ListFavoriteChildren(ctx, runtime.graphqlClient, args[0], limit)
-	return favorites, favorites.Favorites, err
+	return writeItemLine(
+		command, options, favorite, favorite.ID,
+		"%s [%s] %s", favorite.ID, favorite.Type, favorite.URL,
+	)
 }

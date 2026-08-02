@@ -60,9 +60,9 @@ func NewRootCommand(ctx context.Context, build BuildInfo) *cobra.Command {
 	flags.BoolVar(&options.compact, "compact", false, "emit compact JSON when --json is set")
 	flags.StringVar(&options.fields, "fields", "", "comma-separated JSON fields to emit")
 	flags.BoolVar(&options.idOnly, "id-only", false, "emit only Linear ids")
-	flags.BoolVar(&options.quiet, "quiet", false, "suppress successful output")
+	flags.BoolVar(&options.quiet, "quiet", false, "do not show output when a command succeeds")
 	flags.BoolVar(&options.failOnEmpty, "fail-on-empty", false, "exit non-zero when a list result is empty")
-	flags.StringVar(&options.sortField, "sort", "", "JSON field to sort list output by")
+	flags.StringVar(&options.sortField, "sort", "", "sort the list output by this JSON field")
 	flags.StringVar(&options.sortOrder, "order", "asc", "sort order: asc or desc")
 	flags.StringVar(&options.format, "format", "compact", "human output format: minimal, compact, or full")
 	flags.StringVar(&options.profile, "profile", "", "config profile to load")
@@ -95,74 +95,82 @@ func validateCommandFlags(command *cobra.Command) error {
 	return nil
 }
 
-func addCommands(ctx context.Context, command *cobra.Command, options *rootOptions) {
-	addUsageCommand(command, options)
-	addAuthCommand(ctx, command, options)
-	addTargetCommand(ctx, command, options)
-	addInitCommand(ctx, command, options)
-	addDoctorCommand(ctx, command, options)
-	addWhoamiCommand(ctx, command, options)
-	addApplicationCommand(ctx, command, options)
-	addAgentActivityCommand(ctx, command, options)
-	addAgentSkillCommand(ctx, command, options)
-	addAgentSessionCommand(ctx, command, options)
-	addExternalUserCommand(ctx, command, options)
-	addAuditEntryCommand(ctx, command, options)
-	addOrganizationCommand(ctx, command, options)
-	addRateLimitCommand(ctx, command, options)
-	addNotificationCommand(ctx, command, options)
-	addReleasePipelineCommand(ctx, command, options)
-	addReleaseStageCommand(ctx, command, options)
-	addReleaseCommand(ctx, command, options)
-	addExternalLinkCommand(ctx, command, options)
-	addReleaseNoteCommand(ctx, command, options)
-	addIssueToReleaseCommand(ctx, command, options)
-	addIssueCommand(ctx, command, options)
-	addIssueRelationCommand(ctx, command, options)
-	addNextCommand(ctx, command, options)
-	addFilesCommand(ctx, command, options)
-	addCurrentCommand(ctx, command, options)
-	addDoneCommand(ctx, command, options)
-	addCommentCommand(ctx, command, options)
-	addProjectCommand(ctx, command, options)
-	addProjectUpdateReadCommand(ctx, command, options)
-	addProjectMilestoneCommand(ctx, command, options)
-	addProjectStatusCommand(ctx, command, options)
-	addProjectLabelCommand(ctx, command, options)
-	addProjectRelationCommand(ctx, command, options)
-	addCycleCommand(ctx, command, options)
-	addSprintCommand(ctx, command, options)
-	addDocumentCommand(ctx, command, options)
-	addLabelCommand(ctx, command, options)
-	addTeamCommand(ctx, command, options)
-	addTeamMembershipCommand(ctx, command, options)
-	addUserCommand(ctx, command, options)
-	addWorkflowStateCommand(ctx, command, options)
-	addTimeScheduleCommand(ctx, command, options)
-	addTriageResponsibilityCommand(ctx, command, options)
-	addSLAConfigurationCommand(ctx, command, options)
-	addSearchFamilyCommands(ctx, command, options)
+// commandRegistrar registers one top-level command group on the root command.
+type commandRegistrar func(context.Context, *cobra.Command, *rootOptions)
+
+// commandRegistrars is the whole top-level command surface, in registration
+// order. It is a list rather than a sequence of calls so adding a group never
+// grows a function body.
+var commandRegistrars = []commandRegistrar{
+	addUsageCommand,
+	addAuthCommand,
+	addTargetCommand,
+	addInitCommand,
+	addDoctorCommand,
+	addWhoamiCommand,
+	addApplicationCommand,
+	addAgentActivityCommand,
+	addAgentSkillCommand,
+	addAgentSessionCommand,
+	addExternalUserCommand,
+	addAuditEntryCommand,
+	addOrganizationCommand,
+	addRateLimitCommand,
+	addNotificationCommand,
+	addReleasePipelineCommand,
+	addReleaseStageCommand,
+	addReleaseCommand,
+	addExternalLinkCommand,
+	addReleaseNoteCommand,
+	addIssueToReleaseCommand,
+	addIssueCommand,
+	addIssueRelationCommand,
+	addNextCommand,
+	addFilesCommand,
+	addCurrentCommand,
+	addDoneCommand,
+	addCommentCommand,
+	addProjectCommand,
+	addProjectUpdateReadCommand,
+	addProjectMilestoneCommand,
+	addProjectStatusCommand,
+	addProjectLabelCommand,
+	addProjectRelationCommand,
+	addCycleCommand,
+	addSprintCommand,
+	addDocumentCommand,
+	addLabelCommand,
+	addTeamCommand,
+	addTeamMembershipCommand,
+	addUserCommand,
+	addWorkflowStateCommand,
+	addTimeScheduleCommand,
+	addTriageResponsibilityCommand,
+	addSLAConfigurationCommand,
+	addSearchCommand,
+	addSemanticSearchCommand,
+	addTemplateCommand,
+	addInitiativeCommand,
+	addInitiativeLabelCommand,
+	addInitiativeRelationCommand,
+	addInitiativeToProjectCommand,
+	addInitiativeUpdateCommand,
+	addRoadmapCommand,
+	addRoadmapToProjectCommand,
+	addCustomViewCommand,
+	addCustomerCommand,
+	addCustomerNeedCommand,
+	addCustomerStatusCommand,
+	addCustomerTierCommand,
+	addFavoriteCommand,
+	addEmojiCommand,
+	addAttachmentCommand,
 }
 
-func addSearchFamilyCommands(ctx context.Context, command *cobra.Command, options *rootOptions) {
-	addSearchCommand(ctx, command, options)
-	addSemanticSearchCommand(ctx, command, options)
-	addTemplateCommand(ctx, command, options)
-	addInitiativeCommand(ctx, command, options)
-	addInitiativeLabelCommand(ctx, command, options)
-	addInitiativeRelationCommand(ctx, command, options)
-	addInitiativeToProjectCommand(ctx, command, options)
-	addInitiativeUpdateCommand(ctx, command, options)
-	addRoadmapCommand(ctx, command, options)
-	addRoadmapToProjectCommand(ctx, command, options)
-	addCustomViewCommand(ctx, command, options)
-	addCustomerCommand(ctx, command, options)
-	addCustomerNeedCommand(ctx, command, options)
-	addCustomerStatusCommand(ctx, command, options)
-	addCustomerTierCommand(ctx, command, options)
-	addFavoriteCommand(ctx, command, options)
-	addEmojiCommand(ctx, command, options)
-	addAttachmentCommand(ctx, command, options)
+func addCommands(ctx context.Context, command *cobra.Command, options *rootOptions) {
+	for _, register := range commandRegistrars {
+		register(ctx, command, options)
+	}
 }
 
 // Execute runs linctl with process stdio.

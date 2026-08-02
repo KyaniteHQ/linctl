@@ -38,14 +38,14 @@ func loadCyclesByTeam(
 	runtime commandRuntime,
 	_ []string,
 	limit int,
-) (client.CycleList, []client.CycleSummary, error) {
+) (client.CycleList, error) {
 	target, err := runtime.resolveTarget(ctx)
 	if err != nil {
-		return client.CycleList{}, nil, err
+		return client.CycleList{}, err
 	}
 	cycles, err := client.ListCyclesByTeam(ctx, runtime.graphqlClient, target.Team.ID, limit)
 
-	return cycles, cycles.Cycles, err
+	return cycles, err
 }
 
 func addCycleGetCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -68,7 +68,6 @@ func addCycleIssuesCommand(ctx context.Context, root *cobra.Command, options *ro
 		"List Issues assigned to one Cycle",
 		"Issues",
 		client.ListCycleIssues,
-		cycleIssueListItems,
 		writeIssue,
 	)
 }
@@ -82,13 +81,8 @@ func addCycleUncompletedIssuesCommand(ctx context.Context, root *cobra.Command, 
 		"List Issues left open when one Cycle closed",
 		"Issues",
 		client.ListCycleUncompletedIssuesUponClose,
-		cycleIssueListItems,
 		writeIssue,
 	)
-}
-
-func cycleIssueListItems(list client.CycleIssueList) []client.IssueSummary {
-	return list.Issues
 }
 
 func writeCycle(command *cobra.Command, options *rootOptions, cycle client.CycleSummary) error {

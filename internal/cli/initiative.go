@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addInitiativeCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -21,8 +20,8 @@ func addInitiativeCommand(ctx context.Context, root *cobra.Command, options *roo
 			LimitHelp: "maximum initiatives to return",
 			GetUse:    "get INITIATIVE_ID",
 			GetShort:  "Get one initiative by id or slug",
-			LoadList:  loadInitiativeList,
-			LoadGet:   loadInitiative,
+			LoadList:  clientList(client.ListInitiatives),
+			LoadGet:   clientGet(client.GetInitiativeByID),
 			WriteItem: writeInitiative,
 		},
 	)
@@ -35,148 +34,88 @@ func addInitiativeCommand(ctx context.Context, root *cobra.Command, options *roo
 }
 
 func addInitiativeHistoryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "history INITIATIVE_ID",
-		Short: "List history records associated with one Linear initiative",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadInitiativeHistory,
-				writeInitiativeHistory,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum history records to return")
-	root.AddCommand(preflightReadListCommand(command, loadInitiativeHistory))
+	addChildListCommand(
+		ctx,
+		root,
+		options,
+		"history INITIATIVE_ID",
+		"List history records associated with one Linear initiative",
+		"history records",
+		client.ListInitiativeHistory,
+		writeInitiativeHistory,
+	)
 }
 
 func addInitiativeLinksCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "links INITIATIVE_ID",
-		Short: "List external links associated with one Linear initiative",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadInitiativeLinks,
-				writeEntityExternalLink,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum links to return")
-	root.AddCommand(preflightReadListCommand(command, loadInitiativeLinks))
+	addChildListCommand(
+		ctx,
+		root,
+		options,
+		"links INITIATIVE_ID",
+		"List external links associated with one Linear initiative",
+		"links",
+		client.ListInitiativeLinks,
+		writeEntityExternalLink,
+	)
 }
 
 func addSubInitiativesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "sub-initiatives INITIATIVE_ID",
-		Short: "List sub-initiatives associated with one Linear initiative",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadSubInitiatives,
-				writeInitiative,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum sub-initiatives to return")
-	root.AddCommand(preflightReadListCommand(command, loadSubInitiatives))
+	addChildListCommand(
+		ctx,
+		root,
+		options,
+		"sub-initiatives INITIATIVE_ID",
+		"List sub-initiatives associated with one Linear initiative",
+		"sub-initiatives",
+		client.ListSubInitiatives,
+		writeInitiative,
+	)
 }
 
 func addInitiativeScopedUpdatesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "updates INITIATIVE_ID",
-		Short: "List status updates associated with one Linear initiative",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadInitiativeScopedUpdates,
-				writeInitiativeUpdate,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum initiative updates to return")
-	root.AddCommand(preflightReadListCommand(command, loadInitiativeScopedUpdates))
+	addChildListCommand(
+		ctx,
+		root,
+		options,
+		"updates INITIATIVE_ID",
+		"List status updates associated with one Linear initiative",
+		"initiative updates",
+		client.ListInitiativeUpdatesForInitiative,
+		writeInitiativeUpdate,
+	)
 }
 
 func addInitiativeDocumentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "documents INITIATIVE_ID",
-		Short: "List documents associated with one Linear initiative",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadInitiativeDocuments,
-				writeDocument,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum documents to return")
-	root.AddCommand(preflightReadListCommand(command, loadInitiativeDocuments))
+	addChildListCommand(
+		ctx,
+		root,
+		options,
+		"documents INITIATIVE_ID",
+		"List documents associated with one Linear initiative",
+		"documents",
+		client.ListInitiativeDocuments,
+		writeDocument,
+	)
 }
 
 func addInitiativeProjectsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "projects INITIATIVE_ID",
-		Short: "List projects directly associated with one Linear initiative",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadInitiativeProjects,
-				writeProject,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum projects to return")
-	root.AddCommand(preflightReadListCommand(command, loadInitiativeProjects))
+	addChildListCommand(
+		ctx,
+		root,
+		options,
+		"projects INITIATIVE_ID",
+		"List projects directly associated with one Linear initiative",
+		"projects",
+		client.ListInitiativeProjects,
+		writeProject,
+	)
 }
 
 func writeInitiative(command *cobra.Command, options *rootOptions, initiative client.InitiativeSummary) error {
-	return writeItem(command, options, initiative, initiative.ID,
-		func(command *cobra.Command, _ *rootOptions, initiative client.InitiativeSummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s %s [%s]",
-				initiative.ID,
-				initiative.Name,
-				initiative.Status,
-			)
-		})
+	return writeItemLine(
+		command, options, initiative, initiative.ID,
+		"%s %s [%s]", initiative.ID, initiative.Name, initiative.Status,
+	)
 }
 
 func writeInitiativeHistory(
@@ -184,92 +123,8 @@ func writeInitiativeHistory(
 	options *rootOptions,
 	history client.InitiativeHistorySummary,
 ) error {
-	return writeItem(command, options, history, history.ID,
-		func(command *cobra.Command, _ *rootOptions, history client.InitiativeHistorySummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s initiative %s entries %d",
-				history.ID,
-				history.InitiativeID,
-				history.EntryCount,
-			)
-		})
-}
-
-func loadInitiativeList(
-	ctx context.Context,
-	runtime commandRuntime,
-	_ []string,
-	limit int,
-) (client.InitiativeList, []client.InitiativeSummary, error) {
-	initiatives, err := client.ListInitiatives(ctx, runtime.graphqlClient, limit)
-	return initiatives, initiatives.Initiatives, err
-}
-
-func loadInitiative(
-	ctx context.Context,
-	runtime commandRuntime,
-	id string,
-) (client.InitiativeSummary, error) {
-	return client.GetInitiativeByID(ctx, runtime.graphqlClient, id)
-}
-
-func loadInitiativeHistory(
-	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
-	limit int,
-) (client.InitiativeHistoryList, []client.InitiativeHistorySummary, error) {
-	history, err := client.ListInitiativeHistory(ctx, runtime.graphqlClient, args[0], limit)
-	return history, history.History, err
-}
-
-func loadInitiativeLinks(
-	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
-	limit int,
-) (client.EntityExternalLinkList, []client.EntityExternalLinkSummary, error) {
-	links, err := client.ListInitiativeLinks(ctx, runtime.graphqlClient, args[0], limit)
-	return links, links.Links, err
-}
-
-func loadSubInitiatives(
-	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
-	limit int,
-) (client.InitiativeList, []client.InitiativeSummary, error) {
-	initiatives, err := client.ListSubInitiatives(ctx, runtime.graphqlClient, args[0], limit)
-	return initiatives, initiatives.Initiatives, err
-}
-
-func loadInitiativeScopedUpdates(
-	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
-	limit int,
-) (client.InitiativeUpdateList, []client.InitiativeUpdateSummary, error) {
-	updates, err := client.ListInitiativeUpdatesForInitiative(ctx, runtime.graphqlClient, args[0], limit)
-	return updates, updates.Updates, err
-}
-
-func loadInitiativeDocuments(
-	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
-	limit int,
-) (client.DocumentList, []client.DocumentSummary, error) {
-	documents, err := client.ListInitiativeDocuments(ctx, runtime.graphqlClient, args[0], limit)
-	return documents, documents.Documents, err
-}
-
-func loadInitiativeProjects(
-	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
-	limit int,
-) (client.ProjectList, []client.ProjectSummary, error) {
-	projects, err := client.ListInitiativeProjects(ctx, runtime.graphqlClient, args[0], limit)
-	return projects, projects.Projects, err
+	return writeItemLine(
+		command, options, history, history.ID,
+		"%s initiative %s entries %d", history.ID, history.InitiativeID, history.EntryCount,
+	)
 }

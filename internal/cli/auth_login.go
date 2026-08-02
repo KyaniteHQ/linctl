@@ -57,7 +57,7 @@ func addAuthLoginCommand(ctx context.Context, root *cobra.Command, options *root
 		&flags.callback,
 		"callback",
 		"",
-		"OAuth callback URL, authorization code, or '-' to read from stdin",
+		"OAuth callback URL, OAuth authorization code, or - to read the value from stdin",
 	)
 	root.AddCommand(command)
 }

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck shell=bash
 # Refresh the vendored Linear schema from the upstream linear/linear SDK schema,
-# bump the LINEAR_SDK_REF pins, regenerate the genqlient client, and rewrite the
+# bump the .linear-sdk-ref pin, regenerate the genqlient client, and rewrite the
 # coverage ledger. No OAuth token required: the source of truth is the same SDK
 # schema file that schema-drift-check compares against.
 #
@@ -50,25 +50,8 @@ fi
 
 cp "$upstream_schema" "$repo_root/internal/client/schema.graphql"
 
-python3 - "$repo_root" "$sha" <<'PY'
-from pathlib import Path
-import re
-import sys
-
-repo = Path(sys.argv[1])
-sha = sys.argv[2]
-replacements = (
-    (repo / "Taskfile.yml", re.compile(r"^(  LINEAR_SDK_REF: )[0-9a-f]{40}$", re.M)),
-    (repo / ".github/workflows/ci.yml", re.compile(r"^(  LINCTL_LINEAR_SDK_REF: )[0-9a-f]{40}$", re.M)),
-)
-for path, pattern in replacements:
-    text = path.read_text()
-    updated, count = pattern.subn(rf"\g<1>{sha}", text)
-    if count != 1:
-        raise SystemExit(f"expected exactly one pin in {path}, found {count}")
-    path.write_text(updated)
-print(f"pinned LINEAR_SDK_REF to {sha}", file=sys.stderr)
-PY
+printf '%s\n' "$sha" > "$repo_root/.linear-sdk-ref"
+printf 'pinned the Linear SDK ref to %s\n' "$sha" >&2
 
 go generate ./...
 
@@ -84,8 +67,7 @@ if ! git diff --quiet -- \
   internal/client/schema.graphql \
   internal/client/internal/gql/generated.go \
   docs/internal/linear-api-coverage.md \
-  Taskfile.yml \
-  .github/workflows/ci.yml; then
+  .linear-sdk-ref; then
   changed=1
 fi
 

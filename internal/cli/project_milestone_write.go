@@ -10,9 +10,10 @@ import (
 
 func addProjectMilestoneDeleteCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[string]{
-		Use:   "delete PROJECT_MILESTONE_ID",
-		Short: "Hard delete a ProjectMilestone after pinned-target comparison; cannot be undone via linctl",
-		Args:  cobra.ExactArgs(1),
+		Use:          "delete PROJECT_MILESTONE_ID",
+		Short:        "Delete a ProjectMilestone after pinned-target comparison, which linctl cannot undo",
+		Args:         cobra.ExactArgs(1),
+		Irreversible: true,
 		Run: func(ctx context.Context, _ *cobra.Command, runtime commandRuntime, args []string) (string, error) {
 			return client.DeleteProjectMilestone(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
 		},

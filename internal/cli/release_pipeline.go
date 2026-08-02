@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addReleasePipelineCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -21,8 +20,8 @@ func addReleasePipelineCommand(ctx context.Context, root *cobra.Command, options
 			LimitHelp: "maximum release pipelines to return",
 			GetUse:    "get RELEASE_PIPELINE_ID",
 			GetShort:  "Get one release pipeline by id",
-			LoadList:  loadReleasePipelineList,
-			LoadGet:   loadReleasePipeline,
+			LoadList:  clientList(client.ListReleasePipelines),
+			LoadGet:   clientGet(client.GetReleasePipelineByID),
 			WriteItem: writeReleasePipeline,
 		},
 	)
@@ -32,69 +31,42 @@ func addReleasePipelineCommand(ctx context.Context, root *cobra.Command, options
 }
 
 func addReleasePipelineReleasesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "releases RELEASE_PIPELINE_ID",
-		Short: "List releases associated with one Linear release pipeline",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadReleasePipelineReleases,
-				writeRelease,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum releases to return")
-	root.AddCommand(preflightReadListCommand(command, loadReleasePipelineReleases))
+	addChildListCommand(
+		ctx,
+		root,
+		options,
+		"releases RELEASE_PIPELINE_ID",
+		"List releases associated with one Linear release pipeline",
+		"releases",
+		client.ListReleasePipelineReleases,
+		writeRelease,
+	)
 }
 
 func addReleasePipelineStagesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "stages RELEASE_PIPELINE_ID",
-		Short: "List stages associated with one Linear release pipeline",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadReleasePipelineStages,
-				writeReleaseStage,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum release stages to return")
-	root.AddCommand(preflightReadListCommand(command, loadReleasePipelineStages))
+	addChildListCommand(
+		ctx,
+		root,
+		options,
+		"stages RELEASE_PIPELINE_ID",
+		"List stages associated with one Linear release pipeline",
+		"release stages",
+		client.ListReleasePipelineStages,
+		writeReleaseStage,
+	)
 }
 
 func addReleasePipelineTeamsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "teams RELEASE_PIPELINE_ID",
-		Short: "List teams associated with one Linear release pipeline",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadReleasePipelineTeams,
-				writeTeam,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum teams to return")
-	root.AddCommand(preflightReadListCommand(command, loadReleasePipelineTeams))
+	addChildListCommand(
+		ctx,
+		root,
+		options,
+		"teams RELEASE_PIPELINE_ID",
+		"List teams associated with one Linear release pipeline",
+		"teams",
+		client.ListReleasePipelineTeams,
+		writeTeam,
+	)
 }
 
 func addReleaseStageCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -109,8 +81,8 @@ func addReleaseStageCommand(ctx context.Context, root *cobra.Command, options *r
 			LimitHelp: "maximum release stages to return",
 			GetUse:    "get RELEASE_STAGE_ID",
 			GetShort:  "Get one release stage by id",
-			LoadList:  loadReleaseStageList,
-			LoadGet:   loadReleaseStage,
+			LoadList:  clientList(client.ListReleaseStages),
+			LoadGet:   clientGet(client.GetReleaseStageByID),
 			WriteItem: writeReleaseStage,
 		},
 	)
@@ -118,127 +90,28 @@ func addReleaseStageCommand(ctx context.Context, root *cobra.Command, options *r
 }
 
 func addReleaseStageReleasesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "releases RELEASE_STAGE_ID",
-		Short: "List releases associated with one Linear release stage",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadReleaseStageReleases,
-				writeRelease,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum releases to return")
-	root.AddCommand(preflightReadListCommand(command, loadReleaseStageReleases))
+	addChildListCommand(
+		ctx,
+		root,
+		options,
+		"releases RELEASE_STAGE_ID",
+		"List releases associated with one Linear release stage",
+		"releases",
+		client.ListReleaseStageReleases,
+		writeRelease,
+	)
 }
 
 func writeReleasePipeline(command *cobra.Command, options *rootOptions, pipeline client.ReleasePipelineSummary) error {
-	return writeItem(command, options, pipeline, pipeline.ID,
-		func(command *cobra.Command, _ *rootOptions, pipeline client.ReleasePipelineSummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s %s %s releases %d",
-				pipeline.ID,
-				pipeline.Name,
-				pipeline.SlugID,
-				pipeline.ApproximateReleaseCount,
-			)
-		})
+	return writeItemLine(
+		command, options, pipeline, pipeline.ID,
+		"%s %s %s releases %d", pipeline.ID, pipeline.Name, pipeline.SlugID, pipeline.ApproximateReleaseCount,
+	)
 }
 
 func writeReleaseStage(command *cobra.Command, options *rootOptions, stage client.ReleaseStageSummary) error {
-	return writeItem(command, options, stage, stage.ID,
-		func(command *cobra.Command, _ *rootOptions, stage client.ReleaseStageSummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s %s [%s] pipeline %s",
-				stage.ID,
-				stage.Name,
-				stage.Type,
-				stage.PipelineName,
-			)
-		})
-}
-
-func loadReleasePipelineList(
-	ctx context.Context,
-	runtime commandRuntime,
-	_ []string,
-	limit int,
-) (client.ReleasePipelineList, []client.ReleasePipelineSummary, error) {
-	pipelines, err := client.ListReleasePipelines(ctx, runtime.graphqlClient, limit)
-	return pipelines, pipelines.ReleasePipelines, err
-}
-
-func loadReleasePipeline(
-	ctx context.Context,
-	runtime commandRuntime,
-	id string,
-) (client.ReleasePipelineSummary, error) {
-	return client.GetReleasePipelineByID(ctx, runtime.graphqlClient, id)
-}
-
-func loadReleasePipelineReleases(
-	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
-	limit int,
-) (client.ReleaseList, []client.ReleaseSummary, error) {
-	releases, err := client.ListReleasePipelineReleases(ctx, runtime.graphqlClient, args[0], limit)
-	return releases, releases.Releases, err
-}
-
-func loadReleasePipelineStages(
-	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
-	limit int,
-) (client.ReleaseStageList, []client.ReleaseStageSummary, error) {
-	stages, err := client.ListReleasePipelineStages(ctx, runtime.graphqlClient, args[0], limit)
-	return stages, stages.ReleaseStages, err
-}
-
-func loadReleasePipelineTeams(
-	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
-	limit int,
-) (client.TeamList, []client.TeamSummary, error) {
-	teams, err := client.ListReleasePipelineTeams(ctx, runtime.graphqlClient, args[0], limit)
-	return teams, teams.Teams, err
-}
-
-func loadReleaseStageList(
-	ctx context.Context,
-	runtime commandRuntime,
-	_ []string,
-	limit int,
-) (client.ReleaseStageList, []client.ReleaseStageSummary, error) {
-	stages, err := client.ListReleaseStages(ctx, runtime.graphqlClient, limit)
-	return stages, stages.ReleaseStages, err
-}
-
-func loadReleaseStage(
-	ctx context.Context,
-	runtime commandRuntime,
-	id string,
-) (client.ReleaseStageSummary, error) {
-	return client.GetReleaseStageByID(ctx, runtime.graphqlClient, id)
-}
-
-func loadReleaseStageReleases(
-	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
-	limit int,
-) (client.ReleaseList, []client.ReleaseSummary, error) {
-	releases, err := client.ListReleaseStageReleases(ctx, runtime.graphqlClient, args[0], limit)
-	return releases, releases.Releases, err
+	return writeItemLine(
+		command, options, stage, stage.ID,
+		"%s %s [%s] pipeline %s", stage.ID, stage.Name, stage.Type, stage.PipelineName,
+	)
 }

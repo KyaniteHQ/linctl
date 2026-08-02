@@ -14,6 +14,13 @@ var ErrNotFound = errors.New("not found")
 // any one entity file.
 var ErrWriteInvalid = errors.New("invalid write")
 
+// requiredFieldError names a missing write-request field with the shared
+// ErrWriteInvalid sentinel, so every guarded-write surface words a missing
+// field the same way.
+func requiredFieldError(field string) error {
+	return fmt.Errorf("%w: %s is required", ErrWriteInvalid, field)
+}
+
 func notFoundError(format string, args ...any) error {
 	args = append(args, ErrNotFound)
 

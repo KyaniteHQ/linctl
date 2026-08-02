@@ -16,9 +16,6 @@ defaults:
   run:
     shell: bash
 
-env:
-  LINCTL_LINEAR_SDK_REF: 7ef4c5024f88667b2c85057ff4c905676c4a93c2
-
 jobs:
   generated-client:
     name: generated client
@@ -28,21 +25,15 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version-file: go.mod
-          cache: true
-          cache-dependency-path: go.sum
-      - name: Verify dependencies
-        run: |
-          go mod download
-          go mod verify
+      - uses: ./.github/actions/go-setup
       - name: Verify generated client
         run: go tool task generated-client-check
-      - name: Verify generated command reference
+      - name: Verify generated command references
         run: |
           go run scripts/gen-skill.go
-          git diff --exit-code -- skills/linctl/references/commands.md
+          git diff --exit-code -- \
+            skills/linctl/references/commands.md \
+            skills/linctl/references/guarded-writes.md
       - name: Verify GraphQL operations and coverage ledger against upstream Linear
         run: go tool task upstream-schema-checks
 
@@ -64,15 +55,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version-file: go.mod
-          cache: true
-          cache-dependency-path: go.sum
-      - name: Verify dependencies
-        run: |
-          go mod download
-          go mod verify
+      - uses: ./.github/actions/go-setup
       - name: Vet
         run: go vet $(bash scripts/go-packages.sh)
       - name: Test
@@ -96,15 +79,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version-file: go.mod
-          cache: true
-          cache-dependency-path: go.sum
-      - name: Verify dependencies
-        run: |
-          go mod download
-          go mod verify
+      - uses: ./.github/actions/go-setup
       - name: Verify hand-written coverage
         run: bash scripts/coverage.sh
 
@@ -116,15 +91,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version-file: go.mod
-          cache: true
-          cache-dependency-path: go.sum
-      - name: Verify dependencies
-        run: |
-          go mod download
-          go mod verify
+      - uses: ./.github/actions/go-setup
       - name: golangci-lint
         uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9.3.0
         with:
@@ -150,15 +117,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version-file: go.mod
-          cache: true
-          cache-dependency-path: go.sum
-      - name: Verify dependencies
-        run: |
-          go mod download
-          go mod verify
+      - uses: ./.github/actions/go-setup
       - name: Vulnerability scan
         # Same pinned reachability-aware scan as the local gate (`task vuln`):
         # go.mod pins govulncheck, and scripts/go-packages.sh scopes the scan to
@@ -187,20 +146,23 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version-file: go.mod
-          cache: true
-          cache-dependency-path: go.sum
-      - name: Verify dependencies
+      - uses: ./.github/actions/go-setup
+      - name: Detect OAuth fixture
+        id: fixture
         run: |
-          go mod download
-          go mod verify
+          ready=true
+          for name in LINCTL_OAUTH_CLIENT_ID LINCTL_OAUTH_CLIENT_SECRET LINCTL_OAUTH_REDIRECT_URI \
+            LINCTL_OAUTH_SCOPES LINCTL_TEST_ORG_ID LINCTL_TEST_TEAM_KEY LINCTL_TEST_TEAM_ID; do
+            if [[ -z "${!name:-}" ]]; then
+              ready=false
+            fi
+          done
+          echo "ready=$ready" >> "$GITHUB_OUTPUT"
       - name: Skip notice (OAuth fixture absent)
-        if: env.LINCTL_OAUTH_CLIENT_ID == '' || env.LINCTL_OAUTH_CLIENT_SECRET == '' || env.LINCTL_OAUTH_REDIRECT_URI == '' || env.LINCTL_OAUTH_SCOPES == '' || env.LINCTL_TEST_ORG_ID == '' || env.LINCTL_TEST_TEAM_KEY == '' || env.LINCTL_TEST_TEAM_ID == ''
+        if: steps.fixture.outputs.ready != 'true'
         run: echo "OAuth fixture env is not configured, skipping live OAuth." >> "$GITHUB_STEP_SUMMARY"
       - name: Write live target config
-        if: env.LINCTL_OAUTH_CLIENT_ID != '' && env.LINCTL_OAUTH_CLIENT_SECRET != '' && env.LINCTL_OAUTH_REDIRECT_URI != '' && env.LINCTL_OAUTH_SCOPES != '' && env.LINCTL_TEST_ORG_ID != '' && env.LINCTL_TEST_TEAM_KEY != '' && env.LINCTL_TEST_TEAM_ID != ''
+        if: steps.fixture.outputs.ready == 'true'
         run: |
           {
             printf '[target]\n'
@@ -210,7 +172,7 @@ jobs:
             printf 'project_id = "%s"\n' "$LINCTL_TEST_PROJECT_ID"
           } > .linctl.toml
       - name: OAuth live gate
-        if: env.LINCTL_OAUTH_CLIENT_ID != '' && env.LINCTL_OAUTH_CLIENT_SECRET != '' && env.LINCTL_OAUTH_REDIRECT_URI != '' && env.LINCTL_OAUTH_SCOPES != '' && env.LINCTL_TEST_ORG_ID != '' && env.LINCTL_TEST_TEAM_KEY != '' && env.LINCTL_TEST_TEAM_ID != ''
+        if: steps.fixture.outputs.ready == 'true'
         run: go tool task live-oauth
 
   dependency-review:
@@ -241,11 +203,9 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+      - uses: ./.github/actions/go-setup
         with:
-          go-version-file: go.mod
-          cache: true
-          cache-dependency-path: go.sum
+          verify-dependencies: "false"
       - name: Verify release build
         uses: goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94 # v7.2.3
         with:

@@ -15,7 +15,7 @@ func addInitiativeLabelRetireCommand(ctx context.Context, root *cobra.Command, o
 	orgWide := false
 	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.InitiativeLabelSummary]{
 		Use:   "retire INITIATIVE_LABEL_ID",
-		Short: "Retire an initiative label; requires --org-wide (affects every initiative in the organization)",
+		Short: "Retire an initiative label with --org-wide, which changes every initiative in the organization",
 		Args:  cobra.ExactArgs(1),
 		Configure: func(command *cobra.Command) {
 			command.Flags().BoolVar(&orgWide, "org-wide", false, orgWideInitiativeLabelHelp)
@@ -33,7 +33,7 @@ func addInitiativeLabelRestoreCommand(ctx context.Context, root *cobra.Command, 
 	orgWide := false
 	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.InitiativeLabelSummary]{
 		Use:   "restore INITIATIVE_LABEL_ID",
-		Short: "Restore a retired initiative label; requires --org-wide (affects every initiative)",
+		Short: "Restore a retired initiative label with --org-wide, which changes every initiative",
 		Args:  cobra.ExactArgs(1),
 		Configure: func(command *cobra.Command) {
 			command.Flags().BoolVar(&orgWide, "org-wide", false, orgWideInitiativeLabelHelp)

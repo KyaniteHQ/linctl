@@ -1,4 +1,3 @@
-//nolint:dupl // Minimal read-command glue is intentionally uniform across domains via addReadListGetCommand.
 package cli
 
 import (
@@ -7,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addInitiativeToProjectCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -22,8 +20,8 @@ func addInitiativeToProjectCommand(ctx context.Context, root *cobra.Command, opt
 			LimitHelp: "maximum Initiative-to-Project associations to return",
 			GetUse:    "get INITIATIVE_TO_PROJECT_ID",
 			GetShort:  "Get one Initiative-to-Project association by id",
-			LoadList:  loadInitiativeToProjectList,
-			LoadGet:   loadInitiativeToProject,
+			LoadList:  clientList(client.ListInitiativeToProjects),
+			LoadGet:   clientGet(client.GetInitiativeToProjectByID),
 			WriteItem: writeInitiativeToProject,
 		},
 	)
@@ -34,33 +32,12 @@ func writeInitiativeToProject(
 	options *rootOptions,
 	association client.InitiativeToProjectSummary,
 ) error {
-	return writeItem(command, options, association, association.ID,
-		func(command *cobra.Command, _ *rootOptions, association client.InitiativeToProjectSummary) error {
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s %s -> %s order %s",
-				association.ID,
-				association.InitiativeName,
-				association.ProjectName,
-				association.SortOrder,
-			)
-		})
-}
-
-func loadInitiativeToProjectList(
-	ctx context.Context,
-	runtime commandRuntime,
-	_ []string,
-	limit int,
-) (client.InitiativeToProjectList, []client.InitiativeToProjectSummary, error) {
-	associations, err := client.ListInitiativeToProjects(ctx, runtime.graphqlClient, limit)
-	return associations, associations.Associations, err
-}
-
-func loadInitiativeToProject(
-	ctx context.Context,
-	runtime commandRuntime,
-	id string,
-) (client.InitiativeToProjectSummary, error) {
-	return client.GetInitiativeToProjectByID(ctx, runtime.graphqlClient, id)
+	return writeItemLine(
+		command, options, association, association.ID,
+		"%s %s -> %s order %s",
+		association.ID,
+		association.InitiativeName,
+		association.ProjectName,
+		association.SortOrder,
+	)
 }

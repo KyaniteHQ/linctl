@@ -1,10 +1,10 @@
 # Quickstart
 
-From nothing to a write that lands, in about five minutes.
+This page takes you from nothing to a write that lands, in about five minutes.
 
-You will need a Linear account and permission to create an OAuth application in it.
+You need a Linear account, and the permission to create an OAuth application in it.
 
-## 1. Install
+## 1. Install linctl
 
 ```bash
 # macOS
@@ -14,30 +14,30 @@ brew install --cask KyaniteHQ/linctl/linctl
 go install github.com/KyaniteHQ/linctl/cmd/linctl@latest
 ```
 
-Check it works. This needs no auth and no config:
+Check that linctl runs. These two commands need no auth and no config.
 
 ```bash
 linctl --version
 linctl usage
 ```
 
-`linctl usage` prints a compact orientation summary. It is the thing to hand an agent that has
-never seen linctl before.
+`linctl usage` prints a compact orientation summary. Give it to an agent that has not used
+linctl before.
 
 ## 2. Create a Linear OAuth application
 
-In Linear: **Settings → API → OAuth applications → Create new**.
+In Linear, open **Settings → API → OAuth applications → Create new**.
 
-- **Redirect URI**: `http://127.0.0.1:8765/callback`
-- Copy the **client ID**. Copy the **client secret** too if Linear gives you one.
+- Set the **redirect URI** to `http://127.0.0.1:8765/callback`.
+- Copy the **client ID**. Also copy the **client secret** if Linear shows one.
 
-linctl authenticates with OAuth, not personal API keys. That is deliberate: OAuth tokens carry
-scopes and an actor identity that linctl can verify before it lets a write through.
+linctl authenticates with OAuth, not with a personal API key. This is deliberate. An OAuth token
+carries scopes and an actor identity that linctl can verify before it permits a write.
 
-## 3. Configure auth
+## 3. Configure the auth
 
-Auth material lives outside your repo, in your OS config directory. It never goes in
-`.linctl.toml` and never goes in git.
+The auth material lives outside your repo, in the config directory of your operating system. It
+never goes into `.linctl.toml`, and it never goes into git.
 
 ```bash
 export LINCTL_OAUTH_CLIENT_ID=<your-client-id>
@@ -48,56 +48,52 @@ linctl auth configure \
   --scopes read,write,issues:create,comments:create
 ```
 
-If your app has a secret, add `--client-secret "$LINCTL_OAUTH_CLIENT_SECRET"`.
+If your application has a secret, add `--client-secret "$LINCTL_OAUTH_CLIENT_SECRET"`.
 
-Now log in. This opens a browser:
+Now log in. This command opens a browser.
 
 ```bash
 linctl auth login
 ```
 
-Confirm it worked:
+Confirm that the login worked.
 
 ```bash
 linctl auth status
 ```
 
-You should see the actor, the granted scopes, and an expiry. linctl checks this against Linear
-live, so a green status means the credential really works, not just that a file exists on disk.
+The output shows the actor, the granted scopes, and an expiry. linctl checks this against Linear
+live, so a good status means that the credential really works. It does not only mean that a file
+exists on disk.
 
-Secrets are never printed. Auth output reports them as `set` or `missing`.
+linctl never prints a secret. The auth output reports each secret as `set` or `missing`.
 
 ## 4. Pin the target
 
-From the repo where your agent will run, scaffold a target-only pin from the active
-credential. Auth material never goes in this file.
+Run this in the repo where your agent works. `linctl init` writes a target-only pin from the
+active credential. Auth material never goes into this file.
 
 ```bash
-# one visible team: writes .linctl.toml in the current directory
+# one visible team: this writes .linctl.toml in the current directory
 linctl init
 
-# multiple teams: pick one (discover with linctl team list --json)
+# more than one team: select one. Use linctl team list --json to find the key.
 linctl init --team LIT
-# optional: also pin a project after verifying it belongs to that team
+
+# optional: also pin a project, after you confirm that it belongs to that team
 linctl init --team LIT --project PROJECT_ID
 ```
 
-`init` refuses to overwrite an existing `.linctl.toml` (edit or remove it; there is no
-`--force`). The file is the whole safety story: *writes from this repo go here and
-nowhere else.* It is safe to commit. It holds no secrets.
-
-Confirm the credential actually resolves to it:
-
-```bash
-linctl target --json
-```
+`init` refuses to overwrite an existing `.linctl.toml`, and linctl has no `--force` flag. Edit
+the file or remove it instead. The file carries the whole safety story: *a write from this repo
+goes here and nowhere else.* The file holds no secret, so you can commit it.
 
 <details>
-<summary>Manual pin (when you already know the ids)</summary>
+<summary>Manual pin, when you already know the ids</summary>
 
 ```bash
-linctl user me --json          # organization
-linctl team list --json        # teams the credential can see
+linctl user me --json          # the organization
+linctl team list --json        # the teams that the credential can see
 ```
 
 ```toml
@@ -106,11 +102,19 @@ org_id   = "your-linear-org-id"
 team_key = "LIT"
 team_id  = "your-linear-team-id"
 
-# Optional. Narrows writes further, to a single project.
+# Optional. This makes a write narrower, down to a single project.
 # project_id = "your-linear-project-id"
 ```
 
 </details>
+
+## 5. Confirm the target
+
+Confirm that the credential really resolves to the pinned target.
+
+```bash
+linctl target --json
+```
 
 ```json
 {
@@ -124,10 +128,10 @@ team_id  = "your-linear-team-id"
 ```
 
 `expected` is what you pinned. `resolved` is what the live credential proves. `"confirmed":
-true` means they agree, so writes will work. If it says otherwise, `linctl doctor` will tell
-you which of the two is wrong.
+true` means that the two agree, so a write works. If the output shows something else, run
+`linctl doctor`. It tells you which of the two is wrong.
 
-Without `--json` you get the same thing on one line:
+Without `--json` you get the same facts on one line.
 
 ```
 org your-linear-org-id team LIT/your-linear-team-id project  confirmed true
@@ -135,7 +139,7 @@ org your-linear-org-id team LIT/your-linear-team-id project  confirmed true
 
 ## 6. Read something
 
-Reads need no pin and no confirmation. They work as soon as you are authenticated.
+A read needs no pin and no confirmation. A read works as soon as you authenticate.
 
 ```bash
 linctl issue list --mine
@@ -145,7 +149,7 @@ linctl issue get LIT-123 --json
 
 ## 7. Write something
 
-Now the part that matters.
+Now the important part.
 
 ```bash
 linctl issue create --title "Hello from linctl"
@@ -158,11 +162,10 @@ LIT-42  Hello from linctl  [Backlog]
 That issue is real. It landed in the pinned team, because the live credential resolved to the
 pinned team.
 
-## 8. Watch it refuse
+## 8. See linctl refuse a write
 
-Run the same write, but aim it at a team your credential cannot reach. Overriding the target on
-the command line takes **both** flags, a key and an id, because a key alone is not enough to
-identify a team:
+Run the same write, but aim it at a team that your credential cannot reach. An override on the
+command line needs **both** flags, a key and an id, because a key alone does not identify a team.
 
 ```bash
 linctl issue create --title "Hello from linctl" \
@@ -173,20 +176,20 @@ linctl issue create --title "Hello from linctl" \
 {"error_code":"TARGET_MISMATCH","message":"target mismatch: expected team_id=00000000-0000-0000-0000-000000000000 team_key=STG"}
 ```
 
-Exit code 1. Nothing was created. The credential cannot reach that team, so linctl stopped
-before sending any mutation.
+The exit code is 1. linctl created nothing. The credential cannot reach that team, so linctl
+stopped before it sent a mutation.
 
 That is the guard. `--team` and `--team-id` **set** the pinned target. They did not relax the
 check. The write still had to prove itself against the live credential, and it could not. No
-flag makes this succeed.
+flag makes this write succeed.
 
-This is what protects you when an agent runs with a stale token, in the wrong checkout, or from
-a config it misread.
+This is what protects you when an agent runs with an old token, in the wrong checkout, or from a
+config that it misread.
 
-> Passing `--team` on its own gives you `TARGET_NOT_CONFIGURED` instead, because a target
-> override with no team id is incomplete. Pass both, or neither.
+> `--team` on its own gives you `TARGET_NOT_CONFIGURED` instead, because a target override
+> without a team id is incomplete. Pass both flags, or pass neither.
 
-## 9. Point your agent at it
+## 9. Give linctl to your agent
 
 ```bash
 linctl issue list --json --compact --fields identifier,title,state
@@ -196,15 +199,15 @@ linctl issue comment "$id" --body "Reproduced on staging."
 ```
 
 Give your agent [`skills/linctl/SKILL.md`](../skills/linctl/SKILL.md). It teaches the command
-surface, the JSON contracts, and the guard, and it includes an `AGENTS.md` snippet you can drop
+surface, the JSON contracts, and the guard. It also has an `AGENTS.md` block that you can copy
 into the repo.
 
-## Running headless (CI, containers, agents with no browser)
+## Run linctl without a browser (CI, containers, agents)
 
-`linctl auth login` opens a browser, which is useless in CI. Two options that do not:
+`linctl auth login` opens a browser, which does not work in CI. Two other paths do work.
 
-**Authorize as the app itself.** This needs a client secret and gives you an app actor rather
-than a user actor, so changes are attributed to the application:
+**Authorize as the application.** This needs a client secret. It gives you an app actor instead
+of a user actor, so Linear attributes each change to the application.
 
 ```bash
 linctl auth configure --client-id "$LINCTL_OAUTH_CLIENT_ID" \
@@ -213,42 +216,42 @@ linctl auth configure --client-id "$LINCTL_OAUTH_CLIENT_ID" \
 linctl auth app
 ```
 
-**Or hand it a token directly.** linctl reads these from the environment and never writes them
-to disk, which makes them the right fit for CI secrets:
+**Or give linctl a token directly.** linctl reads these variables from the environment, and
+linctl never writes them to disk. That makes them the correct fit for a CI secret.
 
 | Variable | Purpose |
 | --- | --- |
-| `LINCTL_OAUTH_ACCESS_TOKEN` | use this token, skip local auth state entirely |
-| `LINCTL_OAUTH_CLIENT_ID` | OAuth app client id |
-| `LINCTL_OAUTH_CLIENT_SECRET` | OAuth app client secret |
-| `LINCTL_OAUTH_REDIRECT_URI` | redirect URI |
-| `LINCTL_OAUTH_SCOPES` | requested scopes |
+| `LINCTL_OAUTH_ACCESS_TOKEN` | use this token, and skip the local auth state |
+| `LINCTL_OAUTH_CLIENT_ID` | the client id of the OAuth application |
+| `LINCTL_OAUTH_CLIENT_SECRET` | the client secret of the OAuth application |
+| `LINCTL_OAUTH_REDIRECT_URI` | the redirect URI |
+| `LINCTL_OAUTH_SCOPES` | the requested scopes |
 
-These are non-persistent overrides. They do not change your saved auth state, so a CI run cannot
-quietly rewrite what your laptop is logged in as.
+These overrides are not persistent. They do not change your saved auth state, so a CI run cannot
+quietly rewrite the login of your laptop.
 
-The guard behaves identically either way. A CI job with a token for the wrong organization gets
-`TARGET_MISMATCH` and a non-zero exit, which is exactly what you want a pipeline to do.
+The guard behaves the same way on both paths. A CI job with a token for the wrong organization
+gets `TARGET_MISMATCH` and a non-zero exit, which is what a pipeline must do.
 
 ## Where to go next
 
-- [Why not the Linear MCP server?](why-not-mcp.md) — the token cost and the write boundary
+- [linctl compared to the Linear MCP server](why-not-mcp.md): the token cost and the write boundary
 - [All documentation](README.md)
-- `linctl <group> --help` — every subcommand of every group
-- `linctl doctor` — run this first whenever something is not behaving
+- `linctl <group> --help`: every subcommand of every group
+- `linctl doctor`: run this first when something behaves in an unexpected way
 
 ## Troubleshooting
 
-**`TARGET_NOT_CONFIGURED`** — no `.linctl.toml`, or it is missing `org_id`, `team_key`, or
-`team_id`. Reads still work. Writes will not, until you pin a target.
+**`TARGET_NOT_CONFIGURED`**: there is no `.linctl.toml`, or the file has no `org_id`, no
+`team_key`, or no `team_id`. A read still works. A write does not work until you pin a target.
 
-**`TARGET_MISMATCH` when you did not expect it** — the credential does not resolve to what you
+**`TARGET_MISMATCH` when you did not expect it**: the credential does not resolve to what you
 pinned. Run `linctl target --json` and `linctl auth status`. Usually the token belongs to a
-different organization than the one in the file, or the token is stale. This is the guard doing
-its job, so read the message before assuming it is a bug.
+different organization than the file names, or the token is old. This is the guard at work, so
+read the message before you assume a defect.
 
-**Auth expired** — `linctl auth refresh`. linctl also refreshes on its own mid-command and
-retries once, so you should rarely need this.
+**The auth expired**: run `linctl auth refresh`. linctl also refreshes the token inside a
+command and retries one time, so you rarely need this.
 
-**Anything else** — `linctl doctor` checks config, auth, and target together and tells you which
-layer is broken.
+**Anything else**: `linctl doctor` checks the config, the auth, and the target together, and it
+tells you which layer is broken.

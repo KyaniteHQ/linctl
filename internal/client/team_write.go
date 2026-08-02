@@ -34,7 +34,7 @@ func CreateTeam(
 	request TeamCreateRequest,
 ) (TeamSummary, error) {
 	if request.Name == "" {
-		return TeamSummary{}, fmt.Errorf("%w: name is required", ErrWriteInvalid)
+		return TeamSummary{}, requiredFieldError("name")
 	}
 	if !request.OrgWide {
 		return TeamSummary{}, fmt.Errorf(

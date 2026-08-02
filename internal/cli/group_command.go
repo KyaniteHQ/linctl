@@ -8,7 +8,9 @@ import (
 
 // newGroupCommand builds a parent command that only routes to subcommands.
 // A bare invocation prints help; an unknown subcommand token is an error so
-// agent pipelines fail loudly instead of parsing help output.
+// agent pipelines fail loudly instead of parsing help output. A group command
+// changes nothing in Linear, so it carries the read safety class explicitly
+// and never depends on the wording of its Short text.
 func newGroupCommand(use string, short string) *cobra.Command {
 	command := &cobra.Command{
 		Use:   use,
@@ -22,6 +24,7 @@ func newGroupCommand(use string, short string) *cobra.Command {
 			return fmt.Errorf("unknown command %q for %q", args[0], command.CommandPath())
 		},
 	}
+	annotateCommand(command, commandSafetyAnnotation, string(CommandSafetyRead))
 
 	return command
 }
