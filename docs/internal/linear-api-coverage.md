@@ -1,6 +1,6 @@
 # Linear API coverage ledger
 
-Generated from current local sources and upstream Linear SDK commit `8335e09`.
+Generated from current local sources and upstream Linear SDK commit `7ef4c50`.
 
 Sources (paths relative to the upstream Linear SDK checkout):
 
@@ -17,8 +17,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Surface | Total | Covered/exposed | Classified |
 | --- | ---: | ---: | ---: |
 | Upstream SDK root methods with generated local operations | 468 | 156 | 468 |
-| Upstream Query root fields used by generated local operations | 164 | 116 | 164 |
-| Upstream Mutation root fields used by generated local operations | 371 | 42 | 371 |
+| Upstream Query root fields used by generated local operations | 165 | 116 | 165 |
+| Upstream Mutation root fields used by generated local operations | 372 | 42 | 372 |
 | Local generated Go operations declared in GraphQL files | 310 | 310 | 310 |
 | Public CLI commands from command inventory | 439 | 322 | 439 |
 
@@ -588,7 +588,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `issueToReleases` | `IssueToReleaseConnection!` | generated_operation | root field used by local GraphQL operation |
 | `issueVcsBranchSearch` | `Issue` | generated_operation | root field used by local GraphQL operation |
 | `issues` | `IssueConnection!` | generated_operation | root field used by local GraphQL operation |
-| `latestReleaseByAccessKey` | `Release` | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the auth-scoped agent CLI |
+| `latestReleaseByAccessKey` | `AccessKeyRelease` | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the auth-scoped agent CLI |
 | `microsoftTeamsChannels` | `MicrosoftTeamsChannelsPayload!` | intentionally_excluded | Microsoft Teams channel enumeration exposes chat integration metadata outside the default Linear work CLI surface |
 | `notification` | `Notification!` | generated_operation | root field used by local GraphQL operation |
 | `notificationSubscription` | `NotificationSubscription!` | generated_operation | root field used by local GraphQL operation |
@@ -605,6 +605,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `organizationInvites` | `OrganizationInviteConnection!` | intentionally_excluded | organization invite reads can expose invitee and admin metadata outside an agent-safe CLI surface |
 | `organizationMeta` | `OrganizationMeta` | safe_candidate | read operation may fit future CLI coverage |
 | `partnerOfferDetails` | `PartnerOfferDetailsPayload` | safe_candidate | read operation may fit future CLI coverage |
+| `partnerOfferWorkspaces` | `PartnerOfferWorkspacesPayload` | safe_candidate | read operation may fit future CLI coverage |
 | `project` | `Project!` | generated_operation | root field used by local GraphQL operation |
 | `projectFilterSuggestion` | `ProjectFilterSuggestionPayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectLabel` | `ProjectLabel!` | generated_operation | root field used by local GraphQL operation |
@@ -621,12 +622,12 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `projects` | `ProjectConnection!` | generated_operation | root field used by local GraphQL operation |
 | `pushSubscriptionTest` | `PushSubscriptionTestPayload!` | intentionally_excluded | push subscription diagnostics are notification-device integration plumbing outside the CLI surface |
 | `rateLimitStatus` | `RateLimitPayload!` | generated_operation | root field used by local GraphQL operation |
-| `recentReleasesByAccessKey` | `[Release!]!` | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the auth-scoped agent CLI |
+| `recentReleasesByAccessKey` | `[AccessKeyRelease!]!` | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the auth-scoped agent CLI |
 | `release` | `Release!` | generated_operation | root field used by local GraphQL operation |
 | `releaseNote` | `ReleaseNote!` | generated_operation | root field used by local GraphQL operation |
 | `releaseNotes` | `ReleaseNoteConnection!` | generated_operation | root field used by local GraphQL operation |
 | `releasePipeline` | `ReleasePipeline!` | generated_operation | root field used by local GraphQL operation |
-| `releasePipelineByAccessKey` | `ReleasePipeline!` | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the auth-scoped agent CLI |
+| `releasePipelineByAccessKey` | `AccessKeyReleasePipeline!` | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the auth-scoped agent CLI |
 | `releasePipelines` | `ReleasePipelineConnection!` | generated_operation | root field used by local GraphQL operation |
 | `releaseSearch` | `[Release!]!` | generated_operation | root field used by local GraphQL operation |
 | `releaseStage` | `ReleaseStage!` | generated_operation | root field used by local GraphQL operation |
@@ -923,6 +924,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `organizationStartTrialForPlan` | `OrganizationStartTrialPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `organizationUpdate` | `OrganizationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `partnerApplicationCreate` | `ContactPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `partnerOfferRedeem` | `PartnerOfferRedeemPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `passkeyLoginFinish` | `AuthResolverResponse!` | blocked_needs_design | mutation needs product and safety design |
 | `passkeyLoginStart` | `PasskeyLoginStartResponse!` | blocked_needs_design | mutation needs product and safety design |
 | `projectAddLabel` | `ProjectPayload!` | generated_operation | root field used by local GraphQL operation |
@@ -963,7 +965,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `refreshGoogleSheetsData` | `IntegrationPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `releaseArchive` | `ReleaseArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `releaseComplete` | `ReleasePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `releaseCompleteByAccessKey` | `ReleasePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `releaseCompleteByAccessKey` | `AccessKeyReleasePayload!` | blocked_needs_design | mutation needs product and safety design |
 | `releaseCreate` | `ReleasePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `releaseDelete` | `ReleaseArchivePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `releaseNoteCreate` | `ReleaseNotePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -979,11 +981,11 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `releaseStageUnarchive` | `ReleaseStageArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `releaseStageUpdate` | `ReleaseStagePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `releaseSync` | `ReleasePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `releaseSyncByAccessKey` | `ReleasePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `releaseSyncByAccessKey` | `AccessKeyReleasePayload!` | blocked_needs_design | mutation needs product and safety design |
 | `releaseUnarchive` | `ReleaseArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `releaseUpdate` | `ReleasePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `releaseUpdateByPipeline` | `ReleasePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `releaseUpdateByPipelineByAccessKey` | `ReleasePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `releaseUpdateByPipelineByAccessKey` | `AccessKeyReleasePayload!` | blocked_needs_design | mutation needs product and safety design |
 | `resendOrganizationInvite` | `DeletePayload!` | blocked_needs_design | mutation needs product and safety design |
 | `resendOrganizationInviteByEmail` | `DeletePayload!` | blocked_needs_design | mutation needs product and safety design |
 | `roadmapArchive` | `RoadmapArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |

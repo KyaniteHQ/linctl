@@ -81,7 +81,7 @@ jobs:
             echo "has_drift=true"
             echo 'report<<EOF'
             cat "$report"
-            echo 'EOF'
+            printf '\nEOF\n'
           } >> "$GITHUB_OUTPUT"
           breaking=false
           if grep -qE '^(types removed upstream|fields removed|field types changed|enum values removed) \(' "$report"; then
