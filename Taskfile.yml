@@ -8,7 +8,7 @@ vars:
   # Single source of the upstream Linear SDK pin. CI reads the same file, so a
   # refresh bumps one place instead of two.
   LINEAR_SDK_REF:
-    sh: cat .linear-sdk-ref
+    sh: cat "{{.TASKFILE_DIR}}/.linear-sdk-ref"
   INFISICAL_ENV: secrets
   INFISICAL_PATH: /linctl
   # Infisical needs a project id. Export INFISICAL_PROJECT_ID to supply one without
