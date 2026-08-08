@@ -14913,6 +14913,7 @@ const (
 	NotificationCategoryCustomers           NotificationCategory = "customers"
 	NotificationCategoryDocumentchanges     NotificationCategory = "documentChanges"
 	NotificationCategoryFeed                NotificationCategory = "feed"
+	NotificationCategoryLoops               NotificationCategory = "loops"
 	NotificationCategoryMentions            NotificationCategory = "mentions"
 	NotificationCategoryPostsandupdates     NotificationCategory = "postsAndUpdates"
 	NotificationCategoryReactions           NotificationCategory = "reactions"
@@ -14932,6 +14933,7 @@ var AllNotificationCategory = []NotificationCategory{
 	NotificationCategoryCustomers,
 	NotificationCategoryDocumentchanges,
 	NotificationCategoryFeed,
+	NotificationCategoryLoops,
 	NotificationCategoryMentions,
 	NotificationCategoryPostsandupdates,
 	NotificationCategoryReactions,
