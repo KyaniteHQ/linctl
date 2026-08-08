@@ -1,6 +1,6 @@
 # Linear API coverage ledger
 
-Generated from current local sources and upstream Linear SDK commit `7ef4c50`.
+Generated from current local sources and upstream Linear SDK commit `eabc85d`.
 
 Sources (paths relative to the upstream Linear SDK checkout):
 
@@ -18,7 +18,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | --- | ---: | ---: | ---: |
 | Upstream SDK root methods with generated local operations | 468 | 156 | 468 |
 | Upstream Query root fields used by generated local operations | 165 | 116 | 165 |
-| Upstream Mutation root fields used by generated local operations | 372 | 42 | 372 |
+| Upstream Mutation root fields used by generated local operations | 373 | 42 | 373 |
 | Local generated Go operations declared in GraphQL files | 310 | 310 | 310 |
 | Public CLI commands from command inventory | 439 | 322 | 439 |
 
@@ -932,6 +932,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `projectCreate` | `ProjectPayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectCreateSlackChannel` | `ProjectPayload!` | blocked_needs_design | project Slack channel creation mutates chat integration state and needs explicit integration guard semantics |
 | `projectDelete` | `ProjectArchivePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
+| `projectDismissSlackChannelCreationFailure` | `ProjectPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `projectExternalSyncDisable` | `ProjectPayload!` | blocked_needs_design | project external-sync disable changes integration state and needs explicit integration guard semantics |
 | `projectLabelCreate` | `ProjectLabelPayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectLabelDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
