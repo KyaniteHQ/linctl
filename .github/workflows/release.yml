@@ -59,8 +59,8 @@ jobs:
       - uses: ./.github/actions/go-setup
         with:
           verify-dependencies: "false"
-      - name: Release preflight
-        run: go tool task release-preflight
+      - name: GoReleaser check
+        run: go tool task goreleaser-check
 
   publish:
     name: publish

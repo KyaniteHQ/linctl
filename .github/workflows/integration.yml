@@ -74,18 +74,3 @@ jobs:
       - name: Sweep orphaned namespaced resources
         if: always() && steps.fixture.outputs.ready == 'true'
         run: bash scripts/live-sweep.sh
-
-  schema-drift:
-    name: schema drift check
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    if: github.repository == 'KyaniteHQ/linctl'
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - uses: ./.github/actions/go-setup
-      - name: Schema drift check
-        env:
-          LINCTL_LINEAR_SDK_REF: master
-        run: go tool task schema-drift-check

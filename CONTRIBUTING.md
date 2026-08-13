@@ -96,21 +96,21 @@ Never run a write test against real project data. A test resource must use the n
 
 ## Schema changes
 
-A nightly `schema-drift` job (`.github/workflows/integration.yml`) reports the semantic drift
-between the vendored `internal/client/schema.graphql` and the upstream `linear/linear` SDK
+A nightly `schema-refresh` workflow (`.github/workflows/schema-refresh.yml`) reports the semantic
+drift between the vendored `internal/client/schema.graphql` and the upstream `linear/linear` SDK
 schema. It reports each type, field, and enum value added or removed, and each field type change
-on a type in both schemas. It is read-only, and it is not part of `go tool task ci`, so it never
-blocks a PR. It exists to show when the vendored snapshot falls behind. Run it locally:
+on a type in both schemas. The check is read-only, and it is not part of `go tool task ci` or
+`.github/workflows/integration.yml`, so it never blocks a PR or the live e2e job. Run the same
+check locally:
 
 ```bash
 go tool task schema-drift-check
 ```
 
-A companion nightly `schema-refresh` workflow (`.github/workflows/schema-refresh.yml`) opens or
-updates a `chore/schema-refresh` PR when it detects drift. That workflow copies the upstream SDK
-schema, bumps `.linear-sdk-ref`, regenerates the client and the coverage ledger, and leaves the
-PR for a human review. It never merges by itself. Prefer that PR over a hand-rolled refresh when
-it is already open.
+When the workflow detects drift, it opens or updates a `chore/schema-refresh` PR. That workflow
+copies the upstream SDK schema, bumps `.linear-sdk-ref`, regenerates the client and the coverage
+ledger, and leaves the PR for a human review. It never merges by itself. Prefer that PR over a
+hand-rolled refresh when it is already open.
 
 The repo secret `SCHEMA_REFRESH_GITHUB_TOKEN` is optional. It is a fine-grained PAT with
 contents and pull-requests write access on this repo. When it is set, the workflow uses it, and
@@ -152,9 +152,10 @@ needs it.
 
 ## Releases
 
-A push of a `v*` tag starts a release. The release workflow then runs GoReleaser, which publishes
-the GitHub artifacts (archives, SBOMs, `checksums.txt`, and a keyless cosign sigstore bundle) and
-updates the `KyaniteHQ/homebrew-linctl` tap cask. The tap token must be
+A push of a `v*` tag starts a release. The release workflow requires a successful `ci.yml` run
+on that SHA on `master`, runs `go tool task goreleaser-check`, then runs GoReleaser. GoReleaser
+publishes the GitHub artifacts (archives, SBOMs, `checksums.txt`, and a keyless cosign sigstore
+bundle) and updates the `KyaniteHQ/homebrew-linctl` tap cask. The tap token must be
 `HOMEBREW_TAP_GITHUB_TOKEN`.
 
 Run the local non-publishing release preflight before you create and push the tag:
