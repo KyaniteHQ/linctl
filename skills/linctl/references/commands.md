@@ -2835,6 +2835,14 @@ Flags:
       --limit int   maximum documents to return (default 50)
 ```
 
+### linctl project export
+
+Export the content and the attachment URLs of a project to a directory
+
+```
+linctl project export PROJECT_ID DIR
+```
+
 ### linctl project external-links
 
 List project external links

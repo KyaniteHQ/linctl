@@ -96,6 +96,7 @@ var usageTopics = map[string]usagePayload{
 		Text: "The project commands cover the safe Linear project loop. " +
 			"Use linctl project list --limit 50 to list the projects attached to the resolved team. " +
 			"Use linctl project get PROJECT_ID to inspect one project. " +
+			"Use linctl project export PROJECT_ID DIR to write the project content markdown to a local file. " +
 			"Use linctl project members PROJECT_ID to list the current members. " +
 			"Use linctl project updates PROJECT_ID --limit 20 to read the project status history. " +
 			"Use linctl project-milestone list PROJECT_ID --limit 20 to read the ProjectMilestone context. " +

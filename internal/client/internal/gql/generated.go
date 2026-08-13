@@ -62171,8 +62171,13 @@ func (v *projectMilestonesResponse) GetProjectMilestones() projectMilestonesProj
 //
 // A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type projectProject struct {
+	// The project's content in markdown format.
+	Content              *string `json:"content"`
 	ProjectSummaryFields `json:"-"`
 }
+
+// GetContent returns projectProject.Content, and is useful for accessing the field via an interface.
+func (v *projectProject) GetContent() *string { return v.Content }
 
 // GetId returns projectProject.Id, and is useful for accessing the field via an interface.
 func (v *projectProject) GetId() string { return v.ProjectSummaryFields.Id }
@@ -62234,6 +62239,8 @@ func (v *projectProject) UnmarshalJSON(b []byte) error {
 }
 
 type __premarshalprojectProject struct {
+	Content *string `json:"content"`
+
 	Id string `json:"id"`
 
 	Name string `json:"name"`
@@ -62266,6 +62273,7 @@ func (v *projectProject) MarshalJSON() ([]byte, error) {
 func (v *projectProject) __premarshalJSON() (*__premarshalprojectProject, error) {
 	var retval __premarshalprojectProject
 
+	retval.Content = v.Content
 	retval.Id = v.ProjectSummaryFields.Id
 	retval.Name = v.ProjectSummaryFields.Name
 	retval.Description = v.ProjectSummaryFields.Description
@@ -90999,6 +91007,7 @@ func organization_users(
 const project_Operation = `
 query project ($id: String!) {
 	project(id: $id) {
+		content
 		... ProjectSummaryFields
 	}
 }

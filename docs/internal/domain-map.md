@@ -348,7 +348,7 @@ Schema backing:
 - Reads: `Query.projects`, `Query.project`, `Project.attachments`, `Project.documents`, `Project.externalLinks`, `Project.history`, `Project.initiativeToProjects`, `Project.initiatives`, `Project.inverseRelations`, `Project.issues`, `Project.labels`, `Project.members`, `Project.needs`, `Project.relations`, `Project.teams`, `Project.projectUpdates`
 - Writes: `Mutation.projectCreate`, `Mutation.projectUpdate`, `Mutation.projectArchive`, `Mutation.projectAddLabel`, `Mutation.projectRemoveLabel`
 - Inputs: `ProjectCreateInput`, `ProjectUpdateInput`
-- Relevant fields: `Project.id`, `Project.name`, `Project.description`, `Project.status`, `Project.lead`, `Project.url`, `Project.teams`, `Project.members`, `Project.documents`, `Project.projectMilestones`, `Project.issues`, `Project.comments`
+- Relevant fields: `Project.id`, `Project.name`, `Project.description`, `Project.content`, `Project.status`, `Project.lead`, `Project.url`, `Project.teams`, `Project.members`, `Project.documents`, `Project.projectMilestones`, `Project.issues`, `Project.comments`
 
 Planned commands:
 
@@ -357,6 +357,7 @@ Planned commands:
 | `project list` | `Query.team`, `Team.projects` | Read-only, resolved-team scoped |
 | `project all` | `Query.projects` | Read-only |
 | `project get` | `Query.project` | Read-only |
+| `project export` | `Query.project` (`GetProjectDetail` for `Project.content`) and `Project.attachments` are assembled into a single markdown file (`<DIR>/<slug-or-id>.md`) holding the metadata header, content, and attachment URLs; capped at 250 attachments with a stderr note when more pages exist | Read-only, writes only local files |
 | `project open` | `Query.project` resolves `Project.url`, then the platform opener (`xdg-open`/`open`/`rundll32`) launches it with the URL as a discrete argv argument | Read-only |
 | `project attachments` | `Project.attachments` | Read-only |
 | `project documents` | `Project.documents` | Read-only |

@@ -14,6 +14,7 @@ func addProjectCommand(ctx context.Context, root *cobra.Command, options *rootOp
 	addProjectListCommand(ctx, projectCommand, options)
 	addProjectAllCommand(ctx, projectCommand, options)
 	addProjectGetCommand(ctx, projectCommand, options)
+	addProjectExportCommand(ctx, projectCommand, options)
 	addProjectAttachmentsCommand(ctx, projectCommand, options)
 	addProjectDocumentsCommand(ctx, projectCommand, options)
 	addProjectExternalLinksCommand(ctx, projectCommand, options)

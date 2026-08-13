@@ -12,6 +12,12 @@ import (
 
 const projectListPageSize = 50
 
+// ProjectDetail is one project with the long markdown body kept off compact output.
+type ProjectDetail struct {
+	Summary ProjectSummary
+	Content string
+}
+
 // ProjectSummary is the compact project model used by project commands.
 type ProjectSummary struct {
 	ID          string        `json:"id"`
@@ -289,12 +295,25 @@ func ListProjects(ctx context.Context, graphqlClient graphql.Client, limit int) 
 
 // GetProjectByID returns a project by Linear id or slug.
 func GetProjectByID(ctx context.Context, graphqlClient graphql.Client, id string) (ProjectSummary, error) {
-	projectResult, err := gql.XProject(ctx, graphqlClient, id)
+	detail, err := GetProjectDetail(ctx, graphqlClient, id)
 	if err != nil {
-		return ProjectSummary{}, fmt.Errorf("get project %s: %w", id, err)
+		return ProjectSummary{}, err
 	}
 
-	return projectSummaryFromFields(projectResult.Project.ProjectSummaryFields), nil
+	return detail.Summary, nil
+}
+
+// GetProjectDetail returns a project by Linear id or slug with its markdown content.
+func GetProjectDetail(ctx context.Context, graphqlClient graphql.Client, id string) (ProjectDetail, error) {
+	projectResult, err := gql.XProject(ctx, graphqlClient, id)
+	if err != nil {
+		return ProjectDetail{}, fmt.Errorf("get project %s: %w", id, err)
+	}
+
+	return ProjectDetail{
+		Summary: projectSummaryFromFields(projectResult.Project.ProjectSummaryFields),
+		Content: stringValue(projectResult.Project.Content),
+	}, nil
 }
 
 // GetProjectFilterSuggestion returns a JSON project filter suggestion for a prompt.

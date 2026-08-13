@@ -83,6 +83,7 @@ type commandFlowFakeClient struct {
 	emptyIssueChildren            bool
 	emptyIssueComments            bool
 	truncatedExport               bool
+	invalidExportLeaf             bool
 	emptyIssueProject             bool
 	emptyIssueMine                bool
 	emptyIssueLabel               bool

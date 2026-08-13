@@ -20,7 +20,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Upstream Query root fields used by generated local operations | 165 | 116 | 165 |
 | Upstream Mutation root fields used by generated local operations | 373 | 42 | 373 |
 | Local generated Go operations declared in GraphQL files | 310 | 310 | 310 |
-| Public CLI commands from command inventory | 439 | 322 | 439 |
+| Public CLI commands from command inventory | 440 | 323 | 440 |
 
 ## Upstream SDK Root Methods
 
@@ -1529,6 +1529,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Project | `project list` | `Query.team`, `Team.projects` | Read-only, resolved-team scoped | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Project | `project all` | `Query.projects` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Project | `project get` | `Query.project` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
+| Project | `project export` | `Query.project` (`GetProjectDetail` for `Project.content`) and `Project.attachments` are assembled into a single markdown file (`<DIR>/<slug-or-id>.md`) holding the metadata header, content, and attachment URLs; capped at 250 attachments with a stderr note when more pages exist | Read-only, writes only local files | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Project | `project open` | `Query.project` resolves `Project.url`, then the platform opener (`xdg-open`/`open`/`rundll32`) launches it with the URL as a discrete argv argument | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Project | `project attachments` | `Project.attachments` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
 | Project | `project documents` | `Project.documents` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |

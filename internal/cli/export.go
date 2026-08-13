@@ -37,6 +37,19 @@ func addIssueExportCommand(ctx context.Context, root *cobra.Command, options *ro
 	})
 }
 
+func addProjectExportCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	command := &cobra.Command{
+		Use:   "export PROJECT_ID DIR",
+		Short: "Export the content and the attachment URLs of a project to a directory",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(command *cobra.Command, args []string) error {
+			return runProjectExport(ctx, command, options, args[0], args[1])
+		},
+	}
+	command.ValidArgsFunction = firstArgCompletion(ctx, options, projectIDCandidates)
+	addCommandWithSafety(root, CommandSafetyRead, command)
+}
+
 func runIssueExport(
 	ctx context.Context,
 	command *cobra.Command,
@@ -71,7 +84,11 @@ func runIssueExport(
 		return err
 	}
 	document := renderIssueExport(detail, comments.Comments, attachments.Attachments)
-	path, err := writeExportDocument(dir, detail.Summary.Identifier, document)
+	leaf, err := issueExportLeaf(detail.Summary.Identifier)
+	if err != nil {
+		return err
+	}
+	path, err := writeExportDocument(dir, leaf, document)
 	if err != nil {
 		return err
 	}
@@ -97,20 +114,160 @@ func runIssueExport(
 // filesystem, so the identifier cannot smuggle path separators into the join.
 var exportIdentifierPattern = regexp.MustCompile(`^[A-Z][A-Z0-9]+-[0-9]+$`)
 
+// exportSafeLeafPattern is the shared filesystem rule for an export filename
+// stem: one path segment, no separators, no parent-directory tokens.
+var exportSafeLeafPattern = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9._-]*$`)
+
 // writeExportDocument creates dir if needed and writes the assembled export.
-func writeExportDocument(dir string, identifier string, document string) (string, error) {
-	if !exportIdentifierPattern.MatchString(identifier) {
-		return "", fmt.Errorf("refusing export: %q is not a valid Linear issue identifier", identifier)
+func writeExportDocument(dir string, leaf string, document string) (string, error) {
+	if !exportSafeLeafPattern.MatchString(leaf) {
+		return "", fmt.Errorf("refusing export: %q is not a valid export filename", leaf)
 	}
 	if err := os.MkdirAll(dir, 0o750); err != nil {
 		return "", fmt.Errorf("create %s: %w", dir, err)
 	}
-	path := filepath.Join(dir, identifier+".md")
+	path := filepath.Join(dir, leaf+".md")
 	if err := os.WriteFile(path, []byte(document), 0o600); err != nil {
 		return "", fmt.Errorf("write %s: %w", path, err)
 	}
 
 	return path, nil
+}
+
+func issueExportLeaf(identifier string) (string, error) {
+	if !exportIdentifierPattern.MatchString(identifier) {
+		return "", fmt.Errorf("refusing export: %q is not a valid Linear issue identifier", identifier)
+	}
+
+	return identifier, nil
+}
+
+func projectExportLeaf(summary client.ProjectSummary) (string, error) {
+	if exportSafeLeafPattern.MatchString(summary.SlugID) {
+		return summary.SlugID, nil
+	}
+	if exportSafeLeafPattern.MatchString(summary.ID) {
+		return summary.ID, nil
+	}
+
+	return "", fmt.Errorf("refusing export: %q is not a valid export filename", summary.SlugID)
+}
+
+// projectExportResult is the structured confirmation of a written project export.
+type projectExportResult struct {
+	Path        string `json:"path"`
+	SlugID      string `json:"slug_id"`
+	Attachments int    `json:"attachments"`
+	Truncated   bool   `json:"truncated,omitempty"`
+}
+
+func runProjectExport(
+	ctx context.Context,
+	command *cobra.Command,
+	options *rootOptions,
+	id string,
+	dir string,
+) error {
+	runtime, err := buildCommandRuntime(ctx, options)
+	if err != nil {
+		return err
+	}
+	detail := client.ProjectDetail{}
+	attachments := client.ProjectAttachmentList{}
+	group, groupCtx := errgroup.WithContext(ctx)
+	group.Go(func() error {
+		var detailErr error
+		detail, detailErr = client.GetProjectDetail(groupCtx, runtime.graphqlClient, id)
+		return detailErr
+	})
+	group.Go(func() error {
+		var attachmentsErr error
+		attachments, attachmentsErr = client.ListProjectAttachments(
+			groupCtx, runtime.graphqlClient, id, exportPageLimit,
+		)
+		return attachmentsErr
+	})
+	if err := group.Wait(); err != nil {
+		return err
+	}
+	leaf, err := projectExportLeaf(detail.Summary)
+	if err != nil {
+		return err
+	}
+	document := renderProjectExport(detail, attachments.Attachments)
+	path, err := writeExportDocument(dir, leaf, document)
+	if err != nil {
+		return err
+	}
+	truncated := attachments.HasNextPage
+	if truncated {
+		const note = "export capped at %d attachments; more pages exist"
+		if noteErr := writeNote(command, note, exportPageLimit); noteErr != nil {
+			return noteErr
+		}
+	}
+
+	return writeProjectExport(command, options, projectExportResult{
+		Path:        path,
+		SlugID:      detail.Summary.SlugID,
+		Attachments: len(attachments.Attachments),
+		Truncated:   truncated,
+	})
+}
+
+func renderProjectExport(detail client.ProjectDetail, attachments []client.AttachmentSummary) string {
+	sections := []string{
+		renderProjectExportHeader(detail.Summary),
+		renderExportContent(detail.Content),
+		renderExportAttachments(attachments),
+	}
+
+	return strings.Join(sections, "\n") + "\n"
+}
+
+func renderProjectExportHeader(summary client.ProjectSummary) string {
+	builder := strings.Builder{}
+	fmt.Fprintf(&builder, "# %s\n\n", summary.Name)
+	for _, field := range projectExportHeaderFields(summary) {
+		fmt.Fprintf(&builder, "- %s: %s\n", field.label, field.value)
+	}
+
+	return builder.String()
+}
+
+func projectExportHeaderFields(summary client.ProjectSummary) []exportField {
+	candidates := []exportField{
+		{"ID", summary.ID},
+		{"Slug", summary.SlugID},
+		{"URL", summary.URL},
+		{"Status", summary.Status.Name},
+		{"Lead", summary.Lead},
+		{"Description", summary.Description},
+	}
+	fields := make([]exportField, 0, len(candidates))
+	for _, field := range candidates {
+		if field.value != "" {
+			fields = append(fields, field)
+		}
+	}
+
+	return fields
+}
+
+func renderExportContent(content string) string {
+	body := strings.TrimSpace(content)
+	if body == "" {
+		body = "_No content._"
+	}
+
+	return "## Content\n\n" + body + "\n"
+}
+
+func writeProjectExport(command *cobra.Command, options *rootOptions, result projectExportResult) error {
+	return writeItemLine(
+		command, options, result, result.Path,
+		"%s (%d attachments)", result.Path, result.Attachments,
+	)
 }
 
 // renderIssueExport assembles the metadata header, description, comments, and

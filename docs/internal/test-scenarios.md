@@ -1143,6 +1143,11 @@ Success is pass/fail:
    - Success: `linctl notification unread-count` prints the authenticated user's unread notification count as a bare integer, supports `--json` and `--quiet`, and returns operation failures without changing exit-code semantics.
    - Evidence: `go test ./internal/client ./internal/cli`, `Test_GetNotificationsUnreadCount_returns_fake_response`, `Test_GetNotificationsUnreadCount_wraps_operation_errors`, `Test_NotificationUnreadCount_command_outputs_supported_modes`, `Test_NotificationUnreadCount_command_returns_operation_errors`, `Test_NotificationUnreadCount_command_returns_runtime_errors`.
 
+217. Project export
+   - Success: `linctl project export PROJECT_ID DIR` writes a local markdown file with the project content body and attachment URLs. Compact `project get --json` still omits `content`.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_project_export_writes_document`, `Test_CommandFlows_project_export_honors_output_flags`, `Test_CommandFlows_project_export_notes_truncation`;
+     `go test ./internal/client`, `Test_ClientReadIssueAndProjectScenarios_return_compact_lists_details_and_members`.
+
 ## Current Outcome
 
 All local scenarios pass under the method above. The complete product suite also passes with
