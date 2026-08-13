@@ -1,6 +1,6 @@
 # Linear API coverage ledger
 
-Generated from current local sources and upstream Linear SDK commit `eabc85d`.
+Generated from current local sources and upstream Linear SDK commit `a3480b1`.
 
 Sources (paths relative to the upstream Linear SDK checkout):
 
@@ -17,7 +17,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Surface | Total | Covered/exposed | Classified |
 | --- | ---: | ---: | ---: |
 | Upstream SDK root methods with generated local operations | 468 | 156 | 468 |
-| Upstream Query root fields used by generated local operations | 165 | 116 | 165 |
+| Upstream Query root fields used by generated local operations | 166 | 116 | 166 |
 | Upstream Mutation root fields used by generated local operations | 373 | 42 | 373 |
 | Local generated Go operations declared in GraphQL files | 310 | 310 | 310 |
 | Public CLI commands from command inventory | 440 | 323 | 440 |
@@ -518,6 +518,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `attachmentsForURL` | `AttachmentConnection!` | generated_operation | root field used by local GraphQL operation |
 | `auditEntries` | `AuditEntryConnection!` | blocked_needs_design | audit logs can expose actor, IP, country, and request metadata; needs explicit admin/security output model |
 | `auditEntryTypes` | `[AuditEntryType!]!` | generated_operation | root field used by local GraphQL operation |
+| `auditLogWebhookFailureEvents` | `[WebhookFailureEvent!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `authenticationSessions` | `[AuthenticationSessionResponse!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `availableUsers` | `AuthResolverResponse!` | intentionally_excluded | available-user picker enumeration is a specialized product resolver; `user list` is the supported user read surface |
 | `comment` | `Comment!` | generated_operation | root field used by local GraphQL operation |
