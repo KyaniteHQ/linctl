@@ -33,11 +33,23 @@ func commandFlowProjectReadPayload(operation string, fake commandFlowFakeClient)
 			commandProjectJSON("Listed project", "Backlog", "backlog") +
 			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "project":
-		return `{"project":` + commandProjectJSON("Detail project", "Backlog", "backlog") + `}`, true
+		if fake.invalidExportLeaf {
+			return `{"project":{"id":"../escape","name":"Detail project","description":"description",` +
+				`"slugId":"bad name","url":"https://linear.app/kyanite/project/project-id","priority":0,` +
+				`"status":{"id":"status-id","name":"Backlog","type":"backlog"},"lead":null,` +
+				`"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl"}]}}}`, true
+		}
+		return `{"project":` + commandProjectDetailJSON(
+			"Detail project", "Backlog", "backlog", "Existing project content",
+		) + `}`, true
 	case "project_attachments":
+		hasNextPage := "false"
+		if fake.truncatedExport {
+			hasNextPage = "true"
+		}
 		return `{"project":{"id":"project-id","name":"Detail project","attachments":{"nodes":[` +
 			commandAttachmentJSON() +
-			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+			`],"pageInfo":{"hasNextPage":` + hasNextPage + `,"endCursor":null}}}}`, true
 	case "project_documents":
 		return `{"project":{"id":"project-id","name":"Detail project","documents":{"nodes":[` +
 			commandDocumentJSON(

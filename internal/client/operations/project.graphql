@@ -26,6 +26,7 @@ query projects($first: Int, $after: String, $includeArchived: Boolean) {
 
 query project($id: String!) {
   project(id: $id) {
+    content
     ...ProjectSummaryFields
   }
 }

@@ -49,6 +49,10 @@ func projectJSONWithLead(project projectFixture, lead string) string {
 	return strings.Replace(projectJSON(project), `"lead":null`, `"lead":{"id":"user-id","name":"omer","displayName":"`+lead+`"}`, 1)
 }
 
+func projectJSONWithContent(project projectFixture, content string) string {
+	return strings.Replace(projectJSON(project), `"description":"description",`, `"description":"description","content":"`+content+`",`, 1)
+}
+
 func notificationJSON() string {
 	return `{
 		"__typename":"IssueNotification",

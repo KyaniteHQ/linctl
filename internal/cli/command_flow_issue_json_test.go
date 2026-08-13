@@ -6,6 +6,14 @@ import (
 	"strings"
 )
 
+func commandIssueExportIdentifier(fake commandFlowFakeClient) string {
+	if fake.invalidExportLeaf {
+		return "../escape"
+	}
+
+	return "LIT-1"
+}
+
 func commandIssueJSON(identifier string, title string, stateID string, state string, stateType string) string {
 	return commandIssueJSONWithTeam(identifier, title, stateID, state, stateType, "team-id", "LIT")
 }
@@ -162,17 +170,18 @@ func commandBlockingRelationsJSON(count int) string {
 }
 
 func commandProjectJSON(name string, status string, statusType string) string {
-	return `{
-		"id":"project-id",
-		"name":"` + name + `",
-		"description":"description",
-		"slugId":"` + name + `",
-		"url":"https://linear.app/kyanite/project/project-id",
-		"priority":0,
-		"status":{"id":"status-id","name":"` + status + `","type":"` + statusType + `"},
-		"lead":null,
-		"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl"}]}
-	}`
+	return commandProjectJSONWithTeams(name, status, statusType, []commandProjectTeam{
+		{ID: "team-id", Key: "LIT", Name: "linctl"},
+	})
+}
+
+func commandProjectDetailJSON(name string, status string, statusType string, content string) string {
+	return strings.Replace(
+		commandProjectJSON(name, status, statusType),
+		`"description":"description",`,
+		`"description":"description","content":"`+content+`",`,
+		1,
+	)
 }
 
 func commandProjectUpdateJSON() string {

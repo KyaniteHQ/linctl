@@ -143,6 +143,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"project", "list"},
 			{"project", "all"},
 			{"project", "get", "project-id"},
+			{"project", "export", "project-id", "."},
 			{"project", "members", "project-id"},
 			{"project", "updates", "project-id"},
 			{"project-milestone", "list", "project-id"},

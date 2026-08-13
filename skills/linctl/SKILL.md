@@ -81,7 +81,7 @@ sections.
 
 Commands that preview a write without a mutation: `issue create --dry-run` and
 `issue import --dry-run`. Commands that only read and then open a browser: `issue open` and
-`project open`. `issue export` writes a local markdown file from reads.
+`project open`. `issue export` and `project export` write a local markdown file from reads.
 
 Safety rules:
 

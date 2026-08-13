@@ -87,6 +87,11 @@ envelope.
 `project members` → **ProjectMemberList**:
 `{ "project_id", "project_name", "members": [{ "id", "name", "display_name", "email" }], "has_next_page": bool, "end_cursor": string|absent }`
 
+`project export PROJECT_ID DIR` → **projectExportResult**:
+`{ "path": string, "slug_id": string, "attachments": number, "truncated": bool|absent }`
+
+`path` is the written markdown file. `truncated` is present only when more attachment pages exist beyond the export cap. The file body is the project `content` field. Strip the header before `## Content` and the `## Attachments` section when you write that body back with `project update --content-file`.
+
 ## Target
 
 `whoami` → **TargetViewer**: `{ "id", "name", "display_name", "email" }`

@@ -222,7 +222,9 @@ func commandFlowIssueReadPayload(operation string, fake commandFlowFakeClient) (
 		}
 		return `{"issues":{"nodes":[` + commandIssueWithNextRankJSON("LIT-27", "Next issue", 0, "No priority", "2026-06-01T12:00:00Z", 0) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "issue":
-		return `{"issue":` + commandIssueJSON("LIT-1", "Detail issue", "todo-state", "Todo", "unstarted") + `}`, true
+		return `{"issue":` + commandIssueJSON(
+			commandIssueExportIdentifier(fake), "Detail issue", "todo-state", "Todo", "unstarted",
+		) + `}`, true
 	case "IssueDependencies":
 		return commandFlowIssueDependenciesPayload(), true
 	case "issue_comments":

@@ -159,11 +159,11 @@ func readScenarioGraphQLClient(endCursor string) fakeGraphQLClient {
 			Name:   "workspace listed",
 			Status: "Backlog",
 		}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"project": `{"project":` + projectJSON(projectFixture{
+		"project": `{"project":` + projectJSONWithContent(projectFixture{
 			ID:     "project-id",
 			Name:   "detail",
 			Status: "Started",
-		}) + `}`,
+		}, "Existing project content") + `}`,
 		"project_members":              `{"project":{"id":"project-id","name":"detail","members":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"project_attachments":          `{"project":{"id":"project-id","name":"detail","attachments":{"nodes":[` + projectAttachmentJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"project_documents":            `{"project":{"id":"project-id","name":"detail","documents":{"nodes":[{"id":"project-document-id","title":"Project spec","slugId":"project-spec","archivedAt":null,"project":{"id":"project-id","name":"detail"},"team":null,"issue":null,"cycle":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
