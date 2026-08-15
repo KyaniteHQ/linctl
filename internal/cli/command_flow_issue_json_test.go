@@ -43,6 +43,34 @@ func commandIssueJSONWithTeam(
 	}`
 }
 
+// commandDestinationProjectID names the move-project destination in command flow
+// tests. It differs from the pinned "project-id" so the move is a real move.
+const commandDestinationProjectID = "eoir-project-id"
+
+// commandDestinationProjectJSON is the move-project destination: another project
+// on the pinned LIT team, so requireProjectTeam passes.
+func commandDestinationProjectJSON() string {
+	return strings.ReplaceAll(
+		commandProjectJSON("EOIR Case Scraper", "Backlog", "backlog"),
+		`"project-id"`,
+		`"`+commandDestinationProjectID+`"`,
+	)
+}
+
+func commandIssueJSONWithProject(
+	identifier string,
+	title string,
+	projectID string,
+	projectName string,
+) string {
+	return strings.Replace(
+		commandIssueJSONWithTeam(identifier, title, "todo-state", "Todo", "unstarted", "team-id", "LIT"),
+		`"project":{"id":"project-id","name":"Pinned project"}`,
+		`"project":{"id":"`+projectID+`","name":"`+projectName+`"}`,
+		1,
+	)
+}
+
 func commandDestinationTeamJSON(teamID string, teamKey string) string {
 	return `{
 		"id":"` + teamID + `",

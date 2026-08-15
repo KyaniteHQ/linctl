@@ -161,6 +161,7 @@ type LinearIssueUpdateInput struct {
 	Estimate           json.RawMessage `json:"estimate,omitempty"`
 	ProjectMilestoneID json.RawMessage `json:"projectMilestoneId,omitempty"`
 	TeamID             *string         `json:"teamId,omitempty"`
+	ProjectID          *string         `json:"projectId,omitempty"`
 }
 
 // LinearProjectCreateInput is the sparse Linear projectCreate payload linctl supports.

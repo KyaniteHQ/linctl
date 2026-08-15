@@ -30,6 +30,14 @@ type IssueMoveTeamRequest struct {
 	TeamKey string
 }
 
+// IssueMoveProjectRequest describes a resource-scoped write that moves an issue
+// from the pinned project to another project on the pinned team. The issue must
+// start on the pin; after the move it deliberately no longer matches the pin.
+type IssueMoveProjectRequest struct {
+	IssueID   string
+	ProjectID string
+}
+
 // AddProjectTeam attaches a team to a project after comparing the project against
 // the pinned target. Linear's projectUpdate teamIds field replaces the full set,
 // so the write merges the destination onto the complete current membership and
@@ -182,6 +190,81 @@ func (guard *guardedClient) moveIssueTeam(
 			summary.Team,
 			destination.ID,
 			destination.Key,
+		)
+	}
+
+	return summary, nil
+}
+
+// MoveIssueProject moves an issue to another project on the pinned team. The
+// issue must currently match the pinned team (and project, when one is pinned).
+// The destination project is compared against the pinned team only: after the
+// move the issue leaves the pinned project by design, so the returned issue is
+// not re-checked for project match.
+func MoveIssueProject(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	expected config.Target,
+	request IssueMoveProjectRequest,
+) (IssueSummary, error) {
+	if request.IssueID == "" {
+		return IssueSummary{}, requiredFieldError("issue id")
+	}
+	if request.ProjectID == "" {
+		return IssueSummary{}, requiredFieldError("--to-project-id")
+	}
+
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return IssueSummary{}, err
+	}
+
+	return guard.moveIssueProject(ctx, request)
+}
+
+func (guard *guardedClient) moveIssueProject(
+	ctx context.Context,
+	request IssueMoveProjectRequest,
+) (IssueSummary, error) {
+	issue, err := guard.requireIssueDetail(ctx, request.IssueID)
+	if err != nil {
+		return IssueSummary{}, err
+	}
+
+	destination, err := GetProjectByID(ctx, guard.graphqlClient, request.ProjectID)
+	if err != nil {
+		return IssueSummary{}, err
+	}
+	if err := guard.requireProjectTeam(destination); err != nil {
+		return IssueSummary{}, err
+	}
+	if destination.ID == issue.Summary.ProjectID {
+		return IssueSummary{}, fmt.Errorf(
+			"%w: issue %s is already on project_id=%s",
+			ErrWriteInvalid,
+			request.IssueID,
+			issue.Summary.ProjectID,
+		)
+	}
+
+	updated, err := gql.IssueUpdate(ctx, guard.graphqlClient, request.IssueID, LinearIssueUpdateInput{
+		ProjectID: stringPtr(destination.ID),
+	})
+	if err != nil {
+		return IssueSummary{}, fmt.Errorf("move issue %s: %w", request.IssueID, err)
+	}
+	if !updated.IssueUpdate.Success || updated.IssueUpdate.Issue == nil {
+		return IssueSummary{}, fmt.Errorf("%w: issueUpdate returned no issue", ErrMutationFailed)
+	}
+
+	summary := issueSummaryFromFields(updated.IssueUpdate.Issue.IssueSummaryFields)
+	if summary.ProjectID != destination.ID {
+		return IssueSummary{}, fmt.Errorf(
+			"%w: issue %s landed on project_id=%s, expected project_id=%s",
+			ErrMutationFailed,
+			request.IssueID,
+			summary.ProjectID,
+			destination.ID,
 		)
 	}
 

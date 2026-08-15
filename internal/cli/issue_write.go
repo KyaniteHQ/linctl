@@ -54,6 +54,9 @@ func addIssueCreateCommand(ctx context.Context, root *cobra.Command, options *ro
 			if err != nil {
 				return err
 			}
+			if err := noteCreatedProject(command, assembled.ParentID, issue); err != nil {
+				return err
+			}
 
 			return writeIssue(command, options, issue)
 		},
@@ -99,6 +102,22 @@ func addIssueCreateCommand(ctx context.Context, root *cobra.Command, options *ro
 	)
 	registerStateCompletion(ctx, command, options)
 	addWriteCommand(root, WriteEffectGuarded, command)
+}
+
+// noteCreatedProject reports on stderr which project an unparented create landed
+// in. A create with a parent already proves its project through the parent guard,
+// so it needs no note. The note is informational: the pinned project is the
+// intended destination, and only the caller knows whether the pin was the one
+// they meant.
+func noteCreatedProject(command *cobra.Command, parentID string, issue client.IssueSummary) error {
+	if parentID != "" {
+		return nil
+	}
+	if issue.Project == "" {
+		return writeNote(command, "created in team %s with no project", issue.Team)
+	}
+
+	return writeNote(command, "created in project %q", issue.Project)
 }
 
 func issueCreateRequiresRuntime(flags issueCreateFlags) bool {
@@ -223,6 +242,26 @@ func addIssueMoveTeamCommand(ctx context.Context, root *cobra.Command, options *
 			request.IssueID = args[0]
 
 			return client.MoveIssueTeam(ctx, runtime.graphqlClient, runtime.config.Target, request)
+		},
+		Write: writeIssue,
+	})
+}
+
+func addIssueMoveProjectCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	request := client.IssueMoveProjectRequest{}
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.IssueSummary]{
+		Use:   "move-project ISSUE_ID",
+		Short: "Move an issue from the pinned project to another project on the team",
+		Args:  cobra.ExactArgs(1),
+		Configure: func(command *cobra.Command) {
+			command.Flags().StringVar(&request.ProjectID, "to-project-id", "", "destination project id")
+		},
+		Run: func(
+			ctx context.Context, _ *cobra.Command, runtime commandRuntime, args []string,
+		) (client.IssueSummary, error) {
+			request.IssueID = args[0]
+
+			return client.MoveIssueProject(ctx, runtime.graphqlClient, runtime.config.Target, request)
 		},
 		Write: writeIssue,
 	})

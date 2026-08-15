@@ -1883,6 +1883,20 @@ Flags:
       --updated-before string   filter by the latest updated-at date
 ```
 
+### linctl issue move-project
+
+Move an issue from the pinned project to another project on the team
+
+```
+linctl issue move-project ISSUE_ID [flags]
+```
+
+Flags:
+
+```
+      --to-project-id string   destination project id
+```
+
 ### linctl issue move-team
 
 Move an issue from the pinned team to another team in the organization

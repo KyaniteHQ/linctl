@@ -189,9 +189,10 @@ func (client commandFlowFakeClient) MakeRequest(
 }
 
 // commandFlowCrossTeamPayload returns destination-aware fixtures for the
-// project add-team and issue move-team happy paths. The default team/issue
-// fixtures stay on the pinned LIT team, so a move that lands on OPS needs a
-// response that names that destination or the post-write check fails closed.
+// project add-team, issue move-team and issue move-project happy paths. The
+// default team/issue/project fixtures stay on the pinned LIT team and project,
+// so a move that lands elsewhere needs a response that names that destination
+// or the post-write check fails closed.
 func commandFlowCrossTeamPayload(request *graphql.Request) (string, bool) {
 	switch request.OpName {
 	case "team":
@@ -201,7 +202,23 @@ func commandFlowCrossTeamPayload(request *graphql.Request) (string, bool) {
 		}
 
 		return `{"team":` + commandDestinationTeamJSON("ops-team-id", "OPS") + `}`, true
+	case "project":
+		id, err := requestVariable[string](request, "id")
+		if err != nil || id != commandDestinationProjectID {
+			return "", false
+		}
+
+		return `{"project":` + commandDestinationProjectJSON() + `}`, true
 	case "IssueUpdate":
+		if projectID, err := requestVariable[string](request, "input", "projectId"); err == nil {
+			if projectID != commandDestinationProjectID {
+				return "", false
+			}
+
+			return `{"issueUpdate":{"success":true,"issue":` + commandIssueJSONWithProject(
+				"LIT-1", "Moved issue", commandDestinationProjectID, "EOIR Case Scraper",
+			) + `}}`, true
+		}
 		teamID, err := requestVariable[string](request, "input", "teamId")
 		if err != nil || teamID != "ops-team-id" {
 			return "", false

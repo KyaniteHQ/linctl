@@ -322,6 +322,175 @@ func Test_MoveIssueTeam_resolves_destination_by_key(t *testing.T) {
 	require.Equal(t, "OPS", issue.Team)
 }
 
+// eoirIssueFixture is the destination-side issue: the same issue after it landed
+// in the destination project.
+func eoirIssueFixture(identifier string) issueFixture {
+	issue := b1IssueFixture(identifier)
+	issue.ProjectID = "eoir-project-id"
+	issue.Project = "EOIR Case Scraper"
+
+	return issue
+}
+
+func destinationProjectFixture() projectFixture {
+	return projectFixture{ID: "eoir-project-id", Name: "EOIR Case Scraper", Status: "Backlog"}
+}
+
+func Test_MoveIssueProject_moves_issue_off_the_pinned_project(t *testing.T) {
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
+		"issue":   `{"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}`,
+		"project": `{"project":` + projectJSON(destinationProjectFixture()) + `}`,
+		"IssueUpdate": `{"issueUpdate":{"success":true,"issue":` + issueJSON(
+			eoirIssueFixture("LIT-1"),
+		) + `}}`,
+	})}
+
+	issue, err := MoveIssueProject(context.Background(), recorder, matchingTarget(), IssueMoveProjectRequest{
+		IssueID:   "LIT-1",
+		ProjectID: "eoir-project-id",
+	})
+
+	require.NoError(t, err)
+	require.Equal(t, "eoir-project-id", issue.ProjectID)
+	require.Equal(t, "EOIR Case Scraper", issue.Project)
+	require.JSONEq(t, `{
+		"id": "LIT-1",
+		"input": {"projectId": "eoir-project-id"}
+	}`, string(recorder.variablesFor(t, "IssueUpdate")))
+}
+
+func Test_MoveIssueProject_requires_issue_id(t *testing.T) {
+	_, err := MoveIssueProject(context.Background(), issueWriteFakeClient(map[string]string{}), matchingTarget(), IssueMoveProjectRequest{
+		ProjectID: "eoir-project-id",
+	})
+
+	require.ErrorIs(t, err, ErrWriteInvalid)
+}
+
+func Test_MoveIssueProject_requires_destination(t *testing.T) {
+	_, err := MoveIssueProject(context.Background(), issueWriteFakeClient(map[string]string{}), matchingTarget(), IssueMoveProjectRequest{
+		IssueID: "LIT-1",
+	})
+
+	require.ErrorIs(t, err, ErrWriteInvalid)
+}
+
+func Test_MoveIssueProject_refuses_when_target_unresolved(t *testing.T) {
+	_, err := MoveIssueProject(context.Background(), issueWriteFakeClient(map[string]string{}), config.Target{
+		OrgID: "org-id", TeamKey: "WRONG", TeamID: "wrong-id",
+	}, IssueMoveProjectRequest{IssueID: "LIT-1", ProjectID: "eoir-project-id"})
+
+	require.ErrorIs(t, err, ErrTargetMismatch)
+}
+
+func Test_MoveIssueProject_refuses_issue_outside_the_pin(t *testing.T) {
+	recorder := &mutationRecordingClient{inner: issueWriteFakeClient(map[string]string{
+		"issue": `{"issue":` + issueJSON(eoirIssueFixture("LIT-1")) + `}`,
+	})}
+
+	_, err := MoveIssueProject(context.Background(), recorder, matchingTarget(), IssueMoveProjectRequest{
+		IssueID:   "LIT-1",
+		ProjectID: "eoir-project-id",
+	})
+
+	require.ErrorIs(t, err, ErrTargetMismatch)
+	require.False(t, recorder.sentOperation("IssueUpdate"))
+}
+
+func Test_MoveIssueProject_reports_unreadable_destination(t *testing.T) {
+	recorder := &mutationRecordingClient{inner: issueWriteFakeClient(map[string]string{
+		"issue": `{"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}`,
+	})}
+
+	_, err := MoveIssueProject(context.Background(), recorder, matchingTarget(), IssueMoveProjectRequest{
+		IssueID:   "LIT-1",
+		ProjectID: "eoir-project-id",
+	})
+
+	require.Error(t, err)
+	require.False(t, recorder.sentOperation("IssueUpdate"))
+}
+
+func Test_MoveIssueProject_refuses_destination_outside_the_pinned_team(t *testing.T) {
+	recorder := &mutationRecordingClient{inner: issueWriteFakeClient(map[string]string{
+		"issue": `{"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}`,
+		"project": `{"project":` + projectJSONWithTeam(
+			destinationProjectFixture(), "ops-team-id", "OPS",
+		) + `}`,
+	})}
+
+	_, err := MoveIssueProject(context.Background(), recorder, matchingTarget(), IssueMoveProjectRequest{
+		IssueID:   "LIT-1",
+		ProjectID: "eoir-project-id",
+	})
+
+	require.ErrorIs(t, err, ErrTargetMismatch)
+	require.False(t, recorder.sentOperation("IssueUpdate"))
+}
+
+func Test_MoveIssueProject_refuses_when_issue_is_already_on_destination(t *testing.T) {
+	recorder := &mutationRecordingClient{inner: issueWriteFakeClient(map[string]string{
+		"issue": `{"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}`,
+		"project": `{"project":` + projectJSON(projectFixture{
+			ID: "project-id", Name: "fixture", Status: "Backlog",
+		}) + `}`,
+	})}
+
+	_, err := MoveIssueProject(context.Background(), recorder, matchingTarget(), IssueMoveProjectRequest{
+		IssueID:   "LIT-1",
+		ProjectID: "project-id",
+	})
+
+	require.ErrorIs(t, err, ErrWriteInvalid)
+	require.False(t, recorder.sentOperation("IssueUpdate"))
+}
+
+func Test_MoveIssueProject_reports_failed_mutation(t *testing.T) {
+	graphqlClient := issueWriteFakeClient(map[string]string{
+		"issue":       `{"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}`,
+		"project":     `{"project":` + projectJSON(destinationProjectFixture()) + `}`,
+		"IssueUpdate": `{"issueUpdate":{"success":false,"issue":null}}`,
+	})
+
+	_, err := MoveIssueProject(context.Background(), graphqlClient, matchingTarget(), IssueMoveProjectRequest{
+		IssueID:   "LIT-1",
+		ProjectID: "eoir-project-id",
+	})
+
+	require.ErrorIs(t, err, ErrMutationFailed)
+}
+
+func Test_MoveIssueProject_reports_transport_failure(t *testing.T) {
+	graphqlClient := issueWriteFakeClient(map[string]string{
+		"issue":   `{"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}`,
+		"project": `{"project":` + projectJSON(destinationProjectFixture()) + `}`,
+	})
+
+	_, err := MoveIssueProject(context.Background(), graphqlClient, matchingTarget(), IssueMoveProjectRequest{
+		IssueID:   "LIT-1",
+		ProjectID: "eoir-project-id",
+	})
+
+	require.Error(t, err)
+}
+
+func Test_MoveIssueProject_reports_issue_landing_on_another_project(t *testing.T) {
+	graphqlClient := issueWriteFakeClient(map[string]string{
+		"issue":   `{"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}`,
+		"project": `{"project":` + projectJSON(destinationProjectFixture()) + `}`,
+		"IssueUpdate": `{"issueUpdate":{"success":true,"issue":` + issueJSON(
+			b1IssueFixture("LIT-1"),
+		) + `}}`,
+	})
+
+	_, err := MoveIssueProject(context.Background(), graphqlClient, matchingTarget(), IssueMoveProjectRequest{
+		IssueID:   "LIT-1",
+		ProjectID: "eoir-project-id",
+	})
+
+	require.ErrorIs(t, err, ErrMutationFailed)
+}
+
 func Test_AddProjectTeam_requires_project_id(t *testing.T) {
 	_, err := AddProjectTeam(context.Background(), projectWriteFakeClient(map[string]string{}), matchingTarget(), ProjectAddTeamRequest{
 		TeamID: "ops-team-id",
