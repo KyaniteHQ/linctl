@@ -2,7 +2,7 @@ module github.com/KyaniteHQ/linctl
 
 go 1.26
 
-toolchain go1.26.5
+toolchain go1.26.6
 
 require (
 	github.com/Khan/genqlient v0.8.1
