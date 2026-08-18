@@ -32,6 +32,7 @@ func Test_RootCommand_exposes_global_flags_when_created(t *testing.T) {
 		"sort",
 		"order",
 		"format",
+		"config",
 		"profile",
 		"org",
 		"team",

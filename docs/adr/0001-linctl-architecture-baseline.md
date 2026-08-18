@@ -23,6 +23,8 @@ Read commands may inspect Linear data visible to the active OAuth credential wit
 
 The Pinned Target is `org_id`, `team_key`, `team_id`, and optional `project_id` from config. The Resolved Target is the organization, team, and optional project proven through Linear GraphQL using the active OAuth access token.
 
+The current directory selects `./.linctl.toml` by default. `--config PATH` selects another repo pin explicitly. An explicit missing path fails before Linear access. Config selection never relaxes target comparison.
+
 Target Mismatch is a hard stop. It is not a warning, confirmation prompt, or recoverable branch. `--org`, `--team`, `--team-id`, and `--project` set the target used for comparison; they do not relax the guard.
 
 Team-scoped creates compare organization and team because the entity does not exist yet. Resource-scoped writes resolve the existing resource first and compare its team, plus `project_id` when one is pinned.

@@ -32,6 +32,7 @@ through MCP, raw GraphQL, or an ad hoc script.
 Do this before each write.
 
 1. Read `.linctl.toml` if the file exists. It overlays `~/.config/linctl/config.toml`.
+   Use `--config /absolute/repo/.linctl.toml` when the task runs from another checkout.
 2. If the pin is absent, run `linctl init`. Run `linctl init --team KEY` when more than one team
    is visible. Never put auth material in `.linctl.toml`.
 3. Run `linctl doctor --json` or `linctl target --json`.
@@ -61,7 +62,7 @@ Useful global flags:
 --id-only --quiet --fail-on-empty
 --sort title --order asc
 --format minimal|compact|full
---profile NAME --org ORG_ID --team TEAM_KEY --team-id TEAM_ID --project PROJECT_ID
+--config PATH --profile NAME --org ORG_ID --team TEAM_KEY --team-id TEAM_ID --project PROJECT_ID
 --timeout 30s
 ```
 
@@ -86,6 +87,8 @@ Commands that preview a write without a mutation: `issue create --dry-run` and
 Safety rules:
 
 - A Target Mismatch is a hard stop. Do not retry with different auth.
+- A wrong repo config is not an auth failure. Select the intended pin with `--config PATH`.
+- An explicit config path must exist. Do not fall back when that path is missing.
 - A team-scoped write compares the organization and the team.
 - A resource-scoped write resolves the existing resource first. It then compares the pinned
   `project_id` when the config sets one.

@@ -3,6 +3,7 @@ package cli
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -18,6 +19,7 @@ import (
 
 type commandRuntime struct {
 	config        config.Resolved
+	repoConfig    repoConfigSelection
 	fileClient    httpDoer
 	graphqlClient graphql.Client
 	logger        *slog.Logger
@@ -25,15 +27,68 @@ type commandRuntime struct {
 
 var buildCommandRuntime = newCommandRuntime
 
+const (
+	repoConfigLoaded  = "loaded"
+	repoConfigMissing = "missing"
+)
+
+type repoConfigSelection struct {
+	Path   string
+	Status string
+}
+
 // resolveConfig loads the layered configuration: the one config-resolution
 // path every command uses.
 func resolveConfig(ctx context.Context, options *rootOptions) (config.Resolved, error) {
-	return config.Load(ctx, config.LoadRequest{
+	resolved, _, err := resolveConfigWithSource(ctx, options)
+
+	return resolved, err
+}
+
+func resolveConfigWithSource(
+	ctx context.Context,
+	options *rootOptions,
+) (config.Resolved, repoConfigSelection, error) {
+	repoConfig, err := selectRepoConfig(options)
+	if err != nil {
+		return config.Resolved{}, repoConfigSelection{}, err
+	}
+	resolved, err := config.Load(ctx, config.LoadRequest{
 		GlobalPath:      defaultGlobalConfigPath(),
-		RepoPath:        ".linctl.toml",
+		RepoPath:        repoConfig.Path,
 		ProfileOverride: options.profile,
 		TargetOverride:  targetOverride(options),
 	})
+	if err != nil {
+		return config.Resolved{}, repoConfigSelection{}, err
+	}
+
+	return resolved, repoConfig, nil
+}
+
+func selectRepoConfig(options *rootOptions) (repoConfigSelection, error) {
+	path := options.configPath
+	explicit := path != ""
+	if path == "" {
+		path = ".linctl.toml"
+	}
+	absolutePath, err := filepath.Abs(path)
+	if err != nil {
+		return repoConfigSelection{}, fmt.Errorf("resolve repo config path %s: %w", path, err)
+	}
+	_, err = os.Stat(absolutePath)
+	if err == nil {
+		return repoConfigSelection{Path: absolutePath, Status: repoConfigLoaded}, nil
+	}
+	if errors.Is(err, os.ErrNotExist) {
+		if explicit {
+			return repoConfigSelection{}, fmt.Errorf("read explicit repo config %s: %w", absolutePath, err)
+		}
+
+		return repoConfigSelection{Path: absolutePath, Status: repoConfigMissing}, nil
+	}
+
+	return repoConfigSelection{}, fmt.Errorf("inspect repo config %s: %w", absolutePath, err)
 }
 
 func newCommandRuntime(ctx context.Context, options *rootOptions) (commandRuntime, error) {
@@ -42,7 +97,7 @@ func newCommandRuntime(ctx context.Context, options *rootOptions) (commandRuntim
 	if err != nil {
 		return commandRuntime{}, err
 	}
-	resolvedConfig, err := resolveConfig(ctx, options)
+	resolvedConfig, repoConfig, err := resolveConfigWithSource(ctx, options)
 	if err != nil {
 		return commandRuntime{}, err
 	}
@@ -73,6 +128,7 @@ func newCommandRuntime(ctx context.Context, options *rootOptions) (commandRuntim
 
 	return commandRuntime{
 		config:     resolvedConfig,
+		repoConfig: repoConfig,
 		fileClient: &http.Client{Timeout: options.timeout},
 		logger:     logger,
 		graphqlClient: newRecoveringGraphQLClient(recoveringGraphQLClientConfig{

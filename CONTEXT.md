@@ -12,6 +12,10 @@ _Avoid_: Linear wrapper, API helper, generic CLI
 The Linear organization, team, and optional project that a repo declares as the only allowed destination for writes. A pinned target is expressed as `org_id`, `team_key`, `team_id`, and optional `project_id`.
 _Avoid_: Workspace, account, default project
 
+**Repo Config Selection**:
+The `.linctl.toml` path that supplies a repo's Pinned Target. The current directory supplies the default path. `--config PATH` selects another repo's pin explicitly. An explicit missing path fails before Linear access.
+_Avoid_: Project switcher, auth profile, target bypass
+
 **Resolved Target**:
 The Linear organization, team, and optional project proven from the active credential at command time. A resolved target must match the pinned target before guarded writes proceed.
 _Avoid_: Current workspace, active account

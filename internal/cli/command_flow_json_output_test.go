@@ -18,7 +18,7 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		nonObjectOK bool
 	}{
 		{args: []string{"--json", "target"}, keys: []string{"viewer", "org", "team", "expected", "resolved", "confirmed"}},
-		{args: []string{"--json", "doctor"}, keys: []string{"config", "token", "target", "viewer"}},
+		{args: []string{"--json", "doctor"}, keys: []string{"config", "repo_config_path", "repo_config_status", "token", "target", "viewer"}},
 		{args: []string{"--json", "whoami"}, keys: []string{"id", "display_name", "email"}},
 		{args: []string{"--json", "organization", "exists", "kyanite"}, keys: []string{"exists"}},
 		{args: []string{"--json", "--fields", "id,name,type,team_key", "organization", "templates", "--limit", "1"}, keys: []string{"templates"}},

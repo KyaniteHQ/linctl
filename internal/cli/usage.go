@@ -19,12 +19,13 @@ var usageTopics = map[string]usagePayload{
 		Topic: "overview",
 		Text: "linctl is a schema-aligned Linear CLI for safe daily coordination. " +
 			"Set a pinned target in .linctl.toml with org_id, team_key, team_id, and an optional project_id. " +
+			"Use --config PATH to select another repo target config explicitly. " +
 			"Reads are free. Writes fail closed against the pinned target. " +
 			"Core commands: target, doctor, whoami, current, next, done, issue, comment, cycle, sprint, project, " +
 			"project-milestone, organization, rate-limit, document, label, team, user, workflow-state. " +
 			"Use initiative, initiative-to-project, and initiative-update for new strategic planning reads. " +
 			"The roadmap and roadmap-to-project commands read deprecated Linear Roadmap data for compatibility. " +
-			"Use --json for structured output. Use --profile to select a named config. " +
+			"Use --json for structured output. Use --profile to select a named auth config. " +
 			"Use --org, --team, and --project to set the target explicitly. Use --timeout to bound one command. " +
 			"For scripts, add --compact or --fields to --json. Use --id-only to chain commands. " +
 			"Use --quiet for a write that succeeds. Use --fail-on-empty for a monitor. " +

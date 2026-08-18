@@ -29,6 +29,7 @@ type rootOptions struct {
 	sortField   string
 	sortOrder   string
 	format      string
+	configPath  string
 	profile     string
 	orgID       string
 	team        string
@@ -65,6 +66,7 @@ func NewRootCommand(ctx context.Context, build BuildInfo) *cobra.Command {
 	flags.StringVar(&options.sortField, "sort", "", "sort the list output by this JSON field")
 	flags.StringVar(&options.sortOrder, "order", "asc", "sort order: asc or desc")
 	flags.StringVar(&options.format, "format", "compact", "human output format: minimal, compact, or full")
+	flags.StringVar(&options.configPath, "config", "", "path to the repo target config (default .linctl.toml)")
 	flags.StringVar(&options.profile, "profile", "", "config profile to load")
 	flags.StringVar(&options.orgID, "org", "", "pinned Linear organization id")
 	flags.StringVar(&options.team, "team", "", "pinned Linear team key")

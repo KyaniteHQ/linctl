@@ -82,6 +82,67 @@ func Test_CommandRuntime_reports_config_load_error(t *testing.T) {
 	require.ErrorContains(t, err, "parse config")
 }
 
+func Test_ResolveConfig_uses_explicit_repo_config_outside_its_directory(t *testing.T) {
+	workingDir := t.TempDir()
+	t.Chdir(workingDir)
+	configPath := filepath.Join(t.TempDir(), "case-scraper.toml")
+	require.NoError(t, os.WriteFile(configPath, []byte(`
+[target]
+org_id = "org-id"
+team_key = "NIN"
+team_id = "team-id"
+project_id = "case-scraper-project"
+`), 0o600))
+
+	resolved, source, err := resolveConfigWithSource(
+		context.Background(),
+		&rootOptions{configPath: configPath},
+	)
+
+	require.NoError(t, err)
+	require.Equal(t, "case-scraper-project", resolved.Target.ProjectID)
+	require.Equal(t, configPath, source.Path)
+	require.Equal(t, repoConfigLoaded, source.Status)
+}
+
+func Test_ResolveConfig_refuses_missing_explicit_repo_config(t *testing.T) {
+	missingPath := filepath.Join(t.TempDir(), "missing.toml")
+
+	_, _, err := resolveConfigWithSource(
+		context.Background(),
+		&rootOptions{configPath: missingPath},
+	)
+
+	require.ErrorContains(t, err, "read explicit repo config")
+}
+
+func Test_SelectRepoConfig_reports_missing_default_in_current_directory(t *testing.T) {
+	workingDir := t.TempDir()
+	t.Chdir(workingDir)
+
+	source, err := selectRepoConfig(&rootOptions{})
+
+	require.NoError(t, err)
+	require.Equal(t, filepath.Join(workingDir, ".linctl.toml"), source.Path)
+	require.Equal(t, repoConfigMissing, source.Status)
+}
+
+func Test_SelectRepoConfig_reports_current_directory_resolution_error(t *testing.T) {
+	workingDir := t.TempDir()
+	t.Chdir(workingDir)
+	require.NoError(t, os.Remove(workingDir))
+
+	_, err := selectRepoConfig(&rootOptions{})
+
+	require.ErrorContains(t, err, "resolve repo config path")
+}
+
+func Test_SelectRepoConfig_reports_non_missing_path_error(t *testing.T) {
+	_, err := selectRepoConfig(&rootOptions{configPath: "bad\x00path"})
+
+	require.ErrorContains(t, err, "inspect repo config")
+}
+
 func Test_CommandRuntime_requires_oauth_token(t *testing.T) {
 	dir := t.TempDir()
 	t.Chdir(dir)

@@ -168,6 +168,7 @@ that you use most.
 ```bash
 linctl target --json          # what the live credential resolves to
 linctl doctor                 # the health of the config, the auth, and the target
+linctl --config /repo/.linctl.toml doctor --json  # use another repo's pin explicitly
 linctl current                # the issue of the current git branch
 linctl next --dry-run         # the top-ranked unblocked issue, without a write
 
@@ -235,6 +236,7 @@ These flags are global. You can combine them with any command.
 | `--fail-on-empty` | exit non-zero when a list is empty, for a monitor |
 | `--sort FIELD --order asc\|desc` | deterministic order |
 | `--format minimal\|compact\|full` | the detail level of the human output |
+| `--config PATH` | load this repo target config instead of `./.linctl.toml` |
 | `--profile` / `--org` / `--team` / `--team-id` / `--project` | select a config profile, or set the pinned target |
 | `--timeout 30s` | one deadline for the whole command, retries included |
 | `--debug` | diagnostics to **stderr**. Set `LINCTL_DEBUG_JSON=1` for JSON |
@@ -251,6 +253,9 @@ them.
 
 `--org`, `--team`, `--team-id`, and `--project` **set** the pinned target. They do not relax the
 guard. linctl still compares everything against the live credential.
+
+Use `--config PATH` when the command runs from another worktree or repository. An explicit path
+must exist. `linctl doctor` reports the selected repo config path and whether it loaded.
 
 ## Guarded writes
 

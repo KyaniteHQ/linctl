@@ -11,10 +11,12 @@ import (
 )
 
 type doctorReport struct {
-	Config string              `json:"config"`
-	Token  string              `json:"token"`
-	Target doctorTargetReport  `json:"target"`
-	Viewer client.TargetViewer `json:"viewer"`
+	Config           string              `json:"config"`
+	RepoConfigPath   string              `json:"repo_config_path"`
+	RepoConfigStatus string              `json:"repo_config_status"`
+	Token            string              `json:"token"`
+	Target           doctorTargetReport  `json:"target"`
+	Viewer           client.TargetViewer `json:"viewer"`
 }
 
 type doctorTargetReport struct {
@@ -46,29 +48,33 @@ func addDoctorCommand(ctx context.Context, root *cobra.Command, options *rootOpt
 				return nil
 			}
 
-			report := newDoctorReport(target)
+			report := newDoctorReport(target, runtime.repoConfig)
 			if options.json {
 				return writeJSONValue(command, options, report)
 			}
 
 			return render.WriteLine(
 				command.OutOrStdout(),
-				"config %s\n token %s\n target %s %s/%s project %s",
+				"config %s\n token %s\n target %s %s/%s project %s\n repo_config %s %s",
 				report.Config,
 				report.Token,
 				report.Target.Status,
 				report.Target.TeamKey,
 				report.Target.TeamID,
 				report.Target.ProjectID,
+				report.RepoConfigStatus,
+				report.RepoConfigPath,
 			)
 		},
 	})
 }
 
-func newDoctorReport(target client.ResolvedTarget) doctorReport {
+func newDoctorReport(target client.ResolvedTarget, repoConfig repoConfigSelection) doctorReport {
 	return doctorReport{
-		Config: "ok",
-		Token:  "set",
+		Config:           "ok",
+		RepoConfigPath:   repoConfig.Path,
+		RepoConfigStatus: repoConfig.Status,
+		Token:            "set",
 		Target: doctorTargetReport{
 			Status:    "confirmed",
 			OrgID:     target.Org.ID,

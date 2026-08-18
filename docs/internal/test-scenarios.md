@@ -377,9 +377,12 @@ Success is pass/fail:
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
 72. Doctor health check
-   - Success: `linctl doctor` reports config load, OAuth auth readiness, and target confirmation without printing secret values.
+   - Success: `linctl doctor` reports config load, the repo config path, OAuth readiness, and target confirmation without printing secret values. `--config PATH` selects another repo pin. A missing explicit path fails before Linear access.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/doctor`;
-     `Test_CommandFlows_print_json_for_read_and_comment_commands/--json/doctor`.
+     `Test_CommandFlows_print_json_for_read_and_comment_commands/--json/doctor`;
+     `Test_ResolveConfig_uses_explicit_repo_config_outside_its_directory`;
+     `Test_ResolveConfig_refuses_missing_explicit_repo_config`;
+     `Test_SelectRepoConfig_reports_missing_default_in_current_directory`.
 
 73. File-backed issue text
    - Success: `linctl issue create --description-file FILE`, `linctl issue update --append-file FILE`, `linctl issue comment --body-file FILE`, and `linctl issue reply --body-file FILE` read local file contents before the existing guarded write path.

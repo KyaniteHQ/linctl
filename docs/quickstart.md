@@ -250,6 +250,9 @@ pinned. Run `linctl target --json` and `linctl auth status`. Usually the token b
 different organization than the file names, or the token is old. This is the guard at work, so
 read the message before you assume a defect.
 
+**The task runs from another checkout**: pass `--config /absolute/repo/.linctl.toml`.
+Run `linctl --config /absolute/repo/.linctl.toml doctor --json` before a write.
+
 **The auth expired**: run `linctl auth refresh`. linctl also refreshes the token inside a
 command and retries one time, so you rarely need this.
 
