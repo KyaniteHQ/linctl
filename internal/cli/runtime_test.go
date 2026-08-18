@@ -128,19 +128,28 @@ func Test_SelectRepoConfig_reports_missing_default_in_current_directory(t *testi
 }
 
 func Test_SelectRepoConfig_reports_current_directory_resolution_error(t *testing.T) {
-	workingDir := t.TempDir()
-	t.Chdir(workingDir)
-	require.NoError(t, os.Remove(workingDir))
+	expectedErr := errors.New("path resolution failed")
 
-	_, err := selectRepoConfig(&rootOptions{})
+	_, err := selectRepoConfigWithFS(
+		&rootOptions{},
+		func(string) (string, error) { return "", expectedErr },
+		os.Stat,
+	)
 
 	require.ErrorContains(t, err, "resolve repo config path")
+	require.ErrorIs(t, err, expectedErr)
 }
 
 func Test_SelectRepoConfig_reports_non_missing_path_error(t *testing.T) {
-	_, err := selectRepoConfig(&rootOptions{configPath: "bad\x00path"})
+	expectedErr := errors.New("stat failed")
+	_, err := selectRepoConfigWithFS(
+		&rootOptions{configPath: "config.toml"},
+		filepath.Abs,
+		func(string) (os.FileInfo, error) { return nil, expectedErr },
+	)
 
 	require.ErrorContains(t, err, "inspect repo config")
+	require.ErrorIs(t, err, expectedErr)
 }
 
 func Test_CommandRuntime_requires_oauth_token(t *testing.T) {

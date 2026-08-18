@@ -67,28 +67,36 @@ func resolveConfigWithSource(
 }
 
 func selectRepoConfig(options *rootOptions) (repoConfigSelection, error) {
+	return selectRepoConfigWithFS(options, filepath.Abs, os.Stat)
+}
+
+func selectRepoConfigWithFS(
+	options *rootOptions,
+	absolutePath func(string) (string, error),
+	stat func(string) (os.FileInfo, error),
+) (repoConfigSelection, error) {
 	path := options.configPath
 	explicit := path != ""
 	if path == "" {
 		path = ".linctl.toml"
 	}
-	absolutePath, err := filepath.Abs(path)
+	resolvedPath, err := absolutePath(path)
 	if err != nil {
 		return repoConfigSelection{}, fmt.Errorf("resolve repo config path %s: %w", path, err)
 	}
-	_, err = os.Stat(absolutePath)
+	_, err = stat(resolvedPath)
 	if err == nil {
-		return repoConfigSelection{Path: absolutePath, Status: repoConfigLoaded}, nil
+		return repoConfigSelection{Path: resolvedPath, Status: repoConfigLoaded}, nil
 	}
 	if errors.Is(err, os.ErrNotExist) {
 		if explicit {
-			return repoConfigSelection{}, fmt.Errorf("read explicit repo config %s: %w", absolutePath, err)
+			return repoConfigSelection{}, fmt.Errorf("read explicit repo config %s: %w", resolvedPath, err)
 		}
 
-		return repoConfigSelection{Path: absolutePath, Status: repoConfigMissing}, nil
+		return repoConfigSelection{Path: resolvedPath, Status: repoConfigMissing}, nil
 	}
 
-	return repoConfigSelection{}, fmt.Errorf("inspect repo config %s: %w", absolutePath, err)
+	return repoConfigSelection{}, fmt.Errorf("inspect repo config %s: %w", resolvedPath, err)
 }
 
 func newCommandRuntime(ctx context.Context, options *rootOptions) (commandRuntime, error) {
