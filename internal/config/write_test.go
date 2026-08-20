@@ -132,6 +132,38 @@ func Test_WritePin_encode_write_close_seams(t *testing.T) {
 		})
 		require.ErrorContains(t, err, "close boom")
 	})
+	t.Run("write removes created file", func(t *testing.T) {
+		path := filepath.Join(t.TempDir(), "pin.toml")
+		original := openPinFile
+		openPinFile = func(path string, flag int, perm os.FileMode) (pinWriter, error) {
+			file, err := openPinFileDefault(path, flag, perm)
+			if err != nil {
+				return nil, err
+			}
+
+			return failingPinWriter{inner: file, writeErr: errors.New("write boom")}, nil
+		}
+		t.Cleanup(func() { openPinFile = original })
+		err := WritePin(path, Target{OrgID: "org-id", TeamKey: "LIT", TeamID: "team-id"})
+		require.ErrorContains(t, err, "write boom")
+		require.NoFileExists(t, path)
+	})
+	t.Run("close removes created file", func(t *testing.T) {
+		path := filepath.Join(t.TempDir(), "pin.toml")
+		original := openPinFile
+		openPinFile = func(path string, flag int, perm os.FileMode) (pinWriter, error) {
+			file, err := openPinFileDefault(path, flag, perm)
+			if err != nil {
+				return nil, err
+			}
+
+			return failingPinWriter{inner: file, closeErr: errors.New("close boom")}, nil
+		}
+		t.Cleanup(func() { openPinFile = original })
+		err := WritePin(path, Target{OrgID: "org-id", TeamKey: "LIT", TeamID: "team-id"})
+		require.ErrorContains(t, err, "close boom")
+		require.NoFileExists(t, path)
+	})
 }
 
 func Test_SerializedPinKeys_edges(t *testing.T) {
@@ -160,6 +192,7 @@ team_id = "team-id"
 }
 
 type failingPinWriter struct {
+	inner    pinWriter
 	writeErr error
 	closeErr error
 }
@@ -168,10 +201,20 @@ func (writer failingPinWriter) Write(payload []byte) (int, error) {
 	if writer.writeErr != nil {
 		return 0, writer.writeErr
 	}
+	if writer.inner != nil {
+		return writer.inner.Write(payload)
+	}
 
 	return len(payload), nil
 }
 
 func (writer failingPinWriter) Close() error {
+	if writer.inner != nil {
+		closeErr := writer.inner.Close()
+		if writer.closeErr == nil {
+			return closeErr
+		}
+	}
+
 	return writer.closeErr
 }

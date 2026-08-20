@@ -213,11 +213,25 @@ func (runtime commandRuntime) fileHTTPClient() httpDoer {
 }
 
 func writeDownloadedFile(body io.Reader, output string) (int64, error) {
-	directory := filepath.Dir(output)
-	pattern := "." + filepath.Base(output) + ".tmp-*"
-	file, err := createDownloadTempFile(directory, pattern)
+	var size int64
+	err := writeFileAtomically(output, func(writer io.Writer) error {
+		var copyErr error
+		size, copyErr = io.Copy(writer, body)
+		return copyErr
+	})
 	if err != nil {
 		return 0, err
+	}
+
+	return size, nil
+}
+
+func writeFileAtomically(path string, write func(io.Writer) error) error {
+	directory := filepath.Dir(path)
+	pattern := "." + filepath.Base(path) + ".tmp-*"
+	file, err := createDownloadTempFile(directory, pattern)
+	if err != nil {
+		return err
 	}
 	tempPath := file.Name()
 	keepTemp := false
@@ -227,20 +241,20 @@ func writeDownloadedFile(body io.Reader, output string) (int64, error) {
 		}
 	}()
 
-	size, copyErr := io.Copy(file, body)
+	writeErr := write(file)
 	closeErr := file.Close()
-	if copyErr != nil {
-		return 0, copyErr
+	if writeErr != nil {
+		return writeErr
 	}
 	if closeErr != nil {
-		return 0, closeErr
+		return closeErr
 	}
-	if err := os.Rename(tempPath, output); err != nil {
-		return 0, err
+	if err := os.Rename(tempPath, path); err != nil {
+		return err
 	}
 	keepTemp = true
 
-	return size, nil
+	return nil
 }
 
 func writeAssetURL(command *cobra.Command, options *rootOptions, assetURL string) error {

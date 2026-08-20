@@ -497,14 +497,13 @@ func runIssueBulkExport(
 }
 
 func writeIssueFile(path string, format string, issues []client.IssueSummary) error {
-	//nolint:gosec // G304: the export command's purpose is to write the user-named file.
-	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o600)
-	if err != nil {
-		return fmt.Errorf("create %s: %w", path, err)
+	if err := writeFileAtomically(path, func(writer io.Writer) error {
+		return encodeIssues(writer, format, issues)
+	}); err != nil {
+		return fmt.Errorf("write %s: %w", path, err)
 	}
-	defer closeQuietly(file)
 
-	return encodeIssues(file, format, issues)
+	return nil
 }
 
 func encodeIssues(writer io.Writer, format string, issues []client.IssueSummary) error {
@@ -528,7 +527,7 @@ func issuesToCSVRecords(issues []client.IssueSummary) [][]string {
 	records := make([][]string, 0, 1+len(issues))
 	records = append(records, []string{"identifier", "title", "state", "priority", "assignee", "project", "url"})
 	for _, issue := range issues {
-		records = append(records, []string{
+		row := []string{
 			issue.Identifier,
 			issue.Title,
 			issue.State,
@@ -536,10 +535,26 @@ func issuesToCSVRecords(issues []client.IssueSummary) [][]string {
 			issue.Assignee,
 			issue.Project,
 			issue.URL,
-		})
+		}
+		for index, cell := range row {
+			row[index] = prefixCSVFormulaCell(cell)
+		}
+		records = append(records, row)
 	}
 
 	return records
+}
+
+func prefixCSVFormulaCell(value string) string {
+	if value == "" {
+		return value
+	}
+	switch value[0] {
+	case '=', '+', '-', '@', '\t', '\r':
+		return "'" + value
+	default:
+		return value
+	}
 }
 
 func writeBulkExportResult(command *cobra.Command, options *rootOptions, path string, count int) error {

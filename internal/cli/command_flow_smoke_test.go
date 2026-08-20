@@ -126,7 +126,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "issue subscribers", args: []string{"issue", "subscribers", "LIT-1", "--limit", "1"}, contains: "user-id Omer <omer@example.com>"},
 		{name: "issue relation list", args: []string{"issue-relation", "list", "--limit", "1"}, contains: "issue-relation-id blocks LIT-1 -> LIT-2"},
 		{name: "issue relation get", args: []string{"issue-relation", "get", "issue-relation-id"}, contains: "issue-relation-id blocks LIT-1 -> LIT-2"},
-		{name: "issue pr", args: []string{"issue", "pr", "LIT-1"}, contains: `gh pr create --title "LIT-1 Detail issue" --body "https://linear.app/kyanite/issue/LIT-1"`},
+		{name: "issue pr", args: []string{"issue", "pr", "LIT-1"}, contains: "gh pr create --title 'LIT-1 Detail issue' --body 'https://linear.app/kyanite/issue/LIT-1'"},
 		{name: "issue create", args: []string{"issue", "create", "--title", "Created issue"}, contains: "LIT-2 Created issue [Todo]", fake: commandFlowFakeClient{expectedCreateTitle: "Created issue"}},
 		{name: "issue create with state alias", args: []string{"issue", "create", "--title", "Created issue", "--state", "todo"}, contains: "LIT-2 Created issue [Todo]", fake: commandFlowFakeClient{expectedCreateTitle: "Created issue"}},
 		{name: "issue create with priority alias", args: []string{"issue", "create", "--title", "Created issue", "--priority", "high"}, contains: "LIT-2 Created issue [Todo]", fake: commandFlowFakeClient{expectedCreateTitle: "Created issue"}},

@@ -2,7 +2,7 @@ package cli
 
 import (
 	"context"
-	"strconv"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -62,7 +62,13 @@ func writePullRequestPlan(command *cobra.Command, options *rootOptions, plan pul
 	return render.WriteLine(
 		command.OutOrStdout(),
 		"gh pr create --title %s --body %s",
-		strconv.Quote(plan.Title),
-		strconv.Quote(plan.Body),
+		shellQuote(plan.Title),
+		shellQuote(plan.Body),
 	)
+}
+
+// shellQuote wraps value in POSIX single quotes. An embedded quote is replaced
+// with the four-character sequence quote, backslash, quote, quote.
+func shellQuote(value string) string {
+	return "'" + strings.ReplaceAll(value, "'", `'\''`) + "'"
 }

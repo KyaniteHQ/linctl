@@ -134,7 +134,7 @@ func Test_CommandFlows_print_issue_pr_from_current_branch(t *testing.T) {
 	output, err := runCurrentCommandInGitBranch(t, []string{"issue", "pr"})
 
 	require.NoError(t, err)
-	require.Contains(t, output, `gh pr create --title "LIT-1 Detail issue"`)
+	require.Contains(t, output, "gh pr create --title 'LIT-1 Detail issue'")
 }
 
 func Test_CommandFlows_close_current_issue_from_done(t *testing.T) {

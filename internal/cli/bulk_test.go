@@ -3,10 +3,12 @@ package cli
 import (
 	"bytes"
 	"context"
+	"encoding/csv"
 	"errors"
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -386,4 +388,70 @@ func Test_encodeIssues_surfaces_writer_errors(t *testing.T) {
 
 	require.Error(t, encodeIssues(commandFailingWriter{}, formatJSON, issues))
 	require.Error(t, encodeIssues(commandFailingWriter{}, formatCSV, issues))
+}
+
+func Test_prefixCSVFormulaCell(t *testing.T) {
+	require.Empty(t, prefixCSVFormulaCell(""))
+	require.Equal(t, "Listed issue", prefixCSVFormulaCell("Listed issue"))
+	require.Equal(t, `'=HYPERLINK("http://evil/","click")`, prefixCSVFormulaCell(`=HYPERLINK("http://evil/","click")`))
+	require.Equal(t, "'+cmd", prefixCSVFormulaCell("+cmd"))
+	require.Equal(t, "'-1+1", prefixCSVFormulaCell("-1+1"))
+	require.Equal(t, "'@SUM(1)", prefixCSVFormulaCell("@SUM(1)"))
+	require.Equal(t, "'\tTAB", prefixCSVFormulaCell("\tTAB"))
+	require.Equal(t, "'\rCR", prefixCSVFormulaCell("\rCR"))
+}
+
+func Test_issuesToCSVRecords_prefixes_formula_trigger_cells(t *testing.T) {
+	records := issuesToCSVRecords([]client.IssueSummary{{
+		Identifier:    "=CMD",
+		Title:         `=HYPERLINK("http://evil/","click")`,
+		State:         "+cmd",
+		PriorityLabel: "-1+1",
+		Assignee:      "@SUM(1)",
+		Project:       "\tTAB",
+		URL:           "\rCR",
+	}})
+
+	require.Equal(t, []string{"identifier", "title", "state", "priority", "assignee", "project", "url"}, records[0])
+	require.Equal(t, []string{
+		"'=CMD",
+		`'=HYPERLINK("http://evil/","click")`,
+		"'+cmd",
+		"'-1+1",
+		"'@SUM(1)",
+		"'\tTAB",
+		"'\rCR",
+	}, records[1])
+}
+
+func Test_writeIssueFile_prefixes_csv_formula_cells_on_disk(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "issues.csv")
+
+	err := writeIssueFile(path, formatCSV, []client.IssueSummary{{
+		Identifier: "LIT-1",
+		Title:      `=HYPERLINK("http://evil/","click")`,
+		State:      "Todo",
+	}})
+
+	require.NoError(t, err)
+	data, err := os.ReadFile(path) //nolint:gosec // G304: test-controlled temp path.
+	require.NoError(t, err)
+	require.Contains(t, string(data), `'=HYPERLINK`)
+	records, err := csv.NewReader(strings.NewReader(string(data))).ReadAll()
+	require.NoError(t, err)
+	require.Equal(t, `'=HYPERLINK("http://evil/","click")`, records[1][1])
+}
+
+func Test_writeIssueFile_leaves_no_destination_on_write_failure(t *testing.T) {
+	dir := t.TempDir()
+	dest := filepath.Join(dir, "issues.csv")
+	stubAtomicTempWriteError(t, errors.New("write boom"))
+
+	err := writeIssueFile(dest, formatCSV, []client.IssueSummary{{Identifier: "LIT-1", Title: "Listed issue"}})
+
+	require.ErrorContains(t, err, "write boom")
+	require.NoFileExists(t, dest)
+	entries, readErr := os.ReadDir(dir)
+	require.NoError(t, readErr)
+	require.Empty(t, entries)
 }

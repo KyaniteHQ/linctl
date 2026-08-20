@@ -3,6 +3,7 @@ package cli
 import (
 	"bytes"
 	"context"
+	"errors"
 	"os"
 	"path/filepath"
 	"testing"
@@ -148,6 +149,19 @@ func Test_writeExportDocument_surfaces_write_errors(t *testing.T) {
 	_, err := writeExportDocument(dir, "LIT-1", "body")
 
 	require.Error(t, err)
+}
+
+func Test_writeExportDocument_leaves_no_destination_on_write_failure(t *testing.T) {
+	dir := t.TempDir()
+	stubAtomicTempWriteError(t, errors.New("write boom"))
+
+	_, err := writeExportDocument(dir, "LIT-1", "body")
+
+	require.ErrorContains(t, err, "write boom")
+	require.NoFileExists(t, filepath.Join(dir, "LIT-1.md"))
+	entries, readErr := os.ReadDir(dir)
+	require.NoError(t, readErr)
+	require.Empty(t, entries)
 }
 
 func Test_renderExportDescription_falls_back_when_empty(t *testing.T) {

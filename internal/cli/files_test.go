@@ -66,6 +66,31 @@ type closeErrorTempFile struct {
 	name string
 }
 
+type writeErrorTempFile struct {
+	downloadTempFile
+	err error
+}
+
+func (file writeErrorTempFile) Write(_ []byte) (int, error) {
+	return 0, file.err
+}
+
+func stubAtomicTempWriteError(t *testing.T, writeErr error) {
+	t.Helper()
+	original := createDownloadTempFile
+	createDownloadTempFile = func(directory string, pattern string) (downloadTempFile, error) {
+		file, err := os.CreateTemp(directory, pattern)
+		if err != nil {
+			return nil, err
+		}
+
+		return writeErrorTempFile{downloadTempFile: file, err: writeErr}, nil
+	}
+	t.Cleanup(func() {
+		createDownloadTempFile = original
+	})
+}
+
 func (file closeErrorTempFile) Write(bytes []byte) (int, error) {
 	return len(bytes), nil
 }
