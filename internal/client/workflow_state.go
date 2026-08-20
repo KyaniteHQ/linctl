@@ -37,23 +37,41 @@ type WorkflowStateIssueList struct {
 	EndCursor         *string        `json:"end_cursor,omitempty"`
 }
 
+//nolint:lll
+type workflowStatesNode = gql.XWorkflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState
+
+//nolint:lll
+type workflowStateIssuesNode = gql.XWorkflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue
+
+type workflowStatesQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
+type workflowStateIssuesQuery struct {
+	ctx               context.Context
+	graphqlClient     graphql.Client
+	id                string
+	workflowStateID   string
+	workflowStateName string
+}
+
 // ListWorkflowStates returns visible workflow states.
 func ListWorkflowStates(ctx context.Context, graphqlClient graphql.Client, limit int) (WorkflowStateList, error) {
-	states, err := gql.XWorkflowStates(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := workflowStatesQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list workflow states", limit, defaultListPageSize,
+		query.page,
+		workflowStatesNodeSummary,
+	)
 	if err != nil {
-		return WorkflowStateList{}, fmt.Errorf("list workflow states: %w", err)
+		return WorkflowStateList{}, err
 	}
 
-	summaries := mapNodes(states.WorkflowStates.Nodes, func(
-		state gql.XWorkflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState,
-	) WorkflowStateSummary {
-		return workflowStateSummary(state.WorkflowStateSummaryFields)
-	})
-
 	return WorkflowStateList{
-		WorkflowStates: summaries,
-		HasNextPage:    states.WorkflowStates.PageInfo.HasNextPage,
-		EndCursor:      states.WorkflowStates.PageInfo.EndCursor,
+		WorkflowStates: page.Items,
+		HasNextPage:    page.HasNextPage,
+		EndCursor:      page.EndCursor,
 	}, nil
 }
 
@@ -78,24 +96,63 @@ func ListWorkflowStateIssues(
 	id string,
 	limit int,
 ) (WorkflowStateIssueList, error) {
-	state, err := gql.XWorkflowState_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &workflowStateIssuesQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list workflow state issues "+id, limit, defaultListPageSize,
+		query.issues,
+		workflowStateIssuesNodeSummary,
+	)
 	if err != nil {
-		return WorkflowStateIssueList{}, fmt.Errorf("list workflow state issues %s: %w", id, err)
+		return WorkflowStateIssueList{}, err
 	}
 
-	issues := mapNodes(state.WorkflowState.Issues.Nodes, func(
-		issue gql.XWorkflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(issue.IssueSummaryFields)
-	})
-
 	return WorkflowStateIssueList{
-		WorkflowStateID:   state.WorkflowState.Id,
-		WorkflowStateName: state.WorkflowState.Name,
-		Issues:            issues,
-		HasNextPage:       state.WorkflowState.Issues.PageInfo.HasNextPage,
-		EndCursor:         state.WorkflowState.Issues.PageInfo.EndCursor,
+		WorkflowStateID:   query.workflowStateID,
+		WorkflowStateName: query.workflowStateName,
+		Issues:            page.Items,
+		HasNextPage:       page.HasNextPage,
+		EndCursor:         page.EndCursor,
 	}, nil
+}
+
+func (query workflowStatesQuery) page(pageSize int, after *string) ([]workflowStatesNode, bool, *string, error) {
+	result, err := gql.XWorkflowStates(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.WorkflowStates.Nodes,
+		result.WorkflowStates.PageInfo.HasNextPage,
+		result.WorkflowStates.PageInfo.EndCursor,
+		nil
+}
+
+func (query *workflowStateIssuesQuery) issues(
+	pageSize int,
+	after *string,
+) ([]workflowStateIssuesNode, bool, *string, error) {
+	result, err := gql.XWorkflowState_issues(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	query.workflowStateID = result.WorkflowState.Id
+	query.workflowStateName = result.WorkflowState.Name
+
+	return result.WorkflowState.Issues.Nodes,
+		result.WorkflowState.Issues.PageInfo.HasNextPage,
+		result.WorkflowState.Issues.PageInfo.EndCursor,
+		nil
+}
+
+func workflowStatesNodeSummary(state workflowStatesNode) WorkflowStateSummary {
+	return workflowStateSummary(state.WorkflowStateSummaryFields)
+}
+
+func workflowStateIssuesNodeSummary(issue workflowStateIssuesNode) IssueSummary {
+	return issueSummaryFromFields(issue.IssueSummaryFields)
 }
 
 func workflowStateSummary(state gql.WorkflowStateSummaryFields) WorkflowStateSummary {
