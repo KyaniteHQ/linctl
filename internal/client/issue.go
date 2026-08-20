@@ -283,6 +283,7 @@ func listIssuesBlockedByIssue(
 }
 
 // ListIssuePriorityValues returns Linear issue priority labels.
+// It cannot paginate: it is a flat enum list and takes no limit.
 func ListIssuePriorityValues(ctx context.Context, graphqlClient graphql.Client) ([]IssuePriorityValue, error) {
 	result, err := gql.XIssuePriorityValues(ctx, graphqlClient)
 	if err != nil {

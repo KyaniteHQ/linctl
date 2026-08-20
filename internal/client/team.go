@@ -65,20 +65,25 @@ type GitAutomationStateList struct {
 
 // ListTeams returns visible teams.
 func ListTeams(ctx context.Context, graphqlClient graphql.Client, limit int) (TeamList, error) {
-	teams, err := gql.XTeams_list(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	page, err := listConnection(
+		"list teams", limit, defaultListPageSize,
+		func(pageSize int, after *string) ([]gql.XTeams_listTeamsTeamConnectionNodesTeam, bool, *string, error) {
+			result, err := gql.XTeams_list(ctx, graphqlClient, intPtr(pageSize), after, boolPtr(true))
+			if err != nil {
+				return nil, false, nil, err
+			}
+
+			return result.Teams.Nodes, result.Teams.PageInfo.HasNextPage, result.Teams.PageInfo.EndCursor, nil
+		},
+		func(team gql.XTeams_listTeamsTeamConnectionNodesTeam) TeamSummary {
+			return teamSummary(team.TeamSummaryFields)
+		},
+	)
 	if err != nil {
-		return TeamList{}, fmt.Errorf("list teams: %w", err)
+		return TeamList{}, err
 	}
 
-	summaries := mapNodes(teams.Teams.Nodes, func(team gql.XTeams_listTeamsTeamConnectionNodesTeam) TeamSummary {
-		return teamSummary(team.TeamSummaryFields)
-	})
-
-	return TeamList{
-		Teams:       summaries,
-		HasNextPage: teams.Teams.PageInfo.HasNextPage,
-		EndCursor:   teams.Teams.PageInfo.EndCursor,
-	}, nil
+	return TeamList{Teams: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // GetTeamByID returns one Team by id.

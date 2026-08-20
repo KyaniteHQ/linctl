@@ -61,6 +61,7 @@ func ListOrganizationTemplates(ctx context.Context, graphqlClient graphql.Client
 }
 
 // ListTemplates returns visible Linear templates.
+// It cannot paginate: gql.XTemplates takes no arguments, fetches everything, and truncates client-side.
 func ListTemplates(ctx context.Context, graphqlClient graphql.Client, limit int) (TemplateList, error) {
 	result, err := gql.XTemplates(ctx, graphqlClient)
 	if err != nil {

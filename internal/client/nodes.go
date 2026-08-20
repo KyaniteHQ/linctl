@@ -53,3 +53,26 @@ func collectNodePages[Item any](
 		after = page.EndCursor
 	}
 }
+
+// listConnection wraps collectNodePages for the common shape: fetch one page of a
+// connection, map its nodes to a Summary, and thread its page info through unchanged.
+func listConnection[Node, Summary any](
+	operation string,
+	limit int,
+	pageSize int,
+	fetch func(pageSize int, after *string) (nodes []Node, hasNextPage bool, endCursor *string, err error),
+	mapOne func(Node) Summary,
+) (nodePage[Summary], error) {
+	return collectNodePages(operation, limit, pageSize, func(pageSize int, after *string) (nodePage[Summary], error) {
+		nodes, hasNextPage, endCursor, err := fetch(pageSize, after)
+		if err != nil {
+			return nodePage[Summary]{}, err
+		}
+
+		return nodePage[Summary]{Items: mapNodes(nodes, mapOne), HasNextPage: hasNextPage, EndCursor: endCursor}, nil
+	})
+}
+
+// defaultListPageSize matches Linear's per-request cap, the same authority
+// issueListPageSize cites at issue.go:134.
+const defaultListPageSize = 250
