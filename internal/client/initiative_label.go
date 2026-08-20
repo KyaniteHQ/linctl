@@ -39,19 +39,29 @@ type initiativeLabelNode = gql.XInitiativeLabelsInitiativeLabelsInitiativeLabelC
 
 // ListInitiativeLabels returns visible Linear initiative labels.
 func ListInitiativeLabels(ctx context.Context, graphqlClient graphql.Client, limit int) (InitiativeLabelList, error) {
-	result, err := gql.XInitiativeLabels(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	page, err := listConnection(
+		"list initiative labels", limit, defaultListPageSize,
+		func(pageSize int, after *string) ([]initiativeLabelNode, bool, *string, error) {
+			result, err := gql.XInitiativeLabels(ctx, graphqlClient, intPtr(pageSize), after, boolPtr(true))
+			if err != nil {
+				return nil, false, nil, err
+			}
+
+			return result.InitiativeLabels.Nodes,
+				result.InitiativeLabels.PageInfo.HasNextPage,
+				result.InitiativeLabels.PageInfo.EndCursor,
+				nil
+		},
+		initiativeLabelNodeSummary,
+	)
 	if err != nil {
-		return InitiativeLabelList{}, fmt.Errorf("list initiative labels: %w", err)
+		return InitiativeLabelList{}, err
 	}
 
-	labels := mapNodes(result.InitiativeLabels.Nodes, func(label initiativeLabelNode) InitiativeLabelSummary {
-		return initiativeLabelSummary(label.InitiativeLabelSummaryFields)
-	})
-
 	return InitiativeLabelList{
-		InitiativeLabels: labels,
-		HasNextPage:      result.InitiativeLabels.PageInfo.HasNextPage,
-		EndCursor:        result.InitiativeLabels.PageInfo.EndCursor,
+		InitiativeLabels: page.Items,
+		HasNextPage:      page.HasNextPage,
+		EndCursor:        page.EndCursor,
 	}, nil
 }
 
@@ -67,6 +77,10 @@ func GetInitiativeLabelByID(
 	}
 
 	return initiativeLabelSummary(result.InitiativeLabel.InitiativeLabelSummaryFields), nil
+}
+
+func initiativeLabelNodeSummary(label initiativeLabelNode) InitiativeLabelSummary {
+	return initiativeLabelSummary(label.InitiativeLabelSummaryFields)
 }
 
 func initiativeLabelSummary(fields gql.InitiativeLabelSummaryFields) InitiativeLabelSummary {

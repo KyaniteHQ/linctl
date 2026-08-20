@@ -32,28 +32,35 @@ type InitiativeRelationList struct {
 	EndCursor   *string                     `json:"end_cursor,omitempty"`
 }
 
+//nolint:lll
+type initiativeRelationNode = gql.XInitiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation
+
 // ListInitiativeRelations returns visible parent-child relations between initiatives.
 func ListInitiativeRelations(
 	ctx context.Context,
 	graphqlClient graphql.Client,
 	limit int,
 ) (InitiativeRelationList, error) {
-	result, err := gql.XInitiativeRelations(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	page, err := listConnection(
+		"list initiative relations", limit, defaultListPageSize,
+		func(pageSize int, after *string) ([]initiativeRelationNode, bool, *string, error) {
+			result, err := gql.XInitiativeRelations(ctx, graphqlClient, intPtr(pageSize), after, boolPtr(true))
+			if err != nil {
+				return nil, false, nil, err
+			}
+
+			return result.InitiativeRelations.Nodes,
+				result.InitiativeRelations.PageInfo.HasNextPage,
+				result.InitiativeRelations.PageInfo.EndCursor,
+				nil
+		},
+		initiativeRelationNodeSummary,
+	)
 	if err != nil {
-		return InitiativeRelationList{}, fmt.Errorf("list initiative relations: %w", err)
+		return InitiativeRelationList{}, err
 	}
 
-	relations := mapNodes(result.InitiativeRelations.Nodes, func(
-		relation gql.XInitiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation,
-	) InitiativeRelationSummary {
-		return initiativeRelationSummary(relation.InitiativeRelationSummaryFields)
-	})
-
-	return InitiativeRelationList{
-		Relations:   relations,
-		HasNextPage: result.InitiativeRelations.PageInfo.HasNextPage,
-		EndCursor:   result.InitiativeRelations.PageInfo.EndCursor,
-	}, nil
+	return InitiativeRelationList{Relations: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // GetInitiativeRelationByID returns one initiative relation by Linear id.
@@ -68,6 +75,10 @@ func GetInitiativeRelationByID(
 	}
 
 	return initiativeRelationSummary(result.InitiativeRelation.InitiativeRelationSummaryFields), nil
+}
+
+func initiativeRelationNodeSummary(relation initiativeRelationNode) InitiativeRelationSummary {
+	return initiativeRelationSummary(relation.InitiativeRelationSummaryFields)
 }
 
 func initiativeRelationSummary(relation gql.InitiativeRelationSummaryFields) InitiativeRelationSummary {

@@ -32,27 +32,38 @@ type InitiativeToProjectList struct {
 	EndCursor    *string                      `json:"end_cursor,omitempty"`
 }
 
+//nolint:lll
+type initiativeToProjectsNode = gql.XInitiativeToProjectsInitiativeToProjectsInitiativeToProjectConnectionNodesInitiativeToProject
+
 // ListInitiativeToProjects returns visible Initiative-to-Project associations.
 func ListInitiativeToProjects(
 	ctx context.Context,
 	graphqlClient graphql.Client,
 	limit int,
 ) (InitiativeToProjectList, error) {
-	result, err := gql.XInitiativeToProjects(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	page, err := listConnection(
+		"list initiative to projects", limit, defaultListPageSize,
+		func(pageSize int, after *string) ([]initiativeToProjectsNode, bool, *string, error) {
+			result, err := gql.XInitiativeToProjects(ctx, graphqlClient, intPtr(pageSize), after, boolPtr(true))
+			if err != nil {
+				return nil, false, nil, err
+			}
+
+			return result.InitiativeToProjects.Nodes,
+				result.InitiativeToProjects.PageInfo.HasNextPage,
+				result.InitiativeToProjects.PageInfo.EndCursor,
+				nil
+		},
+		initiativeToProjectsNodeSummary,
+	)
 	if err != nil {
-		return InitiativeToProjectList{}, fmt.Errorf("list initiative to projects: %w", err)
+		return InitiativeToProjectList{}, err
 	}
 
-	associations := mapNodes(result.InitiativeToProjects.Nodes, func(
-		association gql.XInitiativeToProjectsInitiativeToProjectsInitiativeToProjectConnectionNodesInitiativeToProject,
-	) InitiativeToProjectSummary {
-		return initiativeToProjectSummary(association.InitiativeToProjectSummaryFields)
-	})
-
 	return InitiativeToProjectList{
-		Associations: associations,
-		HasNextPage:  result.InitiativeToProjects.PageInfo.HasNextPage,
-		EndCursor:    result.InitiativeToProjects.PageInfo.EndCursor,
+		Associations: page.Items,
+		HasNextPage:  page.HasNextPage,
+		EndCursor:    page.EndCursor,
 	}, nil
 }
 
@@ -68,6 +79,10 @@ func GetInitiativeToProjectByID(
 	}
 
 	return initiativeToProjectSummary(result.InitiativeToProject.InitiativeToProjectSummaryFields), nil
+}
+
+func initiativeToProjectsNodeSummary(association initiativeToProjectsNode) InitiativeToProjectSummary {
+	return initiativeToProjectSummary(association.InitiativeToProjectSummaryFields)
 }
 
 func initiativeToProjectSummary(association gql.InitiativeToProjectSummaryFields) InitiativeToProjectSummary {

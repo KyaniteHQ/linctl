@@ -41,24 +41,37 @@ type InitiativeUpdateCommentList struct {
 	EndCursor          *string                  `json:"end_cursor,omitempty"`
 }
 
+//nolint:lll
+type initiativeUpdatesNode = gql.XInitiativeUpdatesInitiativeUpdatesInitiativeUpdateConnectionNodesInitiativeUpdate
+
+//nolint:lll
+type initiativeUpdateCommentsNode = gql.XInitiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment
+
+type initiativeUpdatesQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
+type initiativeUpdateCommentsQuery struct {
+	ctx                context.Context
+	graphqlClient      graphql.Client
+	id                 string
+	initiativeUpdateID string
+}
+
 // ListInitiativeUpdates returns visible initiative status updates.
 func ListInitiativeUpdates(ctx context.Context, graphqlClient graphql.Client, limit int) (InitiativeUpdateList, error) {
-	result, err := gql.XInitiativeUpdates(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := initiativeUpdatesQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list initiative updates", limit, defaultListPageSize,
+		query.page,
+		initiativeUpdatesNodeSummary,
+	)
 	if err != nil {
-		return InitiativeUpdateList{}, fmt.Errorf("list initiative updates: %w", err)
+		return InitiativeUpdateList{}, err
 	}
 
-	updates := mapNodes(result.InitiativeUpdates.Nodes, func(
-		update gql.XInitiativeUpdatesInitiativeUpdatesInitiativeUpdateConnectionNodesInitiativeUpdate,
-	) InitiativeUpdateSummary {
-		return initiativeUpdateSummary(update.InitiativeUpdateSummaryFields)
-	})
-
-	return InitiativeUpdateList{
-		Updates:     updates,
-		HasNextPage: result.InitiativeUpdates.PageInfo.HasNextPage,
-		EndCursor:   result.InitiativeUpdates.PageInfo.EndCursor,
-	}, nil
+	return InitiativeUpdateList{Updates: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // GetInitiativeUpdateByID returns one initiative update by Linear id.
@@ -82,23 +95,64 @@ func ListInitiativeUpdateComments(
 	id string,
 	limit int,
 ) (InitiativeUpdateCommentList, error) {
-	result, err := gql.XInitiativeUpdate_comments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &initiativeUpdateCommentsQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list initiative update comments "+id, limit, defaultListPageSize,
+		query.comments,
+		initiativeUpdateCommentsNodeSummary,
+	)
 	if err != nil {
-		return InitiativeUpdateCommentList{}, fmt.Errorf("list initiative update comments %s: %w", id, err)
+		return InitiativeUpdateCommentList{}, err
 	}
 
-	comments := mapNodes(result.InitiativeUpdate.Comments.Nodes, func(
-		node gql.XInitiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment,
-	) CommentMetadataSummary {
-		return commentMetadataSummary(node.CommentMetadataFields)
-	})
-
 	return InitiativeUpdateCommentList{
-		InitiativeUpdateID: result.InitiativeUpdate.Id,
-		Comments:           comments,
-		HasNextPage:        result.InitiativeUpdate.Comments.PageInfo.HasNextPage,
-		EndCursor:          result.InitiativeUpdate.Comments.PageInfo.EndCursor,
+		InitiativeUpdateID: query.initiativeUpdateID,
+		Comments:           page.Items,
+		HasNextPage:        page.HasNextPage,
+		EndCursor:          page.EndCursor,
 	}, nil
+}
+
+func (query initiativeUpdatesQuery) page(
+	pageSize int,
+	after *string,
+) ([]initiativeUpdatesNode, bool, *string, error) {
+	result, err := gql.XInitiativeUpdates(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.InitiativeUpdates.Nodes,
+		result.InitiativeUpdates.PageInfo.HasNextPage,
+		result.InitiativeUpdates.PageInfo.EndCursor,
+		nil
+}
+
+func (query *initiativeUpdateCommentsQuery) comments(
+	pageSize int,
+	after *string,
+) ([]initiativeUpdateCommentsNode, bool, *string, error) {
+	result, err := gql.XInitiativeUpdate_comments(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	query.initiativeUpdateID = result.InitiativeUpdate.Id
+
+	return result.InitiativeUpdate.Comments.Nodes,
+		result.InitiativeUpdate.Comments.PageInfo.HasNextPage,
+		result.InitiativeUpdate.Comments.PageInfo.EndCursor,
+		nil
+}
+
+func initiativeUpdatesNodeSummary(update initiativeUpdatesNode) InitiativeUpdateSummary {
+	return initiativeUpdateSummary(update.InitiativeUpdateSummaryFields)
+}
+
+func initiativeUpdateCommentsNodeSummary(node initiativeUpdateCommentsNode) CommentMetadataSummary {
+	return commentMetadataSummary(node.CommentMetadataFields)
 }
 
 func initiativeUpdateSummary(update gql.InitiativeUpdateSummaryFields) InitiativeUpdateSummary {

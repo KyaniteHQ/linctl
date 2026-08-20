@@ -43,24 +43,38 @@ type RoadmapProjectList struct {
 	EndCursor   *string          `json:"end_cursor,omitempty"`
 }
 
+//nolint:lll
+type roadmapsNode = gql.XRoadmapsRoadmapsRoadmapConnectionNodesRoadmap
+
+//nolint:lll
+type roadmapProjectsNode = gql.XRoadmap_projectsRoadmapProjectsProjectConnectionNodesProject
+
+type roadmapsQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
+type roadmapProjectsQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+	id            string
+	roadmapID     string
+	roadmapName   string
+}
+
 // ListRoadmaps returns visible Linear roadmaps.
 func ListRoadmaps(ctx context.Context, graphqlClient graphql.Client, limit int) (RoadmapList, error) {
-	result, err := gql.XRoadmaps(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := roadmapsQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list roadmaps", limit, defaultListPageSize,
+		query.page,
+		roadmapsNodeSummary,
+	)
 	if err != nil {
-		return RoadmapList{}, fmt.Errorf("list roadmaps: %w", err)
+		return RoadmapList{}, err
 	}
 
-	summaries := mapNodes(result.Roadmaps.Nodes, func(
-		node gql.XRoadmapsRoadmapsRoadmapConnectionNodesRoadmap,
-	) RoadmapSummary {
-		return roadmapSummary(node.RoadmapSummaryFields)
-	})
-
-	return RoadmapList{
-		Roadmaps:    summaries,
-		HasNextPage: result.Roadmaps.PageInfo.HasNextPage,
-		EndCursor:   result.Roadmaps.PageInfo.EndCursor,
-	}, nil
+	return RoadmapList{Roadmaps: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // GetRoadmapByID returns one deprecated Linear roadmap by id.
@@ -80,24 +94,63 @@ func ListRoadmapProjects(
 	id string,
 	limit int,
 ) (RoadmapProjectList, error) {
-	result, err := gql.XRoadmap_projects(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &roadmapProjectsQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list roadmap projects "+id, limit, defaultListPageSize,
+		query.projects,
+		roadmapProjectsNodeSummary,
+	)
 	if err != nil {
-		return RoadmapProjectList{}, fmt.Errorf("list roadmap projects %s: %w", id, err)
+		return RoadmapProjectList{}, err
 	}
 
-	projects := mapNodes(result.Roadmap.Projects.Nodes, func(
-		project gql.XRoadmap_projectsRoadmapProjectsProjectConnectionNodesProject,
-	) ProjectSummary {
-		return projectSummaryFromFields(project.ProjectSummaryFields)
-	})
-
 	return RoadmapProjectList{
-		RoadmapID:   result.Roadmap.Id,
-		RoadmapName: result.Roadmap.Name,
-		Projects:    projects,
-		HasNextPage: result.Roadmap.Projects.PageInfo.HasNextPage,
-		EndCursor:   result.Roadmap.Projects.PageInfo.EndCursor,
+		RoadmapID:   query.roadmapID,
+		RoadmapName: query.roadmapName,
+		Projects:    page.Items,
+		HasNextPage: page.HasNextPage,
+		EndCursor:   page.EndCursor,
 	}, nil
+}
+
+func (query roadmapsQuery) page(pageSize int, after *string) ([]roadmapsNode, bool, *string, error) {
+	result, err := gql.XRoadmaps(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Roadmaps.Nodes,
+		result.Roadmaps.PageInfo.HasNextPage,
+		result.Roadmaps.PageInfo.EndCursor,
+		nil
+}
+
+func (query *roadmapProjectsQuery) projects(
+	pageSize int,
+	after *string,
+) ([]roadmapProjectsNode, bool, *string, error) {
+	result, err := gql.XRoadmap_projects(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	query.roadmapID = result.Roadmap.Id
+	query.roadmapName = result.Roadmap.Name
+
+	return result.Roadmap.Projects.Nodes,
+		result.Roadmap.Projects.PageInfo.HasNextPage,
+		result.Roadmap.Projects.PageInfo.EndCursor,
+		nil
+}
+
+func roadmapsNodeSummary(node roadmapsNode) RoadmapSummary {
+	return roadmapSummary(node.RoadmapSummaryFields)
+}
+
+func roadmapProjectsNodeSummary(project roadmapProjectsNode) ProjectSummary {
+	return projectSummaryFromFields(project.ProjectSummaryFields)
 }
 
 func roadmapSummary(fields gql.RoadmapSummaryFields) RoadmapSummary {
