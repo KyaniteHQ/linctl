@@ -56,12 +56,6 @@ type initiativeUpdateCommentsQuery struct {
 	id            string
 }
 
-// initiativeUpdateCommentsParent is the connection parent metadata initiativeUpdateCommentsQuery reads out of
-// every page. Linear repeats it per page, so the last page wins.
-type initiativeUpdateCommentsParent struct {
-	initiativeUpdateID string
-}
-
 // ListInitiativeUpdates returns visible initiative status updates.
 func ListInitiativeUpdates(ctx context.Context, graphqlClient graphql.Client, limit int) (InitiativeUpdateList, error) {
 	query := initiativeUpdatesQuery{ctx: ctx, graphqlClient: graphqlClient}
@@ -109,7 +103,7 @@ func ListInitiativeUpdateComments(
 	}
 
 	return InitiativeUpdateCommentList{
-		InitiativeUpdateID: parent.initiativeUpdateID,
+		InitiativeUpdateID: parent,
 		Comments:           page.Items,
 		Page:               page.Page,
 	}, nil
@@ -133,16 +127,16 @@ func (query initiativeUpdatesQuery) page(
 func (query *initiativeUpdateCommentsQuery) comments(
 	pageSize int,
 	after *string,
-) ([]initiativeUpdateCommentsNode, initiativeUpdateCommentsParent, bool, *string, error) {
+) ([]initiativeUpdateCommentsNode, string, bool, *string, error) {
 	result, err := gql.XInitiativeUpdate_comments(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, initiativeUpdateCommentsParent{}, false, nil, err
+		return nil, "", false, nil, err
 	}
 
 	return result.InitiativeUpdate.Comments.Nodes,
-		initiativeUpdateCommentsParent{initiativeUpdateID: result.InitiativeUpdate.Id},
+		result.InitiativeUpdate.Id,
 		result.InitiativeUpdate.Comments.PageInfo.HasNextPage,
 		result.InitiativeUpdate.Comments.PageInfo.EndCursor,
 		nil

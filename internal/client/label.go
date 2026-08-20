@@ -63,13 +63,6 @@ type labelScopedQuery struct {
 	id            string
 }
 
-// labelScopedParent is the connection parent metadata labelScopedQuery reads out of
-// every page. Linear repeats it per page, so the last page wins.
-type labelScopedParent struct {
-	labelID   string
-	labelName string
-}
-
 // ListLabels returns visible IssueLabels.
 func ListLabels(ctx context.Context, graphqlClient graphql.Client, limit int) (LabelList, error) {
 	query := labelsQuery{ctx: ctx, graphqlClient: graphqlClient}
@@ -155,16 +148,16 @@ func (query labelsQuery) page(pageSize int, after *string) ([]labelsNode, bool, 
 func (query *labelScopedQuery) children(
 	pageSize int,
 	after *string,
-) ([]labelChildrenNode, labelScopedParent, bool, *string, error) {
+) ([]labelChildrenNode, labelParent, bool, *string, error) {
 	result, err := gql.XIssueLabel_children(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, labelScopedParent{}, false, nil, err
+		return nil, labelParent{}, false, nil, err
 	}
 
 	return result.IssueLabel.Children.Nodes,
-		labelScopedParent{labelID: result.IssueLabel.Id, labelName: result.IssueLabel.Name},
+		labelParent{labelID: result.IssueLabel.Id, labelName: result.IssueLabel.Name},
 		result.IssueLabel.Children.PageInfo.HasNextPage,
 		result.IssueLabel.Children.PageInfo.EndCursor,
 		nil
@@ -173,16 +166,16 @@ func (query *labelScopedQuery) children(
 func (query *labelScopedQuery) issues(
 	pageSize int,
 	after *string,
-) ([]labelIssuesNode, labelScopedParent, bool, *string, error) {
+) ([]labelIssuesNode, labelParent, bool, *string, error) {
 	result, err := gql.XIssueLabel_issues(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, labelScopedParent{}, false, nil, err
+		return nil, labelParent{}, false, nil, err
 	}
 
 	return result.IssueLabel.Issues.Nodes,
-		labelScopedParent{labelID: result.IssueLabel.Id, labelName: result.IssueLabel.Name},
+		labelParent{labelID: result.IssueLabel.Id, labelName: result.IssueLabel.Name},
 		result.IssueLabel.Issues.PageInfo.HasNextPage,
 		result.IssueLabel.Issues.PageInfo.EndCursor,
 		nil

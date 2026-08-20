@@ -91,13 +91,6 @@ type projectScopedMilestonesQuery struct {
 	id            string
 }
 
-// projectScopedMilestonesParent is the connection parent metadata projectScopedMilestonesQuery reads out of
-// every page. Linear repeats it per page, so the last page wins.
-type projectScopedMilestonesParent struct {
-	projectID   string
-	projectName string
-}
-
 type projectMilestoneIssuesQuery struct {
 	ctx           context.Context
 	graphqlClient graphql.Client
@@ -183,16 +176,16 @@ func ListProjectMilestoneIssues(
 func (query *projectScopedMilestonesQuery) page(
 	pageSize int,
 	after *string,
-) ([]projectScopedMilestonesNode, projectScopedMilestonesParent, bool, *string, error) {
+) ([]projectScopedMilestonesNode, projectParent, bool, *string, error) {
 	result, err := gql.XProject_projectMilestones(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, projectScopedMilestonesParent{}, false, nil, err
+		return nil, projectParent{}, false, nil, err
 	}
 
 	return result.Project.ProjectMilestones.Nodes,
-		projectScopedMilestonesParent{projectID: result.Project.Id, projectName: result.Project.Name},
+		projectParent{projectID: result.Project.Id, projectName: result.Project.Name},
 		result.Project.ProjectMilestones.PageInfo.HasNextPage,
 		result.Project.ProjectMilestones.PageInfo.EndCursor,
 		nil

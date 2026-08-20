@@ -50,12 +50,6 @@ type documentCommentsQuery struct {
 	id            string
 }
 
-// documentCommentsParent is the connection parent metadata documentCommentsQuery reads out of
-// every page. Linear repeats it per page, so the last page wins.
-type documentCommentsParent struct {
-	documentID string
-}
-
 // ListDocuments returns visible Documents.
 func ListDocuments(ctx context.Context, graphqlClient graphql.Client, limit int) (DocumentList, error) {
 	query := documentsQuery{ctx: ctx, graphqlClient: graphqlClient}
@@ -99,7 +93,7 @@ func ListDocumentComments(
 	}
 
 	return DocumentCommentList{
-		DocumentID: parent.documentID,
+		DocumentID: parent,
 		Comments:   page.Items,
 		Page:       page.Page,
 	}, nil
@@ -120,16 +114,16 @@ func (query documentsQuery) page(pageSize int, after *string) ([]documentsNode, 
 func (query *documentCommentsQuery) comments(
 	pageSize int,
 	after *string,
-) ([]documentCommentsNode, documentCommentsParent, bool, *string, error) {
+) ([]documentCommentsNode, string, bool, *string, error) {
 	result, err := gql.XDocument_comments(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, documentCommentsParent{}, false, nil, err
+		return nil, "", false, nil, err
 	}
 
 	return result.Document.Comments.Nodes,
-		documentCommentsParent{documentID: result.Document.Id},
+		result.Document.Id,
 		result.Document.Comments.PageInfo.HasNextPage,
 		result.Document.Comments.PageInfo.EndCursor,
 		nil

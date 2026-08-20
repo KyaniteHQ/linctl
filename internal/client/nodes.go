@@ -53,8 +53,8 @@ func collectNodePages[Item any](
 	}
 }
 
-// listConnection wraps collectNodePages for the common shape: fetch one page of a
-// connection, map its nodes to a Summary, and thread its page info through unchanged.
+// listConnection is listConnectionWithParent for the common shape: a connection
+// with no denormalized parent to carry back.
 func listConnection[Node, Summary any](
 	operation string,
 	limit int,
@@ -62,22 +62,20 @@ func listConnection[Node, Summary any](
 	fetch func(pageSize int, after *string) (nodes []Node, hasNextPage bool, endCursor *string, err error),
 	mapOne func(Node) Summary,
 ) (nodePage[Summary], error) {
-	return collectNodePages(operation, limit, pageSize, func(pageSize int, after *string) (nodePage[Summary], error) {
+	withoutParent := func(pageSize int, after *string) ([]Node, struct{}, bool, *string, error) {
 		nodes, hasNextPage, endCursor, err := fetch(pageSize, after)
-		if err != nil {
-			return nodePage[Summary]{}, err
-		}
 
-		return nodePage[Summary]{
-			Items: mapNodes(nodes, mapOne),
-			Page:  Page{HasNextPage: hasNextPage, EndCursor: endCursor},
-		}, nil
-	})
+		return nodes, struct{}{}, hasNextPage, endCursor, err
+	}
+	page, _, err := listConnectionWithParent(operation, limit, pageSize, withoutParent, mapOne)
+
+	return page, err
 }
 
-// listConnectionWithParent is listConnection for connections whose parent
-// entity is denormalized into the read: a project id, an issue identifier, a
-// team key. The fetch returns that parent alongside its page instead of
+// listConnectionWithParent wraps collectNodePages: fetch one page, map its
+// nodes to a Summary, thread its page info through, and carry back the parent
+// entity the read denormalizes into every page (a project id, an issue
+// identifier, a team key). The fetch returns that parent instead of
 // writing it into a captured struct field, so the data flow stays visible in
 // the signature. Linear repeats the parent on every page, so the last page's
 // value is the one returned; a zero Parent comes back with any error.
@@ -108,6 +106,25 @@ func listConnectionWithParent[Node, Summary, Parent any](
 	}
 
 	return page, parent, nil
+}
+
+// issueParent, projectParent, and labelParent are the connection parents that
+// several reads share. identifier, projectName, and labelName stay empty when
+// the operation's selection set does not carry them; the consuming list type
+// has no field for them in that case.
+type issueParent struct {
+	issueID    string
+	identifier string
+}
+
+type projectParent struct {
+	projectID   string
+	projectName string
+}
+
+type labelParent struct {
+	labelID   string
+	labelName string
 }
 
 // defaultListPageSize matches Linear's per-request cap, the same authority

@@ -69,13 +69,6 @@ type projectLabelScopedQuery struct {
 	id            string
 }
 
-// projectLabelScopedParent is the connection parent metadata projectLabelScopedQuery reads out of
-// every page. Linear repeats it per page, so the last page wins.
-type projectLabelScopedParent struct {
-	labelID   string
-	labelName string
-}
-
 // ListProjectLabels returns visible Linear project labels.
 func ListProjectLabels(ctx context.Context, graphqlClient graphql.Client, limit int) (ProjectLabelList, error) {
 	query := projectLabelsQuery{ctx: ctx, graphqlClient: graphqlClient}
@@ -166,16 +159,16 @@ func (query projectLabelsQuery) page(pageSize int, after *string) ([]projectLabe
 func (query *projectLabelScopedQuery) children(
 	pageSize int,
 	after *string,
-) ([]projectLabelChildrenNode, projectLabelScopedParent, bool, *string, error) {
+) ([]projectLabelChildrenNode, labelParent, bool, *string, error) {
 	result, err := gql.XProjectLabel_children(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, projectLabelScopedParent{}, false, nil, err
+		return nil, labelParent{}, false, nil, err
 	}
 
 	return result.ProjectLabel.Children.Nodes,
-		projectLabelScopedParent{labelID: result.ProjectLabel.Id, labelName: result.ProjectLabel.Name},
+		labelParent{labelID: result.ProjectLabel.Id, labelName: result.ProjectLabel.Name},
 		result.ProjectLabel.Children.PageInfo.HasNextPage,
 		result.ProjectLabel.Children.PageInfo.EndCursor,
 		nil
@@ -184,16 +177,16 @@ func (query *projectLabelScopedQuery) children(
 func (query *projectLabelScopedQuery) projects(
 	pageSize int,
 	after *string,
-) ([]projectLabelProjectsNode, projectLabelScopedParent, bool, *string, error) {
+) ([]projectLabelProjectsNode, labelParent, bool, *string, error) {
 	result, err := gql.XProjectLabel_projects(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, projectLabelScopedParent{}, false, nil, err
+		return nil, labelParent{}, false, nil, err
 	}
 
 	return result.ProjectLabel.Projects.Nodes,
-		projectLabelScopedParent{labelID: result.ProjectLabel.Id, labelName: result.ProjectLabel.Name},
+		labelParent{labelID: result.ProjectLabel.Id, labelName: result.ProjectLabel.Name},
 		result.ProjectLabel.Projects.PageInfo.HasNextPage,
 		result.ProjectLabel.Projects.PageInfo.EndCursor,
 		nil

@@ -234,16 +234,16 @@ func GetIssueVCSBranchSharedAccess(
 func (query *issueChildQuery) needs(
 	pageSize int,
 	after *string,
-) ([]issueNeedsNode, issueChildParent, bool, *string, error) {
+) ([]issueNeedsNode, issueParent, bool, *string, error) {
 	result, err := gql.XIssue_needs(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, issueChildParent{}, false, nil, err
+		return nil, issueParent{}, false, nil, err
 	}
 
 	return result.Issue.Needs.Nodes,
-		issueChildParent{issueID: result.Issue.Id, identifier: result.Issue.Identifier},
+		issueParent{issueID: result.Issue.Id, identifier: result.Issue.Identifier},
 		result.Issue.Needs.PageInfo.HasNextPage,
 		result.Issue.Needs.PageInfo.EndCursor,
 		nil
@@ -252,16 +252,16 @@ func (query *issueChildQuery) needs(
 func (query *issueChildQuery) formerNeeds(
 	pageSize int,
 	after *string,
-) ([]issueFormerNeedsNode, issueChildParent, bool, *string, error) {
+) ([]issueFormerNeedsNode, issueParent, bool, *string, error) {
 	result, err := gql.XIssue_formerNeeds(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, issueChildParent{}, false, nil, err
+		return nil, issueParent{}, false, nil, err
 	}
 
 	return result.Issue.FormerNeeds.Nodes,
-		issueChildParent{issueID: result.Issue.Id, identifier: result.Issue.Identifier},
+		issueParent{issueID: result.Issue.Id, identifier: result.Issue.Identifier},
 		result.Issue.FormerNeeds.PageInfo.HasNextPage,
 		result.Issue.FormerNeeds.PageInfo.EndCursor,
 		nil
@@ -270,19 +270,19 @@ func (query *issueChildQuery) formerNeeds(
 func (query *issueVCSBranchQuery) comments(
 	pageSize int,
 	after *string,
-) ([]issueVCSBranchCommentsNode, issueVCSBranchParent, bool, *string, error) {
+) ([]issueVCSBranchCommentsNode, issueParent, bool, *string, error) {
 	result, err := gql.XIssueVcsBranchSearch_comments(
 		query.ctx, query.graphqlClient, query.branchName, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, issueVCSBranchParent{}, false, nil, err
+		return nil, issueParent{}, false, nil, err
 	}
 	if result.IssueVcsBranchSearch == nil {
-		return nil, issueVCSBranchParent{}, false, nil, ErrNotFound
+		return nil, issueParent{}, false, nil, ErrNotFound
 	}
 
 	return result.IssueVcsBranchSearch.Comments.Nodes,
-		issueVCSBranchParent{
+		issueParent{
 			issueID:    result.IssueVcsBranchSearch.Id,
 			identifier: result.IssueVcsBranchSearch.Identifier,
 		},
@@ -294,19 +294,19 @@ func (query *issueVCSBranchQuery) comments(
 func (query *issueVCSBranchQuery) needs(
 	pageSize int,
 	after *string,
-) ([]issueVCSBranchNeedsNode, issueVCSBranchParent, bool, *string, error) {
+) ([]issueVCSBranchNeedsNode, issueParent, bool, *string, error) {
 	result, err := gql.XIssueVcsBranchSearch_needs(
 		query.ctx, query.graphqlClient, query.branchName, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, issueVCSBranchParent{}, false, nil, err
+		return nil, issueParent{}, false, nil, err
 	}
 	if result.IssueVcsBranchSearch == nil {
-		return nil, issueVCSBranchParent{}, false, nil, ErrNotFound
+		return nil, issueParent{}, false, nil, ErrNotFound
 	}
 
 	return result.IssueVcsBranchSearch.Needs.Nodes,
-		issueVCSBranchParent{
+		issueParent{
 			issueID:    result.IssueVcsBranchSearch.Id,
 			identifier: result.IssueVcsBranchSearch.Identifier,
 		},
@@ -318,19 +318,19 @@ func (query *issueVCSBranchQuery) needs(
 func (query *issueVCSBranchQuery) formerNeeds(
 	pageSize int,
 	after *string,
-) ([]issueVCSBranchFormerNeedsNode, issueVCSBranchParent, bool, *string, error) {
+) ([]issueVCSBranchFormerNeedsNode, issueParent, bool, *string, error) {
 	result, err := gql.XIssueVcsBranchSearch_formerNeeds(
 		query.ctx, query.graphqlClient, query.branchName, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, issueVCSBranchParent{}, false, nil, err
+		return nil, issueParent{}, false, nil, err
 	}
 	if result.IssueVcsBranchSearch == nil {
-		return nil, issueVCSBranchParent{}, false, nil, ErrNotFound
+		return nil, issueParent{}, false, nil, ErrNotFound
 	}
 
 	return result.IssueVcsBranchSearch.FormerNeeds.Nodes,
-		issueVCSBranchParent{
+		issueParent{
 			issueID:    result.IssueVcsBranchSearch.Id,
 			identifier: result.IssueVcsBranchSearch.Identifier,
 		},

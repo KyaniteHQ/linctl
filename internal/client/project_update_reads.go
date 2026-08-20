@@ -29,23 +29,10 @@ type projectScopedUpdatesQuery struct {
 	id            string
 }
 
-// projectScopedUpdatesParent is the connection parent metadata projectScopedUpdatesQuery reads out of
-// every page. Linear repeats it per page, so the last page wins.
-type projectScopedUpdatesParent struct {
-	projectID   string
-	projectName string
-}
-
 type projectUpdateCommentsQuery struct {
 	ctx           context.Context
 	graphqlClient graphql.Client
 	id            string
-}
-
-// projectUpdateCommentsParent is the connection parent metadata projectUpdateCommentsQuery reads out of
-// every page. Linear repeats it per page, so the last page wins.
-type projectUpdateCommentsParent struct {
-	projectUpdateID string
 }
 
 // ListProjectUpdates returns status updates for one project.
@@ -120,7 +107,7 @@ func ListProjectUpdateComments(
 	}
 
 	return ProjectUpdateCommentList{
-		ProjectUpdateID: parent.projectUpdateID,
+		ProjectUpdateID: parent,
 		Comments:        page.Items,
 		Page:            page.Page,
 	}, nil
@@ -129,16 +116,16 @@ func ListProjectUpdateComments(
 func (query *projectScopedUpdatesQuery) page(
 	pageSize int,
 	after *string,
-) ([]projectScopedUpdatesNode, projectScopedUpdatesParent, bool, *string, error) {
+) ([]projectScopedUpdatesNode, projectParent, bool, *string, error) {
 	result, err := gql.XProject_projectUpdates(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, projectScopedUpdatesParent{}, false, nil, err
+		return nil, projectParent{}, false, nil, err
 	}
 
 	return result.Project.ProjectUpdates.Nodes,
-		projectScopedUpdatesParent{projectID: result.Project.Id, projectName: result.Project.Name},
+		projectParent{projectID: result.Project.Id, projectName: result.Project.Name},
 		result.Project.ProjectUpdates.PageInfo.HasNextPage,
 		result.Project.ProjectUpdates.PageInfo.EndCursor,
 		nil
@@ -162,16 +149,16 @@ func (query projectUpdatesQuery) page(
 func (query *projectUpdateCommentsQuery) page(
 	pageSize int,
 	after *string,
-) ([]projectUpdateCommentsNode, projectUpdateCommentsParent, bool, *string, error) {
+) ([]projectUpdateCommentsNode, string, bool, *string, error) {
 	result, err := gql.XProjectUpdate_comments(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, projectUpdateCommentsParent{}, false, nil, err
+		return nil, "", false, nil, err
 	}
 
 	return result.ProjectUpdate.Comments.Nodes,
-		projectUpdateCommentsParent{projectUpdateID: result.ProjectUpdate.Id},
+		result.ProjectUpdate.Id,
 		result.ProjectUpdate.Comments.PageInfo.HasNextPage,
 		result.ProjectUpdate.Comments.PageInfo.EndCursor,
 		nil

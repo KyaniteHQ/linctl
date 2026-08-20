@@ -122,23 +122,10 @@ type commentScopedQuery struct {
 	id            string
 }
 
-// commentScopedParent is the connection parent metadata commentScopedQuery reads out of
-// every page. Linear repeats it per page, so the last page wins.
-type commentScopedParent struct {
-	commentID string
-}
-
 type issueCommentsQuery struct {
 	ctx           context.Context
 	graphqlClient graphql.Client
 	id            string
-}
-
-// issueCommentsParent is the connection parent metadata issueCommentsQuery reads out of
-// every page. Linear repeats it per page, so the last page wins.
-type issueCommentsParent struct {
-	issueID    string
-	identifier string
 }
 
 // ListComments returns visible comments across parent entity types.
@@ -197,7 +184,7 @@ func ListCommentChildren(
 	}
 
 	return CommentChildList{
-		CommentID: parent.commentID,
+		CommentID: parent,
 		Comments:  page.Items,
 		Page:      page.Page,
 	}, nil
@@ -263,16 +250,16 @@ func (query commentsQuery) page(pageSize int, after *string) ([]commentsNode, bo
 func (query *commentScopedQuery) children(
 	pageSize int,
 	after *string,
-) ([]commentChildrenNode, commentScopedParent, bool, *string, error) {
+) ([]commentChildrenNode, string, bool, *string, error) {
 	result, err := gql.XComment_children(
 		query.ctx, query.graphqlClient, stringPtr(query.id), nil, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, commentScopedParent{}, false, nil, err
+		return nil, "", false, nil, err
 	}
 
 	return result.Comment.Children.Nodes,
-		commentScopedParent{commentID: result.Comment.Id},
+		result.Comment.Id,
 		result.Comment.Children.PageInfo.HasNextPage,
 		result.Comment.Children.PageInfo.EndCursor,
 		nil
@@ -298,16 +285,16 @@ func (query commentScopedQuery) createdIssues(
 func (query *issueCommentsQuery) comments(
 	pageSize int,
 	after *string,
-) ([]issueCommentsNode, issueCommentsParent, bool, *string, error) {
+) ([]issueCommentsNode, issueParent, bool, *string, error) {
 	result, err := gql.XIssue_comments(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, issueCommentsParent{}, false, nil, err
+		return nil, issueParent{}, false, nil, err
 	}
 
 	return result.Issue.Comments.Nodes,
-		issueCommentsParent{issueID: result.Issue.Id, identifier: result.Issue.Identifier},
+		issueParent{issueID: result.Issue.Id, identifier: result.Issue.Identifier},
 		result.Issue.Comments.PageInfo.HasNextPage,
 		result.Issue.Comments.PageInfo.EndCursor,
 		nil

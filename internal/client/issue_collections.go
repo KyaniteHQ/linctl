@@ -48,13 +48,6 @@ type issueChildQuery struct {
 	id            string
 }
 
-// issueChildParent is the connection parent metadata issueChildQuery reads out of
-// every page. Linear repeats it per page, so the last page wins.
-type issueChildParent struct {
-	issueID    string
-	identifier string
-}
-
 // ListIssueAttachments returns attachments associated with one issue.
 func ListIssueAttachments(
 	ctx context.Context,
@@ -433,14 +426,14 @@ func (query *issueChildQuery) releases(pageSize int, after *string) ([]issueRele
 func (query *issueChildQuery) stateHistory(
 	pageSize int,
 	after *string,
-) ([]issueStateHistoryNode, issueChildParent, bool, *string, error) {
+) ([]issueStateHistoryNode, issueParent, bool, *string, error) {
 	result, err := gql.XIssue_stateHistory(query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after)
 	if err != nil {
-		return nil, issueChildParent{}, false, nil, err
+		return nil, issueParent{}, false, nil, err
 	}
 
 	return result.Issue.StateHistory.Nodes,
-		issueChildParent{issueID: result.Issue.Id},
+		issueParent{issueID: result.Issue.Id},
 		result.Issue.StateHistory.PageInfo.HasNextPage,
 		result.Issue.StateHistory.PageInfo.EndCursor,
 		nil

@@ -89,13 +89,6 @@ type attachmentIssueQuery struct {
 	id            string
 }
 
-// attachmentIssueParent is the connection parent metadata attachmentIssueQuery reads out of
-// every page. Linear repeats it per page, so the last page wins.
-type attachmentIssueParent struct {
-	issueID    string
-	identifier string
-}
-
 // ListAttachments returns visible issue attachments.
 func ListAttachments(ctx context.Context, graphqlClient graphql.Client, limit int) (AttachmentList, error) {
 	query := attachmentsQuery{ctx: ctx, graphqlClient: graphqlClient}
@@ -582,16 +575,16 @@ func (query *attachmentIssueQuery) formerAttachments(
 func (query *attachmentIssueQuery) comments(
 	pageSize int,
 	after *string,
-) ([]attachmentIssueCommentsNode, attachmentIssueParent, bool, *string, error) {
+) ([]attachmentIssueCommentsNode, issueParent, bool, *string, error) {
 	result, err := gql.XAttachmentIssue_comments(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, attachmentIssueParent{}, false, nil, err
+		return nil, issueParent{}, false, nil, err
 	}
 
 	return result.AttachmentIssue.Comments.Nodes,
-		attachmentIssueParent{issueID: result.AttachmentIssue.Id, identifier: result.AttachmentIssue.Identifier},
+		issueParent{issueID: result.AttachmentIssue.Id, identifier: result.AttachmentIssue.Identifier},
 		result.AttachmentIssue.Comments.PageInfo.HasNextPage,
 		result.AttachmentIssue.Comments.PageInfo.EndCursor,
 		nil
@@ -600,16 +593,16 @@ func (query *attachmentIssueQuery) comments(
 func (query *attachmentIssueQuery) needs(
 	pageSize int,
 	after *string,
-) ([]attachmentIssueNeedsNode, attachmentIssueParent, bool, *string, error) {
+) ([]attachmentIssueNeedsNode, issueParent, bool, *string, error) {
 	result, err := gql.XAttachmentIssue_needs(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, attachmentIssueParent{}, false, nil, err
+		return nil, issueParent{}, false, nil, err
 	}
 
 	return result.AttachmentIssue.Needs.Nodes,
-		attachmentIssueParent{issueID: result.AttachmentIssue.Id, identifier: result.AttachmentIssue.Identifier},
+		issueParent{issueID: result.AttachmentIssue.Id, identifier: result.AttachmentIssue.Identifier},
 		result.AttachmentIssue.Needs.PageInfo.HasNextPage,
 		result.AttachmentIssue.Needs.PageInfo.EndCursor,
 		nil
@@ -618,16 +611,16 @@ func (query *attachmentIssueQuery) needs(
 func (query *attachmentIssueQuery) formerNeeds(
 	pageSize int,
 	after *string,
-) ([]attachmentIssueFormerNeedsNode, attachmentIssueParent, bool, *string, error) {
+) ([]attachmentIssueFormerNeedsNode, issueParent, bool, *string, error) {
 	result, err := gql.XAttachmentIssue_formerNeeds(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, attachmentIssueParent{}, false, nil, err
+		return nil, issueParent{}, false, nil, err
 	}
 
 	return result.AttachmentIssue.FormerNeeds.Nodes,
-		attachmentIssueParent{issueID: result.AttachmentIssue.Id, identifier: result.AttachmentIssue.Identifier},
+		issueParent{issueID: result.AttachmentIssue.Id, identifier: result.AttachmentIssue.Identifier},
 		result.AttachmentIssue.FormerNeeds.PageInfo.HasNextPage,
 		result.AttachmentIssue.FormerNeeds.PageInfo.EndCursor,
 		nil
@@ -721,14 +714,14 @@ func (query *attachmentIssueQuery) releases(
 func (query *attachmentIssueQuery) stateHistory(
 	pageSize int,
 	after *string,
-) ([]attachmentIssueStateHistoryNode, attachmentIssueParent, bool, *string, error) {
+) ([]attachmentIssueStateHistoryNode, issueParent, bool, *string, error) {
 	result, err := gql.XAttachmentIssue_stateHistory(query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after)
 	if err != nil {
-		return nil, attachmentIssueParent{}, false, nil, err
+		return nil, issueParent{}, false, nil, err
 	}
 
 	return result.AttachmentIssue.StateHistory.Nodes,
-		attachmentIssueParent{issueID: result.AttachmentIssue.Id},
+		issueParent{issueID: result.AttachmentIssue.Id},
 		result.AttachmentIssue.StateHistory.PageInfo.HasNextPage,
 		result.AttachmentIssue.StateHistory.PageInfo.EndCursor,
 		nil

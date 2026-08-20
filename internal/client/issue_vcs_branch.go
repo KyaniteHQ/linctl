@@ -48,13 +48,6 @@ type issueVCSBranchQuery struct {
 	branchName    string
 }
 
-// issueVCSBranchParent is the connection parent metadata issueVCSBranchQuery reads out of
-// every page. Linear repeats it per page, so the last page wins.
-type issueVCSBranchParent struct {
-	issueID    string
-	identifier string
-}
-
 // GetIssueByVCSBranch returns an issue by VCS branch name.
 func GetIssueByVCSBranch(ctx context.Context, graphqlClient graphql.Client, branchName string) (IssueSummary, error) {
 	result, err := gql.XIssueVcsBranchSearch(ctx, graphqlClient, branchName)
@@ -495,19 +488,19 @@ func (query *issueVCSBranchQuery) releases(
 func (query *issueVCSBranchQuery) stateHistory(
 	pageSize int,
 	after *string,
-) ([]issueVCSBranchStateHistoryNode, issueVCSBranchParent, bool, *string, error) {
+) ([]issueVCSBranchStateHistoryNode, issueParent, bool, *string, error) {
 	result, err := gql.XIssueVcsBranchSearch_stateHistory(
 		query.ctx, query.graphqlClient, query.branchName, intPtr(pageSize), after,
 	)
 	if err != nil {
-		return nil, issueVCSBranchParent{}, false, nil, err
+		return nil, issueParent{}, false, nil, err
 	}
 	if result.IssueVcsBranchSearch == nil {
-		return nil, issueVCSBranchParent{}, false, nil, ErrNotFound
+		return nil, issueParent{}, false, nil, ErrNotFound
 	}
 
 	return result.IssueVcsBranchSearch.StateHistory.Nodes,
-		issueVCSBranchParent{issueID: result.IssueVcsBranchSearch.Id},
+		issueParent{issueID: result.IssueVcsBranchSearch.Id},
 		result.IssueVcsBranchSearch.StateHistory.PageInfo.HasNextPage,
 		result.IssueVcsBranchSearch.StateHistory.PageInfo.EndCursor,
 		nil
