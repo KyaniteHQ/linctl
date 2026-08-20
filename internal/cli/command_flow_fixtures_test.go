@@ -46,6 +46,18 @@ func (writer commandFailingWriter) Write(_ []byte) (int, error) {
 func useCommandRuntime(t *testing.T, graphqlClient graphql.Client) func() {
 	t.Helper()
 
+	if fake, ok := graphqlClient.(commandFlowFakeClient); ok {
+		if fake.afterIssue == nil {
+			after := ""
+			fake.afterIssue = &after
+		}
+		if fake.afterRelation == nil {
+			relation := ""
+			fake.afterRelation = &relation
+		}
+		graphqlClient = fake
+	}
+
 	return useCommandRuntimeWithFiles(t, graphqlClient, http.DefaultClient)
 }
 
@@ -104,6 +116,8 @@ type commandFlowFakeClient struct {
 	emptyIssueFigmaSearch         bool
 	emptyNextIssues               bool
 	rankedNextIssues              bool
+	afterIssue                    *string
+	afterRelation                 *string
 	expectedStateType             string
 	expectedProjectID             string
 	expectedAssigneeID            string
@@ -188,8 +202,58 @@ func (client commandFlowFakeClient) MakeRequest(
 	if issuePayload, ok := commandFlowIssueLookupPayload(request); ok {
 		payload = issuePayload
 	}
+	payload = client.overlayAfterWrite(request, payload)
+	client.recordIssueAfterWrite(request)
 
 	return json.Unmarshal([]byte(`{"data":`+payload+`}`), response)
+}
+
+func (client commandFlowFakeClient) overlayAfterWrite(request *graphql.Request, payload string) string {
+	if request.OpName == "issue" && client.afterIssue != nil && *client.afterIssue != "" {
+		return *client.afterIssue
+	}
+	if request.OpName == "issueRelation" && client.afterRelation != nil && *client.afterRelation != "" {
+		return *client.afterRelation
+	}
+
+	return payload
+}
+
+func (client commandFlowFakeClient) recordIssueAfterWrite(request *graphql.Request) {
+	if client.afterIssue == nil && client.afterRelation == nil {
+		return
+	}
+	switch request.OpName {
+	case "IssueUpdate", "IssueCreate", "IssueClose":
+		stateID, err := requestVariable[string](request, "input", "stateId")
+		if err != nil || stateID == "" {
+			return
+		}
+		name, stateType := commandFlowStateByID(stateID)
+		title := "Updated issue"
+		identifier := "LIT-1"
+		if request.OpName == "IssueCreate" {
+			title = "Created issue"
+			identifier = "LIT-2"
+		}
+		if request.OpName == "IssueClose" {
+			title = "Closed issue"
+		}
+		if request.OpName == "IssueUpdate" && client.expectedStartStateID != "" {
+			title = "Started issue"
+		}
+		*client.afterIssue = `{"issue":` + commandIssueJSON(identifier, title, stateID, name, stateType) + `}`
+	case "IssueRelationCreate":
+		if client.afterRelation == nil {
+			return
+		}
+		*client.afterRelation = `{"issueRelation":` + strings.Replace(
+			commandIssueRelationJSON(),
+			`"type":"blocks"`,
+			`"type":"related"`,
+			1,
+		) + `}`
+	}
 }
 
 func commandFlowIssueLookupPayload(request *graphql.Request) (string, bool) {

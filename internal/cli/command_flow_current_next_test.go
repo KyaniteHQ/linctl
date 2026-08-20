@@ -466,7 +466,11 @@ func runCurrentCommandInGitBranch(t *testing.T, args []string) (string, error) {
 	t.Helper()
 
 	return runCurrentCommandInGitBranchWithRuntime(t, args, func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
-		return testCommandRuntime(commandFlowFakeClient{}), nil
+		flow := commandFlowFakeClient{}
+		after := ""
+		flow.afterIssue = &after
+
+		return testCommandRuntime(flow), nil
 	})
 }
 

@@ -43,6 +43,9 @@ when the value is empty.
 `issue comment` · `issue reply` → **IssueCommentResult**:
 `{ "id": string, "body": string, "url": string, "issue": IssueSummary }`
 
+`issue relate` → **IssueRelationWriteResult**:
+the relation summary fields plus `issue` and `related_issue` as IssueSummary values after readback.
+
 `issue comments` → **IssueCommentList**:
 `{ "issue_id": string, "identifier": string, "comments": [IssueCommentSummary], "has_next_page": bool, "end_cursor": string|absent }`
 
@@ -157,6 +160,8 @@ agent can then branch on a stable code instead of a parse of the prose.
 `error_code` is one of:
 
 - `TARGET_MISMATCH`: the resolved target does not match the pinned target. This is a hard stop. Do not retry with different auth.
+- `CROSS_ORGANIZATION_RELATION`: a relation would cross Linear organizations. This is a hard stop.
+- `STATE_MISMATCH`: a state write's readback did not match the selected workflow state.
 - `TARGET_NOT_CONFIGURED`: there is no pinned target. Set `org_id`, `team_key`, and `team_id` in `.linctl.toml`.
 - `RATE_LIMITED`: Linear returned a rate-limit response. Wait, then retry.
 - `MUTATION_FAILED`: the mutation ran, but Linear reported no success and no entity.

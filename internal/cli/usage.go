@@ -49,7 +49,9 @@ var usageTopics = map[string]usagePayload{
 		Text: "The issue commands cover the safe Linear issue loop. " +
 			"Use linctl issue list --limit 50 to inspect the resolved team. " +
 			"Add one filter to that command to narrow the queue. " +
-			"--state started selects one workflow state type. --project PROJECT_ID selects one project. " +
+			"--state started selects one workflow state type on list. " +
+			"On create and update, --state selects an exact workflow-state name or a type. " +
+			"--project PROJECT_ID selects one project. " +
 			"--mine selects the issues assigned to the authenticated user. " +
 			"--assignee USER_ID selects the issues assigned to one Linear user id. " +
 			"--label LABEL_ID selects the issues with one Linear label id. " +
@@ -70,6 +72,9 @@ var usageTopics = map[string]usagePayload{
 			"Create an issue with linctl issue create --title \"...\" --description \"...\". " +
 			"Use --description-file FILE to read the description from a file. " +
 			"Update an issue with linctl issue update LIT-123 --title \"...\" --description \"...\". " +
+			"Select one started state by exact name: linctl issue update LIT-123 --state \"In Review\". " +
+			"Relate two issues with linctl issue relate A B --type related. " +
+			"Name every allowed project with --allowed-project when the issues sit in different projects. " +
 			"Append to the description with linctl issue update LIT-123 --append \"note\" or --append-file FILE. " +
 			"Use linctl issue start LIT-123 to assign the issue and move it to the started state. " +
 			"That command assigns a human viewer, or delegates the issue to an assignable app. " +

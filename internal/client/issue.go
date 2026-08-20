@@ -36,6 +36,7 @@ type IssueSummary struct {
 type IssueDetail struct {
 	Summary     IssueSummary
 	Description string
+	OrgID       string
 }
 
 // IssueList is a page of read-only issues.
@@ -331,7 +332,12 @@ func detailIssue(issue gql.XIssueIssue) IssueDetail {
 	return IssueDetail{
 		Summary:     detailIssueSummary(issue),
 		Description: description,
+		OrgID:       issueOrgID(issue),
 	}
+}
+
+func issueOrgID(issue gql.XIssueIssue) string {
+	return issue.Team.Organization.Id
 }
 
 func issueSummaryFromFields(issue gql.IssueSummaryFields) IssueSummary {

@@ -3,6 +3,7 @@ package cli
 import (
 	"cmp"
 	"context"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -76,7 +77,7 @@ func addIssueCreateCommand(ctx context.Context, root *cobra.Command, options *ro
 	command.Flags().BoolVar(&flags.dryRun, "dry-run", false, "show the assembled issue, and do not create it")
 	command.Flags().StringVar(
 		&flags.state, "state", "",
-		"set the workflow state type, for example started or completed",
+		"set the workflow state by exact name or type, for example In Review or started",
 	)
 	command.Flags().StringVar(&flags.status, "status", "", "alias for --state")
 	command.Flags().StringVar(
@@ -142,12 +143,13 @@ func assembleIssueCreate(
 	if err := applyIssueSections(&request, flags.sections); err != nil {
 		return client.IssueCreateRequest{}, err
 	}
-	stateType, normalizedPriority, normErr := applyIssueWriteNormalization(
+	stateSelector, stateType, normalizedPriority, normErr := applyIssueWriteNormalization(
 		command, flags.state, flags.status, flags.priority,
 	)
 	if normErr != nil {
 		return client.IssueCreateRequest{}, normErr
 	}
+	request.StateSelector = stateSelector
 	request.StateType = stateType
 	request.Priority = normalizedPriority
 	request.Estimate = estimate
@@ -181,7 +183,7 @@ func addIssueUpdateCommand(ctx context.Context, root *cobra.Command, options *ro
 			command.Flags().StringVar(&flags.appendFile, "append-file", "", "read text to append from file")
 			command.Flags().StringVar(
 				&flags.state, "state", "",
-				"set the workflow state type, for example started or completed",
+				"set the workflow state by exact name or type, for example In Review or started",
 			)
 			command.Flags().StringVar(&flags.status, "status", "", "alias for --state")
 			command.Flags().StringVar(
@@ -280,12 +282,13 @@ func assembleIssueUpdate(
 	if err := resolveFileFlag(command, &request.Append, flags.appendFile, "append"); err != nil {
 		return client.IssueUpdateRequest{}, err
 	}
-	stateType, normalizedPriority, normErr := applyIssueWriteNormalization(
+	stateSelector, stateType, normalizedPriority, normErr := applyIssueWriteNormalization(
 		command, flags.state, flags.status, flags.priority,
 	)
 	if normErr != nil {
 		return client.IssueUpdateRequest{}, normErr
 	}
+	request.StateSelector = stateSelector
 	request.StateType = stateType
 	request.Priority = normalizedPriority
 	request.Estimate = estimate
@@ -293,24 +296,42 @@ func assembleIssueUpdate(
 }
 
 // applyIssueWriteNormalization merges the --state/--status alias pair and
-// normalizes both the state type and the priority string. It emits a note to
-// stderr when an alias was expanded to its canonical form.
+// normalizes the priority string. An exact workflow-state name is kept as
+// StateSelector so the client can pick among several states of one type.
 func applyIssueWriteNormalization(
 	command *cobra.Command,
 	state string,
 	status string,
 	priority string,
-) (stateType string, normalizedPriority string, err error) {
-	stateType, err = normalizeAndNote(command, "state", cmp.Or(state, status), normalizedStateType)
+) (stateSelector string, stateType string, normalizedPriority string, err error) {
+	raw := strings.TrimSpace(cmp.Or(state, status))
+	stateSelector, stateType, err = issueWriteStateFields(command, raw)
 	if err != nil {
-		return "", "", err
+		return "", "", "", err
 	}
 	normalizedPriority, err = normalizeAndNote(command, "priority", priority, normalizedPriorityValue)
 	if err != nil {
-		return "", "", err
+		return "", "", "", err
 	}
 
-	return stateType, normalizedPriority, nil
+	return stateSelector, stateType, normalizedPriority, nil
+}
+
+func issueWriteStateFields(command *cobra.Command, raw string) (string, string, error) {
+	if raw == "" {
+		return "", "", nil
+	}
+	canonical, ok := client.CanonicalWorkflowStateType(raw)
+	if !ok {
+		return raw, "", nil
+	}
+	if canonical != raw {
+		if err := writeNote(command, "state %q normalized to %q", raw, canonical); err != nil {
+			return "", "", err
+		}
+	}
+
+	return raw, canonical, nil
 }
 
 func addIssueStartCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {

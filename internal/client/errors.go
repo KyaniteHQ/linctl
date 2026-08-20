@@ -14,6 +14,16 @@ var ErrNotFound = errors.New("not found")
 // any one entity file.
 var ErrWriteInvalid = errors.New("invalid write")
 
+// ErrStateMismatch marks a state write whose readback did not land in the
+// selected workflow state. It is a hard stop: linctl does not replay the
+// mutation.
+var ErrStateMismatch = errors.New("state mismatch")
+
+// ErrCrossOrganizationRelation marks a relation whose endpoints are not in the
+// pinned organization. It is distinct from ErrTargetMismatch so a caller can
+// branch on that boundary without scraping prose.
+var ErrCrossOrganizationRelation = errors.New("cross-organization relation")
+
 // requiredFieldError names a missing write-request field with the shared
 // ErrWriteInvalid sentinel, so every guarded-write surface words a missing
 // field the same way.

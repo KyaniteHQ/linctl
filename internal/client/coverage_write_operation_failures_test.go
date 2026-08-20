@@ -57,8 +57,10 @@ func Test_ClientWriteFailureScenarios_wrap_graphql_operation_errors(t *testing.T
 			State:      "Todo",
 			StateType:  "unstarted",
 		}) + `}`,
-		"WorkflowStatesByType": `{"workflowStates":{"nodes":[{"id":"started-state","name":"Started","type":"started","position":1}]}}`,
-		"IssueUpdate":          "",
+		"WorkflowStatesByTeam": workflowStatesByTeamJSON(
+			`{"id":"started-state","name":"Started","type":"started","position":1}`,
+		),
+		"IssueUpdate": "",
 	}).withError(operationErr), matchingTarget(), "LIT-40")
 	require.ErrorIs(t, err, operationErr)
 	require.ErrorContains(t, err, "start issue LIT-40")
@@ -73,8 +75,10 @@ func Test_ClientWriteFailureScenarios_wrap_graphql_operation_errors(t *testing.T
 			State:      "Todo",
 			StateType:  "unstarted",
 		}) + `}`,
-		"WorkflowStatesByType": `{"workflowStates":{"nodes":[{"id":"done-state","name":"Done","type":"completed","position":1}]}}`,
-		"IssueClose":           "",
+		"WorkflowStatesByTeam": workflowStatesByTeamJSON(
+			`{"id":"done-state","name":"Done","type":"completed","position":1}`,
+		),
+		"IssueClose": "",
 	}).withError(operationErr), matchingTarget(), "LIT-40")
 	require.ErrorIs(t, err, operationErr)
 	require.ErrorContains(t, err, "close issue LIT-40")
@@ -166,10 +170,10 @@ func Test_ClientWriteFailureScenarios_return_guard_read_errors(t *testing.T) {
 			State:      "Todo",
 			StateType:  "unstarted",
 		}) + `}`,
-		"WorkflowStatesByType": "",
+		"WorkflowStatesByTeam": "",
 	}).withError(operationErr), matchingTarget(), "LIT-51")
 	require.ErrorIs(t, err, operationErr)
-	require.ErrorContains(t, err, "list started workflow states")
+	require.ErrorContains(t, err, "list workflow states")
 
 	_, err = CloseIssue(context.Background(), issueWriteFakeClient(map[string]string{
 		"issue": "",
@@ -186,10 +190,10 @@ func Test_ClientWriteFailureScenarios_return_guard_read_errors(t *testing.T) {
 			State:      "Todo",
 			StateType:  "unstarted",
 		}) + `}`,
-		"WorkflowStatesByType": "",
+		"WorkflowStatesByTeam": "",
 	}).withError(operationErr), matchingTarget(), "LIT-51")
 	require.ErrorIs(t, err, operationErr)
-	require.ErrorContains(t, err, "list completed workflow states")
+	require.ErrorContains(t, err, "list workflow states")
 
 	_, err = UpdateProject(context.Background(), projectWriteFakeClient(map[string]string{
 		"project": "",

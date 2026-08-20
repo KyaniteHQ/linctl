@@ -10,7 +10,8 @@ import (
 
 func addIssueRelateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	relationType := "related"
-	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.IssueRelationSummary]{
+	var allowedProjects []string
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.IssueRelationWriteResult]{
 		Use:   "relate ISSUE_ID RELATED_ISSUE_ID",
 		Short: "Relate two issues after pinned-target comparison",
 		Args:  cobra.ExactArgs(2),
@@ -19,21 +20,34 @@ func addIssueRelateCommand(ctx context.Context, root *cobra.Command, options *ro
 				&relationType, "type", relationType,
 				"relation type: blocks, duplicate, related, or similar",
 			)
+			command.Flags().StringArrayVar(
+				&allowedProjects, "allowed-project", nil,
+				"project id both issues may occupy; repeat the flag; required to relate across projects",
+			)
 		},
 		Run: func(
 			ctx context.Context, _ *cobra.Command, runtime commandRuntime, args []string,
-		) (client.IssueRelationSummary, error) {
+		) (client.IssueRelationWriteResult, error) {
 			return client.CreateIssueRelation(
 				ctx, runtime.graphqlClient, runtime.config.Target,
 				client.IssueRelationCreateRequest{
-					IssueID:        args[0],
-					RelatedIssueID: args[1],
-					Type:           relationType,
+					IssueID:           args[0],
+					RelatedIssueID:    args[1],
+					Type:              relationType,
+					AllowedProjectIDs: allowedProjects,
 				},
 			)
 		},
-		Write: writeIssueRelation,
+		Write: writeIssueRelationResult,
 	})
+}
+
+func writeIssueRelationResult(
+	command *cobra.Command,
+	options *rootOptions,
+	result client.IssueRelationWriteResult,
+) error {
+	return writeIssueRelation(command, options, result.IssueRelationSummary)
 }
 
 func addIssueUnrelateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {

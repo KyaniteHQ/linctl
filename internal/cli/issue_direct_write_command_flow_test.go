@@ -74,13 +74,12 @@ func Test_IssueDirectWriteCommandFlows_forward_mutation_variables(t *testing.T) 
 			variables: []expectedWriteVariable{
 				{path: []string{"id"}, value: "LIT-1"},
 				{path: []string{"input", "title"}, value: "Direct update"},
-				{path: []string{"input", "stateId"}, value: "type-state-id"},
+				{path: []string{"input", "stateId"}, value: "done-state"},
 			},
 			numbers: []expectedIssueWriteNumber{
 				{path: []string{"input", "priority"}, value: 1},
 				{path: []string{"input", "estimate"}, value: 8},
 			},
-			stateType: "completed",
 		},
 		{
 			name:      "start",
@@ -91,7 +90,6 @@ func Test_IssueDirectWriteCommandFlows_forward_mutation_variables(t *testing.T) 
 				{path: []string{"input", "assigneeId"}, value: "user-id"},
 				{path: []string{"input", "stateId"}, value: "type-state-id"},
 			},
-			stateType: "started",
 		},
 		{
 			name:      "comment",
@@ -117,9 +115,8 @@ func Test_IssueDirectWriteCommandFlows_forward_mutation_variables(t *testing.T) 
 			operation: "IssueClose",
 			variables: []expectedWriteVariable{
 				{path: []string{"id"}, value: "LIT-1"},
-				{path: []string{"input", "stateId"}, value: "type-state-id"},
+				{path: []string{"input", "stateId"}, value: "done-state"},
 			},
-			stateType: "completed",
 		},
 		{
 			name: "link",
@@ -173,11 +170,16 @@ func Test_IssueDirectWriteCommandFlows_forward_mutation_variables(t *testing.T) 
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			flow := commandFlowFakeClient{}
+			after := ""
+			relation := ""
+			flow.afterIssue = &after
+			flow.afterRelation = &relation
 			fake := &issueWriteCaptureClient{
 				directWriteCaptureClient: directWriteCaptureClient{
 					operation: test.operation,
 					variables: test.variables,
-					delegate:  commandFlowFakeClient{},
+					delegate:  flow,
 				},
 				numbers:   test.numbers,
 				stateType: test.stateType,

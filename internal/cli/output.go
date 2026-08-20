@@ -33,6 +33,10 @@ func errorCode(err error) string {
 		return string(authErr.Code)
 	case errors.As(err, &tokenErr):
 		return string(tokenErr.Code)
+	case errors.Is(err, client.ErrCrossOrganizationRelation):
+		return "CROSS_ORGANIZATION_RELATION"
+	case errors.Is(err, client.ErrStateMismatch):
+		return "STATE_MISMATCH"
 	case errors.Is(err, client.ErrTargetMismatch):
 		return "TARGET_MISMATCH"
 	case errors.Is(err, client.ErrTargetNotConfigured):

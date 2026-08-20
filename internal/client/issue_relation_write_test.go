@@ -46,7 +46,7 @@ func relationIssueReadWrongTeam() string {
 		"url":"https://linear.app/kyanite/issue/LIT-1",
 		"priority":0,
 		"priorityLabel":"No priority",
-		"team":{"id":"other-team","key":"OTHER","name":"other"},
+		"team":{"id":"other-team","key":"OTHER","name":"other","organization":{"id":"org-id"}},
 		"state":{"id":"state-id","name":"Todo","type":"unstarted"},
 		"assignee":null,
 		"project":{"id":"project-id","name":"fixture"}
@@ -137,9 +137,20 @@ func relationPinnedIssueJSON(id string, identifier string, title string) string 
 	})
 }
 
+func emptyIssueRelationsJSON() string {
+	return `{"issue":{"relations":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`
+}
+
 func relationIssuePairFake(extra map[string]string) graphql.Client {
 	first := relationPinnedIssueJSON("issue-id", "LIT-1", "First")
 	second := relationPinnedIssueJSON("related-issue-id", "LIT-2", "Second")
+	responses := map[string]string{
+		"issue_relations": emptyIssueRelationsJSON(),
+		"issueRelation":   `{"issueRelation":` + relationWriteJSON("related") + `}`,
+	}
+	for key, value := range extra {
+		responses[key] = value
+	}
 
 	return issueLookupFake{
 		byID: map[string]string{
@@ -148,7 +159,7 @@ func relationIssuePairFake(extra map[string]string) graphql.Client {
 			"LIT-2":            second,
 			"related-issue-id": second,
 		},
-		inner: issueWriteFakeClient(extra),
+		inner: issueWriteFakeClient(responses),
 	}
 }
 
@@ -174,6 +185,7 @@ func Test_CreateIssueRelation_allows_blocks_without_a_cycle(t *testing.T) {
 		"IssueDependencies": issueRelationDepsJSON(false),
 		"IssueRelationCreate": `{"issueRelationCreate":{"success":true,"issueRelation":` +
 			relationWriteJSON("blocks") + `}}`,
+		"issueRelation": `{"issueRelation":` + relationWriteJSON("blocks") + `}`,
 	})
 
 	relation, err := CreateIssueRelation(context.Background(), graphqlClient, matchingTarget(), IssueRelationCreateRequest{

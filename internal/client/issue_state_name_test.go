@@ -1,0 +1,193 @@
+package client
+
+import (
+	"context"
+	"errors"
+	"testing"
+
+	"github.com/stretchr/testify/require"
+)
+
+func Test_UpdateIssue_selects_exact_started_state_name(t *testing.T) {
+	before := issueFixture{
+		Identifier: "LIT-1", Title: "job", ProjectID: "project-id", Project: "fixture",
+		StateID: "todo-state", State: "Todo", StateType: "unstarted",
+	}
+	after := before
+	after.StateID = "in-review-state"
+	after.State = "In Review"
+	after.StateType = "started"
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
+		"issue":                `{"issue":` + issueJSON(before) + `}`,
+		"WorkflowStatesByTeam": multipleStartedStatesJSON(),
+		"IssueUpdate":          `{"issueUpdate":{"success":true,"issue":` + issueJSON(after) + `}}`,
+	})}
+
+	issue, err := UpdateIssue(
+		context.Background(),
+		withIssueAfterWrite(recorder, after),
+		matchingTarget(),
+		IssueUpdateRequest{ID: "LIT-1", StateSelector: "In Review"},
+	)
+
+	require.NoError(t, err)
+	require.Equal(t, "in-review-state", issue.StateID)
+	require.JSONEq(t, `{
+		"id": "LIT-1",
+		"input": {"stateId": "in-review-state"}
+	}`, string(recorder.variablesFor(t, "IssueUpdate")))
+}
+
+func Test_UpdateIssue_refuses_when_readback_state_does_not_match(t *testing.T) {
+	before := issueFixture{
+		Identifier: "LIT-1", Title: "job", ProjectID: "project-id", Project: "fixture",
+		StateID: "todo-state", State: "Todo", StateType: "unstarted",
+	}
+	wrong := before
+	wrong.StateID = "in-progress-state"
+	wrong.State = "In Progress"
+	wrong.StateType = "started"
+	graphqlClient := withIssueAfterWrite(issueWriteFakeClient(map[string]string{
+		"issue":                `{"issue":` + issueJSON(before) + `}`,
+		"WorkflowStatesByTeam": multipleStartedStatesJSON(),
+		"IssueUpdate":          `{"issueUpdate":{"success":true,"issue":` + issueJSON(wrong) + `}}`,
+	}), wrong)
+
+	_, err := UpdateIssue(
+		context.Background(), graphqlClient, matchingTarget(),
+		IssueUpdateRequest{ID: "LIT-1", StateSelector: "In Review"},
+	)
+
+	require.ErrorIs(t, err, ErrStateMismatch)
+	require.ErrorContains(t, err, "in-review-state")
+}
+
+func Test_UpdateIssue_skips_write_when_issue_already_has_selected_state(t *testing.T) {
+	current := issueFixture{
+		Identifier: "LIT-1", Title: "job", ProjectID: "project-id", Project: "fixture",
+		StateID: "in-review-state", State: "In Review", StateType: "started",
+	}
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
+		"issue":                `{"issue":` + issueJSON(current) + `}`,
+		"WorkflowStatesByTeam": multipleStartedStatesJSON(),
+	})}
+
+	issue, err := UpdateIssue(
+		context.Background(), recorder, matchingTarget(),
+		IssueUpdateRequest{ID: "LIT-1", StateSelector: "In Review"},
+	)
+
+	require.NoError(t, err)
+	require.Equal(t, "in-review-state", issue.StateID)
+	require.Zero(t, recorder.countOf("IssueUpdate"))
+}
+
+func Test_UpdateIssue_reconciles_ambiguous_state_write_without_replay(t *testing.T) {
+	before := issueFixture{
+		Identifier: "LIT-1", Title: "job", ProjectID: "project-id", Project: "fixture",
+		StateID: "todo-state", State: "Todo", StateType: "unstarted",
+	}
+	after := before
+	after.StateID = "in-review-state"
+	after.State = "In Review"
+	after.StateType = "started"
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
+		"issue":                `{"issue":` + issueJSON(before) + `}`,
+		"WorkflowStatesByTeam": multipleStartedStatesJSON(),
+		"IssueUpdate":          "",
+	}).withError(errors.New("timeout"))}
+	graphqlClient := withIssueAfterWrite(recorder, after)
+
+	issue, err := UpdateIssue(
+		context.Background(), graphqlClient, matchingTarget(),
+		IssueUpdateRequest{ID: "LIT-1", StateSelector: "In Review"},
+	)
+
+	require.NoError(t, err)
+	require.Equal(t, "in-review-state", issue.StateID)
+	require.Equal(t, 1, recorder.countOf("IssueUpdate"))
+}
+
+func Test_CreateIssue_uses_state_selector_over_type(t *testing.T) {
+	after := issueFixture{
+		Identifier: "LIT-3", Title: "typed", ProjectID: "project-id", Project: "fixture",
+		StateID: "in-review-state", State: "In Review", StateType: "started",
+	}
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
+		"WorkflowStatesByTeam": multipleStartedStatesJSON(),
+		"IssueCreate":          `{"issueCreate":{"success":true,"issue":` + issueJSON(after) + `}}`,
+	})}
+
+	issue, err := CreateIssue(
+		context.Background(),
+		withIssueAfterWrite(recorder, after),
+		matchingTarget(),
+		IssueCreateRequest{Title: "typed", StateSelector: "In Review", StateType: "started"},
+	)
+
+	require.NoError(t, err)
+	require.Equal(t, "in-review-state", issue.StateID)
+}
+
+func Test_UpdateIssue_returns_readback_error_when_issue_vanishes(t *testing.T) {
+	before := issueFixture{
+		Identifier: "LIT-1", Title: "job", ProjectID: "project-id", Project: "fixture",
+		StateID: "todo-state", State: "Todo", StateType: "unstarted",
+	}
+	inner := issueWriteFakeClient(map[string]string{
+		"issue":                `{"issue":` + issueJSON(before) + `}`,
+		"WorkflowStatesByTeam": multipleStartedStatesJSON(),
+		"IssueUpdate":          `{"issueUpdate":{"success":true,"issue":` + issueJSON(before) + `}}`,
+	})
+	sequenced := newSequentialOpClient(inner)
+	sequenced.failAt["issue"] = 2
+
+	_, err := UpdateIssue(
+		context.Background(), sequenced, matchingTarget(),
+		IssueUpdateRequest{ID: "LIT-1", StateSelector: "In Review"},
+	)
+
+	require.Error(t, err)
+	require.ErrorContains(t, err, "injected issue failure")
+}
+
+func Test_UpdateIssue_prefers_mutation_error_when_readback_also_fails(t *testing.T) {
+	before := issueFixture{
+		Identifier: "LIT-1", Title: "job", ProjectID: "project-id", Project: "fixture",
+		StateID: "todo-state", State: "Todo", StateType: "unstarted",
+	}
+	inner := issueWriteFakeClient(map[string]string{
+		"issue":                `{"issue":` + issueJSON(before) + `}`,
+		"WorkflowStatesByTeam": multipleStartedStatesJSON(),
+		"IssueUpdate":          "",
+	}).withError(errors.New("timeout"))
+	sequenced := newSequentialOpClient(inner)
+	sequenced.failAt["issue"] = 2
+
+	_, err := UpdateIssue(
+		context.Background(), sequenced, matchingTarget(),
+		IssueUpdateRequest{ID: "LIT-1", StateSelector: "In Review"},
+	)
+
+	require.ErrorContains(t, err, "timeout")
+}
+
+func Test_resolveStateID_requires_selector(t *testing.T) {
+	guard := &guardedClient{stateIDs: &stateIDCache{lists: map[string][]workflowStateCandidate{}}}
+
+	_, err := guard.resolveStateID(context.Background(), "team-id", "  ")
+
+	require.ErrorIs(t, err, ErrWriteInvalid)
+}
+
+func Test_selectWorkflowStateID_returns_error_when_name_is_ambiguous(t *testing.T) {
+	states := []workflowStateCandidate{
+		{ID: "a", Name: "In Review", Type: "started", Position: 1},
+		{ID: "b", Name: "in review", Type: "started", Position: 2},
+	}
+
+	_, err := selectWorkflowStateID(states, "team-id", "In Review")
+
+	require.ErrorIs(t, err, ErrWriteInvalid)
+	require.ErrorContains(t, err, "ambiguous")
+}

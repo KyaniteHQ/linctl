@@ -180,6 +180,11 @@ query issue($id: String!) {
   issue(id: $id) {
     description
     ...IssueSummaryFields
+    team {
+      organization {
+        id
+      }
+    }
     projectMilestone {
       id
       name
@@ -421,6 +426,20 @@ query WorkflowStatesByType($teamId: ID!, $stateType: String!, $first: Int) {
       name
       type
       position
+    }
+  }
+}
+
+query WorkflowStatesByTeam($teamId: ID!, $first: Int) {
+  workflowStates(filter: { team: { id: { eq: $teamId } } }, first: $first) {
+    nodes {
+      id
+      name
+      type
+      position
+    }
+    pageInfo {
+      hasNextPage
     }
   }
 }

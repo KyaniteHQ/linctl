@@ -131,7 +131,7 @@ func Test_CommandFlows_report_issue_text_file_errors(t *testing.T) {
 		{
 			name:     "create unknown state alias",
 			args:     []string{"issue", "create", "--title", "T", "--state", "sprinting"},
-			contains: "unknown state type",
+			contains: "unknown workflow state",
 		},
 		{
 			name:     "create unknown priority alias",
@@ -141,7 +141,7 @@ func Test_CommandFlows_report_issue_text_file_errors(t *testing.T) {
 		{
 			name:     "update unknown state alias",
 			args:     []string{"issue", "update", "LIT-1", "--state", "sprinting"},
-			contains: "unknown state type",
+			contains: "unknown workflow state",
 		},
 		{
 			name:     "update unknown priority alias",

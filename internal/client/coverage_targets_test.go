@@ -45,9 +45,11 @@ func Test_TargetFailureScenarios_refuse_unpinned_or_mismatched_targets(t *testin
 	_, err = ResolveTarget(context.Background(), graphqlClient, matchingTarget())
 	require.ErrorIs(t, err, ErrTargetMismatch)
 
-	_, err = firstStateIDOfType(context.Background(), fakeGraphQLClient{
-		"WorkflowStatesByType": `{"workflowStates":{"nodes":[]}}`,
-	}, "team-id", "completed")
+	_, err = listTeamWorkflowStates(context.Background(), fakeGraphQLClient{
+		"WorkflowStatesByTeam": workflowStatesByTeamJSON(""),
+	}, "team-id")
+	require.NoError(t, err)
+	_, err = selectWorkflowStateID(nil, "team-id", "completed")
 	require.ErrorIs(t, err, ErrWriteInvalid)
 
 	err = requireTargetMatch(config.Target{OrgID: "org-id", TeamID: "team-id", TeamKey: "LIT"}, config.Target{

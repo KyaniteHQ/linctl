@@ -148,10 +148,10 @@ func Test_StartIssue_assigns_viewer_and_moves_to_started_state_when_target_match
 			State:      "Todo",
 			StateType:  "unstarted",
 		}) + `}`,
-		"WorkflowStatesByType": `{"workflowStates":{"nodes":[
+		"WorkflowStatesByTeam": workflowStatesByTeamJSON(`
 			{"id":"later-started-state","name":"Later","type":"started","position":2},
 			{"id":"started-state","name":"Started","type":"started","position":1}
-		]}}`,
+		`),
 		"IssueUpdate": `{"issueUpdate":{"success":true,"issue":` + issueJSONWithAssignee(issueFixture{
 			Identifier: "LIT-5",
 			Title:      "start",
@@ -162,9 +162,18 @@ func Test_StartIssue_assigns_viewer_and_moves_to_started_state_when_target_match
 			StateType:  "started",
 		}, "Omer") + `}}`,
 	})}
+	graphqlClient := withIssueAfterWriteJSON(recorder, issueJSONWithAssignee(issueFixture{
+		Identifier: "LIT-5",
+		Title:      "start",
+		ProjectID:  "project-id",
+		Project:    "fixture",
+		StateID:    "started-state",
+		State:      "Started",
+		StateType:  "started",
+	}, "Omer"))
 
 	// When
-	issue, err := StartIssue(context.Background(), recorder, matchingTarget(), "LIT-5")
+	issue, err := StartIssue(context.Background(), graphqlClient, matchingTarget(), "LIT-5")
 
 	// Then
 	require.NoError(t, err)
@@ -188,16 +197,20 @@ func Test_StartIssue_delegates_to_assignable_app_viewer(t *testing.T) {
 			Identifier: "LIT-5", Title: "start", ProjectID: "project-id", Project: "fixture",
 			StateID: "todo-state", State: "Todo", StateType: "unstarted",
 		}) + `}`,
-		"WorkflowStatesByType": `{"workflowStates":{"nodes":[
-			{"id":"started-state","name":"Started","type":"started","position":1}
-		]}}`,
+		"WorkflowStatesByTeam": workflowStatesByTeamJSON(
+			`{"id":"started-state","name":"Started","type":"started","position":1}`,
+		),
 		"IssueUpdate": `{"issueUpdate":{"success":true,"issue":` + issueJSON(issueFixture{
 			Identifier: "LIT-5", Title: "start", ProjectID: "project-id", Project: "fixture",
 			StateID: "started-state", State: "Started", StateType: "started",
 		}) + `}}`,
 	})}
+	graphqlClient := withIssueAfterWrite(recorder, issueFixture{
+		Identifier: "LIT-5", Title: "start", ProjectID: "project-id", Project: "fixture",
+		StateID: "started-state", State: "Started", StateType: "started",
+	})
 
-	issue, err := StartIssue(context.Background(), recorder, matchingTarget(), "LIT-5")
+	issue, err := StartIssue(context.Background(), graphqlClient, matchingTarget(), "LIT-5")
 
 	require.NoError(t, err)
 	require.Equal(t, "started", issue.StateType)
@@ -225,7 +238,7 @@ func Test_StartIssue_rejects_unassignable_app_before_issue_update(t *testing.T) 
 
 func Test_CloseIssue_moves_issue_to_completed_state_when_target_matches(t *testing.T) {
 	// Given
-	graphqlClient := issueWriteFakeClient(map[string]string{
+	graphqlClient := withIssueAfterWrite(issueWriteFakeClient(map[string]string{
 		"issue": `{"issue":` + issueJSON(issueFixture{
 			Identifier: "LIT-4",
 			Title:      "close",
@@ -235,10 +248,10 @@ func Test_CloseIssue_moves_issue_to_completed_state_when_target_matches(t *testi
 			State:      "Todo",
 			StateType:  "unstarted",
 		}) + `}`,
-		"WorkflowStatesByType": `{"workflowStates":{"nodes":[
+		"WorkflowStatesByTeam": workflowStatesByTeamJSON(`
 			{"id":"done-state","name":"Done","type":"completed","position":2},
 			{"id":"complete-state","name":"Complete","type":"completed","position":1}
-		]}}`,
+		`),
 		"IssueClose": `{"issueUpdate":{"success":true,"issue":` + issueJSON(issueFixture{
 			Identifier: "LIT-4",
 			Title:      "close",
@@ -248,6 +261,14 @@ func Test_CloseIssue_moves_issue_to_completed_state_when_target_matches(t *testi
 			State:      "Complete",
 			StateType:  "completed",
 		}) + `}}`,
+	}), issueFixture{
+		Identifier: "LIT-4",
+		Title:      "close",
+		ProjectID:  "project-id",
+		Project:    "fixture",
+		StateID:    "complete-state",
+		State:      "Complete",
+		StateType:  "completed",
 	})
 
 	// When
@@ -417,10 +438,10 @@ type issueFixture struct {
 func Test_CreateIssue_resolves_state_type_and_priority_when_provided(t *testing.T) {
 	// Given
 	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
-		"WorkflowStatesByType": `{"workflowStates":{"nodes":[
+		"WorkflowStatesByTeam": workflowStatesByTeamJSON(`
 			{"id":"todo-state","name":"Todo","type":"unstarted","position":2},
 			{"id":"backlog-state","name":"Backlog","type":"unstarted","position":1}
-		]}}`,
+		`),
 		"IssueCreate": `{"issueCreate":{"success":true,"issue":` + issueJSON(issueFixture{
 			Identifier: "LIT-3",
 			Title:      "typed",
@@ -431,9 +452,18 @@ func Test_CreateIssue_resolves_state_type_and_priority_when_provided(t *testing.
 			StateType:  "unstarted",
 		}) + `}}`,
 	})}
+	graphqlClient := withIssueAfterWrite(recorder, issueFixture{
+		Identifier: "LIT-3",
+		Title:      "typed",
+		ProjectID:  "project-id",
+		Project:    "fixture",
+		StateID:    "backlog-state",
+		State:      "Backlog",
+		StateType:  "unstarted",
+	})
 
 	// When
-	issue, err := CreateIssue(context.Background(), recorder, matchingTarget(), IssueCreateRequest{
+	issue, err := CreateIssue(context.Background(), graphqlClient, matchingTarget(), IssueCreateRequest{
 		Title:     "typed",
 		StateType: "unstarted",
 		Priority:  "2",
@@ -456,7 +486,7 @@ func Test_CreateIssue_resolves_state_type_and_priority_when_provided(t *testing.
 func Test_CreateIssue_returns_error_when_state_type_has_no_workflow_states(t *testing.T) {
 	// Given
 	graphqlClient := issueWriteFakeClient(map[string]string{
-		"WorkflowStatesByType": `{"workflowStates":{"nodes":[]}}`,
+		"WorkflowStatesByTeam": workflowStatesByTeamJSON(""),
 	})
 
 	// When
@@ -482,7 +512,7 @@ func Test_UpdateIssue_returns_error_when_state_type_has_no_workflow_states(t *te
 			State:      "Todo",
 			StateType:  "unstarted",
 		}) + `}`,
-		"WorkflowStatesByType": `{"workflowStates":{"nodes":[]}}`,
+		"WorkflowStatesByTeam": workflowStatesByTeamJSON(""),
 	})
 
 	// When
@@ -508,9 +538,9 @@ func Test_UpdateIssue_resolves_state_type_and_priority_when_provided(t *testing.
 			State:      "Todo",
 			StateType:  "unstarted",
 		}) + `}`,
-		"WorkflowStatesByType": `{"workflowStates":{"nodes":[
-			{"id":"done-state","name":"Done","type":"completed","position":1}
-		]}}`,
+		"WorkflowStatesByTeam": workflowStatesByTeamJSON(
+			`{"id":"done-state","name":"Done","type":"completed","position":1}`,
+		),
 		"IssueUpdate": `{"issueUpdate":{"success":true,"issue":` + issueJSON(issueFixture{
 			Identifier: "LIT-1",
 			Title:      "existing",
@@ -521,9 +551,18 @@ func Test_UpdateIssue_resolves_state_type_and_priority_when_provided(t *testing.
 			StateType:  "completed",
 		}) + `}}`,
 	})}
+	graphqlClient := withIssueAfterWrite(recorder, issueFixture{
+		Identifier: "LIT-1",
+		Title:      "existing",
+		ProjectID:  "project-id",
+		Project:    "fixture",
+		StateID:    "done-state",
+		State:      "Done",
+		StateType:  "completed",
+	})
 
 	// When
-	issue, err := UpdateIssue(context.Background(), recorder, matchingTarget(), IssueUpdateRequest{
+	issue, err := UpdateIssue(context.Background(), graphqlClient, matchingTarget(), IssueUpdateRequest{
 		ID:        "LIT-1",
 		StateType: "completed",
 		Priority:  "1",
@@ -595,17 +634,6 @@ func Test_UpdateIssue_returns_error_for_invalid_priority_string(t *testing.T) {
 	require.ErrorIs(t, err, ErrWriteInvalid)
 }
 
-func Test_firstStateIDOfType_returns_error_on_graphql_failure(t *testing.T) {
-	// Given - empty fake client with no WorkflowStatesByType response triggers error
-	graphqlClient := fakeGraphQLClient(map[string]string{})
-
-	// When
-	_, err := firstStateIDOfType(context.Background(), graphqlClient, "team-id", "started")
-
-	// Then
-	require.ErrorContains(t, err, "list started workflow states")
-}
-
 func Test_parsePriority_returns_nil_for_empty_string(t *testing.T) {
 	result, err := parsePriority("")
 
@@ -631,37 +659,6 @@ func Test_parsePriority_rejects_out_of_range_values(t *testing.T) {
 	}
 }
 
-func Test_firstStateIDOfType_returns_state_with_lowest_position(t *testing.T) {
-	// Given
-	graphqlClient := fakeGraphQLClient(map[string]string{
-		"WorkflowStatesByType": `{"workflowStates":{"nodes":[
-			{"id":"second-state","name":"Second","type":"started","position":2},
-			{"id":"first-state","name":"First","type":"started","position":1}
-		]}}`,
-	})
-
-	// When
-	stateID, err := firstStateIDOfType(context.Background(), graphqlClient, "team-id", "started")
-
-	// Then
-	require.NoError(t, err)
-	require.Equal(t, "first-state", stateID)
-}
-
-func Test_firstStateIDOfType_returns_error_when_no_states(t *testing.T) {
-	// Given
-	graphqlClient := fakeGraphQLClient(map[string]string{
-		"WorkflowStatesByType": `{"workflowStates":{"nodes":[]}}`,
-	})
-
-	// When
-	_, err := firstStateIDOfType(context.Background(), graphqlClient, "team-id", "started")
-
-	// Then
-	require.Error(t, err)
-	require.ErrorIs(t, err, ErrWriteInvalid)
-}
-
 func issueJSON(issue issueFixture) string {
 	id := issue.ID
 	if id == "" {
@@ -679,7 +676,7 @@ func issueJSON(issue issueFixture) string {
 		"url":"https://linear.app/kyanite/issue/` + issue.Identifier + `",
 		"priority":0,
 		"priorityLabel":"No priority",
-		"team":{"id":"team-id","key":"LIT","name":"linctl-it"},
+		"team":{"id":"team-id","key":"LIT","name":"linctl-it","organization":{"id":"org-id"}},
 		"state":{"id":"` + issue.StateID + `","name":"` + issue.State + `","type":"` + issue.StateType + `"},
 		"assignee":null,
 		"project":` + project + `
@@ -888,10 +885,14 @@ func Test_CreateIssues_resolves_target_once(t *testing.T) {
 }
 
 func Test_CreateIssues_resolves_shared_state_and_estimate_config_once(t *testing.T) {
+	after := b1IssueFixture("LIT-1")
+	after.StateID = "started-state"
+	after.State = "Started"
+	after.StateType = "started"
 	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
-		"WorkflowStatesByType": `{"workflowStates":{"nodes":[
-			{"id":"started-state","name":"Started","type":"started","position":1}
-		]}}`,
+		"WorkflowStatesByTeam": workflowStatesByTeamJSON(
+			`{"id":"started-state","name":"Started","type":"started","position":1}`,
+		),
 		"teamEstimateConfig": teamEstimateConfigJSON("fibonacci", false),
 		"IssueCreate":        `{"issueCreate":{"success":true,"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}}`,
 	})}
@@ -902,14 +903,16 @@ func Test_CreateIssues_resolves_shared_state_and_estimate_config_once(t *testing
 		{Title: "Third", StateType: "started", Estimate: &estimate},
 	}
 
-	outcomes, err := CreateIssues(context.Background(), recorder, matchingTarget(), requests, 3)
+	outcomes, err := CreateIssues(
+		context.Background(), withIssueAfterWrite(recorder, after), matchingTarget(), requests, 3,
+	)
 
 	require.NoError(t, err)
 	for _, outcome := range outcomes {
 		require.NoError(t, outcome.Err)
 	}
 	require.Equal(
-		t, 1, recorder.countOf("WorkflowStatesByType"),
+		t, 1, recorder.countOf("WorkflowStatesByTeam"),
 		"a shared state type should resolve once, not per row",
 	)
 	require.Equal(

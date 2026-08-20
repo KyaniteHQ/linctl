@@ -1151,6 +1151,28 @@ Success is pass/fail:
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_project_export_writes_document`, `Test_CommandFlows_project_export_honors_output_flags`, `Test_CommandFlows_project_export_notes_truncation`;
      `go test ./internal/client`, `Test_ClientReadIssueAndProjectScenarios_return_compact_lists_details_and_members`.
 
+218. Exact workflow-state name
+   - Success: `linctl issue update ISSUE --state "In Review"` selects that started state when the team has several started states, then reads the issue back.
+   - Evidence: `go test ./internal/client`, `Test_UpdateIssue_selects_exact_started_state_name`,
+     `Test_UpdateIssue_refuses_when_readback_state_does_not_match`.
+
+219. Cross-project related relation
+   - Success: `linctl issue relate A B --type related --allowed-project P1 --allowed-project P2` links two same-team issues in those projects and keeps each issue in its original project.
+   - Evidence: `go test ./internal/client`, `Test_CreateIssueRelation_links_issues_in_explicit_allowed_projects`,
+     `Test_CreateIssueRelation_refuses_project_outside_allowlist_before_mutation`,
+     `Test_CreateIssueRelation_refuses_cross_organization_relation`.
+
+220. Relation readback
+   - Success: a successful relate returns both issues and the relation after a follow-up read.
+   - Evidence: `go test ./internal/client`, `Test_CreateIssueRelation_links_issues_when_target_matches`,
+     `Test_CreateIssueRelation_links_issues_in_explicit_allowed_projects`.
+
+221. Ambiguous mutation reconcile
+   - Success: a timed-out state write or relation create reads observed state and does not replay the mutation when the desired result is already present.
+   - Evidence: `go test ./internal/client`, `Test_UpdateIssue_reconciles_ambiguous_state_write_without_replay`,
+     `Test_CreateIssueRelation_reconciles_ambiguous_create_without_replay`,
+     `Test_CreateIssueRelation_reconciles_existing_relation_without_create`.
+
 ## Current Outcome
 
 All local scenarios pass under the method above. The complete product suite also passes with

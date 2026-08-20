@@ -184,6 +184,8 @@ func commandFlowIssueRelationPayload(operation string) (string, bool) {
 			`"relatedIssue":{"id":"related-issue-id","identifier":"LIT-2","title":"Related issue"}}}}`, true
 	case "IssueRelationDelete":
 		return `{"issueRelationDelete":{"success":true,"entityId":"issue-relation-id"}}`, true
+	case "issue_relations":
+		return `{"issue":{"relations":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	default:
 		return "", false
 	}
@@ -499,6 +501,8 @@ func commandFlowIssueWritePayload(operation string, fake commandFlowFakeClient) 
 		return `{"attachmentCreate":{"success":true,"attachment":{"id":"attachment-id","title":"Linked PR","subtitle":null,"url":"https://example.com/pr/1","sourceType":null}}}`, true
 	case "WorkflowStatesByType":
 		return `{"workflowStates":{"nodes":[{"id":"type-state-id","name":"TypeState","type":"unstarted","position":1}]}}`, true
+	case "WorkflowStatesByTeam":
+		return commandFlowWorkflowStatesByTeamJSON(), true
 	case "IssueClose":
 		return `{"issueUpdate":{"success":true,"issue":` + commandIssueJSON("LIT-1", "Closed issue", "done-state", "Done", "completed") + `}}`, true
 	case "IssueAddLabel":
