@@ -46,22 +46,76 @@ type DraftList struct {
 	EndCursor   *string        `json:"end_cursor,omitempty"`
 }
 
+//nolint:lll
+type usersNode = gql.XUsersUsersUserConnectionNodesUser
+
+//nolint:lll
+type viewerDraftsNode = gql.XViewer_draftsViewerUserDraftsDraftConnectionNodesDraft
+
+//nolint:lll
+type userAssignedIssuesNode = gql.XUser_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue
+
+//nolint:lll
+type userCreatedIssuesNode = gql.XUser_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue
+
+//nolint:lll
+type userDelegatedIssuesNode = gql.XUser_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue
+
+//nolint:lll
+type userTeamMembershipsNode = gql.XUser_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership
+
+//nolint:lll
+type userTeamsNode = gql.XUser_teamsUserTeamsTeamConnectionNodesTeam
+
+//nolint:lll
+type viewerAssignedIssuesNode = gql.XViewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue
+
+//nolint:lll
+type viewerCreatedIssuesNode = gql.XViewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue
+
+//nolint:lll
+type viewerDelegatedIssuesNode = gql.XViewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue
+
+//nolint:lll
+type viewerTeamMembershipsNode = gql.XViewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership
+
+//nolint:lll
+type viewerTeamsNode = gql.XViewer_teamsViewerUserTeamsTeamConnectionNodesTeam
+
+type usersQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
+type viewerDraftsQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
+type userScopedQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+	id            string
+}
+
+type viewerQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
 // ListUsers returns visible users.
 func ListUsers(ctx context.Context, graphqlClient graphql.Client, limit int) (UserList, error) {
-	userPage, err := gql.XUsers(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true), boolPtr(true))
+	query := usersQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list users", limit, defaultListPageSize,
+		query.page,
+		usersNodeSummary,
+	)
 	if err != nil {
-		return UserList{}, fmt.Errorf("list users: %w", err)
+		return UserList{}, err
 	}
 
-	summaries := mapNodes(userPage.Users.Nodes, func(user gql.XUsersUsersUserConnectionNodesUser) UserSummary {
-		return userSummary(user.UserSummaryFields)
-	})
-
-	return UserList{
-		Users:       summaries,
-		HasNextPage: userPage.Users.PageInfo.HasNextPage,
-		EndCursor:   userPage.Users.PageInfo.EndCursor,
-	}, nil
+	return UserList{Users: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // GetUserByID returns one User by id.
@@ -86,22 +140,17 @@ func GetViewerUser(ctx context.Context, graphqlClient graphql.Client) (UserSumma
 
 // ListViewerDrafts returns the authenticated user's saved draft metadata.
 func ListViewerDrafts(ctx context.Context, graphqlClient graphql.Client, limit int) (DraftList, error) {
-	draftPage, err := gql.XViewer_drafts(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
+	query := viewerDraftsQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list viewer drafts", limit, defaultListPageSize,
+		query.page,
+		viewerDraftsNodeSummary,
+	)
 	if err != nil {
-		return DraftList{}, fmt.Errorf("list viewer drafts: %w", err)
+		return DraftList{}, err
 	}
 
-	summaries := mapNodes(draftPage.Viewer.Drafts.Nodes, func(
-		draft gql.XViewer_draftsViewerUserDraftsDraftConnectionNodesDraft,
-	) DraftSummary {
-		return draftSummary(draft.DraftSummaryFields)
-	})
-
-	return DraftList{
-		Drafts:      summaries,
-		HasNextPage: draftPage.Viewer.Drafts.PageInfo.HasNextPage,
-		EndCursor:   draftPage.Viewer.Drafts.PageInfo.EndCursor,
-	}, nil
+	return DraftList{Drafts: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // ListUserAssignedIssues returns issues assigned to one User.
@@ -111,42 +160,32 @@ func ListUserAssignedIssues(
 	id string,
 	limit int,
 ) (IssueList, error) {
-	result, err := gql.XUser_assignedIssues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
+	query := userScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list user assigned issues "+id, limit, defaultListPageSize,
+		query.assignedIssues,
+		userAssignedIssuesNodeSummary,
+	)
 	if err != nil {
-		return IssueList{}, fmt.Errorf("list user assigned issues %s: %w", id, err)
+		return IssueList{}, err
 	}
 
-	issues := mapNodes(result.User.AssignedIssues.Nodes, func(
-		issue gql.XUser_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(issue.IssueSummaryFields)
-	})
-
-	return IssueList{
-		Issues:      issues,
-		HasNextPage: result.User.AssignedIssues.PageInfo.HasNextPage,
-		EndCursor:   result.User.AssignedIssues.PageInfo.EndCursor,
-	}, nil
+	return IssueList{Issues: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // ListUserCreatedIssues returns issues created by one User.
 func ListUserCreatedIssues(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (IssueList, error) {
-	result, err := gql.XUser_createdIssues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
+	query := userScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list user created issues "+id, limit, defaultListPageSize,
+		query.createdIssues,
+		userCreatedIssuesNodeSummary,
+	)
 	if err != nil {
-		return IssueList{}, fmt.Errorf("list user created issues %s: %w", id, err)
+		return IssueList{}, err
 	}
 
-	issues := mapNodes(result.User.CreatedIssues.Nodes, func(
-		issue gql.XUser_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(issue.IssueSummaryFields)
-	})
-
-	return IssueList{
-		Issues:      issues,
-		HasNextPage: result.User.CreatedIssues.PageInfo.HasNextPage,
-		EndCursor:   result.User.CreatedIssues.PageInfo.EndCursor,
-	}, nil
+	return IssueList{Issues: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // ListUserDelegatedIssues returns issues delegated to one User.
@@ -156,22 +195,17 @@ func ListUserDelegatedIssues(
 	id string,
 	limit int,
 ) (IssueList, error) {
-	result, err := gql.XUser_delegatedIssues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
+	query := userScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list user delegated issues "+id, limit, defaultListPageSize,
+		query.delegatedIssues,
+		userDelegatedIssuesNodeSummary,
+	)
 	if err != nil {
-		return IssueList{}, fmt.Errorf("list user delegated issues %s: %w", id, err)
+		return IssueList{}, err
 	}
 
-	issues := mapNodes(result.User.DelegatedIssues.Nodes, func(
-		issue gql.XUser_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(issue.IssueSummaryFields)
-	})
-
-	return IssueList{
-		Issues:      issues,
-		HasNextPage: result.User.DelegatedIssues.PageInfo.HasNextPage,
-		EndCursor:   result.User.DelegatedIssues.PageInfo.EndCursor,
-	}, nil
+	return IssueList{Issues: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // ListUserTeamMemberships returns TeamMemberships associated with one User.
@@ -181,100 +215,77 @@ func ListUserTeamMemberships(
 	id string,
 	limit int,
 ) (TeamMembershipList, error) {
-	result, err := gql.XUser_teamMemberships(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
+	query := userScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list user team memberships "+id, limit, defaultListPageSize,
+		query.teamMemberships,
+		userTeamMembershipsNodeSummary,
+	)
 	if err != nil {
-		return TeamMembershipList{}, fmt.Errorf("list user team memberships %s: %w", id, err)
+		return TeamMembershipList{}, err
 	}
 
-	memberships := mapNodes(result.User.TeamMemberships.Nodes, func(
-		membership gql.XUser_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership,
-	) TeamMembershipSummary {
-		return teamMembershipSummary(membership.TeamMembershipSummaryFields)
-	})
-
-	return TeamMembershipList{
-		Memberships: memberships,
-		HasNextPage: result.User.TeamMemberships.PageInfo.HasNextPage,
-		EndCursor:   result.User.TeamMemberships.PageInfo.EndCursor,
-	}, nil
+	return TeamMembershipList{Memberships: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // ListUserTeams returns Teams associated with one User.
 func ListUserTeams(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (TeamList, error) {
-	result, err := gql.XUser_teams(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
+	query := userScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list user teams "+id, limit, defaultListPageSize,
+		query.teams,
+		userTeamsNodeSummary,
+	)
 	if err != nil {
-		return TeamList{}, fmt.Errorf("list user teams %s: %w", id, err)
+		return TeamList{}, err
 	}
 
-	teams := mapNodes(result.User.Teams.Nodes, func(team gql.XUser_teamsUserTeamsTeamConnectionNodesTeam) TeamSummary {
-		return teamSummary(team.TeamSummaryFields)
-	})
-
-	return TeamList{
-		Teams:       teams,
-		HasNextPage: result.User.Teams.PageInfo.HasNextPage,
-		EndCursor:   result.User.Teams.PageInfo.EndCursor,
-	}, nil
+	return TeamList{Teams: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // ListViewerAssignedIssues returns issues assigned to the authenticated User.
 func ListViewerAssignedIssues(ctx context.Context, graphqlClient graphql.Client, limit int) (IssueList, error) {
-	result, err := gql.XViewer_assignedIssues(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
+	query := viewerQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list viewer assigned issues", limit, defaultListPageSize,
+		query.assignedIssues,
+		viewerAssignedIssuesNodeSummary,
+	)
 	if err != nil {
-		return IssueList{}, fmt.Errorf("list viewer assigned issues: %w", err)
+		return IssueList{}, err
 	}
 
-	issues := mapNodes(result.Viewer.AssignedIssues.Nodes, func(
-		issue gql.XViewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(issue.IssueSummaryFields)
-	})
-
-	return IssueList{
-		Issues:      issues,
-		HasNextPage: result.Viewer.AssignedIssues.PageInfo.HasNextPage,
-		EndCursor:   result.Viewer.AssignedIssues.PageInfo.EndCursor,
-	}, nil
+	return IssueList{Issues: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // ListViewerCreatedIssues returns issues created by the authenticated User.
 func ListViewerCreatedIssues(ctx context.Context, graphqlClient graphql.Client, limit int) (IssueList, error) {
-	result, err := gql.XViewer_createdIssues(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
+	query := viewerQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list viewer created issues", limit, defaultListPageSize,
+		query.createdIssues,
+		viewerCreatedIssuesNodeSummary,
+	)
 	if err != nil {
-		return IssueList{}, fmt.Errorf("list viewer created issues: %w", err)
+		return IssueList{}, err
 	}
 
-	issues := mapNodes(result.Viewer.CreatedIssues.Nodes, func(
-		issue gql.XViewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(issue.IssueSummaryFields)
-	})
-
-	return IssueList{
-		Issues:      issues,
-		HasNextPage: result.Viewer.CreatedIssues.PageInfo.HasNextPage,
-		EndCursor:   result.Viewer.CreatedIssues.PageInfo.EndCursor,
-	}, nil
+	return IssueList{Issues: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // ListViewerDelegatedIssues returns issues delegated to the authenticated User.
 func ListViewerDelegatedIssues(ctx context.Context, graphqlClient graphql.Client, limit int) (IssueList, error) {
-	result, err := gql.XViewer_delegatedIssues(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
+	query := viewerQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list viewer delegated issues", limit, defaultListPageSize,
+		query.delegatedIssues,
+		viewerDelegatedIssuesNodeSummary,
+	)
 	if err != nil {
-		return IssueList{}, fmt.Errorf("list viewer delegated issues: %w", err)
+		return IssueList{}, err
 	}
 
-	issues := mapNodes(result.Viewer.DelegatedIssues.Nodes, func(
-		issue gql.XViewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(issue.IssueSummaryFields)
-	})
-
-	return IssueList{
-		Issues:      issues,
-		HasNextPage: result.Viewer.DelegatedIssues.PageInfo.HasNextPage,
-		EndCursor:   result.Viewer.DelegatedIssues.PageInfo.EndCursor,
-	}, nil
+	return IssueList{Issues: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // ListViewerTeamMemberships returns TeamMemberships associated with the authenticated User.
@@ -283,42 +294,253 @@ func ListViewerTeamMemberships(
 	graphqlClient graphql.Client,
 	limit int,
 ) (TeamMembershipList, error) {
-	result, err := gql.XViewer_teamMemberships(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
+	query := viewerQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list viewer team memberships", limit, defaultListPageSize,
+		query.teamMemberships,
+		viewerTeamMembershipsNodeSummary,
+	)
 	if err != nil {
-		return TeamMembershipList{}, fmt.Errorf("list viewer team memberships: %w", err)
+		return TeamMembershipList{}, err
 	}
 
-	memberships := mapNodes(result.Viewer.TeamMemberships.Nodes, func(
-		membership gql.XViewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership,
-	) TeamMembershipSummary {
-		return teamMembershipSummary(membership.TeamMembershipSummaryFields)
-	})
-
-	return TeamMembershipList{
-		Memberships: memberships,
-		HasNextPage: result.Viewer.TeamMemberships.PageInfo.HasNextPage,
-		EndCursor:   result.Viewer.TeamMemberships.PageInfo.EndCursor,
-	}, nil
+	return TeamMembershipList{Memberships: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // ListViewerTeams returns Teams associated with the authenticated User.
 func ListViewerTeams(ctx context.Context, graphqlClient graphql.Client, limit int) (TeamList, error) {
-	result, err := gql.XViewer_teams(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
+	query := viewerQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list viewer teams", limit, defaultListPageSize,
+		query.teams,
+		viewerTeamsNodeSummary,
+	)
 	if err != nil {
-		return TeamList{}, fmt.Errorf("list viewer teams: %w", err)
+		return TeamList{}, err
 	}
 
-	teams := mapNodes(result.Viewer.Teams.Nodes, func(
-		team gql.XViewer_teamsViewerUserTeamsTeamConnectionNodesTeam,
-	) TeamSummary {
-		return teamSummary(team.TeamSummaryFields)
-	})
+	return TeamList{Teams: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+}
 
-	return TeamList{
-		Teams:       teams,
-		HasNextPage: result.Viewer.Teams.PageInfo.HasNextPage,
-		EndCursor:   result.Viewer.Teams.PageInfo.EndCursor,
-	}, nil
+func (query usersQuery) page(pageSize int, after *string) ([]usersNode, bool, *string, error) {
+	result, err := gql.XUsers(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true), boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Users.Nodes, result.Users.PageInfo.HasNextPage, result.Users.PageInfo.EndCursor, nil
+}
+
+func (query viewerDraftsQuery) page(pageSize int, after *string) ([]viewerDraftsNode, bool, *string, error) {
+	result, err := gql.XViewer_drafts(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(false))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Viewer.Drafts.Nodes,
+		result.Viewer.Drafts.PageInfo.HasNextPage,
+		result.Viewer.Drafts.PageInfo.EndCursor,
+		nil
+}
+
+func (query userScopedQuery) assignedIssues(
+	pageSize int,
+	after *string,
+) ([]userAssignedIssuesNode, bool, *string, error) {
+	result, err := gql.XUser_assignedIssues(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(false),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.User.AssignedIssues.Nodes,
+		result.User.AssignedIssues.PageInfo.HasNextPage,
+		result.User.AssignedIssues.PageInfo.EndCursor,
+		nil
+}
+
+func (query userScopedQuery) createdIssues(
+	pageSize int,
+	after *string,
+) ([]userCreatedIssuesNode, bool, *string, error) {
+	result, err := gql.XUser_createdIssues(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(false),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.User.CreatedIssues.Nodes,
+		result.User.CreatedIssues.PageInfo.HasNextPage,
+		result.User.CreatedIssues.PageInfo.EndCursor,
+		nil
+}
+
+func (query userScopedQuery) delegatedIssues(
+	pageSize int,
+	after *string,
+) ([]userDelegatedIssuesNode, bool, *string, error) {
+	result, err := gql.XUser_delegatedIssues(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(false),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.User.DelegatedIssues.Nodes,
+		result.User.DelegatedIssues.PageInfo.HasNextPage,
+		result.User.DelegatedIssues.PageInfo.EndCursor,
+		nil
+}
+
+func (query userScopedQuery) teamMemberships(
+	pageSize int,
+	after *string,
+) ([]userTeamMembershipsNode, bool, *string, error) {
+	result, err := gql.XUser_teamMemberships(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(false),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.User.TeamMemberships.Nodes,
+		result.User.TeamMemberships.PageInfo.HasNextPage,
+		result.User.TeamMemberships.PageInfo.EndCursor,
+		nil
+}
+
+func (query userScopedQuery) teams(pageSize int, after *string) ([]userTeamsNode, bool, *string, error) {
+	result, err := gql.XUser_teams(query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(false))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.User.Teams.Nodes,
+		result.User.Teams.PageInfo.HasNextPage,
+		result.User.Teams.PageInfo.EndCursor,
+		nil
+}
+
+func (query viewerQuery) assignedIssues(
+	pageSize int,
+	after *string,
+) ([]viewerAssignedIssuesNode, bool, *string, error) {
+	result, err := gql.XViewer_assignedIssues(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(false))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Viewer.AssignedIssues.Nodes,
+		result.Viewer.AssignedIssues.PageInfo.HasNextPage,
+		result.Viewer.AssignedIssues.PageInfo.EndCursor,
+		nil
+}
+
+func (query viewerQuery) createdIssues(
+	pageSize int,
+	after *string,
+) ([]viewerCreatedIssuesNode, bool, *string, error) {
+	result, err := gql.XViewer_createdIssues(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(false))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Viewer.CreatedIssues.Nodes,
+		result.Viewer.CreatedIssues.PageInfo.HasNextPage,
+		result.Viewer.CreatedIssues.PageInfo.EndCursor,
+		nil
+}
+
+func (query viewerQuery) delegatedIssues(
+	pageSize int,
+	after *string,
+) ([]viewerDelegatedIssuesNode, bool, *string, error) {
+	result, err := gql.XViewer_delegatedIssues(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(false))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Viewer.DelegatedIssues.Nodes,
+		result.Viewer.DelegatedIssues.PageInfo.HasNextPage,
+		result.Viewer.DelegatedIssues.PageInfo.EndCursor,
+		nil
+}
+
+func (query viewerQuery) teamMemberships(
+	pageSize int,
+	after *string,
+) ([]viewerTeamMembershipsNode, bool, *string, error) {
+	result, err := gql.XViewer_teamMemberships(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(false))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Viewer.TeamMemberships.Nodes,
+		result.Viewer.TeamMemberships.PageInfo.HasNextPage,
+		result.Viewer.TeamMemberships.PageInfo.EndCursor,
+		nil
+}
+
+func (query viewerQuery) teams(pageSize int, after *string) ([]viewerTeamsNode, bool, *string, error) {
+	result, err := gql.XViewer_teams(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(false))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Viewer.Teams.Nodes,
+		result.Viewer.Teams.PageInfo.HasNextPage,
+		result.Viewer.Teams.PageInfo.EndCursor,
+		nil
+}
+
+func usersNodeSummary(user usersNode) UserSummary {
+	return userSummary(user.UserSummaryFields)
+}
+
+func viewerDraftsNodeSummary(draft viewerDraftsNode) DraftSummary {
+	return draftSummary(draft.DraftSummaryFields)
+}
+
+func userAssignedIssuesNodeSummary(issue userAssignedIssuesNode) IssueSummary {
+	return issueSummaryFromFields(issue.IssueSummaryFields)
+}
+
+func userCreatedIssuesNodeSummary(issue userCreatedIssuesNode) IssueSummary {
+	return issueSummaryFromFields(issue.IssueSummaryFields)
+}
+
+func userDelegatedIssuesNodeSummary(issue userDelegatedIssuesNode) IssueSummary {
+	return issueSummaryFromFields(issue.IssueSummaryFields)
+}
+
+func userTeamMembershipsNodeSummary(membership userTeamMembershipsNode) TeamMembershipSummary {
+	return teamMembershipSummary(membership.TeamMembershipSummaryFields)
+}
+
+func userTeamsNodeSummary(team userTeamsNode) TeamSummary {
+	return teamSummary(team.TeamSummaryFields)
+}
+
+func viewerAssignedIssuesNodeSummary(issue viewerAssignedIssuesNode) IssueSummary {
+	return issueSummaryFromFields(issue.IssueSummaryFields)
+}
+
+func viewerCreatedIssuesNodeSummary(issue viewerCreatedIssuesNode) IssueSummary {
+	return issueSummaryFromFields(issue.IssueSummaryFields)
+}
+
+func viewerDelegatedIssuesNodeSummary(issue viewerDelegatedIssuesNode) IssueSummary {
+	return issueSummaryFromFields(issue.IssueSummaryFields)
+}
+
+func viewerTeamMembershipsNodeSummary(membership viewerTeamMembershipsNode) TeamMembershipSummary {
+	return teamMembershipSummary(membership.TeamMembershipSummaryFields)
+}
+
+func viewerTeamsNodeSummary(team viewerTeamsNode) TeamSummary {
+	return teamSummary(team.TeamSummaryFields)
 }
 
 func userSummary(user gql.UserSummaryFields) UserSummary {

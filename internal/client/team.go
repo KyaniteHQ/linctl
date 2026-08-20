@@ -63,6 +63,45 @@ type GitAutomationStateList struct {
 	EndCursor   *string                     `json:"end_cursor,omitempty"`
 }
 
+//nolint:lll
+type teamMembersNode = gql.XTeam_membersTeamMembersUserConnectionNodesUser
+
+//nolint:lll
+type teamCyclesNode = gql.XTeam_cyclesTeamCyclesCycleConnectionNodesCycle
+
+//nolint:lll
+type teamIssuesNode = gql.XTeam_issuesTeamIssuesIssueConnectionNodesIssue
+
+//nolint:lll
+type teamLabelsNode = gql.XTeam_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel
+
+//nolint:lll
+type teamMembershipsForTeamNode = gql.XTeam_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership
+
+//nolint:lll
+type teamProjectsNode = gql.XTeam_projectsTeamProjectsProjectConnectionNodesProject
+
+//nolint:lll
+type teamReleasePipelinesNode = gql.XTeam_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline
+
+//nolint:lll
+type teamWorkflowStatesNode = gql.XTeam_statesTeamStatesWorkflowStateConnectionNodesWorkflowState
+
+//nolint:lll
+type teamGitAutomationStatesNode = gql.XTeam_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState
+
+//nolint:lll
+type teamTemplatesNode = gql.XTeam_templatesTeamTemplatesTemplateConnectionNodesTemplate
+
+type teamScopedQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+	id            string
+	teamID        string
+	teamKey       string
+	teamName      string
+}
+
 // ListTeams returns visible teams.
 func ListTeams(ctx context.Context, graphqlClient graphql.Client, limit int) (TeamList, error) {
 	page, err := listConnection(
@@ -98,85 +137,69 @@ func GetTeamByID(ctx context.Context, graphqlClient graphql.Client, id string) (
 
 // ListTeamMembers returns visible members for one Team.
 func ListTeamMembers(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (TeamMemberList, error) {
-	team, err := gql.XTeam_members(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &teamScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list team members "+id, limit, defaultListPageSize,
+		query.members,
+		teamMembersNodeSummary,
+	)
 	if err != nil {
-		return TeamMemberList{}, fmt.Errorf("list team members %s: %w", id, err)
+		return TeamMemberList{}, err
 	}
 
-	members := mapNodes(team.Team.Members.Nodes, func(
-		member gql.XTeam_membersTeamMembersUserConnectionNodesUser,
-	) UserSummary {
-		return userSummary(member.UserSummaryFields)
-	})
-
 	return TeamMemberList{
-		TeamID:      team.Team.Id,
-		TeamKey:     team.Team.Key,
-		TeamName:    team.Team.Name,
-		Members:     members,
-		HasNextPage: team.Team.Members.PageInfo.HasNextPage,
-		EndCursor:   team.Team.Members.PageInfo.EndCursor,
+		TeamID:      query.teamID,
+		TeamKey:     query.teamKey,
+		TeamName:    query.teamName,
+		Members:     page.Items,
+		HasNextPage: page.HasNextPage,
+		EndCursor:   page.EndCursor,
 	}, nil
 }
 
 // ListTeamCycles returns Cycles associated with one Team.
 func ListTeamCycles(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (CycleList, error) {
-	team, err := gql.XTeam_cycles(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &teamScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list team cycles "+id, limit, defaultListPageSize,
+		query.cycles,
+		teamCyclesNodeSummary,
+	)
 	if err != nil {
-		return CycleList{}, fmt.Errorf("list team cycles %s: %w", id, err)
+		return CycleList{}, err
 	}
 
-	cycles := mapNodes(team.Team.Cycles.Nodes, func(
-		cycle gql.XTeam_cyclesTeamCyclesCycleConnectionNodesCycle,
-	) CycleSummary {
-		return cycleSummary(cycle.CycleSummaryFields)
-	})
-
-	return CycleList{
-		Cycles:      cycles,
-		HasNextPage: team.Team.Cycles.PageInfo.HasNextPage,
-		EndCursor:   team.Team.Cycles.PageInfo.EndCursor,
-	}, nil
+	return CycleList{Cycles: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // ListTeamIssues returns issues associated with one Team.
 func ListTeamIssues(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (IssueList, error) {
-	team, err := gql.XTeam_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &teamScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list team issues "+id, limit, defaultListPageSize,
+		query.issues,
+		teamIssuesNodeSummary,
+	)
 	if err != nil {
-		return IssueList{}, fmt.Errorf("list team issues %s: %w", id, err)
+		return IssueList{}, err
 	}
 
-	issues := mapNodes(team.Team.Issues.Nodes, func(
-		issue gql.XTeam_issuesTeamIssuesIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(issue.IssueSummaryFields)
-	})
-
-	return IssueList{
-		Issues:      issues,
-		HasNextPage: team.Team.Issues.PageInfo.HasNextPage,
-		EndCursor:   team.Team.Issues.PageInfo.EndCursor,
-	}, nil
+	return IssueList{Issues: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // ListTeamLabels returns IssueLabels associated with one Team.
 func ListTeamLabels(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (LabelList, error) {
-	team, err := gql.XTeam_labels(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &teamScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list team labels "+id, limit, defaultListPageSize,
+		query.labels,
+		teamLabelsNodeSummary,
+	)
 	if err != nil {
-		return LabelList{}, fmt.Errorf("list team labels %s: %w", id, err)
+		return LabelList{}, err
 	}
 
-	labels := mapNodes(team.Team.Labels.Nodes, func(
-		label gql.XTeam_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel,
-	) LabelSummary {
-		return labelSummary(label.IssueLabelSummaryFields)
-	})
-
-	return LabelList{
-		Labels:      labels,
-		HasNextPage: team.Team.Labels.PageInfo.HasNextPage,
-		EndCursor:   team.Team.Labels.PageInfo.EndCursor,
-	}, nil
+	return LabelList{Labels: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // ListTeamMembershipsForTeam returns TeamMemberships associated with one Team.
@@ -186,42 +209,32 @@ func ListTeamMembershipsForTeam(
 	id string,
 	limit int,
 ) (TeamMembershipList, error) {
-	team, err := gql.XTeam_memberships(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &teamScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list team memberships "+id, limit, defaultListPageSize,
+		query.memberships,
+		teamMembershipsForTeamNodeSummary,
+	)
 	if err != nil {
-		return TeamMembershipList{}, fmt.Errorf("list team memberships %s: %w", id, err)
+		return TeamMembershipList{}, err
 	}
 
-	memberships := mapNodes(team.Team.Memberships.Nodes, func(
-		membership gql.XTeam_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership,
-	) TeamMembershipSummary {
-		return teamMembershipSummary(membership.TeamMembershipSummaryFields)
-	})
-
-	return TeamMembershipList{
-		Memberships: memberships,
-		HasNextPage: team.Team.Memberships.PageInfo.HasNextPage,
-		EndCursor:   team.Team.Memberships.PageInfo.EndCursor,
-	}, nil
+	return TeamMembershipList{Memberships: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // ListTeamProjects returns Projects associated with one Team.
 func ListTeamProjects(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (ProjectList, error) {
-	team, err := gql.XTeam_projects(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &teamScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list team projects "+id, limit, defaultListPageSize,
+		query.projects,
+		teamProjectsNodeSummary,
+	)
 	if err != nil {
-		return ProjectList{}, fmt.Errorf("list team projects %s: %w", id, err)
+		return ProjectList{}, err
 	}
 
-	projects := mapNodes(team.Team.Projects.Nodes, func(
-		project gql.XTeam_projectsTeamProjectsProjectConnectionNodesProject,
-	) ProjectSummary {
-		return projectSummaryFromFields(project.ProjectSummaryFields)
-	})
-
-	return ProjectList{
-		Projects:    projects,
-		HasNextPage: team.Team.Projects.PageInfo.HasNextPage,
-		EndCursor:   team.Team.Projects.PageInfo.EndCursor,
-	}, nil
+	return ProjectList{Projects: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // ListTeamReleasePipelines returns ReleasePipelines associated with one Team.
@@ -231,21 +244,20 @@ func ListTeamReleasePipelines(
 	id string,
 	limit int,
 ) (ReleasePipelineList, error) {
-	team, err := gql.XTeam_releasePipelines(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &teamScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list team release pipelines "+id, limit, defaultListPageSize,
+		query.releasePipelines,
+		teamReleasePipelinesNodeSummary,
+	)
 	if err != nil {
-		return ReleasePipelineList{}, fmt.Errorf("list team release pipelines %s: %w", id, err)
+		return ReleasePipelineList{}, err
 	}
 
-	pipelines := mapNodes(team.Team.ReleasePipelines.Nodes, func(
-		pipeline gql.XTeam_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline,
-	) ReleasePipelineSummary {
-		return releasePipelineSummary(pipeline.ReleasePipelineSummaryFields)
-	})
-
 	return ReleasePipelineList{
-		ReleasePipelines: pipelines,
-		HasNextPage:      team.Team.ReleasePipelines.PageInfo.HasNextPage,
-		EndCursor:        team.Team.ReleasePipelines.PageInfo.EndCursor,
+		ReleasePipelines: page.Items,
+		HasNextPage:      page.HasNextPage,
+		EndCursor:        page.EndCursor,
 	}, nil
 }
 
@@ -256,21 +268,20 @@ func ListTeamWorkflowStates(
 	id string,
 	limit int,
 ) (WorkflowStateList, error) {
-	team, err := gql.XTeam_states(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &teamScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list team states "+id, limit, defaultListPageSize,
+		query.states,
+		teamWorkflowStatesNodeSummary,
+	)
 	if err != nil {
-		return WorkflowStateList{}, fmt.Errorf("list team states %s: %w", id, err)
+		return WorkflowStateList{}, err
 	}
 
-	states := mapNodes(team.Team.States.Nodes, func(
-		state gql.XTeam_statesTeamStatesWorkflowStateConnectionNodesWorkflowState,
-	) WorkflowStateSummary {
-		return workflowStateSummary(state.WorkflowStateSummaryFields)
-	})
-
 	return WorkflowStateList{
-		WorkflowStates: states,
-		HasNextPage:    team.Team.States.PageInfo.HasNextPage,
-		EndCursor:      team.Team.States.PageInfo.EndCursor,
+		WorkflowStates: page.Items,
+		HasNextPage:    page.HasNextPage,
+		EndCursor:      page.EndCursor,
 	}, nil
 }
 
@@ -281,46 +292,241 @@ func ListTeamGitAutomationStates(
 	id string,
 	limit int,
 ) (GitAutomationStateList, error) {
-	team, err := gql.XTeam_gitAutomationStates(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &teamScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list team git automation states "+id, limit, defaultListPageSize,
+		query.gitAutomationStates,
+		teamGitAutomationStatesNodeSummary,
+	)
 	if err != nil {
-		return GitAutomationStateList{}, fmt.Errorf("list team git automation states %s: %w", id, err)
+		return GitAutomationStateList{}, err
 	}
 
-	states := mapNodes(team.Team.GitAutomationStates.Nodes, func(
-		state gql.XTeam_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState,
-	) GitAutomationStateSummary {
-		return gitAutomationStateSummary(state.GitAutomationStateSummaryFields)
-	})
-
 	return GitAutomationStateList{
-		TeamID:      team.Team.Id,
-		TeamKey:     team.Team.Key,
-		TeamName:    team.Team.Name,
-		States:      states,
-		HasNextPage: team.Team.GitAutomationStates.PageInfo.HasNextPage,
-		EndCursor:   team.Team.GitAutomationStates.PageInfo.EndCursor,
+		TeamID:      query.teamID,
+		TeamKey:     query.teamKey,
+		TeamName:    query.teamName,
+		States:      page.Items,
+		HasNextPage: page.HasNextPage,
+		EndCursor:   page.EndCursor,
 	}, nil
 }
 
 // ListTeamTemplates returns Templates associated with one Team.
 func ListTeamTemplates(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (TemplateList, error) {
-	team, err := gql.XTeam_templates(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &teamScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list team templates "+id, limit, defaultListPageSize,
+		query.templates,
+		teamTemplatesNodeSummary,
+	)
 	if err != nil {
-		return TemplateList{}, fmt.Errorf("list team templates %s: %w", id, err)
+		return TemplateList{}, err
 	}
 
-	templates := mapNodes(team.Team.Templates.Nodes, func(
-		template gql.XTeam_templatesTeamTemplatesTemplateConnectionNodesTemplate,
-	) TemplateSummary {
-		return templateSummary(template.TemplateSummaryFields)
-	})
-
 	return TemplateList{
-		Templates:   templates,
-		TotalCount:  len(templates),
-		HasNextPage: team.Team.Templates.PageInfo.HasNextPage,
-		EndCursor:   team.Team.Templates.PageInfo.EndCursor,
+		Templates:   page.Items,
+		TotalCount:  len(page.Items),
+		HasNextPage: page.HasNextPage,
+		EndCursor:   page.EndCursor,
 	}, nil
+}
+
+func (query *teamScopedQuery) members(pageSize int, after *string) ([]teamMembersNode, bool, *string, error) {
+	result, err := gql.XTeam_members(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	query.teamID = result.Team.Id
+	query.teamKey = result.Team.Key
+	query.teamName = result.Team.Name
+
+	return result.Team.Members.Nodes,
+		result.Team.Members.PageInfo.HasNextPage,
+		result.Team.Members.PageInfo.EndCursor,
+		nil
+}
+
+func (query *teamScopedQuery) cycles(pageSize int, after *string) ([]teamCyclesNode, bool, *string, error) {
+	result, err := gql.XTeam_cycles(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Team.Cycles.Nodes,
+		result.Team.Cycles.PageInfo.HasNextPage,
+		result.Team.Cycles.PageInfo.EndCursor,
+		nil
+}
+
+func (query *teamScopedQuery) issues(pageSize int, after *string) ([]teamIssuesNode, bool, *string, error) {
+	result, err := gql.XTeam_issues(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Team.Issues.Nodes,
+		result.Team.Issues.PageInfo.HasNextPage,
+		result.Team.Issues.PageInfo.EndCursor,
+		nil
+}
+
+func (query *teamScopedQuery) labels(pageSize int, after *string) ([]teamLabelsNode, bool, *string, error) {
+	result, err := gql.XTeam_labels(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Team.Labels.Nodes,
+		result.Team.Labels.PageInfo.HasNextPage,
+		result.Team.Labels.PageInfo.EndCursor,
+		nil
+}
+
+func (query *teamScopedQuery) memberships(
+	pageSize int,
+	after *string,
+) ([]teamMembershipsForTeamNode, bool, *string, error) {
+	result, err := gql.XTeam_memberships(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Team.Memberships.Nodes,
+		result.Team.Memberships.PageInfo.HasNextPage,
+		result.Team.Memberships.PageInfo.EndCursor,
+		nil
+}
+
+func (query *teamScopedQuery) projects(pageSize int, after *string) ([]teamProjectsNode, bool, *string, error) {
+	result, err := gql.XTeam_projects(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Team.Projects.Nodes,
+		result.Team.Projects.PageInfo.HasNextPage,
+		result.Team.Projects.PageInfo.EndCursor,
+		nil
+}
+
+func (query *teamScopedQuery) releasePipelines(
+	pageSize int,
+	after *string,
+) ([]teamReleasePipelinesNode, bool, *string, error) {
+	result, err := gql.XTeam_releasePipelines(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Team.ReleasePipelines.Nodes,
+		result.Team.ReleasePipelines.PageInfo.HasNextPage,
+		result.Team.ReleasePipelines.PageInfo.EndCursor,
+		nil
+}
+
+func (query *teamScopedQuery) states(pageSize int, after *string) ([]teamWorkflowStatesNode, bool, *string, error) {
+	result, err := gql.XTeam_states(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Team.States.Nodes,
+		result.Team.States.PageInfo.HasNextPage,
+		result.Team.States.PageInfo.EndCursor,
+		nil
+}
+
+func (query *teamScopedQuery) gitAutomationStates(
+	pageSize int,
+	after *string,
+) ([]teamGitAutomationStatesNode, bool, *string, error) {
+	result, err := gql.XTeam_gitAutomationStates(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	query.teamID = result.Team.Id
+	query.teamKey = result.Team.Key
+	query.teamName = result.Team.Name
+
+	return result.Team.GitAutomationStates.Nodes,
+		result.Team.GitAutomationStates.PageInfo.HasNextPage,
+		result.Team.GitAutomationStates.PageInfo.EndCursor,
+		nil
+}
+
+func (query *teamScopedQuery) templates(pageSize int, after *string) ([]teamTemplatesNode, bool, *string, error) {
+	result, err := gql.XTeam_templates(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Team.Templates.Nodes,
+		result.Team.Templates.PageInfo.HasNextPage,
+		result.Team.Templates.PageInfo.EndCursor,
+		nil
+}
+
+func teamMembersNodeSummary(member teamMembersNode) UserSummary {
+	return userSummary(member.UserSummaryFields)
+}
+
+func teamCyclesNodeSummary(cycle teamCyclesNode) CycleSummary {
+	return cycleSummary(cycle.CycleSummaryFields)
+}
+
+func teamIssuesNodeSummary(issue teamIssuesNode) IssueSummary {
+	return issueSummaryFromFields(issue.IssueSummaryFields)
+}
+
+func teamLabelsNodeSummary(label teamLabelsNode) LabelSummary {
+	return labelSummary(label.IssueLabelSummaryFields)
+}
+
+func teamMembershipsForTeamNodeSummary(membership teamMembershipsForTeamNode) TeamMembershipSummary {
+	return teamMembershipSummary(membership.TeamMembershipSummaryFields)
+}
+
+func teamProjectsNodeSummary(project teamProjectsNode) ProjectSummary {
+	return projectSummaryFromFields(project.ProjectSummaryFields)
+}
+
+func teamReleasePipelinesNodeSummary(pipeline teamReleasePipelinesNode) ReleasePipelineSummary {
+	return releasePipelineSummary(pipeline.ReleasePipelineSummaryFields)
+}
+
+func teamWorkflowStatesNodeSummary(state teamWorkflowStatesNode) WorkflowStateSummary {
+	return workflowStateSummary(state.WorkflowStateSummaryFields)
+}
+
+func teamGitAutomationStatesNodeSummary(state teamGitAutomationStatesNode) GitAutomationStateSummary {
+	return gitAutomationStateSummary(state.GitAutomationStateSummaryFields)
+}
+
+func teamTemplatesNodeSummary(template teamTemplatesNode) TemplateSummary {
+	return templateSummary(template.TemplateSummaryFields)
 }
 
 func teamSummary(team gql.TeamSummaryFields) TeamSummary {
