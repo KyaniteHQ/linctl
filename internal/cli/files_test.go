@@ -387,7 +387,7 @@ func Test_writeDownloadedFile_removes_temp_file_on_copy_error(t *testing.T) {
 	directory := t.TempDir()
 	output := filepath.Join(directory, "got.txt")
 
-	_, err := writeDownloadedFile(errorReader{}, output, downloadMaxSize{})
+	_, err := writeDownloadedFile(errorReader{}, output, nil)
 
 	require.Error(t, err)
 	entries, readErr := os.ReadDir(directory)
@@ -407,7 +407,7 @@ func Test_writeDownloadedFile_reports_close_error(t *testing.T) {
 	_, err := writeDownloadedFile(
 		strings.NewReader("data"),
 		filepath.Join(t.TempDir(), "got.txt"),
-		downloadMaxSize{},
+		nil,
 	)
 
 	require.ErrorContains(t, err, "close boom")
@@ -418,7 +418,7 @@ func Test_writeDownloadedFile_removes_temp_file_on_rename_error(t *testing.T) {
 	output := filepath.Join(directory, "existing-dir")
 	require.NoError(t, os.Mkdir(output, 0o700))
 
-	_, err := writeDownloadedFile(strings.NewReader("data"), output, downloadMaxSize{})
+	_, err := writeDownloadedFile(strings.NewReader("data"), output, nil)
 
 	require.Error(t, err)
 	entries, readErr := os.ReadDir(directory)
@@ -525,18 +525,11 @@ func Test_parseDownloadMaxSize_rejects_invalid_and_overflowing_values(t *testing
 	}
 }
 
-func Test_downloadMaxSizeFromFlag_absent_flag_is_unlimited(t *testing.T) {
-	limit, err := downloadMaxSizeFromFlag("1KB", false)
-	require.NoError(t, err)
-	require.False(t, limit.set)
-}
-
 func Test_writeDownloadedFile_treats_max_int64_limit_as_unbounded(t *testing.T) {
 	out := filepath.Join(t.TempDir(), "got.txt")
-	limit := downloadMaxSize{
+	limit := &downloadMaxSize{
 		bytes: math.MaxInt64,
 		flag:  strconv.FormatInt(math.MaxInt64, 10),
-		set:   true,
 	}
 
 	size, err := writeDownloadedFile(strings.NewReader("data"), out, limit)

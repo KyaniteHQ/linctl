@@ -30,9 +30,8 @@ type CustomerNeedSummary struct {
 
 // CustomerNeedList is a page of Linear customer needs.
 type CustomerNeedList struct {
-	Needs       []CustomerNeedSummary `json:"customer_needs"`
-	HasNextPage bool                  `json:"has_next_page"`
-	EndCursor   *string               `json:"end_cursor,omitempty"`
+	Needs []CustomerNeedSummary `json:"customer_needs"`
+	Page
 }
 
 // CustomerNeedProjectAttachment is the metadata-only ProjectAttachment linked to a customer need.
@@ -61,7 +60,7 @@ func ListCustomerNeeds(ctx context.Context, graphqlClient graphql.Client, limit 
 		return CustomerNeedList{}, err
 	}
 
-	return CustomerNeedList{Needs: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return CustomerNeedList{Needs: page.Items, Page: page.Page}, nil
 }
 
 // GetCustomerNeedByID returns one Linear customer need by id.

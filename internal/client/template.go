@@ -39,6 +39,13 @@ type TemplateList struct {
 	EndCursor   *string           `json:"end_cursor,omitempty"`
 }
 
+// HasMore reports whether more templates exist. TemplateList keeps its own
+// page fields instead of embedding Page because its has_next_page tag carries
+// omitempty, and embedding Page would start emitting the key when false.
+func (list TemplateList) HasMore() bool {
+	return list.HasNextPage
+}
+
 //nolint:lll
 type organizationTemplatesNode = gql.XOrganization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate
 

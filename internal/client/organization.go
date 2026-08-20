@@ -37,7 +37,7 @@ func ListOrganizationLabels(ctx context.Context, graphqlClient graphql.Client, l
 		return LabelList{}, err
 	}
 
-	return LabelList{Labels: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return LabelList{Labels: page.Items, Page: page.Page}, nil
 }
 
 // ListOrganizationProjectLabels returns organization-wide project labels.
@@ -58,8 +58,7 @@ func ListOrganizationProjectLabels(
 
 	return ProjectLabelList{
 		ProjectLabels: page.Items,
-		HasNextPage:   page.HasNextPage,
-		EndCursor:     page.EndCursor,
+		Page:          page.Page,
 	}, nil
 }
 
@@ -75,7 +74,7 @@ func ListOrganizationTeams(ctx context.Context, graphqlClient graphql.Client, li
 		return TeamList{}, err
 	}
 
-	return TeamList{Teams: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return TeamList{Teams: page.Items, Page: page.Page}, nil
 }
 
 // ListOrganizationUsers returns active users visible to the authenticated user.
@@ -90,7 +89,7 @@ func ListOrganizationUsers(ctx context.Context, graphqlClient graphql.Client, li
 		return UserList{}, err
 	}
 
-	return UserList{Users: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return UserList{Users: page.Items, Page: page.Page}, nil
 }
 
 func (query organizationQuery) labels(

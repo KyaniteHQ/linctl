@@ -30,8 +30,7 @@ type InitiativeLabelSummary struct {
 // InitiativeLabelList is a page of Linear initiative labels.
 type InitiativeLabelList struct {
 	InitiativeLabels []InitiativeLabelSummary `json:"initiative_labels"`
-	HasNextPage      bool                     `json:"has_next_page"`
-	EndCursor        *string                  `json:"end_cursor,omitempty"`
+	Page
 }
 
 //nolint:lll
@@ -60,8 +59,7 @@ func ListInitiativeLabels(ctx context.Context, graphqlClient graphql.Client, lim
 
 	return InitiativeLabelList{
 		InitiativeLabels: page.Items,
-		HasNextPage:      page.HasNextPage,
-		EndCursor:        page.EndCursor,
+		Page:             page.Page,
 	}, nil
 }
 

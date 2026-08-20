@@ -19,9 +19,8 @@ type FavoriteSummary struct {
 
 // FavoriteList is a page of favorites.
 type FavoriteList struct {
-	Favorites   []FavoriteSummary `json:"favorites"`
-	HasNextPage bool              `json:"has_next_page"`
-	EndCursor   *string           `json:"end_cursor,omitempty"`
+	Favorites []FavoriteSummary `json:"favorites"`
+	Page
 }
 
 //nolint:lll
@@ -53,7 +52,7 @@ func ListFavorites(ctx context.Context, graphqlClient graphql.Client, limit int)
 		return FavoriteList{}, err
 	}
 
-	return FavoriteList{Favorites: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return FavoriteList{Favorites: page.Items, Page: page.Page}, nil
 }
 
 // ListFavoriteChildren returns child favorites under a folder favorite.
@@ -73,7 +72,7 @@ func ListFavoriteChildren(
 		return FavoriteList{}, err
 	}
 
-	return FavoriteList{Favorites: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return FavoriteList{Favorites: page.Items, Page: page.Page}, nil
 }
 
 // GetFavoriteByID returns one favorite by Linear id.

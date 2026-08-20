@@ -28,8 +28,7 @@ type InitiativeToProjectSummary struct {
 // InitiativeToProjectList is a page of Initiative-to-Project associations.
 type InitiativeToProjectList struct {
 	Associations []InitiativeToProjectSummary `json:"associations"`
-	HasNextPage  bool                         `json:"has_next_page"`
-	EndCursor    *string                      `json:"end_cursor,omitempty"`
+	Page
 }
 
 //nolint:lll
@@ -62,8 +61,7 @@ func ListInitiativeToProjects(
 
 	return InitiativeToProjectList{
 		Associations: page.Items,
-		HasNextPage:  page.HasNextPage,
-		EndCursor:    page.EndCursor,
+		Page:         page.Page,
 	}, nil
 }
 

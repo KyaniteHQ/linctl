@@ -31,8 +31,7 @@ type ReleasePipelineSummary struct {
 // ReleasePipelineList is a page of Linear release pipelines.
 type ReleasePipelineList struct {
 	ReleasePipelines []ReleasePipelineSummary `json:"release_pipelines"`
-	HasNextPage      bool                     `json:"has_next_page"`
-	EndCursor        *string                  `json:"end_cursor,omitempty"`
+	Page
 }
 
 // ReleaseStageSummary is the compact release stage model used by read-only commands.
@@ -54,8 +53,7 @@ type ReleaseStageSummary struct {
 // ReleaseStageList is a page of Linear release stages.
 type ReleaseStageList struct {
 	ReleaseStages []ReleaseStageSummary `json:"release_stages"`
-	HasNextPage   bool                  `json:"has_next_page"`
-	EndCursor     *string               `json:"end_cursor,omitempty"`
+	Page
 }
 
 //nolint:lll
@@ -112,8 +110,7 @@ func ListReleasePipelines(ctx context.Context, graphqlClient graphql.Client, lim
 
 	return ReleasePipelineList{
 		ReleasePipelines: page.Items,
-		HasNextPage:      page.HasNextPage,
-		EndCursor:        page.EndCursor,
+		Page:             page.Page,
 	}, nil
 }
 
@@ -148,7 +145,7 @@ func ListReleasePipelineReleases(
 		return ReleaseList{}, err
 	}
 
-	return ReleaseList{Releases: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return ReleaseList{Releases: page.Items, Page: page.Page}, nil
 }
 
 // ListReleasePipelineStages returns stages associated with one Linear release pipeline.
@@ -168,7 +165,7 @@ func ListReleasePipelineStages(
 		return ReleaseStageList{}, err
 	}
 
-	return ReleaseStageList{ReleaseStages: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return ReleaseStageList{ReleaseStages: page.Items, Page: page.Page}, nil
 }
 
 // ListReleasePipelineTeams returns teams associated with one Linear release pipeline.
@@ -188,7 +185,7 @@ func ListReleasePipelineTeams(
 		return TeamList{}, err
 	}
 
-	return TeamList{Teams: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return TeamList{Teams: page.Items, Page: page.Page}, nil
 }
 
 // ListReleaseStages returns visible Linear release stages.
@@ -203,7 +200,7 @@ func ListReleaseStages(ctx context.Context, graphqlClient graphql.Client, limit 
 		return ReleaseStageList{}, err
 	}
 
-	return ReleaseStageList{ReleaseStages: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return ReleaseStageList{ReleaseStages: page.Items, Page: page.Page}, nil
 }
 
 // GetReleaseStageByID returns one Linear release stage by id.
@@ -233,7 +230,7 @@ func ListReleaseStageReleases(
 		return ReleaseList{}, err
 	}
 
-	return ReleaseList{Releases: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return ReleaseList{Releases: page.Items, Page: page.Page}, nil
 }
 
 func (query releasePipelinesQuery) page(

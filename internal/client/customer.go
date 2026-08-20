@@ -31,9 +31,8 @@ type CustomerSummary struct {
 
 // CustomerList is a page of Linear customers.
 type CustomerList struct {
-	Customers   []CustomerSummary `json:"customers"`
-	HasNextPage bool              `json:"has_next_page"`
-	EndCursor   *string           `json:"end_cursor,omitempty"`
+	Customers []CustomerSummary `json:"customers"`
+	Page
 }
 
 //nolint:lll
@@ -56,7 +55,7 @@ func ListCustomers(ctx context.Context, graphqlClient graphql.Client, limit int)
 		return CustomerList{}, err
 	}
 
-	return CustomerList{Customers: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return CustomerList{Customers: page.Items, Page: page.Page}, nil
 }
 
 // GetCustomerByID returns one Linear customer by id or slug.

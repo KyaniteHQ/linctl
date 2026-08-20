@@ -22,17 +22,15 @@ type DocumentSummary struct {
 
 // DocumentList is a page of Documents.
 type DocumentList struct {
-	Documents   []DocumentSummary `json:"documents"`
-	HasNextPage bool              `json:"has_next_page"`
-	EndCursor   *string           `json:"end_cursor,omitempty"`
+	Documents []DocumentSummary `json:"documents"`
+	Page
 }
 
 // DocumentCommentList is a page of body-free Comments associated with one Document.
 type DocumentCommentList struct {
-	DocumentID  string                   `json:"document_id"`
-	Comments    []CommentMetadataSummary `json:"comments"`
-	HasNextPage bool                     `json:"has_next_page"`
-	EndCursor   *string                  `json:"end_cursor,omitempty"`
+	DocumentID string                   `json:"document_id"`
+	Comments   []CommentMetadataSummary `json:"comments"`
+	Page
 }
 
 //nolint:lll
@@ -50,7 +48,12 @@ type documentCommentsQuery struct {
 	ctx           context.Context
 	graphqlClient graphql.Client
 	id            string
-	documentID    string
+}
+
+// documentCommentsParent is the connection parent metadata documentCommentsQuery reads out of
+// every page. Linear repeats it per page, so the last page wins.
+type documentCommentsParent struct {
+	documentID string
 }
 
 // ListDocuments returns visible Documents.
@@ -65,7 +68,7 @@ func ListDocuments(ctx context.Context, graphqlClient graphql.Client, limit int)
 		return DocumentList{}, err
 	}
 
-	return DocumentList{Documents: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return DocumentList{Documents: page.Items, Page: page.Page}, nil
 }
 
 // GetDocumentByID returns one Document by id or slug.
@@ -86,7 +89,7 @@ func ListDocumentComments(
 	limit int,
 ) (DocumentCommentList, error) {
 	query := &documentCommentsQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
-	page, err := listConnection(
+	page, parent, err := listConnectionWithParent(
 		"list document comments "+id, limit, defaultListPageSize,
 		query.comments,
 		documentCommentsNodeSummary,
@@ -96,10 +99,9 @@ func ListDocumentComments(
 	}
 
 	return DocumentCommentList{
-		DocumentID:  query.documentID,
-		Comments:    page.Items,
-		HasNextPage: page.HasNextPage,
-		EndCursor:   page.EndCursor,
+		DocumentID: parent.documentID,
+		Comments:   page.Items,
+		Page:       page.Page,
 	}, nil
 }
 
@@ -118,17 +120,16 @@ func (query documentsQuery) page(pageSize int, after *string) ([]documentsNode, 
 func (query *documentCommentsQuery) comments(
 	pageSize int,
 	after *string,
-) ([]documentCommentsNode, bool, *string, error) {
+) ([]documentCommentsNode, documentCommentsParent, bool, *string, error) {
 	result, err := gql.XDocument_comments(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, false, nil, err
+		return nil, documentCommentsParent{}, false, nil, err
 	}
 
-	query.documentID = result.Document.Id
-
 	return result.Document.Comments.Nodes,
+		documentCommentsParent{documentID: result.Document.Id},
 		result.Document.Comments.PageInfo.HasNextPage,
 		result.Document.Comments.PageInfo.EndCursor,
 		nil

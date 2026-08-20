@@ -51,9 +51,8 @@ type ProjectTeam struct {
 
 // ProjectList is a page of projects scoped to a team.
 type ProjectList struct {
-	Projects    []ProjectSummary `json:"projects"`
-	HasNextPage bool             `json:"has_next_page"`
-	EndCursor   *string          `json:"end_cursor,omitempty"`
+	Projects []ProjectSummary `json:"projects"`
+	Page
 }
 
 // ProjectMember is a project member.
@@ -69,8 +68,7 @@ type ProjectMemberList struct {
 	ProjectID   string          `json:"project_id"`
 	ProjectName string          `json:"project_name"`
 	Members     []ProjectMember `json:"members"`
-	HasNextPage bool            `json:"has_next_page"`
-	EndCursor   *string         `json:"end_cursor,omitempty"`
+	Page
 }
 
 // ProjectUpdateSummary is one project status update.
@@ -93,8 +91,7 @@ type ProjectUpdateList struct {
 	ProjectID   string                 `json:"project_id"`
 	ProjectName string                 `json:"project_name"`
 	Updates     []ProjectUpdateSummary `json:"updates"`
-	HasNextPage bool                   `json:"has_next_page"`
-	EndCursor   *string                `json:"end_cursor,omitempty"`
+	Page
 }
 
 // ProjectFilterSuggestion is an AI-generated project filter suggestion.
@@ -107,8 +104,7 @@ type ProjectFilterSuggestion struct {
 type ProjectUpdateCommentList struct {
 	ProjectUpdateID string                   `json:"project_update_id"`
 	Comments        []CommentMetadataSummary `json:"comments"`
-	HasNextPage     bool                     `json:"has_next_page"`
-	EndCursor       *string                  `json:"end_cursor,omitempty"`
+	Page
 }
 
 // ProjectAttachmentList is a page of Attachments associated with one Project.
@@ -116,8 +112,7 @@ type ProjectAttachmentList struct {
 	ProjectID   string              `json:"project_id"`
 	ProjectName string              `json:"project_name"`
 	Attachments []AttachmentSummary `json:"attachments"`
-	HasNextPage bool                `json:"has_next_page"`
-	EndCursor   *string             `json:"end_cursor,omitempty"`
+	Page
 }
 
 // ProjectDocumentList is a page of Documents associated with one Project.
@@ -125,8 +120,7 @@ type ProjectDocumentList struct {
 	ProjectID   string            `json:"project_id"`
 	ProjectName string            `json:"project_name"`
 	Documents   []DocumentSummary `json:"documents"`
-	HasNextPage bool              `json:"has_next_page"`
-	EndCursor   *string           `json:"end_cursor,omitempty"`
+	Page
 }
 
 // ProjectExternalLinkList is a page of external links associated with one Project.
@@ -134,8 +128,7 @@ type ProjectExternalLinkList struct {
 	ProjectID   string                      `json:"project_id"`
 	ProjectName string                      `json:"project_name"`
 	Links       []EntityExternalLinkSummary `json:"links"`
-	HasNextPage bool                        `json:"has_next_page"`
-	EndCursor   *string                     `json:"end_cursor,omitempty"`
+	Page
 }
 
 // ProjectHistorySummary is the compact project history model used by read-only commands.
@@ -154,8 +147,7 @@ type ProjectHistoryList struct {
 	ProjectID   string                  `json:"project_id"`
 	ProjectName string                  `json:"project_name"`
 	History     []ProjectHistorySummary `json:"history"`
-	HasNextPage bool                    `json:"has_next_page"`
-	EndCursor   *string                 `json:"end_cursor,omitempty"`
+	Page
 }
 
 // ProjectInitiativeToProjectList is a page of initiative associations for one Project.
@@ -163,8 +155,7 @@ type ProjectInitiativeToProjectList struct {
 	ProjectID    string                       `json:"project_id"`
 	ProjectName  string                       `json:"project_name"`
 	Associations []InitiativeToProjectSummary `json:"associations"`
-	HasNextPage  bool                         `json:"has_next_page"`
-	EndCursor    *string                      `json:"end_cursor,omitempty"`
+	Page
 }
 
 // ProjectInitiativeList is a page of Initiatives associated with one Project.
@@ -172,8 +163,7 @@ type ProjectInitiativeList struct {
 	ProjectID   string              `json:"project_id"`
 	ProjectName string              `json:"project_name"`
 	Initiatives []InitiativeSummary `json:"initiatives"`
-	HasNextPage bool                `json:"has_next_page"`
-	EndCursor   *string             `json:"end_cursor,omitempty"`
+	Page
 }
 
 // ProjectIssueList is a page of Issues associated with one Project.
@@ -181,8 +171,7 @@ type ProjectIssueList struct {
 	ProjectID   string         `json:"project_id"`
 	ProjectName string         `json:"project_name"`
 	Issues      []IssueSummary `json:"issues"`
-	HasNextPage bool           `json:"has_next_page"`
-	EndCursor   *string        `json:"end_cursor,omitempty"`
+	Page
 }
 
 // ProjectCommentList is a page of body-free Comments associated with one Project.
@@ -190,8 +179,7 @@ type ProjectCommentList struct {
 	ProjectID   string                   `json:"project_id"`
 	ProjectName string                   `json:"project_name"`
 	Comments    []CommentMetadataSummary `json:"comments"`
-	HasNextPage bool                     `json:"has_next_page"`
-	EndCursor   *string                  `json:"end_cursor,omitempty"`
+	Page
 }
 
 // ProjectProjectLabelList is a page of ProjectLabels associated with one Project.
@@ -199,8 +187,7 @@ type ProjectProjectLabelList struct {
 	ProjectID     string                `json:"project_id"`
 	ProjectName   string                `json:"project_name"`
 	ProjectLabels []ProjectLabelSummary `json:"project_labels"`
-	HasNextPage   bool                  `json:"has_next_page"`
-	EndCursor     *string               `json:"end_cursor,omitempty"`
+	Page
 }
 
 // ProjectCustomerNeedList is a page of customer needs associated with one Project.
@@ -208,8 +195,7 @@ type ProjectCustomerNeedList struct {
 	ProjectID   string                `json:"project_id"`
 	ProjectName string                `json:"project_name"`
 	Needs       []CustomerNeedSummary `json:"customer_needs"`
-	HasNextPage bool                  `json:"has_next_page"`
-	EndCursor   *string               `json:"end_cursor,omitempty"`
+	Page
 }
 
 // ProjectProjectRelationList is a page of project relations associated with one Project.
@@ -217,8 +203,7 @@ type ProjectProjectRelationList struct {
 	ProjectID   string                   `json:"project_id"`
 	ProjectName string                   `json:"project_name"`
 	Relations   []ProjectRelationSummary `json:"relations"`
-	HasNextPage bool                     `json:"has_next_page"`
-	EndCursor   *string                  `json:"end_cursor,omitempty"`
+	Page
 }
 
 // ProjectTeamList is a page of Teams associated with one Project.
@@ -226,8 +211,7 @@ type ProjectTeamList struct {
 	ProjectID   string        `json:"project_id"`
 	ProjectName string        `json:"project_name"`
 	Teams       []TeamSummary `json:"teams"`
-	HasNextPage bool          `json:"has_next_page"`
-	EndCursor   *string       `json:"end_cursor,omitempty"`
+	Page
 }
 
 // ListProjectsByTeam returns projects scoped to a resolved team.
@@ -252,8 +236,7 @@ func ListProjectsByTeam(
 				) ProjectSummary {
 					return projectSummaryFromFields(project.ProjectSummaryFields)
 				}),
-				HasNextPage: result.PageInfo.HasNextPage,
-				EndCursor:   result.PageInfo.EndCursor,
+				Page: Page{HasNextPage: result.PageInfo.HasNextPage, EndCursor: result.PageInfo.EndCursor},
 			}, nil
 		},
 	)
@@ -261,7 +244,7 @@ func ListProjectsByTeam(
 		return ProjectList{}, err
 	}
 
-	return ProjectList{Projects: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return ProjectList{Projects: page.Items, Page: page.Page}, nil
 }
 
 // ListProjects returns Linear projects visible to the authenticated user.
@@ -281,8 +264,7 @@ func ListProjects(ctx context.Context, graphqlClient graphql.Client, limit int) 
 				) ProjectSummary {
 					return projectSummaryFromFields(project.ProjectSummaryFields)
 				}),
-				HasNextPage: projects.PageInfo.HasNextPage,
-				EndCursor:   projects.PageInfo.EndCursor,
+				Page: Page{HasNextPage: projects.PageInfo.HasNextPage, EndCursor: projects.PageInfo.EndCursor},
 			}, nil
 		},
 	)
@@ -290,7 +272,7 @@ func ListProjects(ctx context.Context, graphqlClient graphql.Client, limit int) 
 		return ProjectList{}, err
 	}
 
-	return ProjectList{Projects: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return ProjectList{Projects: page.Items, Page: page.Page}, nil
 }
 
 // GetProjectByID returns a project by Linear id or slug.

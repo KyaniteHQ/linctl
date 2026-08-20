@@ -46,8 +46,13 @@ type issueChildQuery struct {
 	ctx           context.Context
 	graphqlClient graphql.Client
 	id            string
-	issueID       string
-	identifier    string
+}
+
+// issueChildParent is the connection parent metadata issueChildQuery reads out of
+// every page. Linear repeats it per page, so the last page wins.
+type issueChildParent struct {
+	issueID    string
+	identifier string
 }
 
 // ListIssueAttachments returns attachments associated with one issue.
@@ -67,7 +72,7 @@ func ListIssueAttachments(
 		return AttachmentList{}, err
 	}
 
-	return AttachmentList{Attachments: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return AttachmentList{Attachments: page.Items, Page: page.Page}, nil
 }
 
 // GetIssueBotActor returns the bot actor that created an issue, when present.
@@ -100,7 +105,7 @@ func ListIssueChildren(
 		return IssueList{}, err
 	}
 
-	return IssueList{Issues: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return IssueList{Issues: page.Items, Page: page.Page}, nil
 }
 
 // ListIssueDocuments returns documents associated with one issue.
@@ -120,7 +125,7 @@ func ListIssueDocuments(
 		return DocumentList{}, err
 	}
 
-	return DocumentList{Documents: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return DocumentList{Documents: page.Items, Page: page.Page}, nil
 }
 
 // ListIssueFormerAttachments returns attachments formerly associated with one issue.
@@ -140,7 +145,7 @@ func ListIssueFormerAttachments(
 		return AttachmentList{}, err
 	}
 
-	return AttachmentList{Attachments: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return AttachmentList{Attachments: page.Items, Page: page.Page}, nil
 }
 
 // ListIssueHistory returns compact history metadata for one issue.
@@ -160,7 +165,7 @@ func ListIssueHistory(
 		return IssueHistoryList{}, err
 	}
 
-	return IssueHistoryList{History: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return IssueHistoryList{History: page.Items, Page: page.Page}, nil
 }
 
 // ListIssueInverseRelations returns inverse relations associated with one issue.
@@ -180,7 +185,7 @@ func ListIssueInverseRelations(
 		return IssueRelationList{}, err
 	}
 
-	return IssueRelationList{Relations: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return IssueRelationList{Relations: page.Items, Page: page.Page}, nil
 }
 
 // ListIssueLabels returns labels associated with one issue.
@@ -200,7 +205,7 @@ func ListIssueLabels(
 		return LabelList{}, err
 	}
 
-	return LabelList{Labels: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return LabelList{Labels: page.Items, Page: page.Page}, nil
 }
 
 // ListIssueRelationsForIssue returns relations associated with one issue.
@@ -220,7 +225,7 @@ func ListIssueRelationsForIssue(
 		return IssueRelationList{}, err
 	}
 
-	return IssueRelationList{Relations: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return IssueRelationList{Relations: page.Items, Page: page.Page}, nil
 }
 
 // ListIssueReleases returns releases associated with one issue.
@@ -240,7 +245,7 @@ func ListIssueReleases(
 		return ReleaseList{}, err
 	}
 
-	return ReleaseList{Releases: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return ReleaseList{Releases: page.Items, Page: page.Page}, nil
 }
 
 // ListIssueStateHistory returns workflow-state spans for one issue.
@@ -251,7 +256,7 @@ func ListIssueStateHistory(
 	limit int,
 ) (IssueStateHistoryList, error) {
 	query := &issueChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
-	page, err := listConnection(
+	page, parent, err := listConnectionWithParent(
 		"list issue state history "+id, limit, defaultListPageSize,
 		query.stateHistory,
 		issueStateSpanSummary,
@@ -261,10 +266,9 @@ func ListIssueStateHistory(
 	}
 
 	return IssueStateHistoryList{
-		IssueID:     query.issueID,
-		Spans:       page.Items,
-		HasNextPage: page.HasNextPage,
-		EndCursor:   page.EndCursor,
+		IssueID: parent.issueID,
+		Spans:   page.Items,
+		Page:    page.Page,
 	}, nil
 }
 
@@ -285,7 +289,7 @@ func ListIssueSubscribers(
 		return UserList{}, err
 	}
 
-	return UserList{Users: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return UserList{Users: page.Items, Page: page.Page}, nil
 }
 
 func (query *issueChildQuery) attachments(
@@ -429,15 +433,14 @@ func (query *issueChildQuery) releases(pageSize int, after *string) ([]issueRele
 func (query *issueChildQuery) stateHistory(
 	pageSize int,
 	after *string,
-) ([]issueStateHistoryNode, bool, *string, error) {
+) ([]issueStateHistoryNode, issueChildParent, bool, *string, error) {
 	result, err := gql.XIssue_stateHistory(query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after)
 	if err != nil {
-		return nil, false, nil, err
+		return nil, issueChildParent{}, false, nil, err
 	}
 
-	query.issueID = result.Issue.Id
-
 	return result.Issue.StateHistory.Nodes,
+		issueChildParent{issueID: result.Issue.Id},
 		result.Issue.StateHistory.PageInfo.HasNextPage,
 		result.Issue.StateHistory.PageInfo.EndCursor,
 		nil

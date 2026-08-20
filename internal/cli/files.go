@@ -170,15 +170,16 @@ func addFilesDownloadCommand(ctx context.Context, root *cobra.Command, options *
 		Short: "Download a file asset to a local path",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
-			return runFileDownload(
-				ctx,
-				command,
-				options,
-				args[0],
-				output,
-				maxSize,
-				command.Flags().Changed("max-size"),
-			)
+			var limit *downloadMaxSize
+			if command.Flags().Changed("max-size") {
+				bytes, err := parseDownloadMaxSize(maxSize)
+				if err != nil {
+					return err
+				}
+				limit = &downloadMaxSize{bytes: bytes, flag: maxSize}
+			}
+
+			return runFileDownload(ctx, command, options, args[0], output, limit)
 		},
 	}
 	command.Flags().StringVar(&output, "output", "", "local path to write the downloaded file")
@@ -195,15 +196,10 @@ func runFileDownload(
 	options *rootOptions,
 	url string,
 	output string,
-	maxSize string,
-	maxSizeSet bool,
+	limit *downloadMaxSize,
 ) error {
 	if output == "" {
 		return errors.New("--output is required")
-	}
-	limit, err := downloadMaxSizeFromFlag(maxSize, maxSizeSet)
-	if err != nil {
-		return err
 	}
 	//nolint:gosec // G107: the download command's purpose is to fetch the user-provided URL.
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
@@ -234,24 +230,12 @@ func (runtime commandRuntime) fileHTTPClient() httpDoer {
 	return http.DefaultClient
 }
 
-// downloadMaxSize is an opt-in byte cap for files download. set is false when
-// the --max-size flag is absent, so the copy stays unbounded.
+// downloadMaxSize is the opt-in byte cap for files download. A nil
+// *downloadMaxSize means --max-size was absent and the copy stays unbounded,
+// so the absent case needs no separate flag alongside the value.
 type downloadMaxSize struct {
 	bytes int64
 	flag  string
-	set   bool
-}
-
-func downloadMaxSizeFromFlag(value string, set bool) (downloadMaxSize, error) {
-	if !set {
-		return downloadMaxSize{}, nil
-	}
-	bytes, err := parseDownloadMaxSize(value)
-	if err != nil {
-		return downloadMaxSize{}, err
-	}
-
-	return downloadMaxSize{bytes: bytes, flag: value, set: true}, nil
 }
 
 func parseDownloadMaxSize(value string) (int64, error) {
@@ -295,7 +279,7 @@ func invalidDownloadMaxSize(value string) error {
 	)
 }
 
-func writeDownloadedFile(body io.Reader, output string, limit downloadMaxSize) (int64, error) {
+func writeDownloadedFile(body io.Reader, output string, limit *downloadMaxSize) (int64, error) {
 	var size int64
 	err := writeFileAtomically(output, func(writer io.Writer) error {
 		var copyErr error
@@ -316,16 +300,16 @@ func writeDownloadedFile(body io.Reader, output string, limit downloadMaxSize) (
 	return size, nil
 }
 
-func limitedDownloadBody(body io.Reader, limit downloadMaxSize) io.Reader {
-	if !limit.set || limit.bytes == math.MaxInt64 {
+func limitedDownloadBody(body io.Reader, limit *downloadMaxSize) io.Reader {
+	if limit == nil || limit.bytes == math.MaxInt64 {
 		return body
 	}
 
 	return io.LimitReader(body, limit.bytes+1)
 }
 
-func downloadExceedsMaxSize(size int64, limit downloadMaxSize) bool {
-	return limit.set && size > limit.bytes
+func downloadExceedsMaxSize(size int64, limit *downloadMaxSize) bool {
+	return limit != nil && size > limit.bytes
 }
 
 func writeFileAtomically(path string, write func(io.Writer) error) error {

@@ -14,9 +14,8 @@ func mapNodes[Node any, Summary any](nodes []Node, mapOne func(Node) Summary) []
 
 // nodePage is one accumulated connection page: its items plus cursor state.
 type nodePage[Item any] struct {
-	Items       []Item
-	HasNextPage bool
-	EndCursor   *string
+	Items []Item
+	Page
 }
 
 // collectNodePages accumulates connection items until limit items are
@@ -69,8 +68,46 @@ func listConnection[Node, Summary any](
 			return nodePage[Summary]{}, err
 		}
 
-		return nodePage[Summary]{Items: mapNodes(nodes, mapOne), HasNextPage: hasNextPage, EndCursor: endCursor}, nil
+		return nodePage[Summary]{
+			Items: mapNodes(nodes, mapOne),
+			Page:  Page{HasNextPage: hasNextPage, EndCursor: endCursor},
+		}, nil
 	})
+}
+
+// listConnectionWithParent is listConnection for connections whose parent
+// entity is denormalized into the read: a project id, an issue identifier, a
+// team key. The fetch returns that parent alongside its page instead of
+// writing it into a captured struct field, so the data flow stays visible in
+// the signature. Linear repeats the parent on every page, so the last page's
+// value is the one returned; a zero Parent comes back with any error.
+func listConnectionWithParent[Node, Summary, Parent any](
+	operation string,
+	limit int,
+	pageSize int,
+	fetch func(pageSize int, after *string) ([]Node, Parent, bool, *string, error),
+	mapOne func(Node) Summary,
+) (nodePage[Summary], Parent, error) {
+	var parent Parent
+	collect := func(pageSize int, after *string) (nodePage[Summary], error) {
+		nodes, pageParent, hasNextPage, endCursor, err := fetch(pageSize, after)
+		if err != nil {
+			return nodePage[Summary]{}, err
+		}
+		parent = pageParent
+
+		return nodePage[Summary]{
+			Items: mapNodes(nodes, mapOne),
+			Page:  Page{HasNextPage: hasNextPage, EndCursor: endCursor},
+		}, nil
+	}
+	page, err := collectNodePages(operation, limit, pageSize, collect)
+	if err != nil {
+		var zero Parent
+		return nodePage[Summary]{}, zero, err
+	}
+
+	return page, parent, nil
 }
 
 // defaultListPageSize matches Linear's per-request cap, the same authority

@@ -24,8 +24,7 @@ type WorkflowStateSummary struct {
 // WorkflowStateList is a page of workflow states.
 type WorkflowStateList struct {
 	WorkflowStates []WorkflowStateSummary `json:"workflow_states"`
-	HasNextPage    bool                   `json:"has_next_page"`
-	EndCursor      *string                `json:"end_cursor,omitempty"`
+	Page
 }
 
 // WorkflowStateIssueList is a page of Issues currently associated with one WorkflowState.
@@ -33,8 +32,7 @@ type WorkflowStateIssueList struct {
 	WorkflowStateID   string         `json:"workflow_state_id"`
 	WorkflowStateName string         `json:"workflow_state_name"`
 	Issues            []IssueSummary `json:"issues"`
-	HasNextPage       bool           `json:"has_next_page"`
-	EndCursor         *string        `json:"end_cursor,omitempty"`
+	Page
 }
 
 //nolint:lll
@@ -49,9 +47,14 @@ type workflowStatesQuery struct {
 }
 
 type workflowStateIssuesQuery struct {
-	ctx               context.Context
-	graphqlClient     graphql.Client
-	id                string
+	ctx           context.Context
+	graphqlClient graphql.Client
+	id            string
+}
+
+// workflowStateIssuesParent is the connection parent metadata workflowStateIssuesQuery reads out of
+// every page. Linear repeats it per page, so the last page wins.
+type workflowStateIssuesParent struct {
 	workflowStateID   string
 	workflowStateName string
 }
@@ -70,8 +73,7 @@ func ListWorkflowStates(ctx context.Context, graphqlClient graphql.Client, limit
 
 	return WorkflowStateList{
 		WorkflowStates: page.Items,
-		HasNextPage:    page.HasNextPage,
-		EndCursor:      page.EndCursor,
+		Page:           page.Page,
 	}, nil
 }
 
@@ -97,7 +99,7 @@ func ListWorkflowStateIssues(
 	limit int,
 ) (WorkflowStateIssueList, error) {
 	query := &workflowStateIssuesQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
-	page, err := listConnection(
+	page, parent, err := listConnectionWithParent(
 		"list workflow state issues "+id, limit, defaultListPageSize,
 		query.issues,
 		workflowStateIssuesNodeSummary,
@@ -107,11 +109,10 @@ func ListWorkflowStateIssues(
 	}
 
 	return WorkflowStateIssueList{
-		WorkflowStateID:   query.workflowStateID,
-		WorkflowStateName: query.workflowStateName,
+		WorkflowStateID:   parent.workflowStateID,
+		WorkflowStateName: parent.workflowStateName,
 		Issues:            page.Items,
-		HasNextPage:       page.HasNextPage,
-		EndCursor:         page.EndCursor,
+		Page:              page.Page,
 	}, nil
 }
 
@@ -130,18 +131,19 @@ func (query workflowStatesQuery) page(pageSize int, after *string) ([]workflowSt
 func (query *workflowStateIssuesQuery) issues(
 	pageSize int,
 	after *string,
-) ([]workflowStateIssuesNode, bool, *string, error) {
+) ([]workflowStateIssuesNode, workflowStateIssuesParent, bool, *string, error) {
 	result, err := gql.XWorkflowState_issues(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, false, nil, err
+		return nil, workflowStateIssuesParent{}, false, nil, err
 	}
 
-	query.workflowStateID = result.WorkflowState.Id
-	query.workflowStateName = result.WorkflowState.Name
-
 	return result.WorkflowState.Issues.Nodes,
+		workflowStateIssuesParent{
+			workflowStateID:   result.WorkflowState.Id,
+			workflowStateName: result.WorkflowState.Name,
+		},
 		result.WorkflowState.Issues.PageInfo.HasNextPage,
 		result.WorkflowState.Issues.PageInfo.EndCursor,
 		nil

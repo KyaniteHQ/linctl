@@ -23,8 +23,7 @@ type CustomViewSummary struct {
 // CustomViewList is a page of custom views.
 type CustomViewList struct {
 	CustomViews []CustomViewSummary `json:"custom_views"`
-	HasNextPage bool                `json:"has_next_page"`
-	EndCursor   *string             `json:"end_cursor,omitempty"`
+	Page
 }
 
 // CustomViewSubscriberStatus reports whether a custom view has active subscribers.
@@ -107,7 +106,7 @@ func ListCustomViews(ctx context.Context, graphqlClient graphql.Client, limit in
 		return CustomViewList{}, err
 	}
 
-	return CustomViewList{CustomViews: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return CustomViewList{CustomViews: page.Items, Page: page.Page}, nil
 }
 
 // GetCustomViewByID returns one custom view by Linear id or slug.
@@ -158,7 +157,7 @@ func ListCustomViewInitiatives(
 		return InitiativeList{}, err
 	}
 
-	return InitiativeList{Initiatives: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return InitiativeList{Initiatives: page.Items, Page: page.Page}, nil
 }
 
 // ListCustomViewIssues returns issues matching one custom view's issue filter.
@@ -178,7 +177,7 @@ func ListCustomViewIssues(
 		return IssueList{}, err
 	}
 
-	return IssueList{Issues: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return IssueList{Issues: page.Items, Page: page.Page}, nil
 }
 
 // GetCustomViewOrganizationPreferences returns organization defaults for one custom view.
@@ -255,7 +254,7 @@ func ListCustomViewProjects(
 		return ProjectList{}, err
 	}
 
-	return ProjectList{Projects: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return ProjectList{Projects: page.Items, Page: page.Page}, nil
 }
 
 // GetCustomViewUserPreferences returns current-user preferences for one custom view.

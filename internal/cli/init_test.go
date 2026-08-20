@@ -189,8 +189,8 @@ func Test_selectInitTeam_table(t *testing.T) {
 	require.Equal(t, "OPS", selected.Key)
 
 	_, err = selectInitTeam(client.TeamList{
-		Teams:       []client.TeamSummary{{ID: "team-id", Key: "LIT", OrgID: "org-id"}},
-		HasNextPage: true,
+		Teams: []client.TeamSummary{{ID: "team-id", Key: "LIT", OrgID: "org-id"}},
+		Page:  client.Page{HasNextPage: true},
 	}, "", "")
 	require.ErrorIs(t, err, client.ErrWriteInvalid)
 	require.ErrorContains(t, err, "multiple teams")

@@ -28,17 +28,15 @@ type InitiativeUpdateSummary struct {
 
 // InitiativeUpdateList is a page of initiative status updates.
 type InitiativeUpdateList struct {
-	Updates     []InitiativeUpdateSummary `json:"updates"`
-	HasNextPage bool                      `json:"has_next_page"`
-	EndCursor   *string                   `json:"end_cursor,omitempty"`
+	Updates []InitiativeUpdateSummary `json:"updates"`
+	Page
 }
 
 // InitiativeUpdateCommentList is a page of body-free Comments associated with one InitiativeUpdate.
 type InitiativeUpdateCommentList struct {
 	InitiativeUpdateID string                   `json:"initiative_update_id"`
 	Comments           []CommentMetadataSummary `json:"comments"`
-	HasNextPage        bool                     `json:"has_next_page"`
-	EndCursor          *string                  `json:"end_cursor,omitempty"`
+	Page
 }
 
 //nolint:lll
@@ -53,9 +51,14 @@ type initiativeUpdatesQuery struct {
 }
 
 type initiativeUpdateCommentsQuery struct {
-	ctx                context.Context
-	graphqlClient      graphql.Client
-	id                 string
+	ctx           context.Context
+	graphqlClient graphql.Client
+	id            string
+}
+
+// initiativeUpdateCommentsParent is the connection parent metadata initiativeUpdateCommentsQuery reads out of
+// every page. Linear repeats it per page, so the last page wins.
+type initiativeUpdateCommentsParent struct {
 	initiativeUpdateID string
 }
 
@@ -71,7 +74,7 @@ func ListInitiativeUpdates(ctx context.Context, graphqlClient graphql.Client, li
 		return InitiativeUpdateList{}, err
 	}
 
-	return InitiativeUpdateList{Updates: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return InitiativeUpdateList{Updates: page.Items, Page: page.Page}, nil
 }
 
 // GetInitiativeUpdateByID returns one initiative update by Linear id.
@@ -96,7 +99,7 @@ func ListInitiativeUpdateComments(
 	limit int,
 ) (InitiativeUpdateCommentList, error) {
 	query := &initiativeUpdateCommentsQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
-	page, err := listConnection(
+	page, parent, err := listConnectionWithParent(
 		"list initiative update comments "+id, limit, defaultListPageSize,
 		query.comments,
 		initiativeUpdateCommentsNodeSummary,
@@ -106,10 +109,9 @@ func ListInitiativeUpdateComments(
 	}
 
 	return InitiativeUpdateCommentList{
-		InitiativeUpdateID: query.initiativeUpdateID,
+		InitiativeUpdateID: parent.initiativeUpdateID,
 		Comments:           page.Items,
-		HasNextPage:        page.HasNextPage,
-		EndCursor:          page.EndCursor,
+		Page:               page.Page,
 	}, nil
 }
 
@@ -131,17 +133,16 @@ func (query initiativeUpdatesQuery) page(
 func (query *initiativeUpdateCommentsQuery) comments(
 	pageSize int,
 	after *string,
-) ([]initiativeUpdateCommentsNode, bool, *string, error) {
+) ([]initiativeUpdateCommentsNode, initiativeUpdateCommentsParent, bool, *string, error) {
 	result, err := gql.XInitiativeUpdate_comments(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, false, nil, err
+		return nil, initiativeUpdateCommentsParent{}, false, nil, err
 	}
 
-	query.initiativeUpdateID = result.InitiativeUpdate.Id
-
 	return result.InitiativeUpdate.Comments.Nodes,
+		initiativeUpdateCommentsParent{initiativeUpdateID: result.InitiativeUpdate.Id},
 		result.InitiativeUpdate.Comments.PageInfo.HasNextPage,
 		result.InitiativeUpdate.Comments.PageInfo.EndCursor,
 		nil

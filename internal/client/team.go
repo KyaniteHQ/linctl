@@ -23,19 +23,17 @@ type TeamSummary struct {
 
 // TeamList is a page of teams.
 type TeamList struct {
-	Teams       []TeamSummary `json:"teams"`
-	HasNextPage bool          `json:"has_next_page"`
-	EndCursor   *string       `json:"end_cursor,omitempty"`
+	Teams []TeamSummary `json:"teams"`
+	Page
 }
 
 // TeamMemberList is a page of team members.
 type TeamMemberList struct {
-	TeamID      string        `json:"team_id"`
-	TeamKey     string        `json:"team_key"`
-	TeamName    string        `json:"team_name"`
-	Members     []UserSummary `json:"members"`
-	HasNextPage bool          `json:"has_next_page"`
-	EndCursor   *string       `json:"end_cursor,omitempty"`
+	TeamID   string        `json:"team_id"`
+	TeamKey  string        `json:"team_key"`
+	TeamName string        `json:"team_name"`
+	Members  []UserSummary `json:"members"`
+	Page
 }
 
 // GitAutomationStateSummary is the compact Git automation rule model used by read-only commands.
@@ -55,12 +53,11 @@ type GitAutomationStateSummary struct {
 
 // GitAutomationStateList is a page of Git automation rules associated with one Team.
 type GitAutomationStateList struct {
-	TeamID      string                      `json:"team_id"`
-	TeamKey     string                      `json:"team_key"`
-	TeamName    string                      `json:"team_name"`
-	States      []GitAutomationStateSummary `json:"git_automation_states"`
-	HasNextPage bool                        `json:"has_next_page"`
-	EndCursor   *string                     `json:"end_cursor,omitempty"`
+	TeamID   string                      `json:"team_id"`
+	TeamKey  string                      `json:"team_key"`
+	TeamName string                      `json:"team_name"`
+	States   []GitAutomationStateSummary `json:"git_automation_states"`
+	Page
 }
 
 //nolint:lll
@@ -97,9 +94,14 @@ type teamScopedQuery struct {
 	ctx           context.Context
 	graphqlClient graphql.Client
 	id            string
-	teamID        string
-	teamKey       string
-	teamName      string
+}
+
+// teamScopedParent is the connection parent metadata teamScopedQuery reads out of
+// every page. Linear repeats it per page, so the last page wins.
+type teamScopedParent struct {
+	teamID   string
+	teamKey  string
+	teamName string
 }
 
 // ListTeams returns visible teams.
@@ -122,7 +124,7 @@ func ListTeams(ctx context.Context, graphqlClient graphql.Client, limit int) (Te
 		return TeamList{}, err
 	}
 
-	return TeamList{Teams: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return TeamList{Teams: page.Items, Page: page.Page}, nil
 }
 
 // GetTeamByID returns one Team by id.
@@ -138,7 +140,7 @@ func GetTeamByID(ctx context.Context, graphqlClient graphql.Client, id string) (
 // ListTeamMembers returns visible members for one Team.
 func ListTeamMembers(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (TeamMemberList, error) {
 	query := &teamScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
-	page, err := listConnection(
+	page, parent, err := listConnectionWithParent(
 		"list team members "+id, limit, defaultListPageSize,
 		query.members,
 		teamMembersNodeSummary,
@@ -148,12 +150,11 @@ func ListTeamMembers(ctx context.Context, graphqlClient graphql.Client, id strin
 	}
 
 	return TeamMemberList{
-		TeamID:      query.teamID,
-		TeamKey:     query.teamKey,
-		TeamName:    query.teamName,
-		Members:     page.Items,
-		HasNextPage: page.HasNextPage,
-		EndCursor:   page.EndCursor,
+		TeamID:   parent.teamID,
+		TeamKey:  parent.teamKey,
+		TeamName: parent.teamName,
+		Members:  page.Items,
+		Page:     page.Page,
 	}, nil
 }
 
@@ -169,7 +170,7 @@ func ListTeamCycles(ctx context.Context, graphqlClient graphql.Client, id string
 		return CycleList{}, err
 	}
 
-	return CycleList{Cycles: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return CycleList{Cycles: page.Items, Page: page.Page}, nil
 }
 
 // ListTeamIssues returns issues associated with one Team.
@@ -184,7 +185,7 @@ func ListTeamIssues(ctx context.Context, graphqlClient graphql.Client, id string
 		return IssueList{}, err
 	}
 
-	return IssueList{Issues: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return IssueList{Issues: page.Items, Page: page.Page}, nil
 }
 
 // ListTeamLabels returns IssueLabels associated with one Team.
@@ -199,7 +200,7 @@ func ListTeamLabels(ctx context.Context, graphqlClient graphql.Client, id string
 		return LabelList{}, err
 	}
 
-	return LabelList{Labels: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return LabelList{Labels: page.Items, Page: page.Page}, nil
 }
 
 // ListTeamMembershipsForTeam returns TeamMemberships associated with one Team.
@@ -219,7 +220,7 @@ func ListTeamMembershipsForTeam(
 		return TeamMembershipList{}, err
 	}
 
-	return TeamMembershipList{Memberships: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return TeamMembershipList{Memberships: page.Items, Page: page.Page}, nil
 }
 
 // ListTeamProjects returns Projects associated with one Team.
@@ -234,7 +235,7 @@ func ListTeamProjects(ctx context.Context, graphqlClient graphql.Client, id stri
 		return ProjectList{}, err
 	}
 
-	return ProjectList{Projects: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return ProjectList{Projects: page.Items, Page: page.Page}, nil
 }
 
 // ListTeamReleasePipelines returns ReleasePipelines associated with one Team.
@@ -256,8 +257,7 @@ func ListTeamReleasePipelines(
 
 	return ReleasePipelineList{
 		ReleasePipelines: page.Items,
-		HasNextPage:      page.HasNextPage,
-		EndCursor:        page.EndCursor,
+		Page:             page.Page,
 	}, nil
 }
 
@@ -280,8 +280,7 @@ func ListTeamWorkflowStates(
 
 	return WorkflowStateList{
 		WorkflowStates: page.Items,
-		HasNextPage:    page.HasNextPage,
-		EndCursor:      page.EndCursor,
+		Page:           page.Page,
 	}, nil
 }
 
@@ -293,7 +292,7 @@ func ListTeamGitAutomationStates(
 	limit int,
 ) (GitAutomationStateList, error) {
 	query := &teamScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
-	page, err := listConnection(
+	page, parent, err := listConnectionWithParent(
 		"list team git automation states "+id, limit, defaultListPageSize,
 		query.gitAutomationStates,
 		teamGitAutomationStatesNodeSummary,
@@ -303,12 +302,11 @@ func ListTeamGitAutomationStates(
 	}
 
 	return GitAutomationStateList{
-		TeamID:      query.teamID,
-		TeamKey:     query.teamKey,
-		TeamName:    query.teamName,
-		States:      page.Items,
-		HasNextPage: page.HasNextPage,
-		EndCursor:   page.EndCursor,
+		TeamID:   parent.teamID,
+		TeamKey:  parent.teamKey,
+		TeamName: parent.teamName,
+		States:   page.Items,
+		Page:     page.Page,
 	}, nil
 }
 
@@ -332,19 +330,19 @@ func ListTeamTemplates(ctx context.Context, graphqlClient graphql.Client, id str
 	}, nil
 }
 
-func (query *teamScopedQuery) members(pageSize int, after *string) ([]teamMembersNode, bool, *string, error) {
+func (query *teamScopedQuery) members(
+	pageSize int,
+	after *string,
+) ([]teamMembersNode, teamScopedParent, bool, *string, error) {
 	result, err := gql.XTeam_members(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, false, nil, err
+		return nil, teamScopedParent{}, false, nil, err
 	}
 
-	query.teamID = result.Team.Id
-	query.teamKey = result.Team.Key
-	query.teamName = result.Team.Name
-
 	return result.Team.Members.Nodes,
+		teamScopedParent{teamID: result.Team.Id, teamKey: result.Team.Key, teamName: result.Team.Name},
 		result.Team.Members.PageInfo.HasNextPage,
 		result.Team.Members.PageInfo.EndCursor,
 		nil
@@ -457,19 +455,16 @@ func (query *teamScopedQuery) states(pageSize int, after *string) ([]teamWorkflo
 func (query *teamScopedQuery) gitAutomationStates(
 	pageSize int,
 	after *string,
-) ([]teamGitAutomationStatesNode, bool, *string, error) {
+) ([]teamGitAutomationStatesNode, teamScopedParent, bool, *string, error) {
 	result, err := gql.XTeam_gitAutomationStates(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, false, nil, err
+		return nil, teamScopedParent{}, false, nil, err
 	}
 
-	query.teamID = result.Team.Id
-	query.teamKey = result.Team.Key
-	query.teamName = result.Team.Name
-
 	return result.Team.GitAutomationStates.Nodes,
+		teamScopedParent{teamID: result.Team.Id, teamKey: result.Team.Key, teamName: result.Team.Name},
 		result.Team.GitAutomationStates.PageInfo.HasNextPage,
 		result.Team.GitAutomationStates.PageInfo.EndCursor,
 		nil

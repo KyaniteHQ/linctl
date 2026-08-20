@@ -102,7 +102,7 @@ func Test_collectNodePages_rejects_missing_next_cursor(t *testing.T) {
 	_, err := collectNodePages(
 		"list projects", 100, projectListPageSize,
 		func(int, *string) (nodePage[ProjectSummary], error) {
-			return nodePage[ProjectSummary]{HasNextPage: true}, nil
+			return nodePage[ProjectSummary]{Page: Page{HasNextPage: true}}, nil
 		},
 	)
 

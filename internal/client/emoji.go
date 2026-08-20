@@ -19,9 +19,8 @@ type EmojiSummary struct {
 
 // EmojiList is a page of custom emojis.
 type EmojiList struct {
-	Emojis      []EmojiSummary `json:"emojis"`
-	HasNextPage bool           `json:"has_next_page"`
-	EndCursor   *string        `json:"end_cursor,omitempty"`
+	Emojis []EmojiSummary `json:"emojis"`
+	Page
 }
 
 //nolint:lll
@@ -44,7 +43,7 @@ func ListEmojis(ctx context.Context, graphqlClient graphql.Client, limit int) (E
 		return EmojiList{}, err
 	}
 
-	return EmojiList{Emojis: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return EmojiList{Emojis: page.Items, Page: page.Page}, nil
 }
 
 // GetEmojiByID returns one custom emoji by Linear id or name.

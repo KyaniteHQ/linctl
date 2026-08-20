@@ -28,20 +28,18 @@ type CustomerNeedMetadataSummary struct {
 
 // IssueCommentMetadataList is a page of body-free comments for one issue-like root.
 type IssueCommentMetadataList struct {
-	IssueID     string                   `json:"issue_id"`
-	Identifier  string                   `json:"identifier"`
-	Comments    []CommentMetadataSummary `json:"comments"`
-	HasNextPage bool                     `json:"has_next_page"`
-	EndCursor   *string                  `json:"end_cursor,omitempty"`
+	IssueID    string                   `json:"issue_id"`
+	Identifier string                   `json:"identifier"`
+	Comments   []CommentMetadataSummary `json:"comments"`
+	Page
 }
 
 // IssueCustomerNeedMetadataList is a page of body-free customer needs for one issue-like root.
 type IssueCustomerNeedMetadataList struct {
-	IssueID     string                        `json:"issue_id"`
-	Identifier  string                        `json:"identifier"`
-	Needs       []CustomerNeedMetadataSummary `json:"customer_needs"`
-	HasNextPage bool                          `json:"has_next_page"`
-	EndCursor   *string                       `json:"end_cursor,omitempty"`
+	IssueID    string                        `json:"issue_id"`
+	Identifier string                        `json:"identifier"`
+	Needs      []CustomerNeedMetadataSummary `json:"customer_needs"`
+	Page
 }
 
 // IssueSharedAccessSummary is compact shared-access metadata without shared user details.
@@ -77,7 +75,7 @@ func ListIssueNeeds(
 	limit int,
 ) (IssueCustomerNeedMetadataList, error) {
 	query := &issueChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
-	page, err := listConnection(
+	page, parent, err := listConnectionWithParent(
 		"list issue customer needs "+id, limit, defaultListPageSize,
 		query.needs,
 		issueNeedNodeSummary,
@@ -87,11 +85,10 @@ func ListIssueNeeds(
 	}
 
 	return IssueCustomerNeedMetadataList{
-		IssueID:     query.issueID,
-		Identifier:  query.identifier,
-		Needs:       page.Items,
-		HasNextPage: page.HasNextPage,
-		EndCursor:   page.EndCursor,
+		IssueID:    parent.issueID,
+		Identifier: parent.identifier,
+		Needs:      page.Items,
+		Page:       page.Page,
 	}, nil
 }
 
@@ -103,7 +100,7 @@ func ListIssueFormerNeeds(
 	limit int,
 ) (IssueCustomerNeedMetadataList, error) {
 	query := &issueChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
-	page, err := listConnection(
+	page, parent, err := listConnectionWithParent(
 		"list issue former customer needs "+id, limit, defaultListPageSize,
 		query.formerNeeds,
 		issueFormerNeedNodeSummary,
@@ -113,11 +110,10 @@ func ListIssueFormerNeeds(
 	}
 
 	return IssueCustomerNeedMetadataList{
-		IssueID:     query.issueID,
-		Identifier:  query.identifier,
-		Needs:       page.Items,
-		HasNextPage: page.HasNextPage,
-		EndCursor:   page.EndCursor,
+		IssueID:    parent.issueID,
+		Identifier: parent.identifier,
+		Needs:      page.Items,
+		Page:       page.Page,
 	}, nil
 }
 
@@ -147,7 +143,7 @@ func ListIssueVCSBranchComments(
 	limit int,
 ) (IssueCommentMetadataList, error) {
 	query := &issueVCSBranchQuery{ctx: ctx, graphqlClient: graphqlClient, branchName: branchName}
-	page, err := listConnection(
+	page, parent, err := listConnectionWithParent(
 		"list issue vcs branch comments "+branchName, limit, defaultListPageSize,
 		query.comments,
 		issueVCSBranchCommentNodeSummary,
@@ -157,11 +153,10 @@ func ListIssueVCSBranchComments(
 	}
 
 	return IssueCommentMetadataList{
-		IssueID:     query.issueID,
-		Identifier:  query.identifier,
-		Comments:    page.Items,
-		HasNextPage: page.HasNextPage,
-		EndCursor:   page.EndCursor,
+		IssueID:    parent.issueID,
+		Identifier: parent.identifier,
+		Comments:   page.Items,
+		Page:       page.Page,
 	}, nil
 }
 
@@ -173,7 +168,7 @@ func ListIssueVCSBranchNeeds(
 	limit int,
 ) (IssueCustomerNeedMetadataList, error) {
 	query := &issueVCSBranchQuery{ctx: ctx, graphqlClient: graphqlClient, branchName: branchName}
-	page, err := listConnection(
+	page, parent, err := listConnectionWithParent(
 		"list issue vcs branch customer needs "+branchName, limit, defaultListPageSize,
 		query.needs,
 		issueVCSBranchNeedNodeSummary,
@@ -183,11 +178,10 @@ func ListIssueVCSBranchNeeds(
 	}
 
 	return IssueCustomerNeedMetadataList{
-		IssueID:     query.issueID,
-		Identifier:  query.identifier,
-		Needs:       page.Items,
-		HasNextPage: page.HasNextPage,
-		EndCursor:   page.EndCursor,
+		IssueID:    parent.issueID,
+		Identifier: parent.identifier,
+		Needs:      page.Items,
+		Page:       page.Page,
 	}, nil
 }
 
@@ -199,7 +193,7 @@ func ListIssueVCSBranchFormerNeeds(
 	limit int,
 ) (IssueCustomerNeedMetadataList, error) {
 	query := &issueVCSBranchQuery{ctx: ctx, graphqlClient: graphqlClient, branchName: branchName}
-	page, err := listConnection(
+	page, parent, err := listConnectionWithParent(
 		"list issue vcs branch former customer needs "+branchName, limit, defaultListPageSize,
 		query.formerNeeds,
 		issueVCSBranchFormerNeedNodeSummary,
@@ -209,11 +203,10 @@ func ListIssueVCSBranchFormerNeeds(
 	}
 
 	return IssueCustomerNeedMetadataList{
-		IssueID:     query.issueID,
-		Identifier:  query.identifier,
-		Needs:       page.Items,
-		HasNextPage: page.HasNextPage,
-		EndCursor:   page.EndCursor,
+		IssueID:    parent.issueID,
+		Identifier: parent.identifier,
+		Needs:      page.Items,
+		Page:       page.Page,
 	}, nil
 }
 
@@ -238,18 +231,19 @@ func GetIssueVCSBranchSharedAccess(
 	), nil
 }
 
-func (query *issueChildQuery) needs(pageSize int, after *string) ([]issueNeedsNode, bool, *string, error) {
+func (query *issueChildQuery) needs(
+	pageSize int,
+	after *string,
+) ([]issueNeedsNode, issueChildParent, bool, *string, error) {
 	result, err := gql.XIssue_needs(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, false, nil, err
+		return nil, issueChildParent{}, false, nil, err
 	}
 
-	query.issueID = result.Issue.Id
-	query.identifier = result.Issue.Identifier
-
 	return result.Issue.Needs.Nodes,
+		issueChildParent{issueID: result.Issue.Id, identifier: result.Issue.Identifier},
 		result.Issue.Needs.PageInfo.HasNextPage,
 		result.Issue.Needs.PageInfo.EndCursor,
 		nil
@@ -258,18 +252,16 @@ func (query *issueChildQuery) needs(pageSize int, after *string) ([]issueNeedsNo
 func (query *issueChildQuery) formerNeeds(
 	pageSize int,
 	after *string,
-) ([]issueFormerNeedsNode, bool, *string, error) {
+) ([]issueFormerNeedsNode, issueChildParent, bool, *string, error) {
 	result, err := gql.XIssue_formerNeeds(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, false, nil, err
+		return nil, issueChildParent{}, false, nil, err
 	}
 
-	query.issueID = result.Issue.Id
-	query.identifier = result.Issue.Identifier
-
 	return result.Issue.FormerNeeds.Nodes,
+		issueChildParent{issueID: result.Issue.Id, identifier: result.Issue.Identifier},
 		result.Issue.FormerNeeds.PageInfo.HasNextPage,
 		result.Issue.FormerNeeds.PageInfo.EndCursor,
 		nil
@@ -278,21 +270,22 @@ func (query *issueChildQuery) formerNeeds(
 func (query *issueVCSBranchQuery) comments(
 	pageSize int,
 	after *string,
-) ([]issueVCSBranchCommentsNode, bool, *string, error) {
+) ([]issueVCSBranchCommentsNode, issueVCSBranchParent, bool, *string, error) {
 	result, err := gql.XIssueVcsBranchSearch_comments(
 		query.ctx, query.graphqlClient, query.branchName, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, false, nil, err
+		return nil, issueVCSBranchParent{}, false, nil, err
 	}
 	if result.IssueVcsBranchSearch == nil {
-		return nil, false, nil, ErrNotFound
+		return nil, issueVCSBranchParent{}, false, nil, ErrNotFound
 	}
 
-	query.issueID = result.IssueVcsBranchSearch.Id
-	query.identifier = result.IssueVcsBranchSearch.Identifier
-
 	return result.IssueVcsBranchSearch.Comments.Nodes,
+		issueVCSBranchParent{
+			issueID:    result.IssueVcsBranchSearch.Id,
+			identifier: result.IssueVcsBranchSearch.Identifier,
+		},
 		result.IssueVcsBranchSearch.Comments.PageInfo.HasNextPage,
 		result.IssueVcsBranchSearch.Comments.PageInfo.EndCursor,
 		nil
@@ -301,21 +294,22 @@ func (query *issueVCSBranchQuery) comments(
 func (query *issueVCSBranchQuery) needs(
 	pageSize int,
 	after *string,
-) ([]issueVCSBranchNeedsNode, bool, *string, error) {
+) ([]issueVCSBranchNeedsNode, issueVCSBranchParent, bool, *string, error) {
 	result, err := gql.XIssueVcsBranchSearch_needs(
 		query.ctx, query.graphqlClient, query.branchName, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, false, nil, err
+		return nil, issueVCSBranchParent{}, false, nil, err
 	}
 	if result.IssueVcsBranchSearch == nil {
-		return nil, false, nil, ErrNotFound
+		return nil, issueVCSBranchParent{}, false, nil, ErrNotFound
 	}
 
-	query.issueID = result.IssueVcsBranchSearch.Id
-	query.identifier = result.IssueVcsBranchSearch.Identifier
-
 	return result.IssueVcsBranchSearch.Needs.Nodes,
+		issueVCSBranchParent{
+			issueID:    result.IssueVcsBranchSearch.Id,
+			identifier: result.IssueVcsBranchSearch.Identifier,
+		},
 		result.IssueVcsBranchSearch.Needs.PageInfo.HasNextPage,
 		result.IssueVcsBranchSearch.Needs.PageInfo.EndCursor,
 		nil
@@ -324,21 +318,22 @@ func (query *issueVCSBranchQuery) needs(
 func (query *issueVCSBranchQuery) formerNeeds(
 	pageSize int,
 	after *string,
-) ([]issueVCSBranchFormerNeedsNode, bool, *string, error) {
+) ([]issueVCSBranchFormerNeedsNode, issueVCSBranchParent, bool, *string, error) {
 	result, err := gql.XIssueVcsBranchSearch_formerNeeds(
 		query.ctx, query.graphqlClient, query.branchName, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, false, nil, err
+		return nil, issueVCSBranchParent{}, false, nil, err
 	}
 	if result.IssueVcsBranchSearch == nil {
-		return nil, false, nil, ErrNotFound
+		return nil, issueVCSBranchParent{}, false, nil, ErrNotFound
 	}
 
-	query.issueID = result.IssueVcsBranchSearch.Id
-	query.identifier = result.IssueVcsBranchSearch.Identifier
-
 	return result.IssueVcsBranchSearch.FormerNeeds.Nodes,
+		issueVCSBranchParent{
+			issueID:    result.IssueVcsBranchSearch.Id,
+			identifier: result.IssueVcsBranchSearch.Identifier,
+		},
 		result.IssueVcsBranchSearch.FormerNeeds.PageInfo.HasNextPage,
 		result.IssueVcsBranchSearch.FormerNeeds.PageInfo.EndCursor,
 		nil

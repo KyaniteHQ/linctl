@@ -33,8 +33,7 @@ type AgentSkillSummary struct {
 // AgentSkillList is a page of AgentSkills.
 type AgentSkillList struct {
 	AgentSkills []AgentSkillSummary `json:"agent_skills"`
-	HasNextPage bool                `json:"has_next_page"`
-	EndCursor   *string             `json:"end_cursor,omitempty"`
+	Page
 }
 
 //nolint:lll
@@ -57,7 +56,7 @@ func ListAgentSkills(ctx context.Context, graphqlClient graphql.Client, limit in
 		return AgentSkillList{}, err
 	}
 
-	return AgentSkillList{AgentSkills: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return AgentSkillList{AgentSkills: page.Items, Page: page.Page}, nil
 }
 
 // GetAgentSkillByID returns one AgentSkill by id.

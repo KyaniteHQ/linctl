@@ -22,9 +22,8 @@ type UserSummary struct {
 
 // UserList is a page of users.
 type UserList struct {
-	Users       []UserSummary `json:"users"`
-	HasNextPage bool          `json:"has_next_page"`
-	EndCursor   *string       `json:"end_cursor,omitempty"`
+	Users []UserSummary `json:"users"`
+	Page
 }
 
 // DraftSummary is the compact saved draft model used by viewer-scoped draft reads.
@@ -41,9 +40,8 @@ type DraftSummary struct {
 
 // DraftList is a page of the authenticated user's saved drafts.
 type DraftList struct {
-	Drafts      []DraftSummary `json:"drafts"`
-	HasNextPage bool           `json:"has_next_page"`
-	EndCursor   *string        `json:"end_cursor,omitempty"`
+	Drafts []DraftSummary `json:"drafts"`
+	Page
 }
 
 //nolint:lll
@@ -115,7 +113,7 @@ func ListUsers(ctx context.Context, graphqlClient graphql.Client, limit int) (Us
 		return UserList{}, err
 	}
 
-	return UserList{Users: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return UserList{Users: page.Items, Page: page.Page}, nil
 }
 
 // GetUserByID returns one User by id.
@@ -150,7 +148,7 @@ func ListViewerDrafts(ctx context.Context, graphqlClient graphql.Client, limit i
 		return DraftList{}, err
 	}
 
-	return DraftList{Drafts: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return DraftList{Drafts: page.Items, Page: page.Page}, nil
 }
 
 // ListUserAssignedIssues returns issues assigned to one User.
@@ -170,7 +168,7 @@ func ListUserAssignedIssues(
 		return IssueList{}, err
 	}
 
-	return IssueList{Issues: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return IssueList{Issues: page.Items, Page: page.Page}, nil
 }
 
 // ListUserCreatedIssues returns issues created by one User.
@@ -185,7 +183,7 @@ func ListUserCreatedIssues(ctx context.Context, graphqlClient graphql.Client, id
 		return IssueList{}, err
 	}
 
-	return IssueList{Issues: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return IssueList{Issues: page.Items, Page: page.Page}, nil
 }
 
 // ListUserDelegatedIssues returns issues delegated to one User.
@@ -205,7 +203,7 @@ func ListUserDelegatedIssues(
 		return IssueList{}, err
 	}
 
-	return IssueList{Issues: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return IssueList{Issues: page.Items, Page: page.Page}, nil
 }
 
 // ListUserTeamMemberships returns TeamMemberships associated with one User.
@@ -225,7 +223,7 @@ func ListUserTeamMemberships(
 		return TeamMembershipList{}, err
 	}
 
-	return TeamMembershipList{Memberships: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return TeamMembershipList{Memberships: page.Items, Page: page.Page}, nil
 }
 
 // ListUserTeams returns Teams associated with one User.
@@ -240,7 +238,7 @@ func ListUserTeams(ctx context.Context, graphqlClient graphql.Client, id string,
 		return TeamList{}, err
 	}
 
-	return TeamList{Teams: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return TeamList{Teams: page.Items, Page: page.Page}, nil
 }
 
 // ListViewerAssignedIssues returns issues assigned to the authenticated User.
@@ -255,7 +253,7 @@ func ListViewerAssignedIssues(ctx context.Context, graphqlClient graphql.Client,
 		return IssueList{}, err
 	}
 
-	return IssueList{Issues: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return IssueList{Issues: page.Items, Page: page.Page}, nil
 }
 
 // ListViewerCreatedIssues returns issues created by the authenticated User.
@@ -270,7 +268,7 @@ func ListViewerCreatedIssues(ctx context.Context, graphqlClient graphql.Client, 
 		return IssueList{}, err
 	}
 
-	return IssueList{Issues: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return IssueList{Issues: page.Items, Page: page.Page}, nil
 }
 
 // ListViewerDelegatedIssues returns issues delegated to the authenticated User.
@@ -285,7 +283,7 @@ func ListViewerDelegatedIssues(ctx context.Context, graphqlClient graphql.Client
 		return IssueList{}, err
 	}
 
-	return IssueList{Issues: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return IssueList{Issues: page.Items, Page: page.Page}, nil
 }
 
 // ListViewerTeamMemberships returns TeamMemberships associated with the authenticated User.
@@ -304,7 +302,7 @@ func ListViewerTeamMemberships(
 		return TeamMembershipList{}, err
 	}
 
-	return TeamMembershipList{Memberships: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return TeamMembershipList{Memberships: page.Items, Page: page.Page}, nil
 }
 
 // ListViewerTeams returns Teams associated with the authenticated User.
@@ -319,7 +317,7 @@ func ListViewerTeams(ctx context.Context, graphqlClient graphql.Client, limit in
 		return TeamList{}, err
 	}
 
-	return TeamList{Teams: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return TeamList{Teams: page.Items, Page: page.Page}, nil
 }
 
 func (query usersQuery) page(pageSize int, after *string) ([]usersNode, bool, *string, error) {

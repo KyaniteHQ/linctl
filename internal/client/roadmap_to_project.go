@@ -28,8 +28,7 @@ type RoadmapToProjectSummary struct {
 // RoadmapToProjectList is a page of Roadmap-to-Project associations.
 type RoadmapToProjectList struct {
 	Associations []RoadmapToProjectSummary `json:"associations"`
-	HasNextPage  bool                      `json:"has_next_page"`
-	EndCursor    *string                   `json:"end_cursor,omitempty"`
+	Page
 }
 
 //nolint:lll
@@ -62,8 +61,7 @@ func ListRoadmapToProjects(
 
 	return RoadmapToProjectList{
 		Associations: page.Items,
-		HasNextPage:  page.HasNextPage,
-		EndCursor:    page.EndCursor,
+		Page:         page.Page,
 	}, nil
 }
 

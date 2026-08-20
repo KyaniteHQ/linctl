@@ -24,8 +24,7 @@ type ExternalUserSummary struct {
 // ExternalUserList is a page of ExternalUsers.
 type ExternalUserList struct {
 	ExternalUsers []ExternalUserSummary `json:"external_users"`
-	HasNextPage   bool                  `json:"has_next_page"`
-	EndCursor     *string               `json:"end_cursor,omitempty"`
+	Page
 }
 
 //nolint:lll
@@ -50,8 +49,7 @@ func ListExternalUsers(ctx context.Context, graphqlClient graphql.Client, limit 
 
 	return ExternalUserList{
 		ExternalUsers: page.Items,
-		HasNextPage:   page.HasNextPage,
-		EndCursor:     page.EndCursor,
+		Page:          page.Page,
 	}, nil
 }
 

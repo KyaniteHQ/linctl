@@ -23,9 +23,8 @@ type CustomerStatusSummary struct {
 
 // CustomerStatusList is a page of Linear customer statuses.
 type CustomerStatusList struct {
-	Statuses    []CustomerStatusSummary `json:"customer_statuses"`
-	HasNextPage bool                    `json:"has_next_page"`
-	EndCursor   *string                 `json:"end_cursor,omitempty"`
+	Statuses []CustomerStatusSummary `json:"customer_statuses"`
+	Page
 }
 
 //nolint:lll
@@ -48,7 +47,7 @@ func ListCustomerStatuses(ctx context.Context, graphqlClient graphql.Client, lim
 		return CustomerStatusList{}, err
 	}
 
-	return CustomerStatusList{Statuses: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return CustomerStatusList{Statuses: page.Items, Page: page.Page}, nil
 }
 
 // GetCustomerStatusByID returns one customer lifecycle status by id.

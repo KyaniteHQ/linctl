@@ -29,8 +29,7 @@ type TriageResponsibilitySummary struct {
 // TriageResponsibilityList is a page of triage responsibilities.
 type TriageResponsibilityList struct {
 	TriageResponsibilities []TriageResponsibilitySummary `json:"triage_responsibilities"`
-	HasNextPage            bool                          `json:"has_next_page"`
-	EndCursor              *string                       `json:"end_cursor,omitempty"`
+	Page
 }
 
 // TriageResponsibilityManualSelection is the manual user selection for one triage responsibility.
@@ -65,8 +64,7 @@ func ListTriageResponsibilities(
 
 	return TriageResponsibilityList{
 		TriageResponsibilities: page.Items,
-		HasNextPage:            page.HasNextPage,
-		EndCursor:              page.EndCursor,
+		Page:                   page.Page,
 	}, nil
 }
 

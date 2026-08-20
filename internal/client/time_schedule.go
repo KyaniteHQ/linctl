@@ -34,8 +34,7 @@ type TimeScheduleSummary struct {
 // TimeScheduleList is a page of Linear time schedules.
 type TimeScheduleList struct {
 	TimeSchedules []TimeScheduleSummary `json:"time_schedules"`
-	HasNextPage   bool                  `json:"has_next_page"`
-	EndCursor     *string               `json:"end_cursor,omitempty"`
+	Page
 }
 
 //nolint:lll
@@ -60,8 +59,7 @@ func ListTimeSchedules(ctx context.Context, graphqlClient graphql.Client, limit 
 
 	return TimeScheduleList{
 		TimeSchedules: page.Items,
-		HasNextPage:   page.HasNextPage,
-		EndCursor:     page.EndCursor,
+		Page:          page.Page,
 	}, nil
 }
 

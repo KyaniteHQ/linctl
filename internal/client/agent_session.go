@@ -30,8 +30,7 @@ type AgentSessionSummary struct {
 // AgentSessionList is a page of AgentSessions.
 type AgentSessionList struct {
 	AgentSessions []AgentSessionSummary `json:"agent_sessions"`
-	HasNextPage   bool                  `json:"has_next_page"`
-	EndCursor     *string               `json:"end_cursor,omitempty"`
+	Page
 }
 
 //nolint:lll
@@ -56,8 +55,7 @@ func ListAgentSessions(ctx context.Context, graphqlClient graphql.Client, limit 
 
 	return AgentSessionList{
 		AgentSessions: page.Items,
-		HasNextPage:   page.HasNextPage,
-		EndCursor:     page.EndCursor,
+		Page:          page.Page,
 	}, nil
 }
 

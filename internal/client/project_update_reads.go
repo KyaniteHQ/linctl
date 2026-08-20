@@ -27,14 +27,24 @@ type projectScopedUpdatesQuery struct {
 	ctx           context.Context
 	graphqlClient graphql.Client
 	id            string
-	projectID     string
-	projectName   string
+}
+
+// projectScopedUpdatesParent is the connection parent metadata projectScopedUpdatesQuery reads out of
+// every page. Linear repeats it per page, so the last page wins.
+type projectScopedUpdatesParent struct {
+	projectID   string
+	projectName string
 }
 
 type projectUpdateCommentsQuery struct {
-	ctx             context.Context
-	graphqlClient   graphql.Client
-	id              string
+	ctx           context.Context
+	graphqlClient graphql.Client
+	id            string
+}
+
+// projectUpdateCommentsParent is the connection parent metadata projectUpdateCommentsQuery reads out of
+// every page. Linear repeats it per page, so the last page wins.
+type projectUpdateCommentsParent struct {
 	projectUpdateID string
 }
 
@@ -46,7 +56,7 @@ func ListProjectUpdates(
 	limit int,
 ) (ProjectUpdateList, error) {
 	query := &projectScopedUpdatesQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
-	page, err := listConnection(
+	page, parent, err := listConnectionWithParent(
 		"list project updates "+id, limit, defaultListPageSize,
 		query.page,
 		projectScopedProjectUpdateSummary,
@@ -56,11 +66,10 @@ func ListProjectUpdates(
 	}
 
 	return ProjectUpdateList{
-		ProjectID:   query.projectID,
-		ProjectName: query.projectName,
+		ProjectID:   parent.projectID,
+		ProjectName: parent.projectName,
 		Updates:     page.Items,
-		HasNextPage: page.HasNextPage,
-		EndCursor:   page.EndCursor,
+		Page:        page.Page,
 	}, nil
 }
 
@@ -76,7 +85,7 @@ func ListAllProjectUpdates(ctx context.Context, graphqlClient graphql.Client, li
 		return ProjectUpdateList{}, err
 	}
 
-	return ProjectUpdateList{Updates: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return ProjectUpdateList{Updates: page.Items, Page: page.Page}, nil
 }
 
 // GetProjectUpdateByID returns one project update by Linear id.
@@ -101,7 +110,7 @@ func ListProjectUpdateComments(
 	limit int,
 ) (ProjectUpdateCommentList, error) {
 	query := &projectUpdateCommentsQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
-	page, err := listConnection(
+	page, parent, err := listConnectionWithParent(
 		"list project update comments "+id, limit, defaultListPageSize,
 		query.page,
 		projectUpdateCommentNodeSummary,
@@ -111,28 +120,25 @@ func ListProjectUpdateComments(
 	}
 
 	return ProjectUpdateCommentList{
-		ProjectUpdateID: query.projectUpdateID,
+		ProjectUpdateID: parent.projectUpdateID,
 		Comments:        page.Items,
-		HasNextPage:     page.HasNextPage,
-		EndCursor:       page.EndCursor,
+		Page:            page.Page,
 	}, nil
 }
 
 func (query *projectScopedUpdatesQuery) page(
 	pageSize int,
 	after *string,
-) ([]projectScopedUpdatesNode, bool, *string, error) {
+) ([]projectScopedUpdatesNode, projectScopedUpdatesParent, bool, *string, error) {
 	result, err := gql.XProject_projectUpdates(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, false, nil, err
+		return nil, projectScopedUpdatesParent{}, false, nil, err
 	}
 
-	query.projectID = result.Project.Id
-	query.projectName = result.Project.Name
-
 	return result.Project.ProjectUpdates.Nodes,
+		projectScopedUpdatesParent{projectID: result.Project.Id, projectName: result.Project.Name},
 		result.Project.ProjectUpdates.PageInfo.HasNextPage,
 		result.Project.ProjectUpdates.PageInfo.EndCursor,
 		nil
@@ -156,17 +162,16 @@ func (query projectUpdatesQuery) page(
 func (query *projectUpdateCommentsQuery) page(
 	pageSize int,
 	after *string,
-) ([]projectUpdateCommentsNode, bool, *string, error) {
+) ([]projectUpdateCommentsNode, projectUpdateCommentsParent, bool, *string, error) {
 	result, err := gql.XProjectUpdate_comments(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, false, nil, err
+		return nil, projectUpdateCommentsParent{}, false, nil, err
 	}
 
-	query.projectUpdateID = result.ProjectUpdate.Id
-
 	return result.ProjectUpdate.Comments.Nodes,
+		projectUpdateCommentsParent{projectUpdateID: result.ProjectUpdate.Id},
 		result.ProjectUpdate.Comments.PageInfo.HasNextPage,
 		result.ProjectUpdate.Comments.PageInfo.EndCursor,
 		nil

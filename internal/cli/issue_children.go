@@ -117,7 +117,7 @@ func addIssueChildCommands(
 	)
 }
 
-func addIssueChildListCommand[Page any, Item any](
+func addIssueChildListCommand[Page listPage, Item any](
 	ctx context.Context,
 	root *cobra.Command,
 	options *rootOptions,

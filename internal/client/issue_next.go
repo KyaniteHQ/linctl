@@ -42,7 +42,7 @@ func ListNextIssuesByTeam(
 
 	sortNextIssueCandidates(page.Items)
 
-	return IssueList{Issues: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return IssueList{Issues: page.Items, Page: page.Page}, nil
 }
 
 func nextIssueSummary(issue nextIssueNode) IssueSummary {

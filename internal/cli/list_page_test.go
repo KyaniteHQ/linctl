@@ -9,6 +9,8 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/require"
+
+	"github.com/KyaniteHQ/linctl/internal/client"
 )
 
 func Test_pageWithItems_preserves_page_shape_and_collection_semantics(t *testing.T) {
@@ -132,38 +134,13 @@ func compactJSON(t *testing.T, value any) []byte {
 	return encoded
 }
 
-func Test_pageHasNextPage_reads_exported_bool_field(t *testing.T) {
-	type flagged struct {
-		HasNextPage bool
-	}
-	type missing struct {
-		Items []string
-	}
-	type wrongKind struct {
-		HasNextPage string
-	}
-
-	require.True(t, pageHasNextPage(flagged{HasNextPage: true}))
-	require.False(t, pageHasNextPage(flagged{HasNextPage: false}))
-	require.True(t, pageHasNextPage(&flagged{HasNextPage: true}))
-	require.False(t, pageHasNextPage(missing{}))
-	require.False(t, pageHasNextPage(wrongKind{HasNextPage: "true"}))
-	require.False(t, pageHasNextPage("not a page"))
-	require.False(t, pageHasNextPage[any](nil))
-	var nilFlagged *flagged
-	require.False(t, pageHasNextPage(nilFlagged))
-	label := "not a struct"
-	require.False(t, pageHasNextPage(&label))
-}
-
 func Test_runReadListCommand_notes_truncation_on_stderr(t *testing.T) {
 	type item struct {
 		ID string `json:"id"`
 	}
 	type page struct {
-		Items       []item `json:"items"`
-		HasNextPage bool   `json:"has_next_page"`
-		EndCursor   string `json:"end_cursor,omitempty"`
+		Items []item `json:"items"`
+		client.Page
 	}
 	original := buildCommandRuntime
 	buildCommandRuntime = func(context.Context, *rootOptions) (commandRuntime, error) {
@@ -229,11 +206,12 @@ func Test_runReadListCommand_notes_truncation_on_stderr(t *testing.T) {
 				command.SetErr(commandFailingWriter{})
 			}
 			loaded := page{
-				Items:       []item{{ID: "item-id"}},
-				HasNextPage: test.truncated,
+				Items: []item{{ID: "item-id"}},
+				Page:  client.Page{HasNextPage: test.truncated},
 			}
 			if test.truncated {
-				loaded.EndCursor = "next"
+				cursor := "next"
+				loaded.EndCursor = &cursor
 			}
 
 			err := runReadListCommand(

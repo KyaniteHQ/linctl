@@ -21,8 +21,7 @@ type AttachmentSummary struct {
 // AttachmentList is a page of attachments.
 type AttachmentList struct {
 	Attachments []AttachmentSummary `json:"attachments"`
-	HasNextPage bool                `json:"has_next_page"`
-	EndCursor   *string             `json:"end_cursor,omitempty"`
+	Page
 }
 
 //nolint:lll
@@ -88,8 +87,13 @@ type attachmentIssueQuery struct {
 	ctx           context.Context
 	graphqlClient graphql.Client
 	id            string
-	issueID       string
-	identifier    string
+}
+
+// attachmentIssueParent is the connection parent metadata attachmentIssueQuery reads out of
+// every page. Linear repeats it per page, so the last page wins.
+type attachmentIssueParent struct {
+	issueID    string
+	identifier string
 }
 
 // ListAttachments returns visible issue attachments.
@@ -104,7 +108,7 @@ func ListAttachments(ctx context.Context, graphqlClient graphql.Client, limit in
 		return AttachmentList{}, err
 	}
 
-	return AttachmentList{Attachments: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return AttachmentList{Attachments: page.Items, Page: page.Page}, nil
 }
 
 // ListAttachmentsForURL returns visible issue attachments linked to a URL.
@@ -124,7 +128,7 @@ func ListAttachmentsForURL(
 		return AttachmentList{}, err
 	}
 
-	return AttachmentList{Attachments: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return AttachmentList{Attachments: page.Items, Page: page.Page}, nil
 }
 
 // GetAttachmentByID returns one attachment by Linear id.
@@ -168,7 +172,7 @@ func ListAttachmentIssueAttachments(
 		return AttachmentList{}, err
 	}
 
-	return AttachmentList{Attachments: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return AttachmentList{Attachments: page.Items, Page: page.Page}, nil
 }
 
 // GetAttachmentIssueBotActor returns the issue bot actor associated with one attachment.
@@ -201,7 +205,7 @@ func ListAttachmentIssueChildren(
 		return IssueList{}, err
 	}
 
-	return IssueList{Issues: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return IssueList{Issues: page.Items, Page: page.Page}, nil
 }
 
 // ListAttachmentIssueDocuments returns documents for the issue associated with one attachment.
@@ -221,7 +225,7 @@ func ListAttachmentIssueDocuments(
 		return DocumentList{}, err
 	}
 
-	return DocumentList{Documents: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return DocumentList{Documents: page.Items, Page: page.Page}, nil
 }
 
 // ListAttachmentIssueFormerAttachments returns former attachments for the issue associated with one attachment.
@@ -241,7 +245,7 @@ func ListAttachmentIssueFormerAttachments(
 		return AttachmentList{}, err
 	}
 
-	return AttachmentList{Attachments: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return AttachmentList{Attachments: page.Items, Page: page.Page}, nil
 }
 
 // ListAttachmentIssueComments returns body-free comments for the issue associated with one attachment.
@@ -252,7 +256,7 @@ func ListAttachmentIssueComments(
 	limit int,
 ) (IssueCommentMetadataList, error) {
 	query := &attachmentIssueQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
-	page, err := listConnection(
+	page, parent, err := listConnectionWithParent(
 		"list attachment issue comments "+id, limit, defaultListPageSize,
 		query.comments,
 		attachmentIssueCommentSummary,
@@ -262,11 +266,10 @@ func ListAttachmentIssueComments(
 	}
 
 	return IssueCommentMetadataList{
-		IssueID:     query.issueID,
-		Identifier:  query.identifier,
-		Comments:    page.Items,
-		HasNextPage: page.HasNextPage,
-		EndCursor:   page.EndCursor,
+		IssueID:    parent.issueID,
+		Identifier: parent.identifier,
+		Comments:   page.Items,
+		Page:       page.Page,
 	}, nil
 }
 
@@ -278,7 +281,7 @@ func ListAttachmentIssueNeeds(
 	limit int,
 ) (IssueCustomerNeedMetadataList, error) {
 	query := &attachmentIssueQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
-	page, err := listConnection(
+	page, parent, err := listConnectionWithParent(
 		"list attachment issue customer needs "+id, limit, defaultListPageSize,
 		query.needs,
 		attachmentIssueNeedSummary,
@@ -288,11 +291,10 @@ func ListAttachmentIssueNeeds(
 	}
 
 	return IssueCustomerNeedMetadataList{
-		IssueID:     query.issueID,
-		Identifier:  query.identifier,
-		Needs:       page.Items,
-		HasNextPage: page.HasNextPage,
-		EndCursor:   page.EndCursor,
+		IssueID:    parent.issueID,
+		Identifier: parent.identifier,
+		Needs:      page.Items,
+		Page:       page.Page,
 	}, nil
 }
 
@@ -304,7 +306,7 @@ func ListAttachmentIssueFormerNeeds(
 	limit int,
 ) (IssueCustomerNeedMetadataList, error) {
 	query := &attachmentIssueQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
-	page, err := listConnection(
+	page, parent, err := listConnectionWithParent(
 		"list attachment issue former customer needs "+id, limit, defaultListPageSize,
 		query.formerNeeds,
 		attachmentIssueFormerNeedSummary,
@@ -314,11 +316,10 @@ func ListAttachmentIssueFormerNeeds(
 	}
 
 	return IssueCustomerNeedMetadataList{
-		IssueID:     query.issueID,
-		Identifier:  query.identifier,
-		Needs:       page.Items,
-		HasNextPage: page.HasNextPage,
-		EndCursor:   page.EndCursor,
+		IssueID:    parent.issueID,
+		Identifier: parent.identifier,
+		Needs:      page.Items,
+		Page:       page.Page,
 	}, nil
 }
 
@@ -339,7 +340,7 @@ func ListAttachmentIssueHistory(
 		return IssueHistoryList{}, err
 	}
 
-	return IssueHistoryList{History: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return IssueHistoryList{History: page.Items, Page: page.Page}, nil
 }
 
 // ListAttachmentIssueInverseRelations returns inverse relations for the issue associated with one attachment.
@@ -359,7 +360,7 @@ func ListAttachmentIssueInverseRelations(
 		return IssueRelationList{}, err
 	}
 
-	return IssueRelationList{Relations: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return IssueRelationList{Relations: page.Items, Page: page.Page}, nil
 }
 
 // ListAttachmentIssueLabels returns labels for the issue associated with one attachment.
@@ -379,7 +380,7 @@ func ListAttachmentIssueLabels(
 		return LabelList{}, err
 	}
 
-	return LabelList{Labels: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return LabelList{Labels: page.Items, Page: page.Page}, nil
 }
 
 // ListAttachmentIssueRelations returns relations for the issue associated with one attachment.
@@ -399,7 +400,7 @@ func ListAttachmentIssueRelations(
 		return IssueRelationList{}, err
 	}
 
-	return IssueRelationList{Relations: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return IssueRelationList{Relations: page.Items, Page: page.Page}, nil
 }
 
 // ListAttachmentIssueReleases returns releases for the issue associated with one attachment.
@@ -419,7 +420,7 @@ func ListAttachmentIssueReleases(
 		return ReleaseList{}, err
 	}
 
-	return ReleaseList{Releases: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return ReleaseList{Releases: page.Items, Page: page.Page}, nil
 }
 
 // GetAttachmentIssueSharedAccess returns compact shared-access metadata for the issue associated with one attachment.
@@ -448,7 +449,7 @@ func ListAttachmentIssueStateHistory(
 	limit int,
 ) (IssueStateHistoryList, error) {
 	query := &attachmentIssueQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
-	page, err := listConnection(
+	page, parent, err := listConnectionWithParent(
 		"list attachment issue state history "+id, limit, defaultListPageSize,
 		query.stateHistory,
 		issueStateSpanSummary,
@@ -458,10 +459,9 @@ func ListAttachmentIssueStateHistory(
 	}
 
 	return IssueStateHistoryList{
-		IssueID:     query.issueID,
-		Spans:       page.Items,
-		HasNextPage: page.HasNextPage,
-		EndCursor:   page.EndCursor,
+		IssueID: parent.issueID,
+		Spans:   page.Items,
+		Page:    page.Page,
 	}, nil
 }
 
@@ -482,7 +482,7 @@ func ListAttachmentIssueSubscribers(
 		return UserList{}, err
 	}
 
-	return UserList{Users: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return UserList{Users: page.Items, Page: page.Page}, nil
 }
 
 func (query attachmentsQuery) page(pageSize int, after *string) ([]attachmentsNode, bool, *string, error) {
@@ -582,18 +582,16 @@ func (query *attachmentIssueQuery) formerAttachments(
 func (query *attachmentIssueQuery) comments(
 	pageSize int,
 	after *string,
-) ([]attachmentIssueCommentsNode, bool, *string, error) {
+) ([]attachmentIssueCommentsNode, attachmentIssueParent, bool, *string, error) {
 	result, err := gql.XAttachmentIssue_comments(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, false, nil, err
+		return nil, attachmentIssueParent{}, false, nil, err
 	}
 
-	query.issueID = result.AttachmentIssue.Id
-	query.identifier = result.AttachmentIssue.Identifier
-
 	return result.AttachmentIssue.Comments.Nodes,
+		attachmentIssueParent{issueID: result.AttachmentIssue.Id, identifier: result.AttachmentIssue.Identifier},
 		result.AttachmentIssue.Comments.PageInfo.HasNextPage,
 		result.AttachmentIssue.Comments.PageInfo.EndCursor,
 		nil
@@ -602,18 +600,16 @@ func (query *attachmentIssueQuery) comments(
 func (query *attachmentIssueQuery) needs(
 	pageSize int,
 	after *string,
-) ([]attachmentIssueNeedsNode, bool, *string, error) {
+) ([]attachmentIssueNeedsNode, attachmentIssueParent, bool, *string, error) {
 	result, err := gql.XAttachmentIssue_needs(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, false, nil, err
+		return nil, attachmentIssueParent{}, false, nil, err
 	}
 
-	query.issueID = result.AttachmentIssue.Id
-	query.identifier = result.AttachmentIssue.Identifier
-
 	return result.AttachmentIssue.Needs.Nodes,
+		attachmentIssueParent{issueID: result.AttachmentIssue.Id, identifier: result.AttachmentIssue.Identifier},
 		result.AttachmentIssue.Needs.PageInfo.HasNextPage,
 		result.AttachmentIssue.Needs.PageInfo.EndCursor,
 		nil
@@ -622,18 +618,16 @@ func (query *attachmentIssueQuery) needs(
 func (query *attachmentIssueQuery) formerNeeds(
 	pageSize int,
 	after *string,
-) ([]attachmentIssueFormerNeedsNode, bool, *string, error) {
+) ([]attachmentIssueFormerNeedsNode, attachmentIssueParent, bool, *string, error) {
 	result, err := gql.XAttachmentIssue_formerNeeds(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, false, nil, err
+		return nil, attachmentIssueParent{}, false, nil, err
 	}
 
-	query.issueID = result.AttachmentIssue.Id
-	query.identifier = result.AttachmentIssue.Identifier
-
 	return result.AttachmentIssue.FormerNeeds.Nodes,
+		attachmentIssueParent{issueID: result.AttachmentIssue.Id, identifier: result.AttachmentIssue.Identifier},
 		result.AttachmentIssue.FormerNeeds.PageInfo.HasNextPage,
 		result.AttachmentIssue.FormerNeeds.PageInfo.EndCursor,
 		nil
@@ -727,15 +721,14 @@ func (query *attachmentIssueQuery) releases(
 func (query *attachmentIssueQuery) stateHistory(
 	pageSize int,
 	after *string,
-) ([]attachmentIssueStateHistoryNode, bool, *string, error) {
+) ([]attachmentIssueStateHistoryNode, attachmentIssueParent, bool, *string, error) {
 	result, err := gql.XAttachmentIssue_stateHistory(query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after)
 	if err != nil {
-		return nil, false, nil, err
+		return nil, attachmentIssueParent{}, false, nil, err
 	}
 
-	query.issueID = result.AttachmentIssue.Id
-
 	return result.AttachmentIssue.StateHistory.Nodes,
+		attachmentIssueParent{issueID: result.AttachmentIssue.Id},
 		result.AttachmentIssue.StateHistory.PageInfo.HasNextPage,
 		result.AttachmentIssue.StateHistory.PageInfo.EndCursor,
 		nil

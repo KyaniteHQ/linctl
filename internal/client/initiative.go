@@ -26,8 +26,7 @@ type InitiativeSummary struct {
 // InitiativeList is a page of initiatives.
 type InitiativeList struct {
 	Initiatives []InitiativeSummary `json:"initiatives"`
-	HasNextPage bool                `json:"has_next_page"`
-	EndCursor   *string             `json:"end_cursor,omitempty"`
+	Page
 }
 
 // InitiativeHistorySummary is the compact initiative history model used by read-only commands.
@@ -43,9 +42,8 @@ type InitiativeHistorySummary struct {
 
 // InitiativeHistoryList is a page of Linear initiative history records.
 type InitiativeHistoryList struct {
-	History     []InitiativeHistorySummary `json:"history"`
-	HasNextPage bool                       `json:"has_next_page"`
-	EndCursor   *string                    `json:"end_cursor,omitempty"`
+	History []InitiativeHistorySummary `json:"history"`
+	Page
 }
 
 //nolint:lll
@@ -92,7 +90,7 @@ func ListInitiatives(ctx context.Context, graphqlClient graphql.Client, limit in
 		return InitiativeList{}, err
 	}
 
-	return InitiativeList{Initiatives: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return InitiativeList{Initiatives: page.Items, Page: page.Page}, nil
 }
 
 // GetInitiativeByID returns one initiative by Linear id or slug.
@@ -126,7 +124,7 @@ func ListInitiativeHistory(
 		return InitiativeHistoryList{}, err
 	}
 
-	return InitiativeHistoryList{History: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return InitiativeHistoryList{History: page.Items, Page: page.Page}, nil
 }
 
 // ListInitiativeLinks returns external links associated with one initiative.
@@ -146,7 +144,7 @@ func ListInitiativeLinks(
 		return EntityExternalLinkList{}, err
 	}
 
-	return EntityExternalLinkList{Links: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return EntityExternalLinkList{Links: page.Items, Page: page.Page}, nil
 }
 
 // ListSubInitiatives returns child initiatives associated with one initiative.
@@ -166,7 +164,7 @@ func ListSubInitiatives(
 		return InitiativeList{}, err
 	}
 
-	return InitiativeList{Initiatives: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return InitiativeList{Initiatives: page.Items, Page: page.Page}, nil
 }
 
 // ListInitiativeUpdatesForInitiative returns status updates associated with one initiative.
@@ -186,7 +184,7 @@ func ListInitiativeUpdatesForInitiative(
 		return InitiativeUpdateList{}, err
 	}
 
-	return InitiativeUpdateList{Updates: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return InitiativeUpdateList{Updates: page.Items, Page: page.Page}, nil
 }
 
 // ListInitiativeDocuments returns Documents associated with one initiative.
@@ -206,7 +204,7 @@ func ListInitiativeDocuments(
 		return DocumentList{}, err
 	}
 
-	return DocumentList{Documents: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return DocumentList{Documents: page.Items, Page: page.Page}, nil
 }
 
 // ListInitiativeProjects returns Projects directly associated with one initiative.
@@ -226,7 +224,7 @@ func ListInitiativeProjects(
 		return ProjectList{}, err
 	}
 
-	return ProjectList{Projects: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return ProjectList{Projects: page.Items, Page: page.Page}, nil
 }
 
 func (query initiativesQuery) page(pageSize int, after *string) ([]initiativesNode, bool, *string, error) {

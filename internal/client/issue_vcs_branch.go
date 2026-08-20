@@ -46,8 +46,13 @@ type issueVCSBranchQuery struct {
 	ctx           context.Context
 	graphqlClient graphql.Client
 	branchName    string
-	issueID       string
-	identifier    string
+}
+
+// issueVCSBranchParent is the connection parent metadata issueVCSBranchQuery reads out of
+// every page. Linear repeats it per page, so the last page wins.
+type issueVCSBranchParent struct {
+	issueID    string
+	identifier string
 }
 
 // GetIssueByVCSBranch returns an issue by VCS branch name.
@@ -80,7 +85,7 @@ func ListIssueVCSBranchAttachments(
 		return AttachmentList{}, err
 	}
 
-	return AttachmentList{Attachments: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return AttachmentList{Attachments: page.Items, Page: page.Page}, nil
 }
 
 // GetIssueVCSBranchBotActor returns bot actor metadata for the issue matched by a VCS branch.
@@ -120,7 +125,7 @@ func ListIssueVCSBranchChildren(
 		return IssueList{}, err
 	}
 
-	return IssueList{Issues: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return IssueList{Issues: page.Items, Page: page.Page}, nil
 }
 
 // ListIssueVCSBranchDocuments returns documents for the issue matched by a VCS branch.
@@ -140,7 +145,7 @@ func ListIssueVCSBranchDocuments(
 		return DocumentList{}, err
 	}
 
-	return DocumentList{Documents: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return DocumentList{Documents: page.Items, Page: page.Page}, nil
 }
 
 // ListIssueVCSBranchFormerAttachments returns former attachments for the issue matched by a VCS branch.
@@ -160,7 +165,7 @@ func ListIssueVCSBranchFormerAttachments(
 		return AttachmentList{}, err
 	}
 
-	return AttachmentList{Attachments: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return AttachmentList{Attachments: page.Items, Page: page.Page}, nil
 }
 
 // ListIssueVCSBranchHistory returns history metadata for the issue matched by a VCS branch.
@@ -180,7 +185,7 @@ func ListIssueVCSBranchHistory(
 		return IssueHistoryList{}, err
 	}
 
-	return IssueHistoryList{History: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return IssueHistoryList{History: page.Items, Page: page.Page}, nil
 }
 
 // ListIssueVCSBranchInverseRelations returns inverse relations for the issue matched by a VCS branch.
@@ -200,7 +205,7 @@ func ListIssueVCSBranchInverseRelations(
 		return IssueRelationList{}, err
 	}
 
-	return IssueRelationList{Relations: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return IssueRelationList{Relations: page.Items, Page: page.Page}, nil
 }
 
 // ListIssueVCSBranchLabels returns labels for the issue matched by a VCS branch.
@@ -220,7 +225,7 @@ func ListIssueVCSBranchLabels(
 		return LabelList{}, err
 	}
 
-	return LabelList{Labels: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return LabelList{Labels: page.Items, Page: page.Page}, nil
 }
 
 // ListIssueVCSBranchRelations returns relations for the issue matched by a VCS branch.
@@ -240,7 +245,7 @@ func ListIssueVCSBranchRelations(
 		return IssueRelationList{}, err
 	}
 
-	return IssueRelationList{Relations: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return IssueRelationList{Relations: page.Items, Page: page.Page}, nil
 }
 
 // ListIssueVCSBranchReleases returns releases for the issue matched by a VCS branch.
@@ -260,7 +265,7 @@ func ListIssueVCSBranchReleases(
 		return ReleaseList{}, err
 	}
 
-	return ReleaseList{Releases: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return ReleaseList{Releases: page.Items, Page: page.Page}, nil
 }
 
 // ListIssueVCSBranchStateHistory returns workflow-state spans for the issue matched by a VCS branch.
@@ -271,7 +276,7 @@ func ListIssueVCSBranchStateHistory(
 	limit int,
 ) (IssueStateHistoryList, error) {
 	query := &issueVCSBranchQuery{ctx: ctx, graphqlClient: graphqlClient, branchName: branchName}
-	page, err := listConnection(
+	page, parent, err := listConnectionWithParent(
 		"list issue vcs branch state history "+branchName, limit, defaultListPageSize,
 		query.stateHistory,
 		issueStateSpanSummary,
@@ -281,10 +286,9 @@ func ListIssueVCSBranchStateHistory(
 	}
 
 	return IssueStateHistoryList{
-		IssueID:     query.issueID,
-		Spans:       page.Items,
-		HasNextPage: page.HasNextPage,
-		EndCursor:   page.EndCursor,
+		IssueID: parent.issueID,
+		Spans:   page.Items,
+		Page:    page.Page,
 	}, nil
 }
 
@@ -305,7 +309,7 @@ func ListIssueVCSBranchSubscribers(
 		return UserList{}, err
 	}
 
-	return UserList{Users: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return UserList{Users: page.Items, Page: page.Page}, nil
 }
 
 func (query *issueVCSBranchQuery) attachments(
@@ -491,20 +495,19 @@ func (query *issueVCSBranchQuery) releases(
 func (query *issueVCSBranchQuery) stateHistory(
 	pageSize int,
 	after *string,
-) ([]issueVCSBranchStateHistoryNode, bool, *string, error) {
+) ([]issueVCSBranchStateHistoryNode, issueVCSBranchParent, bool, *string, error) {
 	result, err := gql.XIssueVcsBranchSearch_stateHistory(
 		query.ctx, query.graphqlClient, query.branchName, intPtr(pageSize), after,
 	)
 	if err != nil {
-		return nil, false, nil, err
+		return nil, issueVCSBranchParent{}, false, nil, err
 	}
 	if result.IssueVcsBranchSearch == nil {
-		return nil, false, nil, ErrNotFound
+		return nil, issueVCSBranchParent{}, false, nil, ErrNotFound
 	}
 
-	query.issueID = result.IssueVcsBranchSearch.Id
-
 	return result.IssueVcsBranchSearch.StateHistory.Nodes,
+		issueVCSBranchParent{issueID: result.IssueVcsBranchSearch.Id},
 		result.IssueVcsBranchSearch.StateHistory.PageInfo.HasNextPage,
 		result.IssueVcsBranchSearch.StateHistory.PageInfo.EndCursor,
 		nil

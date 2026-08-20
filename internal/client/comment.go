@@ -80,26 +80,23 @@ type CommentBotActor struct {
 
 // IssueCommentList is a page of comments for one issue.
 type IssueCommentList struct {
-	IssueID     string                `json:"issue_id"`
-	Identifier  string                `json:"identifier"`
-	Comments    []IssueCommentSummary `json:"comments"`
-	HasNextPage bool                  `json:"has_next_page"`
-	EndCursor   *string               `json:"end_cursor,omitempty"`
+	IssueID    string                `json:"issue_id"`
+	Identifier string                `json:"identifier"`
+	Comments   []IssueCommentSummary `json:"comments"`
+	Page
 }
 
 // CommentList is a page of comments visible to the authenticated user.
 type CommentList struct {
-	Comments    []CommentSummary `json:"comments"`
-	HasNextPage bool             `json:"has_next_page"`
-	EndCursor   *string          `json:"end_cursor,omitempty"`
+	Comments []CommentSummary `json:"comments"`
+	Page
 }
 
 // CommentChildList is a page of body-free child comment metadata.
 type CommentChildList struct {
-	CommentID   string                   `json:"comment_id"`
-	Comments    []CommentMetadataSummary `json:"comments"`
-	HasNextPage bool                     `json:"has_next_page"`
-	EndCursor   *string                  `json:"end_cursor,omitempty"`
+	CommentID string                   `json:"comment_id"`
+	Comments  []CommentMetadataSummary `json:"comments"`
+	Page
 }
 
 //nolint:lll
@@ -123,15 +120,25 @@ type commentScopedQuery struct {
 	ctx           context.Context
 	graphqlClient graphql.Client
 	id            string
-	commentID     string
+}
+
+// commentScopedParent is the connection parent metadata commentScopedQuery reads out of
+// every page. Linear repeats it per page, so the last page wins.
+type commentScopedParent struct {
+	commentID string
 }
 
 type issueCommentsQuery struct {
 	ctx           context.Context
 	graphqlClient graphql.Client
 	id            string
-	issueID       string
-	identifier    string
+}
+
+// issueCommentsParent is the connection parent metadata issueCommentsQuery reads out of
+// every page. Linear repeats it per page, so the last page wins.
+type issueCommentsParent struct {
+	issueID    string
+	identifier string
 }
 
 // ListComments returns visible comments across parent entity types.
@@ -146,7 +153,7 @@ func ListComments(ctx context.Context, graphqlClient graphql.Client, limit int) 
 		return CommentList{}, err
 	}
 
-	return CommentList{Comments: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return CommentList{Comments: page.Items, Page: page.Page}, nil
 }
 
 // GetCommentByID returns one comment by Linear id.
@@ -180,7 +187,7 @@ func ListCommentChildren(
 	limit int,
 ) (CommentChildList, error) {
 	query := &commentScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
-	page, err := listConnection(
+	page, parent, err := listConnectionWithParent(
 		"list comment children "+id, limit, defaultListPageSize,
 		query.children,
 		commentChildrenNodeSummary,
@@ -190,10 +197,9 @@ func ListCommentChildren(
 	}
 
 	return CommentChildList{
-		CommentID:   query.commentID,
-		Comments:    page.Items,
-		HasNextPage: page.HasNextPage,
-		EndCursor:   page.EndCursor,
+		CommentID: parent.commentID,
+		Comments:  page.Items,
+		Page:      page.Page,
 	}, nil
 }
 
@@ -214,7 +220,7 @@ func ListCommentCreatedIssues(
 		return IssueList{}, err
 	}
 
-	return IssueList{Issues: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return IssueList{Issues: page.Items, Page: page.Page}, nil
 }
 
 // ListIssueComments returns comments for one issue by Linear id or identifier.
@@ -225,7 +231,7 @@ func ListIssueComments(
 	limit int,
 ) (IssueCommentList, error) {
 	query := &issueCommentsQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
-	page, err := listConnection(
+	page, parent, err := listConnectionWithParent(
 		"list issue comments "+id, limit, defaultListPageSize,
 		query.comments,
 		issueCommentSummary,
@@ -235,11 +241,10 @@ func ListIssueComments(
 	}
 
 	return IssueCommentList{
-		IssueID:     query.issueID,
-		Identifier:  query.identifier,
-		Comments:    page.Items,
-		HasNextPage: page.HasNextPage,
-		EndCursor:   page.EndCursor,
+		IssueID:    parent.issueID,
+		Identifier: parent.identifier,
+		Comments:   page.Items,
+		Page:       page.Page,
 	}, nil
 }
 
@@ -258,17 +263,16 @@ func (query commentsQuery) page(pageSize int, after *string) ([]commentsNode, bo
 func (query *commentScopedQuery) children(
 	pageSize int,
 	after *string,
-) ([]commentChildrenNode, bool, *string, error) {
+) ([]commentChildrenNode, commentScopedParent, bool, *string, error) {
 	result, err := gql.XComment_children(
 		query.ctx, query.graphqlClient, stringPtr(query.id), nil, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, false, nil, err
+		return nil, commentScopedParent{}, false, nil, err
 	}
 
-	query.commentID = result.Comment.Id
-
 	return result.Comment.Children.Nodes,
+		commentScopedParent{commentID: result.Comment.Id},
 		result.Comment.Children.PageInfo.HasNextPage,
 		result.Comment.Children.PageInfo.EndCursor,
 		nil
@@ -294,18 +298,16 @@ func (query commentScopedQuery) createdIssues(
 func (query *issueCommentsQuery) comments(
 	pageSize int,
 	after *string,
-) ([]issueCommentsNode, bool, *string, error) {
+) ([]issueCommentsNode, issueCommentsParent, bool, *string, error) {
 	result, err := gql.XIssue_comments(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, false, nil, err
+		return nil, issueCommentsParent{}, false, nil, err
 	}
 
-	query.issueID = result.Issue.Id
-	query.identifier = result.Issue.Identifier
-
 	return result.Issue.Comments.Nodes,
+		issueCommentsParent{issueID: result.Issue.Id, identifier: result.Issue.Identifier},
 		result.Issue.Comments.PageInfo.HasNextPage,
 		result.Issue.Comments.PageInfo.EndCursor,
 		nil

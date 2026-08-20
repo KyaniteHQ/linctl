@@ -33,9 +33,8 @@ type ProjectRelationSummary struct {
 
 // ProjectRelationList is a page of project dependency relations.
 type ProjectRelationList struct {
-	Relations   []ProjectRelationSummary `json:"relations"`
-	HasNextPage bool                     `json:"has_next_page"`
-	EndCursor   *string                  `json:"end_cursor,omitempty"`
+	Relations []ProjectRelationSummary `json:"relations"`
+	Page
 }
 
 //nolint:lll
@@ -62,7 +61,7 @@ func ListProjectRelations(
 		return ProjectRelationList{}, err
 	}
 
-	return ProjectRelationList{Relations: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return ProjectRelationList{Relations: page.Items, Page: page.Page}, nil
 }
 
 func (query projectRelationsQuery) page(

@@ -22,10 +22,9 @@ type SearchDocumentSummary struct {
 
 // SearchDocumentList is a page of document search results.
 type SearchDocumentList struct {
-	Documents   []SearchDocumentSummary `json:"documents"`
-	TotalCount  float64                 `json:"total_count"`
-	HasNextPage bool                    `json:"has_next_page"`
-	EndCursor   *string                 `json:"end_cursor,omitempty"`
+	Documents  []SearchDocumentSummary `json:"documents"`
+	TotalCount float64                 `json:"total_count"`
+	Page
 }
 
 // SearchIssueSummary is a compact issue search result.
@@ -46,10 +45,9 @@ type SearchIssueSummary struct {
 
 // SearchIssueList is a page of issue search results.
 type SearchIssueList struct {
-	Issues      []SearchIssueSummary `json:"issues"`
-	TotalCount  float64              `json:"total_count"`
-	HasNextPage bool                 `json:"has_next_page"`
-	EndCursor   *string              `json:"end_cursor,omitempty"`
+	Issues     []SearchIssueSummary `json:"issues"`
+	TotalCount float64              `json:"total_count"`
+	Page
 }
 
 // SearchProjectSummary is a compact project search result.
@@ -65,10 +63,9 @@ type SearchProjectSummary struct {
 
 // SearchProjectList is a page of project search results.
 type SearchProjectList struct {
-	Projects    []SearchProjectSummary `json:"projects"`
-	TotalCount  float64                `json:"total_count"`
-	HasNextPage bool                   `json:"has_next_page"`
-	EndCursor   *string                `json:"end_cursor,omitempty"`
+	Projects   []SearchProjectSummary `json:"projects"`
+	TotalCount float64                `json:"total_count"`
+	Page
 }
 
 // SearchDocuments returns compact document search results.
@@ -90,10 +87,12 @@ func SearchDocuments(
 	})
 
 	return SearchDocumentList{
-		Documents:   documents,
-		TotalCount:  result.SearchDocuments.TotalCount,
-		HasNextPage: result.SearchDocuments.PageInfo.HasNextPage,
-		EndCursor:   result.SearchDocuments.PageInfo.EndCursor,
+		Documents:  documents,
+		TotalCount: result.SearchDocuments.TotalCount,
+		Page: Page{
+			HasNextPage: result.SearchDocuments.PageInfo.HasNextPage,
+			EndCursor:   result.SearchDocuments.PageInfo.EndCursor,
+		},
 	}, nil
 }
 
@@ -116,10 +115,12 @@ func SearchIssues(
 	})
 
 	return SearchIssueList{
-		Issues:      issues,
-		TotalCount:  result.SearchIssues.TotalCount,
-		HasNextPage: result.SearchIssues.PageInfo.HasNextPage,
-		EndCursor:   result.SearchIssues.PageInfo.EndCursor,
+		Issues:     issues,
+		TotalCount: result.SearchIssues.TotalCount,
+		Page: Page{
+			HasNextPage: result.SearchIssues.PageInfo.HasNextPage,
+			EndCursor:   result.SearchIssues.PageInfo.EndCursor,
+		},
 	}, nil
 }
 
@@ -142,10 +143,12 @@ func SearchProjects(
 	})
 
 	return SearchProjectList{
-		Projects:    projects,
-		TotalCount:  result.SearchProjects.TotalCount,
-		HasNextPage: result.SearchProjects.PageInfo.HasNextPage,
-		EndCursor:   result.SearchProjects.PageInfo.EndCursor,
+		Projects:   projects,
+		TotalCount: result.SearchProjects.TotalCount,
+		Page: Page{
+			HasNextPage: result.SearchProjects.PageInfo.HasNextPage,
+			EndCursor:   result.SearchProjects.PageInfo.EndCursor,
+		},
 	}, nil
 }
 

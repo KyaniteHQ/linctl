@@ -261,7 +261,7 @@ func Test_runNextWithPicker_notes_truncated_ranking(t *testing.T) {
 					State:      "Todo",
 				},
 			},
-			HasNextPage: true,
+			Page: client.Page{HasNextPage: true},
 		},
 	}
 
@@ -291,7 +291,7 @@ func Test_runNextWithPicker_suppresses_truncated_ranking_note_when_quiet(t *test
 					State:      "Todo",
 				},
 			},
-			HasNextPage: true,
+			Page: client.Page{HasNextPage: true},
 		},
 	}
 
@@ -321,7 +321,7 @@ func Test_runNextWithPicker_surfaces_truncated_ranking_note_writer_errors(t *tes
 					State:      "Todo",
 				},
 			},
-			HasNextPage: true,
+			Page: client.Page{HasNextPage: true},
 		},
 	}
 

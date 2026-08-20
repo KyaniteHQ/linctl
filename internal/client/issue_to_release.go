@@ -22,8 +22,7 @@ type IssueToReleaseSummary struct {
 // IssueToReleaseList is a page of issue-to-release associations.
 type IssueToReleaseList struct {
 	Associations []IssueToReleaseSummary `json:"associations"`
-	HasNextPage  bool                    `json:"has_next_page"`
-	EndCursor    *string                 `json:"end_cursor,omitempty"`
+	Page
 }
 
 //nolint:lll
@@ -56,8 +55,7 @@ func ListIssueToReleases(
 
 	return IssueToReleaseList{
 		Associations: page.Items,
-		HasNextPage:  page.HasNextPage,
-		EndCursor:    page.EndCursor,
+		Page:         page.Page,
 	}, nil
 }
 

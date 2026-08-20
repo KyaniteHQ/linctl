@@ -25,8 +25,7 @@ type ProjectStatusSummary struct {
 // ProjectStatusList is a page of Linear project statuses.
 type ProjectStatusList struct {
 	ProjectStatuses []ProjectStatusSummary `json:"project_statuses"`
-	HasNextPage     bool                   `json:"has_next_page"`
-	EndCursor       *string                `json:"end_cursor,omitempty"`
+	Page
 }
 
 // ProjectStatusProjectCount summarizes projects using one project status.
@@ -57,7 +56,7 @@ func ListProjectStatuses(ctx context.Context, graphqlClient graphql.Client, limi
 		return ProjectStatusList{}, err
 	}
 
-	return ProjectStatusList{ProjectStatuses: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return ProjectStatusList{ProjectStatuses: page.Items, Page: page.Page}, nil
 }
 
 func (query projectStatusesQuery) page(

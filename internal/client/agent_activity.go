@@ -37,8 +37,7 @@ type AgentActivitySummary struct {
 // AgentActivityList is a page of AgentActivities.
 type AgentActivityList struct {
 	AgentActivities []AgentActivitySummary `json:"agent_activities"`
-	HasNextPage     bool                   `json:"has_next_page"`
-	EndCursor       *string                `json:"end_cursor,omitempty"`
+	Page
 }
 
 //nolint:lll
@@ -63,8 +62,7 @@ func ListAgentActivities(ctx context.Context, graphqlClient graphql.Client, limi
 
 	return AgentActivityList{
 		AgentActivities: page.Items,
-		HasNextPage:     page.HasNextPage,
-		EndCursor:       page.EndCursor,
+		Page:            page.Page,
 	}, nil
 }
 

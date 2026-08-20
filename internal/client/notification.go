@@ -35,8 +35,7 @@ type NotificationSummary struct {
 // NotificationList is a page of Linear notifications.
 type NotificationList struct {
 	Notifications []NotificationSummary `json:"notifications"`
-	HasNextPage   bool                  `json:"has_next_page"`
-	EndCursor     *string               `json:"end_cursor,omitempty"`
+	Page
 }
 
 // NotificationSubscriptionSummary is the compact subscription model used by read-only commands.
@@ -58,8 +57,7 @@ type NotificationSubscriptionSummary struct {
 // NotificationSubscriptionList is a page of Linear notification subscriptions.
 type NotificationSubscriptionList struct {
 	Subscriptions []NotificationSubscriptionSummary `json:"notification_subscriptions"`
-	HasNextPage   bool                              `json:"has_next_page"`
-	EndCursor     *string                           `json:"end_cursor,omitempty"`
+	Page
 }
 
 //nolint:lll
@@ -89,8 +87,7 @@ func ListNotifications(ctx context.Context, graphqlClient graphql.Client, limit 
 
 	return NotificationList{
 		Notifications: page.Items,
-		HasNextPage:   page.HasNextPage,
-		EndCursor:     page.EndCursor,
+		Page:          page.Page,
 	}, nil
 }
 
@@ -132,8 +129,7 @@ func ListNotificationSubscriptions(
 
 	return NotificationSubscriptionList{
 		Subscriptions: page.Items,
-		HasNextPage:   page.HasNextPage,
-		EndCursor:     page.EndCursor,
+		Page:          page.Page,
 	}, nil
 }
 

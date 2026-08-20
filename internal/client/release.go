@@ -43,9 +43,8 @@ type ReleaseSummary struct {
 
 // ReleaseList is a page of Linear releases.
 type ReleaseList struct {
-	Releases    []ReleaseSummary `json:"releases"`
-	HasNextPage bool             `json:"has_next_page"`
-	EndCursor   *string          `json:"end_cursor,omitempty"`
+	Releases []ReleaseSummary `json:"releases"`
+	Page
 }
 
 // ReleaseHistorySummary is the compact release history model used by read-only commands.
@@ -61,9 +60,8 @@ type ReleaseHistorySummary struct {
 
 // ReleaseHistoryList is a page of Linear release history records.
 type ReleaseHistoryList struct {
-	History     []ReleaseHistorySummary `json:"history"`
-	HasNextPage bool                    `json:"has_next_page"`
-	EndCursor   *string                 `json:"end_cursor,omitempty"`
+	History []ReleaseHistorySummary `json:"history"`
+	Page
 }
 
 // EntityExternalLinkSummary is the compact external link model used by read-only commands.
@@ -85,9 +83,8 @@ type EntityExternalLinkSummary struct {
 
 // EntityExternalLinkList is a page of Linear external links.
 type EntityExternalLinkList struct {
-	Links       []EntityExternalLinkSummary `json:"links"`
-	HasNextPage bool                        `json:"has_next_page"`
-	EndCursor   *string                     `json:"end_cursor,omitempty"`
+	Links []EntityExternalLinkSummary `json:"links"`
+	Page
 }
 
 // ReleaseNoteSummary is the compact release note model used by read-only commands.
@@ -114,8 +111,7 @@ type ReleaseNoteSummary struct {
 // ReleaseNoteList is a page of Linear release notes.
 type ReleaseNoteList struct {
 	ReleaseNotes []ReleaseNoteSummary `json:"release_notes"`
-	HasNextPage  bool                 `json:"has_next_page"`
-	EndCursor    *string              `json:"end_cursor,omitempty"`
+	Page
 }
 
 //nolint:lll
@@ -164,7 +160,7 @@ func ListReleases(ctx context.Context, graphqlClient graphql.Client, limit int) 
 		return ReleaseList{}, err
 	}
 
-	return ReleaseList{Releases: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return ReleaseList{Releases: page.Items, Page: page.Page}, nil
 }
 
 // GetReleaseByID returns one Linear release by id.
@@ -194,7 +190,7 @@ func ListReleaseHistory(
 		return ReleaseHistoryList{}, err
 	}
 
-	return ReleaseHistoryList{History: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return ReleaseHistoryList{History: page.Items, Page: page.Page}, nil
 }
 
 // ListReleaseDocuments returns documents associated with one Linear release.
@@ -214,7 +210,7 @@ func ListReleaseDocuments(
 		return DocumentList{}, err
 	}
 
-	return DocumentList{Documents: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return DocumentList{Documents: page.Items, Page: page.Page}, nil
 }
 
 // ListReleaseIssues returns issues associated with one Linear release.
@@ -234,7 +230,7 @@ func ListReleaseIssues(
 		return IssueList{}, err
 	}
 
-	return IssueList{Issues: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return IssueList{Issues: page.Items, Page: page.Page}, nil
 }
 
 // ListReleaseLinks returns external links associated with one Linear release.
@@ -254,7 +250,7 @@ func ListReleaseLinks(
 		return EntityExternalLinkList{}, err
 	}
 
-	return EntityExternalLinkList{Links: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return EntityExternalLinkList{Links: page.Items, Page: page.Page}, nil
 }
 
 // GetEntityExternalLinkByID returns one Linear external link by id.
@@ -297,7 +293,7 @@ func ListReleaseNotes(ctx context.Context, graphqlClient graphql.Client, limit i
 		return ReleaseNoteList{}, err
 	}
 
-	return ReleaseNoteList{ReleaseNotes: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return ReleaseNoteList{ReleaseNotes: page.Items, Page: page.Page}, nil
 }
 
 // GetReleaseNoteByID returns one Linear release note by id.

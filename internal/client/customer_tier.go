@@ -23,9 +23,8 @@ type CustomerTierSummary struct {
 
 // CustomerTierList is a page of Linear customer tiers.
 type CustomerTierList struct {
-	Tiers       []CustomerTierSummary `json:"customer_tiers"`
-	HasNextPage bool                  `json:"has_next_page"`
-	EndCursor   *string               `json:"end_cursor,omitempty"`
+	Tiers []CustomerTierSummary `json:"customer_tiers"`
+	Page
 }
 
 //nolint:lll
@@ -48,7 +47,7 @@ func ListCustomerTiers(ctx context.Context, graphqlClient graphql.Client, limit 
 		return CustomerTierList{}, err
 	}
 
-	return CustomerTierList{Tiers: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return CustomerTierList{Tiers: page.Items, Page: page.Page}, nil
 }
 
 // GetCustomerTierByID returns one customer tier by id.

@@ -32,8 +32,7 @@ type TeamMembershipSummary struct {
 // TeamMembershipList is a page of team memberships.
 type TeamMembershipList struct {
 	Memberships []TeamMembershipSummary `json:"memberships"`
-	HasNextPage bool                    `json:"has_next_page"`
-	EndCursor   *string                 `json:"end_cursor,omitempty"`
+	Page
 }
 
 //nolint:lll
@@ -60,7 +59,7 @@ func ListTeamMemberships(
 		return TeamMembershipList{}, err
 	}
 
-	return TeamMembershipList{Memberships: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return TeamMembershipList{Memberships: page.Items, Page: page.Page}, nil
 }
 
 // GetTeamMembershipByID returns one team membership by Linear id.

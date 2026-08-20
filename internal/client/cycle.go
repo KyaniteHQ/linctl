@@ -29,25 +29,22 @@ type CycleSummary struct {
 
 // CycleList is a page of Cycles scoped to a team.
 type CycleList struct {
-	Cycles      []CycleSummary `json:"cycles"`
-	HasNextPage bool           `json:"has_next_page"`
-	EndCursor   *string        `json:"end_cursor,omitempty"`
+	Cycles []CycleSummary `json:"cycles"`
+	Page
 }
 
 // SprintReport is a read-only Cycle report with its assigned issues.
 type SprintReport struct {
-	Cycle       CycleSummary   `json:"cycle"`
-	Issues      []IssueSummary `json:"issues"`
-	HasNextPage bool           `json:"has_next_page"`
-	EndCursor   *string        `json:"end_cursor,omitempty"`
+	Cycle  CycleSummary   `json:"cycle"`
+	Issues []IssueSummary `json:"issues"`
+	Page
 }
 
 // CycleIssueList is a page of Issues associated with one Cycle.
 type CycleIssueList struct {
-	Cycle       CycleSummary   `json:"cycle"`
-	Issues      []IssueSummary `json:"issues"`
-	HasNextPage bool           `json:"has_next_page"`
-	EndCursor   *string        `json:"end_cursor,omitempty"`
+	Cycle  CycleSummary   `json:"cycle"`
+	Issues []IssueSummary `json:"issues"`
+	Page
 }
 
 // CycleCreateRequest describes a guarded Cycle create in the pinned team.
@@ -88,7 +85,12 @@ type cycleScopedQuery struct {
 	ctx           context.Context
 	graphqlClient graphql.Client
 	id            string
-	cycle         CycleSummary
+}
+
+// cycleScopedParent is the connection parent metadata cycleScopedQuery reads out of
+// every page. Linear repeats it per page, so the last page wins.
+type cycleScopedParent struct {
+	cycle CycleSummary
 }
 
 // ListCyclesByTeam returns Cycles scoped to a resolved team.
@@ -108,7 +110,7 @@ func ListCyclesByTeam(
 		return CycleList{}, err
 	}
 
-	return CycleList{Cycles: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return CycleList{Cycles: page.Items, Page: page.Page}, nil
 }
 
 // GetCycleByID returns a Cycle by Linear id or slug.
@@ -162,17 +164,19 @@ func GetSprintReport(ctx context.Context, graphqlClient graphql.Client, id strin
 	})
 
 	return SprintReport{
-		Cycle:       cycleSummary(report.Cycle.CycleSummaryFields),
-		Issues:      issues,
-		HasNextPage: report.Cycle.Issues.PageInfo.HasNextPage,
-		EndCursor:   report.Cycle.Issues.PageInfo.EndCursor,
+		Cycle:  cycleSummary(report.Cycle.CycleSummaryFields),
+		Issues: issues,
+		Page: Page{
+			HasNextPage: report.Cycle.Issues.PageInfo.HasNextPage,
+			EndCursor:   report.Cycle.Issues.PageInfo.EndCursor,
+		},
 	}, nil
 }
 
 // ListCycleIssues returns Issues assigned to one Cycle.
 func ListCycleIssues(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (CycleIssueList, error) {
 	query := &cycleScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
-	page, err := listConnection(
+	page, parent, err := listConnectionWithParent(
 		"list cycle issues "+id, limit, defaultListPageSize,
 		query.issues,
 		cycleIssuesNodeSummary,
@@ -182,10 +186,9 @@ func ListCycleIssues(ctx context.Context, graphqlClient graphql.Client, id strin
 	}
 
 	return CycleIssueList{
-		Cycle:       query.cycle,
-		Issues:      page.Items,
-		HasNextPage: page.HasNextPage,
-		EndCursor:   page.EndCursor,
+		Cycle:  parent.cycle,
+		Issues: page.Items,
+		Page:   page.Page,
 	}, nil
 }
 
@@ -197,7 +200,7 @@ func ListCycleUncompletedIssuesUponClose(
 	limit int,
 ) (CycleIssueList, error) {
 	query := &cycleScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
-	page, err := listConnection(
+	page, parent, err := listConnectionWithParent(
 		"list cycle uncompleted issues "+id, limit, defaultListPageSize,
 		query.uncompletedIssues,
 		cycleUncompletedIssuesNodeSummary,
@@ -207,10 +210,9 @@ func ListCycleUncompletedIssuesUponClose(
 	}
 
 	return CycleIssueList{
-		Cycle:       query.cycle,
-		Issues:      page.Items,
-		HasNextPage: page.HasNextPage,
-		EndCursor:   page.EndCursor,
+		Cycle:  parent.cycle,
+		Issues: page.Items,
+		Page:   page.Page,
 	}, nil
 }
 
@@ -359,17 +361,19 @@ func (query cyclesByTeamQuery) page(pageSize int, after *string) ([]cyclesNode, 
 		nil
 }
 
-func (query *cycleScopedQuery) issues(pageSize int, after *string) ([]cycleIssuesNode, bool, *string, error) {
+func (query *cycleScopedQuery) issues(
+	pageSize int,
+	after *string,
+) ([]cycleIssuesNode, cycleScopedParent, bool, *string, error) {
 	result, err := gql.XCycle_issues(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, false, nil, err
+		return nil, cycleScopedParent{}, false, nil, err
 	}
 
-	query.cycle = cycleSummary(result.Cycle.CycleSummaryFields)
-
 	return result.Cycle.Issues.Nodes,
+		cycleScopedParent{cycle: cycleSummary(result.Cycle.CycleSummaryFields)},
 		result.Cycle.Issues.PageInfo.HasNextPage,
 		result.Cycle.Issues.PageInfo.EndCursor,
 		nil
@@ -378,17 +382,16 @@ func (query *cycleScopedQuery) issues(pageSize int, after *string) ([]cycleIssue
 func (query *cycleScopedQuery) uncompletedIssues(
 	pageSize int,
 	after *string,
-) ([]cycleUncompletedIssuesNode, bool, *string, error) {
+) ([]cycleUncompletedIssuesNode, cycleScopedParent, bool, *string, error) {
 	result, err := gql.XCycle_uncompletedIssuesUponClose(
 		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
 	)
 	if err != nil {
-		return nil, false, nil, err
+		return nil, cycleScopedParent{}, false, nil, err
 	}
 
-	query.cycle = cycleSummary(result.Cycle.CycleSummaryFields)
-
 	return result.Cycle.UncompletedIssuesUponClose.Nodes,
+		cycleScopedParent{cycle: cycleSummary(result.Cycle.CycleSummaryFields)},
 		result.Cycle.UncompletedIssuesUponClose.PageInfo.HasNextPage,
 		result.Cycle.UncompletedIssuesUponClose.PageInfo.EndCursor,
 		nil

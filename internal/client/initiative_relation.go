@@ -27,9 +27,8 @@ type InitiativeRelationSummary struct {
 
 // InitiativeRelationList is a page of initiative relations.
 type InitiativeRelationList struct {
-	Relations   []InitiativeRelationSummary `json:"relations"`
-	HasNextPage bool                        `json:"has_next_page"`
-	EndCursor   *string                     `json:"end_cursor,omitempty"`
+	Relations []InitiativeRelationSummary `json:"relations"`
+	Page
 }
 
 //nolint:lll
@@ -60,7 +59,7 @@ func ListInitiativeRelations(
 		return InitiativeRelationList{}, err
 	}
 
-	return InitiativeRelationList{Relations: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return InitiativeRelationList{Relations: page.Items, Page: page.Page}, nil
 }
 
 // GetInitiativeRelationByID returns one initiative relation by Linear id.

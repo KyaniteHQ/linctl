@@ -26,9 +26,8 @@ type IssueRelationSummary struct {
 
 // IssueRelationList is a page of issue relations.
 type IssueRelationList struct {
-	Relations   []IssueRelationSummary `json:"relations"`
-	HasNextPage bool                   `json:"has_next_page"`
-	EndCursor   *string                `json:"end_cursor,omitempty"`
+	Relations []IssueRelationSummary `json:"relations"`
+	Page
 }
 
 //nolint:lll
@@ -59,7 +58,7 @@ func ListIssueRelations(
 		return IssueRelationList{}, err
 	}
 
-	return IssueRelationList{Relations: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+	return IssueRelationList{Relations: page.Items, Page: page.Page}, nil
 }
 
 // GetIssueRelationByID returns one issue relation by Linear id.

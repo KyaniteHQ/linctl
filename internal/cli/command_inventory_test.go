@@ -269,13 +269,16 @@ func Test_list_command_registration_rejects_invalid_page_shapes(t *testing.T) {
 	}
 	type validPage struct {
 		Items []item `json:"items"`
+		client.Page
 	}
 	type ambiguousPage struct {
 		Items  []item `json:"items"`
 		Labels []item `json:"labels"`
+		client.Page
 	}
 	type wrongItemPage struct {
 		Items []string `json:"items"`
+		client.Page
 	}
 
 	validRoot := &cobra.Command{Use: "root"}
@@ -296,18 +299,20 @@ func Test_list_command_registration_rejects_invalid_page_shapes(t *testing.T) {
 func Test_list_command_registration_rejects_pointer_chains(t *testing.T) {
 	require.PanicsWithError(
 		t,
-		"list page **cli.testPage must point directly to a struct",
-		func() { registerTestList[**testPage, testItem](&cobra.Command{Use: "root"}, nil) },
+		"list page *cli.testSlicePage must point directly to a struct",
+		func() { registerTestList[*testSlicePage, testItem](&cobra.Command{Use: "root"}, nil) },
 	)
 }
 
 type testItem struct{}
 
-type testPage struct {
-	Items []testItem `json:"items"`
-}
+// testSlicePage satisfies listPage without being a struct, so registration
+// still has to reject it at the reflection layer.
+type testSlicePage []testItem
 
-func registerTestList[Page any, Item any](root *cobra.Command, page Page) {
+func (testSlicePage) HasMore() bool { return false }
+
+func registerTestList[Page listPage, Item any](root *cobra.Command, page Page) {
 	addListCommand(context.Background(), root, &rootOptions{}, listCommandSpec[Page, Item]{
 		Use:   "list",
 		Short: "List items",
