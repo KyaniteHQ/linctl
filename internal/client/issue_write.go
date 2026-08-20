@@ -146,17 +146,112 @@ func (guard *guardedClient) createIssue(
 	}
 	input.Priority = priority
 	created, err := gql.IssueCreate(ctx, guard.graphqlClient, input)
+
+	return guard.finishIssueCreate(
+		ctx, request, created, issueCreateWriteError(created, err), stateID, stateSet,
+	)
+}
+
+const createdIssueReconcileLimit = 2
+
+func issueCreateWriteError(created *gql.IssueCreateResponse, err error) error {
 	if err != nil {
-		return IssueSummary{}, fmt.Errorf("create issue: %w", err)
+		return fmt.Errorf("create issue: %w", err)
 	}
-	if !created.IssueCreate.Success || created.IssueCreate.Issue == nil {
-		return IssueSummary{}, fmt.Errorf("%w: issueCreate returned no issue", ErrMutationFailed)
-	}
-	if stateSet {
-		return guard.finishStateWrite(ctx, created.IssueCreate.Issue.Id, stateID, nil)
+	if created != nil && created.IssueCreate.Success && created.IssueCreate.Issue != nil {
+		return nil
 	}
 
-	return issueSummaryFromFields(created.IssueCreate.Issue.IssueSummaryFields), nil
+	return fmt.Errorf("%w: issueCreate returned no issue", ErrMutationFailed)
+}
+
+func createdIssueID(created *gql.IssueCreateResponse) string {
+	if created == nil || created.IssueCreate.Issue == nil {
+		return ""
+	}
+
+	return created.IssueCreate.Issue.Id
+}
+
+func createdIssueSummary(created *gql.IssueCreateResponse) IssueSummary {
+	return issueSummaryFromFields(created.IssueCreate.Issue.IssueSummaryFields)
+}
+
+func (guard *guardedClient) finishIssueCreate(
+	ctx context.Context,
+	request IssueCreateRequest,
+	created *gql.IssueCreateResponse,
+	writeErr error,
+	stateID string,
+	stateSet bool,
+) (IssueSummary, error) {
+	issueID := createdIssueID(created)
+	if issueID == "" {
+		return guard.reconcileMissingCreate(ctx, request, writeErr, stateID, stateSet)
+	}
+	if stateSet {
+		return guard.finishStateWrite(ctx, issueID, stateID, writeErr)
+	}
+	if writeErr != nil {
+		return applyMutationRetryClass(IssueStateWriteRetryClass(), IssueSummary{}, false, writeErr)
+	}
+
+	return createdIssueSummary(created), nil
+}
+
+func (guard *guardedClient) reconcileMissingCreate(
+	ctx context.Context,
+	request IssueCreateRequest,
+	writeErr error,
+	stateID string,
+	stateSet bool,
+) (IssueSummary, error) {
+	found, ok, err := guard.findCreatedIssue(ctx, request)
+	if errors.Is(err, ErrWriteInvalid) {
+		return IssueSummary{}, err
+	}
+	if err != nil {
+		return IssueSummary{}, writeErr
+	}
+	if !ok {
+		return applyMutationRetryClass(IssueStateWriteRetryClass(), IssueSummary{}, false, writeErr)
+	}
+	if stateSet {
+		return guard.finishStateWrite(ctx, found.ID, stateID, writeErr)
+	}
+
+	return applyMutationRetryClass(IssueStateWriteRetryClass(), found, true, writeErr)
+}
+
+func (guard *guardedClient) findCreatedIssue(
+	ctx context.Context,
+	request IssueCreateRequest,
+) (IssueSummary, bool, error) {
+	filters := IssueListFilters{Title: request.Title}
+	if guard.target.Project != nil {
+		filters.ProjectID = guard.target.Project.ID
+	}
+	pageSize := createdIssueReconcileLimit
+	listed, err := gql.IssuesByTeamFiltered(
+		ctx, guard.graphqlClient, buildIssueFilter(guard.target.Team.ID, filters),
+		&pageSize, nil, boolPtr(true),
+	)
+	if err != nil {
+		return IssueSummary{}, false, err
+	}
+	nodes := listed.Issues.Nodes
+	if listed.Issues.PageInfo.HasNextPage || len(nodes) > 1 {
+		return IssueSummary{}, false, fmt.Errorf(
+			"%w: created issue title %q is ambiguous",
+			ErrWriteInvalid,
+			request.Title,
+		)
+	}
+	if len(nodes) == 0 {
+		return IssueSummary{}, false, nil
+	}
+
+	return issueSummaryFromFields(nodes[0].IssueSummaryFields), true, nil
 }
 
 // IssueCreateOutcome is one row's result from a CreateIssues batch call,

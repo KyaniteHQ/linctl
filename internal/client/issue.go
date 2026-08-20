@@ -116,6 +116,7 @@ type IssueDependencyGraph struct {
 
 // IssueListFilters scopes read-only issue listing.
 type IssueListFilters struct {
+	Title         string
 	StateType     string
 	ProjectID     string
 	AssigneeID    string
@@ -212,6 +213,9 @@ func ListIssuesByTeam(
 func buildIssueFilter(teamID string, filters IssueListFilters) gqlmodel.LinearIssueFilter {
 	filter := gqlmodel.LinearIssueFilter{
 		Team: &gqlmodel.LinearIDFilter{ID: gqlmodel.LinearIDComparator{Eq: teamID}},
+	}
+	if filters.Title != "" {
+		filter.Title = &gqlmodel.LinearStringComparator{Eq: filters.Title}
 	}
 	if filters.StateType != "" {
 		filter.State = &gqlmodel.LinearWorkflowStateTypeFilter{

@@ -108,6 +108,126 @@ func Test_UpdateIssue_reconciles_ambiguous_state_write_without_replay(t *testing
 	require.Equal(t, 1, recorder.countOf("IssueUpdate"))
 }
 
+func Test_CreateIssue_reconciles_ambiguous_create_without_replay(t *testing.T) {
+	after := issueFixture{
+		ID: "issue-id", Identifier: "LIT-3", Title: "typed", ProjectID: "project-id", Project: "fixture",
+		StateID: "in-review-state", State: "In Review", StateType: "started",
+	}
+	inner := issueWriteFakeClient(map[string]string{
+		"WorkflowStatesByTeam": multipleStartedStatesJSON(),
+		"IssuesByTeamFiltered": `{"issues":{"nodes":[` + issueJSON(after) +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
+	})
+	sequenced := newSequentialOpClient(inner)
+	sequenced.failAt["IssueCreate"] = 1
+	graphqlClient := withIssueAfterWrite(sequenced, after)
+
+	issue, err := CreateIssue(
+		context.Background(), graphqlClient, matchingTarget(),
+		IssueCreateRequest{Title: "typed", StateSelector: "In Review"},
+	)
+
+	require.NoError(t, err)
+	require.Equal(t, "in-review-state", issue.StateID)
+	require.Equal(t, 1, sequenced.calls["IssueCreate"])
+}
+
+func Test_CreateIssue_reconciles_without_a_state_selector(t *testing.T) {
+	after := issueFixture{
+		ID: "issue-id", Identifier: "LIT-3", Title: "typed", ProjectID: "project-id", Project: "fixture",
+		StateID: "todo-state", State: "Todo", StateType: "unstarted",
+	}
+	sequenced := newSequentialOpClient(issueWriteFakeClient(map[string]string{
+		"IssuesByTeamFiltered": `{"issues":{"nodes":[` + issueJSON(after) +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
+	}))
+	sequenced.failAt["IssueCreate"] = 1
+
+	issue, err := CreateIssue(
+		context.Background(), sequenced, matchingTarget(),
+		IssueCreateRequest{Title: "typed"},
+	)
+
+	require.NoError(t, err)
+	require.Equal(t, "LIT-3", issue.Identifier)
+	require.Equal(t, 1, sequenced.calls["IssueCreate"])
+}
+
+func Test_CreateIssue_returns_mutation_error_when_payload_has_issue_without_success(t *testing.T) {
+	after := issueFixture{
+		ID: "issue-id", Identifier: "LIT-3", Title: "typed", ProjectID: "project-id", Project: "fixture",
+		StateID: "todo-state", State: "Todo", StateType: "unstarted",
+	}
+
+	_, err := CreateIssue(
+		context.Background(),
+		issueWriteFakeClient(map[string]string{
+			"IssueCreate": `{"issueCreate":{"success":false,"issue":` + issueJSON(after) + `}}`,
+		}),
+		matchingTarget(),
+		IssueCreateRequest{Title: "typed"},
+	)
+
+	require.ErrorIs(t, err, ErrMutationFailed)
+}
+
+func Test_CreateIssue_returns_write_error_when_created_issue_is_missing(t *testing.T) {
+	sequenced := newSequentialOpClient(issueWriteFakeClient(map[string]string{
+		"WorkflowStatesByTeam": multipleStartedStatesJSON(),
+		"IssuesByTeamFiltered": `{"issues":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
+	}))
+	sequenced.failAt["IssueCreate"] = 1
+
+	_, err := CreateIssue(
+		context.Background(), sequenced, matchingTarget(),
+		IssueCreateRequest{Title: "typed", StateSelector: "In Review"},
+	)
+
+	require.ErrorContains(t, err, "injected IssueCreate failure")
+}
+
+func Test_CreateIssue_fails_closed_when_created_title_is_ambiguous(t *testing.T) {
+	first := issueJSON(issueFixture{
+		ID: "issue-a", Identifier: "LIT-3", Title: "typed", ProjectID: "project-id", Project: "fixture",
+		StateID: "in-review-state", State: "In Review", StateType: "started",
+	})
+	second := issueJSON(issueFixture{
+		ID: "issue-b", Identifier: "LIT-4", Title: "typed", ProjectID: "project-id", Project: "fixture",
+		StateID: "in-review-state", State: "In Review", StateType: "started",
+	})
+	sequenced := newSequentialOpClient(issueWriteFakeClient(map[string]string{
+		"IssuesByTeamFiltered": `{"issues":{"nodes":[` + first + `,` + second +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
+	}))
+	sequenced.failAt["IssueCreate"] = 1
+
+	_, err := CreateIssue(
+		context.Background(), sequenced, matchingTarget(),
+		IssueCreateRequest{Title: "typed"},
+	)
+
+	require.ErrorIs(t, err, ErrWriteInvalid)
+	require.ErrorContains(t, err, "ambiguous")
+}
+
+func Test_CreateIssue_fails_closed_when_created_title_page_is_truncated(t *testing.T) {
+	sequenced := newSequentialOpClient(issueWriteFakeClient(map[string]string{
+		"IssuesByTeamFiltered": `{"issues":{"nodes":[` + issueJSON(issueFixture{
+			ID: "issue-id", Identifier: "LIT-3", Title: "typed", ProjectID: "project-id", Project: "fixture",
+			StateID: "todo-state", State: "Todo", StateType: "unstarted",
+		}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"c"}}}`,
+	}))
+	sequenced.failAt["IssueCreate"] = 1
+
+	_, err := CreateIssue(
+		context.Background(), sequenced, matchingTarget(),
+		IssueCreateRequest{Title: "typed"},
+	)
+
+	require.ErrorIs(t, err, ErrWriteInvalid)
+	require.ErrorContains(t, err, "ambiguous")
+}
+
 func Test_CreateIssue_uses_state_selector_over_type(t *testing.T) {
 	after := issueFixture{
 		Identifier: "LIT-3", Title: "typed", ProjectID: "project-id", Project: "fixture",

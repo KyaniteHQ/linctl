@@ -7,6 +7,8 @@ import (
 	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
+const issueRelationReconcilePageSize = 50
+
 func (guard *guardedClient) requireRelationIssues(
 	ctx context.Context,
 	request IssueRelationCreateRequest,
@@ -105,7 +107,7 @@ func (guard *guardedClient) existingIssueRelation(
 	relationType string,
 ) (IssueRelationSummary, bool, error) {
 	result, err := gql.XIssue_relations(
-		ctx, guard.graphqlClient, issue.ID, intPtr(workflowStatePageSize), nil, boolPtr(true),
+		ctx, guard.graphqlClient, issue.ID, intPtr(issueRelationReconcilePageSize), nil, boolPtr(true),
 	)
 	if err != nil {
 		return IssueRelationSummary{}, false, err
@@ -123,7 +125,7 @@ func (guard *guardedClient) existingIssueRelation(
 			"%w: issue %s has more than %d relations; cannot reconcile before create",
 			ErrWriteInvalid,
 			issue.Identifier,
-			workflowStatePageSize,
+			issueRelationReconcilePageSize,
 		)
 	}
 

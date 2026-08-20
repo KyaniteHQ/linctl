@@ -1173,8 +1173,9 @@ Success is pass/fail:
      `Test_CreateIssueRelation_links_issues_in_explicit_allowed_projects`.
 
 221. Ambiguous mutation reconcile
-   - Success: a timed-out state write or relation create reads observed state and does not replay the mutation when the desired result is already present.
+   - Success: a timed-out state write, issue create, or relation create reads observed state and does not replay the mutation when the desired result is already present.
    - Evidence: `go test ./internal/client`, `Test_UpdateIssue_reconciles_ambiguous_state_write_without_replay`,
+     `Test_CreateIssue_reconciles_ambiguous_create_without_replay`,
      `Test_CreateIssueRelation_reconciles_ambiguous_create_without_replay`,
      `Test_CreateIssueRelation_reconciles_existing_relation_without_create`.
 

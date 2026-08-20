@@ -163,16 +163,11 @@ func Test_IssueDirectWriteCommandFlows_forward_mutation_variables(t *testing.T) 
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			flow := commandFlowFakeClient{}
-			after := ""
-			relation := ""
-			flow.afterIssue = &after
-			flow.afterRelation = &relation
 			fake := &issueWriteCaptureClient{
 				directWriteCaptureClient: directWriteCaptureClient{
 					operation: test.operation,
 					variables: test.variables,
-					delegate:  flow,
+					delegate:  commandFlowFakeClient{},
 				},
 				numbers: test.numbers,
 			}

@@ -111,6 +111,7 @@ func Test_CreateIssueRelation_refuses_cross_organization_relation(t *testing.T) 
 
 	require.ErrorIs(t, err, ErrCrossOrganizationRelation)
 	require.ErrorIs(t, err, ErrTargetMismatch)
+	require.ErrorIs(t, ErrCrossOrganizationRelation, ErrTargetMismatch)
 	require.False(t, recorder.sentOperation("IssueRelationCreate"))
 }
 

@@ -51,6 +51,7 @@ func Test_ListIssuesByTeam_composes_each_filter_clause(t *testing.T) {
 		want    string
 	}{
 		{"unfiltered", IssueListFilters{}, `{` + team + `}`},
+		{"title", IssueListFilters{Title: "created"}, `{` + team + `, "title": {"eq": "created"}}`},
 		{"state", IssueListFilters{StateType: "started"}, `{` + team + `, "state": {"type": {"eq": "started"}}}`},
 		{"project", IssueListFilters{ProjectID: "project-id"}, `{` + team + `, "project": {"id": {"eq": "project-id"}}}`},
 		{"assignee", IssueListFilters{AssigneeID: "user-id"}, `{` + team + `, "assignee": {"id": {"eq": "user-id"}}}`},

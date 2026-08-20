@@ -24,7 +24,7 @@ var ErrStateMismatch = errors.New("state mismatch")
 // retry or bypass path. The JSON code CROSS_ORGANIZATION_RELATION names this
 // one boundary; ADR 0001 keeps every other guarded-write failure as
 // TARGET_MISMATCH.
-var ErrCrossOrganizationRelation = errors.New("cross-organization relation")
+var ErrCrossOrganizationRelation = fmt.Errorf("%w: cross-organization relation", ErrTargetMismatch)
 
 // requiredFieldError names a missing write-request field with the shared
 // ErrWriteInvalid sentinel, so every guarded-write surface words a missing
