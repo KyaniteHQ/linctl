@@ -131,7 +131,9 @@ func (guard *guardedClient) createIssue(
 	if err := guard.requireCreateMilestone(ctx, request.ProjectMilestoneID); err != nil {
 		return IssueSummary{}, err
 	}
-	stateID, stateSet, err := guard.resolveRequestStateID(ctx, guard.target.Team.ID, issueCreateStateSelector(request))
+	stateID, stateSet, err := guard.resolveNamedOrTypedState(
+		ctx, guard.target.Team.ID, request.StateSelector, request.StateType,
+	)
 	if err != nil {
 		return IssueSummary{}, err
 	}
@@ -296,7 +298,9 @@ func (guard *guardedClient) updateIssue(ctx context.Context, request IssueUpdate
 	if request.Append != "" {
 		description = appendIssueDescription(issue.Description, request.Append)
 	}
-	stateID, stateSet, err := guard.resolveRequestStateID(ctx, issue.Summary.TeamID, issueUpdateStateSelector(request))
+	stateID, stateSet, err := guard.resolveNamedOrTypedState(
+		ctx, issue.Summary.TeamID, request.StateSelector, request.StateType,
+	)
 	if err != nil {
 		return IssueSummary{}, err
 	}
@@ -362,20 +366,21 @@ func validateIssueUpdateRequest(request IssueUpdateRequest) error {
 	return validateDueDate(request.DueDate)
 }
 
-func issueUpdateHasNoFields(request IssueUpdateRequest) bool {
-	return request.Title == "" && request.Description == "" && request.Append == "" &&
-		issueUpdateStateSelector(request) == "" && request.Priority == "" && request.AssigneeID == "" &&
-		len(request.LabelIDs) == 0 && request.DueDate == "" && !request.ClearDueDate &&
-		request.Estimate == nil && !request.ClearEstimate &&
-		request.ProjectMilestoneID == "" && !request.ClearMilestone
-}
-
-func issueUpdateOnlyState(request IssueUpdateRequest) bool {
+func issueUpdateNonStateFieldsEmpty(request IssueUpdateRequest) bool {
 	return request.Title == "" && request.Description == "" && request.Append == "" &&
 		request.Priority == "" && request.AssigneeID == "" &&
 		len(request.LabelIDs) == 0 && request.DueDate == "" && !request.ClearDueDate &&
 		request.Estimate == nil && !request.ClearEstimate &&
 		request.ProjectMilestoneID == "" && !request.ClearMilestone
+}
+
+func issueUpdateHasNoFields(request IssueUpdateRequest) bool {
+	return issueUpdateNonStateFieldsEmpty(request) &&
+		request.StateSelector == "" && request.StateType == ""
+}
+
+func issueUpdateOnlyState(request IssueUpdateRequest) bool {
+	return issueUpdateNonStateFieldsEmpty(request)
 }
 
 func (guard *guardedClient) buildIssueUpdateInput(
@@ -439,7 +444,7 @@ func (guard *guardedClient) startIssue(ctx context.Context, issueID string) (Iss
 	if err != nil {
 		return IssueSummary{}, err
 	}
-	stateID, err := guard.resolveStateID(ctx, issue.TeamID, "started")
+	stateID, err := guard.resolveStateTypeID(ctx, issue.TeamID, "started")
 	if err != nil {
 		return IssueSummary{}, err
 	}
@@ -561,7 +566,7 @@ func (guard *guardedClient) closeIssue(ctx context.Context, issueID string) (Iss
 	if err != nil {
 		return IssueSummary{}, err
 	}
-	stateID, err := guard.resolveStateID(ctx, issue.TeamID, "completed")
+	stateID, err := guard.resolveStateTypeID(ctx, issue.TeamID, "completed")
 	if err != nil {
 		return IssueSummary{}, err
 	}

@@ -27,3 +27,24 @@ func IssueStateWriteRetryClass() MutationRetryClass {
 func IssueRelationCreateRetryClass() MutationRetryClass {
 	return MutationRetryReconcile
 }
+
+func applyMutationRetryClass[T any](
+	class MutationRetryClass,
+	recovered T,
+	recoveredOK bool,
+	writeErr error,
+) (T, error) {
+	var zero T
+	switch class {
+	case MutationRetryReconcile:
+		if recoveredOK {
+			return recovered, nil
+		}
+
+		return zero, writeErr
+	case MutationRetryIdempotent, MutationRetryNever:
+		return zero, writeErr
+	default:
+		return zero, requiredFieldError("mutation retry class")
+	}
+}

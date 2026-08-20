@@ -50,7 +50,7 @@ var usageTopics = map[string]usagePayload{
 			"Use linctl issue list --limit 50 to inspect the resolved team. " +
 			"Add one filter to that command to narrow the queue. " +
 			"--state started selects one workflow state type on list. " +
-			"On create and update, --state selects an exact workflow-state name or a type. " +
+			"On create and update, --state selects an exact workflow-state name. " +
 			"--project PROJECT_ID selects one project. " +
 			"--mine selects the issues assigned to the authenticated user. " +
 			"--assignee USER_ID selects the issues assigned to one Linear user id. " +

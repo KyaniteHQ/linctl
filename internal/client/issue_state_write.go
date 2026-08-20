@@ -5,36 +5,24 @@ import (
 	"fmt"
 )
 
-func issueCreateStateSelector(request IssueCreateRequest) string {
-	if request.StateSelector != "" {
-		return request.StateSelector
-	}
-
-	return request.StateType
-}
-
-func issueUpdateStateSelector(request IssueUpdateRequest) string {
-	if request.StateSelector != "" {
-		return request.StateSelector
-	}
-
-	return request.StateType
-}
-
-func (guard *guardedClient) resolveRequestStateID(
+func (guard *guardedClient) resolveNamedOrTypedState(
 	ctx context.Context,
 	teamID string,
-	selector string,
+	name string,
+	stateType string,
 ) (stateID string, set bool, err error) {
-	if selector == "" {
-		return "", false, nil
+	if name != "" {
+		stateID, err = guard.resolveStateID(ctx, teamID, name)
+
+		return stateID, true, err
 	}
-	stateID, err = guard.resolveStateID(ctx, teamID, selector)
-	if err != nil {
-		return "", false, err
+	if stateType != "" {
+		stateID, err = guard.resolveStateTypeID(ctx, teamID, stateType)
+
+		return stateID, true, err
 	}
 
-	return stateID, true, nil
+	return "", false, nil
 }
 
 func (guard *guardedClient) finishStateWrite(
@@ -52,10 +40,18 @@ func (guard *guardedClient) finishStateWrite(
 		return IssueSummary{}, err
 	}
 	if observed.Summary.StateID == wantStateID {
+		if writeErr != nil {
+			return applyMutationRetryClass(
+				IssueStateWriteRetryClass(), observed.Summary, true, writeErr,
+			)
+		}
+
 		return observed.Summary, nil
 	}
 	if writeErr != nil {
-		return IssueSummary{}, writeErr
+		return applyMutationRetryClass(
+			IssueStateWriteRetryClass(), IssueSummary{}, false, writeErr,
+		)
 	}
 
 	return IssueSummary{}, fmt.Errorf(

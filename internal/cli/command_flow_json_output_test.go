@@ -85,7 +85,7 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{args: []string{"--json", "issue", "start", "LIT-1"}, keys: []string{"id", "identifier", "title"}},
 		{args: []string{"--json", "issue", "comment", "LIT-1", "--body", "Looks good"}, keys: []string{"id", "body", "issue"}},
 		{args: []string{"--json", "issue", "reply", "LIT-1", "comment-id", "--body", "Reply body"}, keys: []string{"id", "body", "issue"}},
-		{args: []string{"--json", "issue", "relate", "LIT-1", "LIT-2", "--type", "related"}, keys: []string{"id", "type"}},
+		{args: []string{"--json", "issue", "relate", "LIT-1", "LIT-2", "--type", "related"}, keys: []string{"id", "type", "issue", "related_issue"}},
 		{args: []string{"--json", "issue", "unrelate", "issue-relation-id"}, keys: []string{"id", "status"}},
 		{args: []string{"--json", "issue", "link", "https://example.com/pr/1", "LIT-1"}, keys: []string{"id", "title", "url"}},
 		{args: []string{"--json", "--fields", "id,display_name", "issue", "comments", "LIT-1", "--limit", "1"}, keys: []string{"comments"}},

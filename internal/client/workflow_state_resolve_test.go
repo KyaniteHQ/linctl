@@ -14,7 +14,7 @@ func Test_selectWorkflowStateID_uses_exact_name_among_started_states(t *testing.
 		{ID: "started-state", Name: "Started", Type: "started", Position: 2},
 	}
 
-	stateID, err := selectWorkflowStateID(states, "team-id", "In Review")
+	stateID, err := selectWorkflowStateID(states, "In Review")
 
 	require.NoError(t, err)
 	require.Equal(t, "in-review-state", stateID)
@@ -26,32 +26,44 @@ func Test_selectWorkflowStateID_matches_state_name_without_regard_to_case(t *tes
 		{ID: "in-progress-state", Name: "In Progress", Type: "started", Position: 0},
 	}
 
-	stateID, err := selectWorkflowStateID(states, "team-id", "in review")
+	stateID, err := selectWorkflowStateID(states, "in review")
 
 	require.NoError(t, err)
 	require.Equal(t, "in-review-state", stateID)
 }
 
-func Test_selectWorkflowStateID_uses_lowest_position_for_a_type(t *testing.T) {
+func Test_selectWorkflowStateID_does_not_fall_back_to_type(t *testing.T) {
+	states := []workflowStateCandidate{
+		{ID: "in-review-state", Name: "In Review", Type: "started", Position: 1},
+		{ID: "in-progress-state", Name: "In Progress", Type: "started", Position: 0},
+	}
+
+	_, err := selectWorkflowStateID(states, "started")
+
+	require.ErrorIs(t, err, ErrWriteInvalid)
+	require.ErrorContains(t, err, "unknown workflow state")
+}
+
+func Test_firstStateIDOfCandidates_uses_lowest_position_for_a_type(t *testing.T) {
 	states := []workflowStateCandidate{
 		{ID: "second-state", Name: "Second", Type: "started", Position: 2},
 		{ID: "first-state", Name: "First", Type: "started", Position: 1},
 	}
 
-	stateID, err := selectWorkflowStateID(states, "team-id", "started")
+	stateID, err := firstStateIDOfCandidates(states, "team-id", "started")
 
 	require.NoError(t, err)
 	require.Equal(t, "first-state", stateID)
 }
 
-func Test_selectWorkflowStateID_returns_error_when_type_has_no_states(t *testing.T) {
-	_, err := selectWorkflowStateID(nil, "team-id", "started")
+func Test_firstStateIDOfCandidates_returns_error_when_type_has_no_states(t *testing.T) {
+	_, err := firstStateIDOfCandidates(nil, "team-id", "started")
 
 	require.ErrorIs(t, err, ErrWriteInvalid)
 }
 
 func Test_selectWorkflowStateID_returns_error_for_unknown_selector(t *testing.T) {
-	_, err := selectWorkflowStateID(nil, "team-id", "sprinting")
+	_, err := selectWorkflowStateID(nil, "sprinting")
 
 	require.ErrorIs(t, err, ErrWriteInvalid)
 	require.ErrorContains(t, err, "unknown workflow state")
@@ -89,4 +101,21 @@ func Test_CanonicalWorkflowStateType_maps_aliases(t *testing.T) {
 
 	require.True(t, ok)
 	require.Equal(t, "started", canonical)
+}
+
+func Test_applyMutationRetryClass_idempotent_and_never_return_write_error(t *testing.T) {
+	recovered := IssueSummary{ID: "issue-id"}
+	writeErr := context.Canceled
+
+	_, err := applyMutationRetryClass(MutationRetryIdempotent, recovered, true, writeErr)
+	require.ErrorIs(t, err, writeErr)
+
+	_, err = applyMutationRetryClass(MutationRetryNever, recovered, true, writeErr)
+	require.ErrorIs(t, err, writeErr)
+}
+
+func Test_applyMutationRetryClass_unknown_class_fails_closed(t *testing.T) {
+	_, err := applyMutationRetryClass(MutationRetryClass("nope"), IssueSummary{}, true, context.Canceled)
+
+	require.ErrorIs(t, err, ErrWriteInvalid)
 }

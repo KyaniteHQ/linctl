@@ -63,7 +63,20 @@ func (guard *guardedClient) resolveStateID(
 		return "", err
 	}
 
-	return selectWorkflowStateID(states, teamID, selector)
+	return selectWorkflowStateID(states, selector)
+}
+
+func (guard *guardedClient) resolveStateTypeID(
+	ctx context.Context,
+	teamID string,
+	stateType string,
+) (string, error) {
+	states, err := guard.teamWorkflowStates(ctx, teamID)
+	if err != nil {
+		return "", err
+	}
+
+	return firstStateIDOfCandidates(states, teamID, stateType)
 }
 
 func (guard *guardedClient) teamWorkflowStates(
@@ -118,18 +131,17 @@ func listTeamWorkflowStates(
 
 func selectWorkflowStateID(
 	states []workflowStateCandidate,
-	teamID string,
 	selector string,
 ) (string, error) {
-	if id, ok, err := uniqueStateNameID(states, selector); err != nil || ok {
-		return id, err
+	id, ok, err := uniqueStateNameID(states, selector)
+	if err != nil {
+		return "", err
 	}
-	stateType, ok := CanonicalWorkflowStateType(selector)
 	if !ok {
 		return "", fmt.Errorf("%w: unknown workflow state %q", ErrWriteInvalid, selector)
 	}
 
-	return firstStateIDOfCandidates(states, teamID, stateType)
+	return id, nil
 }
 
 func uniqueStateNameID(

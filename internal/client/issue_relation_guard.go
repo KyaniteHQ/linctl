@@ -11,68 +11,58 @@ func (guard *guardedClient) requireRelationIssues(
 	ctx context.Context,
 	request IssueRelationCreateRequest,
 ) (IssueDetail, IssueDetail, error) {
-	if len(request.AllowedProjectIDs) == 0 {
-		return guard.requirePinnedRelationIssues(ctx, request.IssueID, request.RelatedIssueID)
-	}
-	allowed, err := guard.allowedProjectSet(ctx, request.AllowedProjectIDs)
+	allowed, err := guard.relationAllowedProjects(ctx, request.AllowedProjectIDs)
 	if err != nil {
 		return IssueDetail{}, IssueDetail{}, err
 	}
-	issue, err := guard.requireAllowedRelationIssue(ctx, request.IssueID, allowed)
+	issue, err := guard.requireIssueOnTeam(ctx, request.IssueID)
 	if err != nil {
 		return IssueDetail{}, IssueDetail{}, err
 	}
-	related, err := guard.requireAllowedRelationIssue(ctx, request.RelatedIssueID, allowed)
+	related, err := guard.requireIssueOnTeam(ctx, request.RelatedIssueID)
 	if err != nil {
 		return IssueDetail{}, IssueDetail{}, err
 	}
-
-	return issue, related, nil
-}
-
-func (guard *guardedClient) requirePinnedRelationIssues(
-	ctx context.Context,
-	firstID string,
-	secondID string,
-) (IssueDetail, IssueDetail, error) {
-	issue, err := guard.requirePinnedRelationIssue(ctx, firstID)
-	if err != nil {
+	if issue.Summary.ProjectID != related.Summary.ProjectID && len(request.AllowedProjectIDs) == 0 {
+		return IssueDetail{}, IssueDetail{}, fmt.Errorf(
+			"%w: relating across projects needs --allowed-project for each project",
+			ErrWriteInvalid,
+		)
+	}
+	if err := guard.requireIssueInAllowedProjects(issue, allowed); err != nil {
 		return IssueDetail{}, IssueDetail{}, err
 	}
-	related, err := guard.requirePinnedRelationIssue(ctx, secondID)
-	if err != nil {
+	if err := guard.requireIssueInAllowedProjects(related, allowed); err != nil {
 		return IssueDetail{}, IssueDetail{}, err
 	}
 
 	return issue, related, nil
 }
 
-func (guard *guardedClient) requirePinnedRelationIssue(
+func (guard *guardedClient) relationAllowedProjects(
 	ctx context.Context,
-	issueID string,
-) (IssueDetail, error) {
-	issue, err := guard.requireIssueOnTeam(ctx, issueID)
+	extraIDs []string,
+) (map[string]struct{}, error) {
+	allowed, err := guard.allowedProjectSet(ctx, extraIDs)
 	if err != nil {
-		return IssueDetail{}, err
+		return nil, err
 	}
-	if guard.target.Project != nil && issue.Summary.ProjectID != guard.target.Project.ID {
-		return IssueDetail{}, guard.projectMismatchError("issue project_id", issue.Summary.ProjectID)
+	if guard.target.Project != nil {
+		allowed[guard.target.Project.ID] = struct{}{}
 	}
 
-	return issue, nil
+	return allowed, nil
 }
 
-func (guard *guardedClient) requireAllowedRelationIssue(
-	ctx context.Context,
-	issueID string,
+func (guard *guardedClient) requireIssueInAllowedProjects(
+	issue IssueDetail,
 	allowed map[string]struct{},
-) (IssueDetail, error) {
-	issue, err := guard.requireIssueOnTeam(ctx, issueID)
-	if err != nil {
-		return IssueDetail{}, err
+) error {
+	if len(allowed) == 0 {
+		return nil
 	}
 	if _, ok := allowed[issue.Summary.ProjectID]; !ok {
-		return IssueDetail{}, fmt.Errorf(
+		return fmt.Errorf(
 			"%w: issue %s project_id=%s is outside the allowed projects",
 			ErrTargetMismatch,
 			issue.Summary.Identifier,
@@ -80,7 +70,7 @@ func (guard *guardedClient) requireAllowedRelationIssue(
 		)
 	}
 
-	return issue, nil
+	return nil
 }
 
 func (guard *guardedClient) allowedProjectSet(
@@ -176,15 +166,22 @@ func (guard *guardedClient) reconcileIssueRelation(
 	writeErr error,
 ) (IssueRelationWriteResult, error) {
 	existing, found, err := guard.existingIssueRelation(ctx, issue, related, relationType)
-	if err != nil || !found {
-		return IssueRelationWriteResult{}, writeErr
+	if err != nil {
+		return IssueRelationWriteResult{}, err
+	}
+	if !found {
+		return applyMutationRetryClass(
+			IssueRelationCreateRetryClass(), IssueRelationWriteResult{}, false, writeErr,
+		)
 	}
 	result, readErr := guard.readIssueRelationResult(ctx, existing, issue, related)
 	if readErr != nil {
 		return IssueRelationWriteResult{}, readErr
 	}
 
-	return result, nil
+	return applyMutationRetryClass(
+		IssueRelationCreateRetryClass(), result, true, writeErr,
+	)
 }
 
 func (guard *guardedClient) readIssueRelationResult(

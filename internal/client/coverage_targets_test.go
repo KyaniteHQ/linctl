@@ -49,7 +49,7 @@ func Test_TargetFailureScenarios_refuse_unpinned_or_mismatched_targets(t *testin
 		"WorkflowStatesByTeam": workflowStatesByTeamJSON(""),
 	}, "team-id")
 	require.NoError(t, err)
-	_, err = selectWorkflowStateID(nil, "team-id", "completed")
+	_, err = selectWorkflowStateID(nil, "completed")
 	require.ErrorIs(t, err, ErrWriteInvalid)
 
 	err = requireTargetMatch(config.Target{OrgID: "org-id", TeamID: "team-id", TeamKey: "LIT"}, config.Target{

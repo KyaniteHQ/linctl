@@ -110,6 +110,7 @@ func Test_CreateIssueRelation_refuses_cross_organization_relation(t *testing.T) 
 	})
 
 	require.ErrorIs(t, err, ErrCrossOrganizationRelation)
+	require.ErrorIs(t, err, ErrTargetMismatch)
 	require.False(t, recorder.sentOperation("IssueRelationCreate"))
 }
 
@@ -282,7 +283,8 @@ func Test_CreateIssueRelation_refuses_pinned_project_mismatch(t *testing.T) {
 		Type:           "related",
 	})
 
-	require.ErrorIs(t, err, ErrTargetMismatch)
+	require.ErrorIs(t, err, ErrWriteInvalid)
+	require.ErrorContains(t, err, "--allowed-project")
 	require.False(t, recorder.sentOperation("IssueRelationCreate"))
 }
 
@@ -302,7 +304,7 @@ func Test_CreateIssueRelation_reconcile_returns_write_error_when_relation_missin
 	require.ErrorContains(t, err, "injected IssueRelationCreate failure")
 }
 
-func Test_requireIssueOnTeam_skips_org_check_when_org_is_absent(t *testing.T) {
+func Test_requireIssueOnTeam_fails_closed_when_org_is_absent(t *testing.T) {
 	issueBody := `{
 		"id":"issue-id",
 		"identifier":"LIT-1",
@@ -320,10 +322,10 @@ func Test_requireIssueOnTeam_skips_org_check_when_org_is_absent(t *testing.T) {
 	}), matchingTarget())
 	require.NoError(t, err)
 
-	issue, err := guard.requireIssueOnTeam(context.Background(), "LIT-1")
+	_, err = guard.requireIssueOnTeam(context.Background(), "LIT-1")
 
-	require.NoError(t, err)
-	require.Equal(t, "LIT-1", issue.Summary.Identifier)
+	require.ErrorIs(t, err, ErrCrossOrganizationRelation)
+	require.ErrorIs(t, err, ErrTargetMismatch)
 }
 
 func Test_CreateIssueRelation_returns_readback_error_when_relation_get_fails(t *testing.T) {
@@ -454,4 +456,117 @@ func Test_CreateIssueRelation_reconcile_refuses_moved_project(t *testing.T) {
 
 	require.ErrorIs(t, err, ErrWriteInvalid)
 	require.ErrorContains(t, err, "relation changed an issue project")
+}
+
+func Test_CreateIssueRelation_keeps_pinned_project_in_allowlist_union(t *testing.T) {
+	first := relationIssueJSON("issue-id", "LIT-1", "project-id", "fixture")
+	second := relationIssueJSON("related-issue-id", "LIT-2", "other-project", "other")
+	inner := issueWriteFakeClient(map[string]string{
+		"issue_relations": emptyIssueRelationsJSON(),
+		"IssueRelationCreate": `{"issueRelationCreate":{"success":true,"issueRelation":` +
+			relationWriteJSON("related") + `}}`,
+		"issueRelation": `{"issueRelation":` + relationWriteJSON("related") + `}`,
+	})
+	projects := newSequentialOpClient(inner)
+	projects.payloads["project"] = []string{
+		`{"project":` + projectJSON(projectFixture{ID: "other-project", Name: "other", Status: "Backlog"}) + `}`,
+	}
+	graphqlClient := issueLookupFake{
+		byID: map[string]string{
+			"LIT-1": first, "issue-id": first,
+			"LIT-2": second, "related-issue-id": second,
+		},
+		inner: projects,
+	}
+
+	result, err := CreateIssueRelation(context.Background(), graphqlClient, matchingTarget(), IssueRelationCreateRequest{
+		IssueID:           "LIT-1",
+		RelatedIssueID:    "LIT-2",
+		Type:              "related",
+		AllowedProjectIDs: []string{"other-project"},
+	})
+
+	require.NoError(t, err)
+	require.Equal(t, "project-id", result.Issue.ProjectID)
+	require.Equal(t, "other-project", result.RelatedIssue.ProjectID)
+}
+
+func Test_CreateIssueRelation_refuses_cross_project_on_team_only_pin_without_allowlist(t *testing.T) {
+	first := relationIssueJSON("issue-id", "LIT-1", "project-id", "fixture")
+	second := relationIssueJSON("related-issue-id", "LIT-2", "other-project", "other")
+	recorder := &mutationRecordingClient{inner: issueLookupFake{
+		byID: map[string]string{
+			"LIT-1": first, "issue-id": first,
+			"LIT-2": second, "related-issue-id": second,
+		},
+		inner: issueWriteFakeClient(map[string]string{}),
+	}}
+
+	_, err := CreateIssueRelation(context.Background(), recorder, teamOnlyTarget(), IssueRelationCreateRequest{
+		IssueID:        "LIT-1",
+		RelatedIssueID: "LIT-2",
+		Type:           "related",
+	})
+
+	require.ErrorIs(t, err, ErrWriteInvalid)
+	require.ErrorContains(t, err, "--allowed-project")
+	require.False(t, recorder.sentOperation("IssueRelationCreate"))
+}
+
+func Test_CreateIssueRelation_refuses_first_issue_outside_allowlist(t *testing.T) {
+	first := relationIssueJSON("issue-id", "LIT-1", "other-project", "other")
+	second := relationIssueJSON("related-issue-id", "LIT-2", "project-id", "fixture")
+	recorder := &mutationRecordingClient{inner: issueLookupFake{
+		byID: map[string]string{
+			"LIT-1": first, "issue-id": first,
+			"LIT-2": second, "related-issue-id": second,
+		},
+		inner: issueWriteFakeClient(map[string]string{
+			"project": `{"project":` + projectJSON(projectFixture{
+				ID: "project-id", Name: "fixture", Status: "Backlog",
+			}) + `}`,
+		}),
+	}}
+
+	_, err := CreateIssueRelation(context.Background(), recorder, matchingTarget(), IssueRelationCreateRequest{
+		IssueID:           "LIT-1",
+		RelatedIssueID:    "LIT-2",
+		Type:              "related",
+		AllowedProjectIDs: []string{"project-id"},
+	})
+
+	require.ErrorIs(t, err, ErrTargetMismatch)
+	require.False(t, recorder.sentOperation("IssueRelationCreate"))
+}
+
+func Test_CreateIssueRelation_allows_same_project_on_team_only_pin(t *testing.T) {
+	graphqlClient := relationIssuePairFake(map[string]string{
+		"IssueRelationCreate": `{"issueRelationCreate":{"success":true,"issueRelation":` +
+			relationWriteJSON("related") + `}}`,
+	})
+
+	result, err := CreateIssueRelation(context.Background(), graphqlClient, teamOnlyTarget(), IssueRelationCreateRequest{
+		IssueID:        "LIT-1",
+		RelatedIssueID: "LIT-2",
+		Type:           "related",
+	})
+
+	require.NoError(t, err)
+	require.Equal(t, "relation-id", result.ID)
+}
+
+func Test_CreateIssueRelation_reconcile_returns_error_when_relation_scan_fails(t *testing.T) {
+	sequenced := newSequentialOpClient(relationIssuePairFake(map[string]string{
+		"IssueRelationCreate": "",
+	}))
+	sequenced.failAt["IssueRelationCreate"] = 1
+	sequenced.failAt["issue_relations"] = 2
+
+	_, err := CreateIssueRelation(context.Background(), sequenced, matchingTarget(), IssueRelationCreateRequest{
+		IssueID:        "LIT-1",
+		RelatedIssueID: "LIT-2",
+		Type:           "related",
+	})
+
+	require.ErrorContains(t, err, "injected issue_relations failure")
 }

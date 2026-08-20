@@ -82,13 +82,8 @@ func (guard *guardedClient) requireIssueOnTeam(
 	if err != nil {
 		return IssueDetail{}, err
 	}
-	if issue.OrgID != "" && issue.OrgID != guard.target.Org.ID {
-		return IssueDetail{}, fmt.Errorf(
-			"%w: expected org_id=%s resolved issue org_id=%s",
-			ErrCrossOrganizationRelation,
-			guard.target.Org.ID,
-			issue.OrgID,
-		)
+	if err := guard.requireOrganization(issue.OrgID); err != nil {
+		return IssueDetail{}, fmt.Errorf("%w: %w", ErrCrossOrganizationRelation, err)
 	}
 	if issue.Summary.TeamID != guard.target.Team.ID || issue.Summary.Team != guard.target.Team.Key {
 		return IssueDetail{}, guard.teamMismatchError("issue", issue.Summary.TeamID, issue.Summary.Team)

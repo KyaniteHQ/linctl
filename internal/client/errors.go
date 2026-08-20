@@ -20,8 +20,10 @@ var ErrWriteInvalid = errors.New("invalid write")
 var ErrStateMismatch = errors.New("state mismatch")
 
 // ErrCrossOrganizationRelation marks a relation whose endpoints are not in the
-// pinned organization. It is distinct from ErrTargetMismatch so a caller can
-// branch on that boundary without scraping prose.
+// pinned organization. It wraps ErrTargetMismatch. It is a hard stop, not a
+// retry or bypass path. The JSON code CROSS_ORGANIZATION_RELATION names this
+// one boundary; ADR 0001 keeps every other guarded-write failure as
+// TARGET_MISMATCH.
 var ErrCrossOrganizationRelation = errors.New("cross-organization relation")
 
 // requiredFieldError names a missing write-request field with the shared

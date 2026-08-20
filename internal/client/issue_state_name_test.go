@@ -180,13 +180,61 @@ func Test_resolveStateID_requires_selector(t *testing.T) {
 	require.ErrorIs(t, err, ErrWriteInvalid)
 }
 
+func Test_resolveStateID_returns_error_when_team_states_cannot_be_listed(t *testing.T) {
+	before := issueFixture{
+		Identifier: "LIT-1", Title: "job", ProjectID: "project-id", Project: "fixture",
+		StateID: "todo-state", State: "Todo", StateType: "unstarted",
+	}
+
+	_, err := UpdateIssue(
+		context.Background(),
+		issueWriteFakeClient(map[string]string{
+			"issue": `{"issue":` + issueJSON(before) + `}`,
+		}),
+		matchingTarget(),
+		IssueUpdateRequest{ID: "LIT-1", StateSelector: "In Review"},
+	)
+
+	require.ErrorContains(t, err, "list workflow states")
+}
+
+func Test_StartIssue_selects_lowest_position_started_type_not_name_started(t *testing.T) {
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
+		"issue": `{"issue":` + issueJSON(issueFixture{
+			Identifier: "LIT-5", Title: "start", ProjectID: "project-id", Project: "fixture",
+			StateID: "todo-state", State: "Todo", StateType: "unstarted",
+		}) + `}`,
+		"WorkflowStatesByTeam": workflowStatesByTeamJSON(`
+			{"id":"started-state","name":"Started","type":"started","position":2},
+			{"id":"in-progress-state","name":"In Progress","type":"started","position":0}
+		`),
+		"IssueUpdate": `{"issueUpdate":{"success":true,"issue":` + issueJSONWithAssignee(issueFixture{
+			Identifier: "LIT-5", Title: "start", ProjectID: "project-id", Project: "fixture",
+			StateID: "in-progress-state", State: "In Progress", StateType: "started",
+		}, "Ada") + `}}`,
+	})}
+	graphqlClient := withIssueAfterWriteJSON(recorder, issueJSONWithAssignee(issueFixture{
+		Identifier: "LIT-5", Title: "start", ProjectID: "project-id", Project: "fixture",
+		StateID: "in-progress-state", State: "In Progress", StateType: "started",
+	}, "Ada"))
+
+	issue, err := StartIssue(context.Background(), graphqlClient, matchingTarget(), "LIT-5")
+
+	require.NoError(t, err)
+	require.Equal(t, "in-progress-state", issue.StateID)
+	require.JSONEq(t, `{
+		"id": "LIT-5",
+		"input": {"assigneeId": "user-id", "stateId": "in-progress-state"}
+	}`, string(recorder.variablesFor(t, "IssueUpdate")))
+}
+
 func Test_selectWorkflowStateID_returns_error_when_name_is_ambiguous(t *testing.T) {
 	states := []workflowStateCandidate{
 		{ID: "a", Name: "In Review", Type: "started", Position: 1},
 		{ID: "b", Name: "in review", Type: "started", Position: 2},
 	}
 
-	_, err := selectWorkflowStateID(states, "team-id", "In Review")
+	_, err := selectWorkflowStateID(states, "In Review")
 
 	require.ErrorIs(t, err, ErrWriteInvalid)
 	require.ErrorContains(t, err, "ambiguous")

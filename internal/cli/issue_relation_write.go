@@ -47,7 +47,11 @@ func writeIssueRelationResult(
 	options *rootOptions,
 	result client.IssueRelationWriteResult,
 ) error {
-	return writeIssueRelation(command, options, result.IssueRelationSummary)
+	return writeItemLine(
+		command, options, result, result.ID,
+		"%s %s %s -> %s",
+		result.ID, result.Type, result.IssueIdentifier, result.RelatedIssueIdentifier,
+	)
 }
 
 func addIssueUnrelateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {

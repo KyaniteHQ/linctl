@@ -77,7 +77,7 @@ func addIssueCreateCommand(ctx context.Context, root *cobra.Command, options *ro
 	command.Flags().BoolVar(&flags.dryRun, "dry-run", false, "show the assembled issue, and do not create it")
 	command.Flags().StringVar(
 		&flags.state, "state", "",
-		"set the workflow state by exact name or type, for example In Review or started",
+		"set the workflow state by exact name, for example In Review",
 	)
 	command.Flags().StringVar(&flags.status, "status", "", "alias for --state")
 	command.Flags().StringVar(
@@ -143,14 +143,13 @@ func assembleIssueCreate(
 	if err := applyIssueSections(&request, flags.sections); err != nil {
 		return client.IssueCreateRequest{}, err
 	}
-	stateSelector, stateType, normalizedPriority, normErr := applyIssueWriteNormalization(
+	stateSelector, normalizedPriority, normErr := applyIssueWriteNormalization(
 		command, flags.state, flags.status, flags.priority,
 	)
 	if normErr != nil {
 		return client.IssueCreateRequest{}, normErr
 	}
 	request.StateSelector = stateSelector
-	request.StateType = stateType
 	request.Priority = normalizedPriority
 	request.Estimate = estimate
 	return request, nil
@@ -183,7 +182,7 @@ func addIssueUpdateCommand(ctx context.Context, root *cobra.Command, options *ro
 			command.Flags().StringVar(&flags.appendFile, "append-file", "", "read text to append from file")
 			command.Flags().StringVar(
 				&flags.state, "state", "",
-				"set the workflow state by exact name or type, for example In Review or started",
+				"set the workflow state by exact name, for example In Review",
 			)
 			command.Flags().StringVar(&flags.status, "status", "", "alias for --state")
 			command.Flags().StringVar(
@@ -282,56 +281,34 @@ func assembleIssueUpdate(
 	if err := resolveFileFlag(command, &request.Append, flags.appendFile, "append"); err != nil {
 		return client.IssueUpdateRequest{}, err
 	}
-	stateSelector, stateType, normalizedPriority, normErr := applyIssueWriteNormalization(
+	stateSelector, normalizedPriority, normErr := applyIssueWriteNormalization(
 		command, flags.state, flags.status, flags.priority,
 	)
 	if normErr != nil {
 		return client.IssueUpdateRequest{}, normErr
 	}
 	request.StateSelector = stateSelector
-	request.StateType = stateType
 	request.Priority = normalizedPriority
 	request.Estimate = estimate
 	return request, nil
 }
 
 // applyIssueWriteNormalization merges the --state/--status alias pair and
-// normalizes the priority string. An exact workflow-state name is kept as
-// StateSelector so the client can pick among several states of one type.
+// normalizes the priority string. Create and update keep --state as an exact
+// workflow-state name. List --state still filters by type.
 func applyIssueWriteNormalization(
 	command *cobra.Command,
 	state string,
 	status string,
 	priority string,
-) (stateSelector string, stateType string, normalizedPriority string, err error) {
-	raw := strings.TrimSpace(cmp.Or(state, status))
-	stateSelector, stateType, err = issueWriteStateFields(command, raw)
-	if err != nil {
-		return "", "", "", err
-	}
+) (stateSelector string, normalizedPriority string, err error) {
+	stateSelector = strings.TrimSpace(cmp.Or(state, status))
 	normalizedPriority, err = normalizeAndNote(command, "priority", priority, normalizedPriorityValue)
 	if err != nil {
-		return "", "", "", err
+		return "", "", err
 	}
 
-	return stateSelector, stateType, normalizedPriority, nil
-}
-
-func issueWriteStateFields(command *cobra.Command, raw string) (string, string, error) {
-	if raw == "" {
-		return "", "", nil
-	}
-	canonical, ok := client.CanonicalWorkflowStateType(raw)
-	if !ok {
-		return raw, "", nil
-	}
-	if canonical != raw {
-		if err := writeNote(command, "state %q normalized to %q", raw, canonical); err != nil {
-			return "", "", err
-		}
-	}
-
-	return raw, canonical, nil
+	return stateSelector, normalizedPriority, nil
 }
 
 func addIssueStartCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {

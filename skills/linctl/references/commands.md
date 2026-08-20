@@ -1669,7 +1669,7 @@ Flags:
       --parent string             create the issue as a sub-issue of this parent issue id
       --priority string           set the priority to urgent, high, medium, low, none, or a number from 0 to 4
       --section stringArray       fill a markdown section with NAME=VALUE, and repeat the flag for more sections
-      --state string              set the workflow state by exact name or type, for example In Review or started
+      --state string              set the workflow state by exact name, for example In Review
       --status string             alias for --state
       --template string           apply a Linear template by id to set the default title and description
       --title string              issue title
@@ -2124,7 +2124,7 @@ Flags:
       --label stringArray         replace the labels with these ids, and repeat the flag for more labels
       --milestone string          assign to a project milestone id, which needs a pinned project
       --priority string           set the priority to urgent, high, medium, low, none, or a number from 0 to 4
-      --state string              set the workflow state by exact name or type, for example In Review or started
+      --state string              set the workflow state by exact name, for example In Review
       --status string             alias for --state
       --title string              new issue title
 ```
