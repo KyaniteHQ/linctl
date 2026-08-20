@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
+	"io"
 	"strings"
 	"testing"
 
@@ -44,6 +46,40 @@ func Test_RootCommand_exposes_global_flags_when_created(t *testing.T) {
 	}
 	require.Equal(t, "pinned Linear team key", flags.Lookup("team").Usage)
 	require.Equal(t, "pinned Linear team id", flags.Lookup("team-id").Usage)
+}
+
+func Test_RootCommand_treats_explicit_empty_config_flag_as_missing_error(t *testing.T) {
+	dir := t.TempDir()
+	t.Chdir(dir)
+
+	err := execute(
+		context.Background(),
+		BuildInfo{},
+		nil,
+		&bytes.Buffer{},
+		&bytes.Buffer{},
+		[]string{"--config", "", "whoami"},
+	)
+
+	require.ErrorContains(t, err, "read explicit repo config")
+}
+
+func Test_RootCommand_threads_injected_stderr_into_root_options(t *testing.T) {
+	var captured io.Writer
+	original := buildCommandRuntime
+	buildCommandRuntime = func(_ context.Context, options *rootOptions) (commandRuntime, error) {
+		captured = options.stderr
+		return commandRuntime{}, errors.New("stop after capturing stderr")
+	}
+	defer func() {
+		buildCommandRuntime = original
+	}()
+	stderrBuf := &bytes.Buffer{}
+
+	err := execute(context.Background(), BuildInfo{}, nil, &bytes.Buffer{}, stderrBuf, []string{"whoami"})
+
+	require.ErrorContains(t, err, "stop after capturing stderr")
+	require.Same(t, stderrBuf, captured)
 }
 
 func Test_RootCommand_rejects_non_positive_limit_before_runtime(t *testing.T) {

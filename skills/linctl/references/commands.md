@@ -458,7 +458,7 @@ Flags:
 
 ```
       --client-id string       OAuth app client id
-      --client-secret string   OAuth app client secret
+      --client-secret string   OAuth app client secret, or - to read the value from stdin
       --redirect-uri string    OAuth redirect URI
       --scopes strings         OAuth scopes
 ```

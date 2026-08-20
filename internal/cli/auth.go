@@ -2,6 +2,8 @@ package cli
 
 import (
 	"context"
+	"fmt"
+	"io"
 	"log/slog"
 	"os"
 	"strings"
@@ -101,9 +103,13 @@ func addAuthConfigureCommand(ctx context.Context, root *cobra.Command, options *
 			if strings.TrimSpace(flags.clientID) == "" {
 				return auth.NewError(auth.ErrorCodeNotConfigured, "missing --client-id")
 			}
+			clientSecret, err := readAuthClientSecret(command, flags.clientSecret)
+			if err != nil {
+				return err
+			}
 			app := auth.AppConfig{
 				ClientID:     strings.TrimSpace(flags.clientID),
-				ClientSecret: flags.clientSecret,
+				ClientSecret: clientSecret,
 				RedirectURI:  strings.TrimSpace(flags.redirectURI),
 				Scopes:       normalizedScopes(flags.scopes),
 			}
@@ -123,7 +129,12 @@ func addAuthConfigureCommand(ctx context.Context, root *cobra.Command, options *
 	}
 	annotateCommand(command, commandSafetyAnnotation, string(CommandSafetyLocal))
 	command.Flags().StringVar(&flags.clientID, "client-id", "", "OAuth app client id")
-	command.Flags().StringVar(&flags.clientSecret, "client-secret", "", "OAuth app client secret")
+	command.Flags().StringVar(
+		&flags.clientSecret,
+		"client-secret",
+		"",
+		"OAuth app client secret, or - to read the value from stdin",
+	)
 	command.Flags().StringVar(&flags.redirectURI, "redirect-uri", "", "OAuth redirect URI")
 	command.Flags().StringSliceVar(&flags.scopes, "scopes", nil, "OAuth scopes")
 	root.AddCommand(command)
@@ -403,4 +414,20 @@ func firstNonEmptyString(primary string, fallback string) string {
 	}
 
 	return fallback
+}
+
+func readAuthClientSecret(command *cobra.Command, value string) (string, error) {
+	if strings.TrimSpace(value) != "-" {
+		return value, nil
+	}
+	data, err := io.ReadAll(command.InOrStdin())
+	if err != nil {
+		return "", fmt.Errorf("read oauth client secret: %w", err)
+	}
+	secret := strings.TrimSpace(string(data))
+	if secret == "" {
+		return "", auth.NewError(auth.ErrorCodeNotConfigured, "missing --client-secret")
+	}
+
+	return secret, nil
 }

@@ -106,7 +106,15 @@ func defaultCheckAuthReadiness(ctx context.Context, request authReadinessRequest
 		return authReadinessReport{}, err
 	}
 
-	return authReadinessReport{Actor: request.TokenActor, Target: target}, nil
+	return authReadinessReport{Actor: actorFromViewer(target.Viewer), Target: target}, nil
+}
+
+func actorFromViewer(viewer client.TargetViewer) string {
+	if viewer.App {
+		return appActor
+	}
+
+	return userActor
 }
 
 func mapAuthReadinessError(err error) error {

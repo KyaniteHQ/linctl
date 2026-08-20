@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -47,6 +48,74 @@ func Test_AuthConfigure_saves_oauth_app_config_without_token_state(t *testing.T)
 	require.Empty(t, got.Token)
 	_, err = os.Stat(paths.TokenPath)
 	require.ErrorIs(t, err, os.ErrNotExist)
+}
+
+func Test_AuthConfigure_reads_client_secret_from_stdin(t *testing.T) {
+	paths := cliAuthTestPaths(t)
+	restore := useAuthPaths(t, paths)
+	defer restore()
+	var stdout bytes.Buffer
+	var stderr bytes.Buffer
+
+	err := execute(
+		context.Background(),
+		BuildInfo{},
+		strings.NewReader("stdin-client-secret\n"),
+		&stdout,
+		&stderr,
+		[]string{
+			"--json",
+			"auth",
+			"configure",
+			"--client-id", "client-id",
+			"--client-secret", "-",
+		},
+	)
+
+	require.NoError(t, err)
+	require.NotContains(t, stdout.String(), "stdin-client-secret")
+	require.NotContains(t, stderr.String(), "stdin-client-secret")
+	got, err := auth.NewStore(paths).Load(context.Background())
+	require.NoError(t, err)
+	require.Equal(t, "client-id", got.App.ClientID)
+	require.Equal(t, "stdin-client-secret", got.App.ClientSecret)
+}
+
+func Test_AuthConfigure_rejects_empty_client_secret_from_stdin(t *testing.T) {
+	paths := cliAuthTestPaths(t)
+	restore := useAuthPaths(t, paths)
+	defer restore()
+	var stderr bytes.Buffer
+
+	err := execute(
+		context.Background(),
+		BuildInfo{},
+		strings.NewReader(" \n"),
+		&bytes.Buffer{},
+		&stderr,
+		[]string{"auth", "configure", "--client-id", "client-id", "--client-secret", "-"},
+	)
+
+	require.Error(t, err)
+	require.Equal(t, string(auth.ErrorCodeNotConfigured), errorCode(err))
+	require.Contains(t, stderr.String(), "missing --client-secret")
+}
+
+func Test_AuthConfigure_reports_client_secret_stdin_read_error(t *testing.T) {
+	paths := cliAuthTestPaths(t)
+	restore := useAuthPaths(t, paths)
+	defer restore()
+
+	err := execute(
+		context.Background(),
+		BuildInfo{},
+		failingReader{err: errors.New("stdin closed")},
+		&bytes.Buffer{},
+		&bytes.Buffer{},
+		[]string{"auth", "configure", "--client-id", "client-id", "--client-secret", "-"},
+	)
+
+	require.ErrorContains(t, err, "read oauth client secret")
 }
 
 func Test_AuthConfigure_saves_oauth_app_config_under_resolved_profile(t *testing.T) {

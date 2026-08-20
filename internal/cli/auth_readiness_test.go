@@ -15,6 +15,11 @@ import (
 	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
+func Test_ActorFromViewer_maps_app_boolean_to_actor_string(t *testing.T) {
+	require.Equal(t, appActor, actorFromViewer(client.TargetViewer{App: true}))
+	require.Equal(t, userActor, actorFromViewer(client.TargetViewer{App: false}))
+}
+
 func Test_DefaultCheckAuthReadiness_requires_access_token(t *testing.T) {
 	_, err := defaultCheckAuthReadiness(context.Background(), authReadinessRequest{})
 
@@ -148,6 +153,7 @@ func Test_AuthReadiness_and_status_helpers(t *testing.T) {
 					"name": "Omer",
 					"displayName": "Omer",
 					"email": "omer@example.com",
+					"app": true,
 					"organization": {"id": "org-id", "name": "Kyanite", "urlKey": "kyanite"}
 				}
 			}`,
@@ -185,6 +191,46 @@ func Test_AuthReadiness_and_status_helpers(t *testing.T) {
 		})
 		require.Error(t, err)
 		require.ErrorIs(t, err, client.ErrTargetNotConfigured)
+	})
+
+	t.Run("readiness actor comes from live viewer not token actor", func(t *testing.T) {
+		restore := useAuthReadinessGraphQLClient(t, authReadinessFakeGraphQLClient{
+			"Viewer": `{
+				"viewer": {
+					"id": "user-id",
+					"name": "Omer",
+					"displayName": "Omer",
+					"email": "omer@example.com",
+					"app": true,
+					"organization": {"id": "org-id", "name": "Kyanite", "urlKey": "kyanite"}
+				}
+			}`,
+			"Teams": `{
+				"teams": {
+					"nodes": [{
+						"id": "team-id",
+						"key": "LIT",
+						"name": "linctl-it",
+						"organization": {"id": "org-id", "name": "Kyanite", "urlKey": "kyanite"}
+					}],
+					"pageInfo": {"hasNextPage": false, "endCursor": null}
+				}
+			}`,
+		})
+		defer restore()
+
+		report, err := defaultCheckAuthReadiness(context.Background(), authReadinessRequest{
+			AccessToken: "access-token",
+			TokenActor:  "user",
+			ExpectedTarget: config.Target{
+				OrgID:   "org-id",
+				TeamKey: "LIT",
+				TeamID:  "team-id",
+			},
+		})
+
+		require.NoError(t, err)
+		require.Equal(t, appActor, report.Actor)
 	})
 
 	t.Run("write status quiet", func(t *testing.T) {

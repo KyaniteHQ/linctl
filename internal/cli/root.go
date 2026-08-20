@@ -19,23 +19,25 @@ type BuildInfo struct {
 }
 
 type rootOptions struct {
-	timeout     time.Duration
-	json        bool
-	compact     bool
-	fields      string
-	idOnly      bool
-	quiet       bool
-	failOnEmpty bool
-	sortField   string
-	sortOrder   string
-	format      string
-	configPath  string
-	profile     string
-	orgID       string
-	team        string
-	teamID      string
-	project     string
-	debug       bool
+	timeout            time.Duration
+	json               bool
+	compact            bool
+	fields             string
+	idOnly             bool
+	quiet              bool
+	failOnEmpty        bool
+	sortField          string
+	sortOrder          string
+	format             string
+	configPath         string
+	profile            string
+	orgID              string
+	team               string
+	teamID             string
+	project            string
+	debug              bool
+	configPathExplicit bool
+	stderr             io.Writer
 }
 
 // NewRootCommand builds the linctl root command.
@@ -51,6 +53,8 @@ func NewRootCommand(ctx context.Context, build BuildInfo) *cobra.Command {
 		SilenceErrors: true,
 		Version:       build.versionText(),
 		PersistentPreRunE: func(command *cobra.Command, _ []string) error {
+			options.configPathExplicit = command.Flags().Changed("config")
+			options.stderr = command.ErrOrStderr()
 			return validateCommandFlags(command)
 		},
 	}
