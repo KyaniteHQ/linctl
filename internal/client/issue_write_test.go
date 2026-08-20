@@ -404,6 +404,7 @@ func teamOnlyTarget() config.Target {
 }
 
 type issueFixture struct {
+	ID         string
 	Identifier string
 	Title      string
 	ProjectID  string
@@ -662,13 +663,17 @@ func Test_firstStateIDOfType_returns_error_when_no_states(t *testing.T) {
 }
 
 func issueJSON(issue issueFixture) string {
+	id := issue.ID
+	if id == "" {
+		id = "issue-id"
+	}
 	project := `null`
 	if issue.ProjectID != "" {
 		project = `{"id":"` + issue.ProjectID + `","name":"` + issue.Project + `"}`
 	}
 
 	return `{
-		"id":"issue-id",
+		"id":"` + id + `",
 		"identifier":"` + issue.Identifier + `",
 		"title":"` + issue.Title + `",
 		"url":"https://linear.app/kyanite/issue/` + issue.Identifier + `",

@@ -338,11 +338,12 @@ func buildImportRequests(rows []issueImportRow, pinnedTeamKey string) ([]client.
 // its state and priority before it becomes a guarded create request.
 func importRowToRequest(row issueImportRow, pinnedTeamKey string) (client.IssueCreateRequest, error) {
 	if strings.TrimSpace(row.Title) == "" {
-		return client.IssueCreateRequest{}, errors.New("title is required")
+		return client.IssueCreateRequest{}, fmt.Errorf("%w: title is required", client.ErrWriteInvalid)
 	}
 	if team := strings.TrimSpace(row.Team); team != "" && team != strings.TrimSpace(pinnedTeamKey) {
 		return client.IssueCreateRequest{}, fmt.Errorf(
-			"team %q does not match pinned target team %q", team, pinnedTeamKey,
+			"%w: team %q does not match pinned target team %q",
+			client.ErrWriteInvalid, team, pinnedTeamKey,
 		)
 	}
 	stateType, err := normalizeOptional(row.State, normalizedStateType)

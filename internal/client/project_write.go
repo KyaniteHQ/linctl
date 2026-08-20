@@ -107,6 +107,10 @@ func ArchiveProject(
 	expected config.Target,
 	projectID string,
 ) (ProjectSummary, error) {
+	if projectID == "" {
+		return ProjectSummary{}, requiredFieldError("project id")
+	}
+
 	guard, err := newGuardedClient(ctx, graphqlClient, expected)
 	if err != nil {
 		return ProjectSummary{}, err

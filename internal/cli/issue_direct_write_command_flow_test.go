@@ -141,7 +141,7 @@ func Test_IssueDirectWriteCommandFlows_forward_mutation_variables(t *testing.T) 
 			operation: "IssueRelationCreate",
 			variables: []expectedWriteVariable{
 				{path: []string{"input", "issueId"}, value: "issue-id"},
-				{path: []string{"input", "relatedIssueId"}, value: "issue-id"},
+				{path: []string{"input", "relatedIssueId"}, value: "related-issue-id"},
 				{path: []string{"input", "type"}, value: "related"},
 			},
 		},

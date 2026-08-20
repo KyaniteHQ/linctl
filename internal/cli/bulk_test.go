@@ -185,6 +185,8 @@ func Test_CommandFlows_issue_import_dry_run_rejects_team_mismatch_locally(t *tes
 
 	err := command.ExecuteContext(context.Background())
 
+	require.ErrorIs(t, err, client.ErrWriteInvalid)
+	require.Equal(t, "INVALID_WRITE", errorCode(err))
 	require.ErrorContains(t, err, "does not match pinned target team")
 }
 
@@ -245,6 +247,8 @@ func Test_CommandFlows_issue_import_rejects_team_mismatch(t *testing.T) {
 
 	_, err := runBulkFlow(t, commandFlowFakeClient{}, []string{"issue", "import", path})
 
+	require.ErrorIs(t, err, client.ErrWriteInvalid)
+	require.Equal(t, "INVALID_WRITE", errorCode(err))
 	require.ErrorContains(t, err, "does not match pinned target team")
 }
 
@@ -262,6 +266,29 @@ func Test_CommandFlows_issue_import_surfaces_input_errors(t *testing.T) {
 			_, err := runBulkFlow(t, commandFlowFakeClient{}, []string{"issue", "import", path})
 
 			require.Error(t, err)
+			if name == "missing title" {
+				require.ErrorIs(t, err, client.ErrWriteInvalid)
+				require.Equal(t, "INVALID_WRITE", errorCode(err))
+			}
+		})
+	}
+}
+
+func Test_importRowToRequest_reports_INVALID_WRITE(t *testing.T) {
+	tests := []struct {
+		name string
+		row  issueImportRow
+		team string
+	}{
+		{name: "missing title", row: issueImportRow{Title: "  "}, team: "LIT"},
+		{name: "team mismatch", row: issueImportRow{Title: "First", Team: "OTH"}, team: "LIT"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := importRowToRequest(tt.row, tt.team)
+
+			require.ErrorIs(t, err, client.ErrWriteInvalid)
+			require.Equal(t, "INVALID_WRITE", errorCode(err))
 		})
 	}
 }

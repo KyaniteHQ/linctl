@@ -2,9 +2,11 @@ package client
 
 import (
 	"context"
+	"encoding/json"
 	"strconv"
 	"testing"
 
+	"github.com/Khan/genqlient/graphql"
 	"github.com/stretchr/testify/require"
 
 	"github.com/KyaniteHQ/linctl/internal/config"
@@ -63,6 +65,7 @@ func issueRelationDepsJSONWithNextPage(blockedBy bool, hasNextPage bool) string 
 	inverse := `[]`
 	if blockedBy {
 		inverse = `[{"id":"blocked-by-relation","type":"blocks","issue":` + issueJSON(issueFixture{
+			ID:         "related-issue-id",
 			Identifier: "LIT-2",
 			Title:      "blocker",
 			StateID:    "state-id",
@@ -81,9 +84,76 @@ func issueRelationDepsJSONWithNextPage(blockedBy bool, hasNextPage bool) string 
 	}}`
 }
 
+func graphqlRequestID(request *graphql.Request) string {
+	if request.Variables == nil {
+		return ""
+	}
+	data, err := json.Marshal(request.Variables)
+	if err != nil {
+		return ""
+	}
+	var variables map[string]any
+	if err := json.Unmarshal(data, &variables); err != nil {
+		return ""
+	}
+	id, ok := variables["id"].(string)
+	if !ok {
+		return ""
+	}
+
+	return id
+}
+
+type issueLookupFake struct {
+	byID  map[string]string
+	inner graphql.Client
+}
+
+func (fake issueLookupFake) MakeRequest(
+	ctx context.Context,
+	request *graphql.Request,
+	response *graphql.Response,
+) error {
+	if request.OpName == "issue" {
+		if payload, ok := fake.byID[graphqlRequestID(request)]; ok {
+			return fakeGraphQLClient(map[string]string{"issue": `{"issue":` + payload + `}`}).
+				MakeRequest(ctx, request, response)
+		}
+	}
+
+	return fake.inner.MakeRequest(ctx, request, response)
+}
+
+func relationPinnedIssueJSON(id string, identifier string, title string) string {
+	return issueJSON(issueFixture{
+		ID:         id,
+		Identifier: identifier,
+		Title:      title,
+		ProjectID:  "project-id",
+		Project:    "fixture",
+		StateID:    "state-id",
+		State:      "Todo",
+		StateType:  "unstarted",
+	})
+}
+
+func relationIssuePairFake(extra map[string]string) graphql.Client {
+	first := relationPinnedIssueJSON("issue-id", "LIT-1", "First")
+	second := relationPinnedIssueJSON("related-issue-id", "LIT-2", "Second")
+
+	return issueLookupFake{
+		byID: map[string]string{
+			"LIT-1":            first,
+			"issue-id":         first,
+			"LIT-2":            second,
+			"related-issue-id": second,
+		},
+		inner: issueWriteFakeClient(extra),
+	}
+}
+
 func Test_CreateIssueRelation_links_issues_when_target_matches(t *testing.T) {
-	graphqlClient := issueWriteFakeClient(map[string]string{
-		"issue": relationIssueRead(),
+	graphqlClient := relationIssuePairFake(map[string]string{
 		"IssueRelationCreate": `{"issueRelationCreate":{"success":true,"issueRelation":` +
 			relationWriteJSON("related") + `}}`,
 	})
@@ -100,8 +170,7 @@ func Test_CreateIssueRelation_links_issues_when_target_matches(t *testing.T) {
 }
 
 func Test_CreateIssueRelation_allows_blocks_without_a_cycle(t *testing.T) {
-	graphqlClient := issueWriteFakeClient(map[string]string{
-		"issue":             relationIssueRead(),
+	graphqlClient := relationIssuePairFake(map[string]string{
 		"IssueDependencies": issueRelationDepsJSON(false),
 		"IssueRelationCreate": `{"issueRelationCreate":{"success":true,"issueRelation":` +
 			relationWriteJSON("blocks") + `}}`,
@@ -118,8 +187,7 @@ func Test_CreateIssueRelation_allows_blocks_without_a_cycle(t *testing.T) {
 }
 
 func Test_CreateIssueRelation_refuses_blocks_that_close_a_cycle(t *testing.T) {
-	graphqlClient := issueWriteFakeClient(map[string]string{
-		"issue":             relationIssueRead(),
+	graphqlClient := relationIssuePairFake(map[string]string{
 		"IssueDependencies": issueRelationDepsJSON(true),
 	})
 
@@ -134,9 +202,7 @@ func Test_CreateIssueRelation_refuses_blocks_that_close_a_cycle(t *testing.T) {
 }
 
 func Test_CreateIssueRelation_wraps_dependency_read_error(t *testing.T) {
-	graphqlClient := issueWriteFakeClient(map[string]string{
-		"issue": relationIssueRead(),
-	})
+	graphqlClient := relationIssuePairFake(map[string]string{})
 
 	_, err := CreateIssueRelation(context.Background(), graphqlClient, matchingTarget(), IssueRelationCreateRequest{
 		IssueID:        "LIT-1",
@@ -152,8 +218,7 @@ func Test_CreateIssueRelation_wraps_dependency_read_error(t *testing.T) {
 // proves a truncated blocked-by scan (hasNextPage=true) with no match found in
 // the fetched page fails closed instead of assuming no cycle exists.
 func Test_CreateIssueRelation_refuses_blocks_when_dependency_scan_is_truncated(t *testing.T) {
-	graphqlClient := issueWriteFakeClient(map[string]string{
-		"issue":             relationIssueRead(),
+	graphqlClient := relationIssuePairFake(map[string]string{
 		"IssueDependencies": issueRelationDepsJSONWithNextPage(false, true),
 	})
 
@@ -178,11 +243,36 @@ func Test_CreateIssueRelation_requires_both_ids(t *testing.T) {
 
 func Test_CreateIssueRelation_rejects_self_relation(t *testing.T) {
 	_, err := CreateIssueRelation(
-		context.Background(), issueWriteFakeClient(map[string]string{}), matchingTarget(),
+		context.Background(), relationIssuePairFake(map[string]string{}), matchingTarget(),
 		IssueRelationCreateRequest{IssueID: "LIT-1", RelatedIssueID: "LIT-1", Type: "related"},
 	)
 
 	require.ErrorIs(t, err, ErrWriteInvalid)
+	require.ErrorContains(t, err, "cannot relate to itself")
+}
+
+func Test_CreateIssueRelation_rejects_self_relation_when_identifier_and_uuid_name_the_same_issue(t *testing.T) {
+	same := relationPinnedIssueJSON("issue-uuid-42", "LIT-42", "Same issue")
+	recorder := &mutationRecordingClient{inner: issueLookupFake{
+		byID: map[string]string{
+			"LIT-42":        same,
+			"issue-uuid-42": same,
+		},
+		inner: issueWriteFakeClient(map[string]string{
+			"IssueRelationCreate": `{"issueRelationCreate":{"success":true,"issueRelation":` +
+				relationWriteJSON("blocks") + `}}`,
+		}),
+	}}
+
+	_, err := CreateIssueRelation(context.Background(), recorder, matchingTarget(), IssueRelationCreateRequest{
+		IssueID:        "LIT-42",
+		RelatedIssueID: "issue-uuid-42",
+		Type:           "blocks",
+	})
+
+	require.ErrorIs(t, err, ErrWriteInvalid)
+	require.ErrorContains(t, err, "cannot relate to itself")
+	require.False(t, recorder.sentOperation("IssueRelationCreate"))
 }
 
 func Test_CreateIssueRelation_rejects_unknown_type(t *testing.T) {
@@ -219,9 +309,7 @@ func Test_CreateIssueRelation_refuses_when_issue_team_differs(t *testing.T) {
 }
 
 func Test_CreateIssueRelation_wraps_mutation_error(t *testing.T) {
-	graphqlClient := issueWriteFakeClient(map[string]string{
-		"issue": relationIssueRead(),
-	})
+	graphqlClient := relationIssuePairFake(map[string]string{})
 
 	_, err := CreateIssueRelation(context.Background(), graphqlClient, matchingTarget(), IssueRelationCreateRequest{
 		IssueID:        "LIT-1",
@@ -234,8 +322,7 @@ func Test_CreateIssueRelation_wraps_mutation_error(t *testing.T) {
 }
 
 func Test_CreateIssueRelation_fails_when_mutation_reports_no_success(t *testing.T) {
-	graphqlClient := issueWriteFakeClient(map[string]string{
-		"issue": relationIssueRead(),
+	graphqlClient := relationIssuePairFake(map[string]string{
 		"IssueRelationCreate": `{"issueRelationCreate":{"success":false,"issueRelation":` +
 			relationWriteJSON("related") + `}}`,
 	})

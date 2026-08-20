@@ -85,7 +85,10 @@ func Test_CreateLabel_creates_team_scoped_label_with_resolved_team_id(t *testing
 			issueLabelJSON("label-id", "created", "team-id", "LIT") + `}}`,
 	})}
 
-	label, err := CreateLabel(context.Background(), capture, matchingTarget(), LabelCreateRequest{Name: "created"})
+	label, err := CreateLabel(
+		context.Background(), capture, matchingTarget(),
+		LabelCreateRequest{Name: "created", Color: "#123456"},
+	)
 
 	require.NoError(t, err)
 	require.Equal(t, "label-id", label.ID)
@@ -114,6 +117,24 @@ func Test_CreateLabel_requires_name(t *testing.T) {
 	_, err := CreateLabel(context.Background(), issueWriteFakeClient(map[string]string{}), matchingTarget(), LabelCreateRequest{})
 
 	require.ErrorIs(t, err, ErrWriteInvalid)
+}
+
+func Test_CreateLabel_rejects_invalid_color(t *testing.T) {
+	_, err := CreateLabel(
+		context.Background(), issueWriteFakeClient(map[string]string{}), matchingTarget(),
+		LabelCreateRequest{Name: "created", Color: "notacolor"},
+	)
+
+	require.ErrorIs(t, err, ErrWriteInvalid)
+	require.ErrorContains(t, err, "color must be #RRGGBB")
+}
+
+func Test_validateLabelColor_accepts_empty_and_six_digit_hex(t *testing.T) {
+	require.NoError(t, validateLabelColor(""))
+	require.NoError(t, validateLabelColor("#123456"))
+	require.NoError(t, validateLabelColor("#AbCdEf"))
+	require.ErrorIs(t, validateLabelColor("#fff"), ErrWriteInvalid)
+	require.ErrorIs(t, validateLabelColor("123456"), ErrWriteInvalid)
 }
 
 func Test_CreateLabel_refuses_when_target_unresolved(t *testing.T) {
@@ -321,6 +342,16 @@ func Test_UpdateLabel_requires_a_field(t *testing.T) {
 	)
 
 	require.ErrorIs(t, err, ErrWriteInvalid)
+}
+
+func Test_UpdateLabel_rejects_invalid_color(t *testing.T) {
+	_, err := UpdateLabel(
+		context.Background(), issueWriteFakeClient(map[string]string{}), matchingTarget(),
+		LabelUpdateRequest{ID: "label-id", Color: "notacolor"},
+	)
+
+	require.ErrorIs(t, err, ErrWriteInvalid)
+	require.ErrorContains(t, err, "color must be #RRGGBB")
 }
 
 func Test_UpdateLabel_wraps_resolution_error(t *testing.T) {

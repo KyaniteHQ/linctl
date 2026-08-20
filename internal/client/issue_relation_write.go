@@ -58,6 +58,9 @@ func (guard *guardedClient) createIssueRelation(
 		return IssueRelationSummary{}, err
 	}
 	issue, related := resolved[0], resolved[1]
+	if issue.ID == related.ID {
+		return IssueRelationSummary{}, fmt.Errorf("%w: an issue cannot relate to itself", ErrWriteInvalid)
+	}
 	if err := guard.guardBlockingCycle(ctx, request.Type, issue, related); err != nil {
 		return IssueRelationSummary{}, err
 	}
@@ -141,9 +144,6 @@ func (guard *guardedClient) requireIssuePair(
 func validateIssueRelationCreateRequest(request IssueRelationCreateRequest) error {
 	if request.IssueID == "" || request.RelatedIssueID == "" {
 		return fmt.Errorf("%w: issue id and related issue id are required", ErrWriteInvalid)
-	}
-	if request.IssueID == request.RelatedIssueID {
-		return fmt.Errorf("%w: an issue cannot relate to itself", ErrWriteInvalid)
 	}
 	if !issueRelationTypes[request.Type] {
 		return fmt.Errorf(
