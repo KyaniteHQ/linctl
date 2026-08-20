@@ -38,28 +38,50 @@ type ProjectRelationList struct {
 	EndCursor   *string                  `json:"end_cursor,omitempty"`
 }
 
+//nolint:lll
+type projectRelationsNode = gql.XProjectRelationsProjectRelationsProjectRelationConnectionNodesProjectRelation
+
+type projectRelationsQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
 // ListProjectRelations returns visible dependency relations between projects.
 func ListProjectRelations(
 	ctx context.Context,
 	graphqlClient graphql.Client,
 	limit int,
 ) (ProjectRelationList, error) {
-	result, err := gql.XProjectRelations(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := projectRelationsQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list project relations", limit, defaultListPageSize,
+		query.page,
+		projectRelationNodeSummary,
+	)
 	if err != nil {
-		return ProjectRelationList{}, fmt.Errorf("list project relations: %w", err)
+		return ProjectRelationList{}, err
 	}
 
-	relations := mapNodes(result.ProjectRelations.Nodes, func(
-		relation gql.XProjectRelationsProjectRelationsProjectRelationConnectionNodesProjectRelation,
-	) ProjectRelationSummary {
-		return projectRelationSummary(relation.ProjectRelationSummaryFields)
-	})
+	return ProjectRelationList{Relations: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+}
 
-	return ProjectRelationList{
-		Relations:   relations,
-		HasNextPage: result.ProjectRelations.PageInfo.HasNextPage,
-		EndCursor:   result.ProjectRelations.PageInfo.EndCursor,
-	}, nil
+func (query projectRelationsQuery) page(
+	pageSize int,
+	after *string,
+) ([]projectRelationsNode, bool, *string, error) {
+	result, err := gql.XProjectRelations(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.ProjectRelations.Nodes,
+		result.ProjectRelations.PageInfo.HasNextPage,
+		result.ProjectRelations.PageInfo.EndCursor,
+		nil
+}
+
+func projectRelationNodeSummary(relation projectRelationsNode) ProjectRelationSummary {
+	return projectRelationSummary(relation.ProjectRelationSummaryFields)
 }
 
 // GetProjectRelationByID returns one project relation by Linear id.

@@ -2,12 +2,61 @@ package client
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
 
 	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
+
+//nolint:lll
+type projectAttachmentsNode = gql.XProject_attachmentsProjectAttachmentsProjectAttachmentConnectionNodesProjectAttachment
+
+//nolint:lll
+type projectDocumentsNode = gql.XProject_documentsProjectDocumentsDocumentConnectionNodesDocument
+
+//nolint:lll
+type projectExternalLinksNode = gql.XProject_externalLinksProjectExternalLinksEntityExternalLinkConnectionNodesEntityExternalLink
+
+//nolint:lll
+type projectHistoryNode = gql.XProject_historyProjectHistoryProjectHistoryConnectionNodesProjectHistory
+
+//nolint:lll
+type initiativeToProjectNode = gql.XProject_initiativeToProjectsProjectInitiativeToProjectsInitiativeToProjectConnectionNodesInitiativeToProject
+
+//nolint:lll
+type projectInitiativesNode = gql.XProject_initiativesProjectInitiativesInitiativeConnectionNodesInitiative
+
+//nolint:lll
+type projectInverseRelationsNode = gql.XProject_inverseRelationsProjectInverseRelationsProjectRelationConnectionNodesProjectRelation
+
+//nolint:lll
+type projectIssuesNode = gql.XProject_issuesProjectIssuesIssueConnectionNodesIssue
+
+//nolint:lll
+type projectCommentsNode = gql.XProject_commentsProjectCommentsCommentConnectionNodesComment
+
+//nolint:lll
+type projectLabelsForProjectNode = gql.XProject_labelsProjectLabelsProjectLabelConnectionNodesProjectLabel
+
+//nolint:lll
+type projectNeedsNode = gql.XProject_needsProjectNeedsCustomerNeedConnectionNodesCustomerNeed
+
+//nolint:lll
+type projectRelationsForProjectNode = gql.XProject_relationsProjectRelationsProjectRelationConnectionNodesProjectRelation
+
+//nolint:lll
+type projectTeamsNode = gql.XProject_teamsProjectTeamsTeamConnectionNodesTeam
+
+//nolint:lll
+type projectMembersNode = gql.XProject_membersProjectMembersUserConnectionNodesUser
+
+type projectChildQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+	id            string
+	projectID     string
+	projectName   string
+}
 
 // ListProjectAttachments returns Attachments associated with one Project.
 func ListProjectAttachments(
@@ -16,23 +65,22 @@ func ListProjectAttachments(
 	id string,
 	limit int,
 ) (ProjectAttachmentList, error) {
-	result, err := gql.XProject_attachments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &projectChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list project attachments "+id, limit, defaultListPageSize,
+		query.attachments,
+		projectAttachmentNodeSummary,
+	)
 	if err != nil {
-		return ProjectAttachmentList{}, fmt.Errorf("list project attachments %s: %w", id, err)
+		return ProjectAttachmentList{}, err
 	}
 
-	attachments := mapNodes(result.Project.Attachments.Nodes, func(
-		node gql.XProject_attachmentsProjectAttachmentsProjectAttachmentConnectionNodesProjectAttachment,
-	) AttachmentSummary {
-		return projectAttachmentSummary(node.ProjectAttachmentSummaryFields)
-	})
-
 	return ProjectAttachmentList{
-		ProjectID:   result.Project.Id,
-		ProjectName: result.Project.Name,
-		Attachments: attachments,
-		HasNextPage: result.Project.Attachments.PageInfo.HasNextPage,
-		EndCursor:   result.Project.Attachments.PageInfo.EndCursor,
+		ProjectID:   query.projectID,
+		ProjectName: query.projectName,
+		Attachments: page.Items,
+		HasNextPage: page.HasNextPage,
+		EndCursor:   page.EndCursor,
 	}, nil
 }
 
@@ -43,23 +91,22 @@ func ListProjectDocuments(
 	id string,
 	limit int,
 ) (ProjectDocumentList, error) {
-	result, err := gql.XProject_documents(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &projectChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list project documents "+id, limit, defaultListPageSize,
+		query.documents,
+		projectDocumentNodeSummary,
+	)
 	if err != nil {
-		return ProjectDocumentList{}, fmt.Errorf("list project documents %s: %w", id, err)
+		return ProjectDocumentList{}, err
 	}
 
-	documents := mapNodes(result.Project.Documents.Nodes, func(
-		node gql.XProject_documentsProjectDocumentsDocumentConnectionNodesDocument,
-	) DocumentSummary {
-		return documentSummary(node.DocumentSummaryFields)
-	})
-
 	return ProjectDocumentList{
-		ProjectID:   result.Project.Id,
-		ProjectName: result.Project.Name,
-		Documents:   documents,
-		HasNextPage: result.Project.Documents.PageInfo.HasNextPage,
-		EndCursor:   result.Project.Documents.PageInfo.EndCursor,
+		ProjectID:   query.projectID,
+		ProjectName: query.projectName,
+		Documents:   page.Items,
+		HasNextPage: page.HasNextPage,
+		EndCursor:   page.EndCursor,
 	}, nil
 }
 
@@ -70,23 +117,22 @@ func ListProjectExternalLinks(
 	id string,
 	limit int,
 ) (ProjectExternalLinkList, error) {
-	result, err := gql.XProject_externalLinks(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &projectChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list project external links "+id, limit, defaultListPageSize,
+		query.externalLinks,
+		projectExternalLinkNodeSummary,
+	)
 	if err != nil {
-		return ProjectExternalLinkList{}, fmt.Errorf("list project external links %s: %w", id, err)
+		return ProjectExternalLinkList{}, err
 	}
 
-	links := mapNodes(result.Project.ExternalLinks.Nodes, func(
-		node gql.XProject_externalLinksProjectExternalLinksEntityExternalLinkConnectionNodesEntityExternalLink,
-	) EntityExternalLinkSummary {
-		return entityExternalLinkSummary(node.EntityExternalLinkSummaryFields)
-	})
-
 	return ProjectExternalLinkList{
-		ProjectID:   result.Project.Id,
-		ProjectName: result.Project.Name,
-		Links:       links,
-		HasNextPage: result.Project.ExternalLinks.PageInfo.HasNextPage,
-		EndCursor:   result.Project.ExternalLinks.PageInfo.EndCursor,
+		ProjectID:   query.projectID,
+		ProjectName: query.projectName,
+		Links:       page.Items,
+		HasNextPage: page.HasNextPage,
+		EndCursor:   page.EndCursor,
 	}, nil
 }
 
@@ -97,28 +143,24 @@ func ListProjectHistory(
 	id string,
 	limit int,
 ) (ProjectHistoryList, error) {
-	result, err := gql.XProject_history(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &projectChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list project history "+id, limit, defaultListPageSize,
+		query.history,
+		projectHistoryNodeSummary,
+	)
 	if err != nil {
-		return ProjectHistoryList{}, fmt.Errorf("list project history %s: %w", id, err)
+		return ProjectHistoryList{}, err
 	}
 
-	history := mapNodes(result.Project.History.Nodes, func(
-		node gql.XProject_historyProjectHistoryProjectHistoryConnectionNodesProjectHistory,
-	) ProjectHistorySummary {
-		return projectHistorySummary(node.ProjectHistorySummaryFields)
-	})
-
 	return ProjectHistoryList{
-		ProjectID:   result.Project.Id,
-		ProjectName: result.Project.Name,
-		History:     history,
-		HasNextPage: result.Project.History.PageInfo.HasNextPage,
-		EndCursor:   result.Project.History.PageInfo.EndCursor,
+		ProjectID:   query.projectID,
+		ProjectName: query.projectName,
+		History:     page.Items,
+		HasNextPage: page.HasNextPage,
+		EndCursor:   page.EndCursor,
 	}, nil
 }
-
-//nolint:lll
-type initiativeToProjectNode = gql.XProject_initiativeToProjectsProjectInitiativeToProjectsInitiativeToProjectConnectionNodesInitiativeToProject
 
 // ListProjectInitiativeToProjects returns Initiative-to-Project associations for one Project.
 func ListProjectInitiativeToProjects(
@@ -127,22 +169,22 @@ func ListProjectInitiativeToProjects(
 	id string,
 	limit int,
 ) (ProjectInitiativeToProjectList, error) {
-	result, err := gql.XProject_initiativeToProjects(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &projectChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list project initiative associations "+id, limit, defaultListPageSize,
+		query.initiativeToProjects,
+		projectInitiativeToProjectNodeSummary,
+	)
 	if err != nil {
-		return ProjectInitiativeToProjectList{}, fmt.Errorf("list project initiative associations %s: %w", id, err)
+		return ProjectInitiativeToProjectList{}, err
 	}
 
-	associations := mapNodes(result.Project.InitiativeToProjects.Nodes,
-		func(node initiativeToProjectNode) InitiativeToProjectSummary {
-			return initiativeToProjectSummary(node.InitiativeToProjectSummaryFields)
-		})
-
 	return ProjectInitiativeToProjectList{
-		ProjectID:    result.Project.Id,
-		ProjectName:  result.Project.Name,
-		Associations: associations,
-		HasNextPage:  result.Project.InitiativeToProjects.PageInfo.HasNextPage,
-		EndCursor:    result.Project.InitiativeToProjects.PageInfo.EndCursor,
+		ProjectID:    query.projectID,
+		ProjectName:  query.projectName,
+		Associations: page.Items,
+		HasNextPage:  page.HasNextPage,
+		EndCursor:    page.EndCursor,
 	}, nil
 }
 
@@ -153,23 +195,22 @@ func ListProjectInitiatives(
 	id string,
 	limit int,
 ) (ProjectInitiativeList, error) {
-	result, err := gql.XProject_initiatives(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &projectChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list project initiatives "+id, limit, defaultListPageSize,
+		query.initiatives,
+		projectInitiativeNodeSummary,
+	)
 	if err != nil {
-		return ProjectInitiativeList{}, fmt.Errorf("list project initiatives %s: %w", id, err)
+		return ProjectInitiativeList{}, err
 	}
 
-	initiatives := mapNodes(result.Project.Initiatives.Nodes, func(
-		node gql.XProject_initiativesProjectInitiativesInitiativeConnectionNodesInitiative,
-	) InitiativeSummary {
-		return initiativeSummary(node.InitiativeSummaryFields)
-	})
-
 	return ProjectInitiativeList{
-		ProjectID:   result.Project.Id,
-		ProjectName: result.Project.Name,
-		Initiatives: initiatives,
-		HasNextPage: result.Project.Initiatives.PageInfo.HasNextPage,
-		EndCursor:   result.Project.Initiatives.PageInfo.EndCursor,
+		ProjectID:   query.projectID,
+		ProjectName: query.projectName,
+		Initiatives: page.Items,
+		HasNextPage: page.HasNextPage,
+		EndCursor:   page.EndCursor,
 	}, nil
 }
 
@@ -180,23 +221,22 @@ func ListProjectInverseRelations(
 	id string,
 	limit int,
 ) (ProjectProjectRelationList, error) {
-	result, err := gql.XProject_inverseRelations(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &projectChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list project inverse relations "+id, limit, defaultListPageSize,
+		query.inverseRelations,
+		projectInverseRelationNodeSummary,
+	)
 	if err != nil {
-		return ProjectProjectRelationList{}, fmt.Errorf("list project inverse relations %s: %w", id, err)
+		return ProjectProjectRelationList{}, err
 	}
 
-	relations := mapNodes(result.Project.InverseRelations.Nodes, func(
-		node gql.XProject_inverseRelationsProjectInverseRelationsProjectRelationConnectionNodesProjectRelation,
-	) ProjectRelationSummary {
-		return projectRelationSummary(node.ProjectRelationSummaryFields)
-	})
-
 	return ProjectProjectRelationList{
-		ProjectID:   result.Project.Id,
-		ProjectName: result.Project.Name,
-		Relations:   relations,
-		HasNextPage: result.Project.InverseRelations.PageInfo.HasNextPage,
-		EndCursor:   result.Project.InverseRelations.PageInfo.EndCursor,
+		ProjectID:   query.projectID,
+		ProjectName: query.projectName,
+		Relations:   page.Items,
+		HasNextPage: page.HasNextPage,
+		EndCursor:   page.EndCursor,
 	}, nil
 }
 
@@ -207,23 +247,22 @@ func ListProjectIssues(
 	id string,
 	limit int,
 ) (ProjectIssueList, error) {
-	result, err := gql.XProject_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &projectChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list project issues "+id, limit, defaultListPageSize,
+		query.issues,
+		projectIssueNodeSummary,
+	)
 	if err != nil {
-		return ProjectIssueList{}, fmt.Errorf("list project issues %s: %w", id, err)
+		return ProjectIssueList{}, err
 	}
 
-	issues := mapNodes(result.Project.Issues.Nodes, func(
-		node gql.XProject_issuesProjectIssuesIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(node.IssueSummaryFields)
-	})
-
 	return ProjectIssueList{
-		ProjectID:   result.Project.Id,
-		ProjectName: result.Project.Name,
-		Issues:      issues,
-		HasNextPage: result.Project.Issues.PageInfo.HasNextPage,
-		EndCursor:   result.Project.Issues.PageInfo.EndCursor,
+		ProjectID:   query.projectID,
+		ProjectName: query.projectName,
+		Issues:      page.Items,
+		HasNextPage: page.HasNextPage,
+		EndCursor:   page.EndCursor,
 	}, nil
 }
 
@@ -234,23 +273,22 @@ func ListProjectComments(
 	id string,
 	limit int,
 ) (ProjectCommentList, error) {
-	result, err := gql.XProject_comments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &projectChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list project comments "+id, limit, defaultListPageSize,
+		query.comments,
+		projectCommentNodeSummary,
+	)
 	if err != nil {
-		return ProjectCommentList{}, fmt.Errorf("list project comments %s: %w", id, err)
+		return ProjectCommentList{}, err
 	}
 
-	comments := mapNodes(result.Project.Comments.Nodes, func(
-		node gql.XProject_commentsProjectCommentsCommentConnectionNodesComment,
-	) CommentMetadataSummary {
-		return commentMetadataSummary(node.CommentMetadataFields)
-	})
-
 	return ProjectCommentList{
-		ProjectID:   result.Project.Id,
-		ProjectName: result.Project.Name,
-		Comments:    comments,
-		HasNextPage: result.Project.Comments.PageInfo.HasNextPage,
-		EndCursor:   result.Project.Comments.PageInfo.EndCursor,
+		ProjectID:   query.projectID,
+		ProjectName: query.projectName,
+		Comments:    page.Items,
+		HasNextPage: page.HasNextPage,
+		EndCursor:   page.EndCursor,
 	}, nil
 }
 
@@ -261,23 +299,22 @@ func ListLabelsForProject(
 	id string,
 	limit int,
 ) (ProjectProjectLabelList, error) {
-	result, err := gql.XProject_labels(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &projectChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list project labels "+id, limit, defaultListPageSize,
+		query.labels,
+		projectLabelForProjectNodeSummary,
+	)
 	if err != nil {
-		return ProjectProjectLabelList{}, fmt.Errorf("list project labels %s: %w", id, err)
+		return ProjectProjectLabelList{}, err
 	}
 
-	labels := mapNodes(result.Project.Labels.Nodes, func(
-		node gql.XProject_labelsProjectLabelsProjectLabelConnectionNodesProjectLabel,
-	) ProjectLabelSummary {
-		return projectLabelSummary(node.ProjectLabelSummaryFields)
-	})
-
 	return ProjectProjectLabelList{
-		ProjectID:     result.Project.Id,
-		ProjectName:   result.Project.Name,
-		ProjectLabels: labels,
-		HasNextPage:   result.Project.Labels.PageInfo.HasNextPage,
-		EndCursor:     result.Project.Labels.PageInfo.EndCursor,
+		ProjectID:     query.projectID,
+		ProjectName:   query.projectName,
+		ProjectLabels: page.Items,
+		HasNextPage:   page.HasNextPage,
+		EndCursor:     page.EndCursor,
 	}, nil
 }
 
@@ -288,23 +325,22 @@ func ListProjectNeeds(
 	id string,
 	limit int,
 ) (ProjectCustomerNeedList, error) {
-	result, err := gql.XProject_needs(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &projectChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list project customer needs "+id, limit, defaultListPageSize,
+		query.needs,
+		projectNeedNodeSummary,
+	)
 	if err != nil {
-		return ProjectCustomerNeedList{}, fmt.Errorf("list project customer needs %s: %w", id, err)
+		return ProjectCustomerNeedList{}, err
 	}
 
-	needs := mapNodes(result.Project.Needs.Nodes, func(
-		node gql.XProject_needsProjectNeedsCustomerNeedConnectionNodesCustomerNeed,
-	) CustomerNeedSummary {
-		return customerNeedSummary(node.CustomerNeedSummaryFields)
-	})
-
 	return ProjectCustomerNeedList{
-		ProjectID:   result.Project.Id,
-		ProjectName: result.Project.Name,
-		Needs:       needs,
-		HasNextPage: result.Project.Needs.PageInfo.HasNextPage,
-		EndCursor:   result.Project.Needs.PageInfo.EndCursor,
+		ProjectID:   query.projectID,
+		ProjectName: query.projectName,
+		Needs:       page.Items,
+		HasNextPage: page.HasNextPage,
+		EndCursor:   page.EndCursor,
 	}, nil
 }
 
@@ -315,23 +351,22 @@ func ListProjectRelationsForProject(
 	id string,
 	limit int,
 ) (ProjectProjectRelationList, error) {
-	result, err := gql.XProject_relations(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &projectChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list project relations "+id, limit, defaultListPageSize,
+		query.relations,
+		projectRelationForProjectNodeSummary,
+	)
 	if err != nil {
-		return ProjectProjectRelationList{}, fmt.Errorf("list project relations %s: %w", id, err)
+		return ProjectProjectRelationList{}, err
 	}
 
-	relations := mapNodes(result.Project.Relations.Nodes, func(
-		node gql.XProject_relationsProjectRelationsProjectRelationConnectionNodesProjectRelation,
-	) ProjectRelationSummary {
-		return projectRelationSummary(node.ProjectRelationSummaryFields)
-	})
-
 	return ProjectProjectRelationList{
-		ProjectID:   result.Project.Id,
-		ProjectName: result.Project.Name,
-		Relations:   relations,
-		HasNextPage: result.Project.Relations.PageInfo.HasNextPage,
-		EndCursor:   result.Project.Relations.PageInfo.EndCursor,
+		ProjectID:   query.projectID,
+		ProjectName: query.projectName,
+		Relations:   page.Items,
+		HasNextPage: page.HasNextPage,
+		EndCursor:   page.EndCursor,
 	}, nil
 }
 
@@ -342,23 +377,22 @@ func ListProjectTeams(
 	id string,
 	limit int,
 ) (ProjectTeamList, error) {
-	result, err := gql.XProject_teams(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &projectChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list project teams "+id, limit, defaultListPageSize,
+		query.teams,
+		projectTeamNodeSummary,
+	)
 	if err != nil {
-		return ProjectTeamList{}, fmt.Errorf("list project teams %s: %w", id, err)
+		return ProjectTeamList{}, err
 	}
 
-	teams := mapNodes(result.Project.Teams.Nodes, func(
-		node gql.XProject_teamsProjectTeamsTeamConnectionNodesTeam,
-	) TeamSummary {
-		return teamSummary(node.TeamSummaryFields)
-	})
-
 	return ProjectTeamList{
-		ProjectID:   result.Project.Id,
-		ProjectName: result.Project.Name,
-		Teams:       teams,
-		HasNextPage: result.Project.Teams.PageInfo.HasNextPage,
-		EndCursor:   result.Project.Teams.PageInfo.EndCursor,
+		ProjectID:   query.projectID,
+		ProjectName: query.projectName,
+		Teams:       page.Items,
+		HasNextPage: page.HasNextPage,
+		EndCursor:   page.EndCursor,
 	}, nil
 }
 
@@ -369,29 +403,364 @@ func ListProjectMembers(
 	id string,
 	limit int,
 ) (ProjectMemberList, error) {
-	project, err := gql.XProject_members(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &projectChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list project members "+id, limit, defaultListPageSize,
+		query.members,
+		projectMemberNodeSummary,
+	)
 	if err != nil {
-		return ProjectMemberList{}, fmt.Errorf("list project members %s: %w", id, err)
+		return ProjectMemberList{}, err
 	}
 
-	members := mapNodes(project.Project.Members.Nodes, func(
-		member gql.XProject_membersProjectMembersUserConnectionNodesUser,
-	) ProjectMember {
-		return ProjectMember{
-			ID:          member.Id,
-			Name:        member.Name,
-			DisplayName: member.DisplayName,
-			Email:       member.Email,
-		}
-	})
-
 	return ProjectMemberList{
-		ProjectID:   project.Project.Id,
-		ProjectName: project.Project.Name,
-		Members:     members,
-		HasNextPage: project.Project.Members.PageInfo.HasNextPage,
-		EndCursor:   project.Project.Members.PageInfo.EndCursor,
+		ProjectID:   query.projectID,
+		ProjectName: query.projectName,
+		Members:     page.Items,
+		HasNextPage: page.HasNextPage,
+		EndCursor:   page.EndCursor,
 	}, nil
+}
+
+func (query *projectChildQuery) attachments(
+	pageSize int,
+	after *string,
+) ([]projectAttachmentsNode, bool, *string, error) {
+	result, err := gql.XProject_attachments(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	query.projectID = result.Project.Id
+	query.projectName = result.Project.Name
+
+	return result.Project.Attachments.Nodes,
+		result.Project.Attachments.PageInfo.HasNextPage,
+		result.Project.Attachments.PageInfo.EndCursor,
+		nil
+}
+
+func (query *projectChildQuery) documents(
+	pageSize int,
+	after *string,
+) ([]projectDocumentsNode, bool, *string, error) {
+	result, err := gql.XProject_documents(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	query.projectID = result.Project.Id
+	query.projectName = result.Project.Name
+
+	return result.Project.Documents.Nodes,
+		result.Project.Documents.PageInfo.HasNextPage,
+		result.Project.Documents.PageInfo.EndCursor,
+		nil
+}
+
+func (query *projectChildQuery) externalLinks(
+	pageSize int,
+	after *string,
+) ([]projectExternalLinksNode, bool, *string, error) {
+	result, err := gql.XProject_externalLinks(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	query.projectID = result.Project.Id
+	query.projectName = result.Project.Name
+
+	return result.Project.ExternalLinks.Nodes,
+		result.Project.ExternalLinks.PageInfo.HasNextPage,
+		result.Project.ExternalLinks.PageInfo.EndCursor,
+		nil
+}
+
+func (query *projectChildQuery) history(
+	pageSize int,
+	after *string,
+) ([]projectHistoryNode, bool, *string, error) {
+	result, err := gql.XProject_history(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	query.projectID = result.Project.Id
+	query.projectName = result.Project.Name
+
+	return result.Project.History.Nodes,
+		result.Project.History.PageInfo.HasNextPage,
+		result.Project.History.PageInfo.EndCursor,
+		nil
+}
+
+func (query *projectChildQuery) initiativeToProjects(
+	pageSize int,
+	after *string,
+) ([]initiativeToProjectNode, bool, *string, error) {
+	result, err := gql.XProject_initiativeToProjects(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	query.projectID = result.Project.Id
+	query.projectName = result.Project.Name
+
+	return result.Project.InitiativeToProjects.Nodes,
+		result.Project.InitiativeToProjects.PageInfo.HasNextPage,
+		result.Project.InitiativeToProjects.PageInfo.EndCursor,
+		nil
+}
+
+func (query *projectChildQuery) initiatives(
+	pageSize int,
+	after *string,
+) ([]projectInitiativesNode, bool, *string, error) {
+	result, err := gql.XProject_initiatives(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	query.projectID = result.Project.Id
+	query.projectName = result.Project.Name
+
+	return result.Project.Initiatives.Nodes,
+		result.Project.Initiatives.PageInfo.HasNextPage,
+		result.Project.Initiatives.PageInfo.EndCursor,
+		nil
+}
+
+func (query *projectChildQuery) inverseRelations(
+	pageSize int,
+	after *string,
+) ([]projectInverseRelationsNode, bool, *string, error) {
+	result, err := gql.XProject_inverseRelations(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	query.projectID = result.Project.Id
+	query.projectName = result.Project.Name
+
+	return result.Project.InverseRelations.Nodes,
+		result.Project.InverseRelations.PageInfo.HasNextPage,
+		result.Project.InverseRelations.PageInfo.EndCursor,
+		nil
+}
+
+func (query *projectChildQuery) issues(
+	pageSize int,
+	after *string,
+) ([]projectIssuesNode, bool, *string, error) {
+	result, err := gql.XProject_issues(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	query.projectID = result.Project.Id
+	query.projectName = result.Project.Name
+
+	return result.Project.Issues.Nodes,
+		result.Project.Issues.PageInfo.HasNextPage,
+		result.Project.Issues.PageInfo.EndCursor,
+		nil
+}
+
+func (query *projectChildQuery) comments(
+	pageSize int,
+	after *string,
+) ([]projectCommentsNode, bool, *string, error) {
+	result, err := gql.XProject_comments(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	query.projectID = result.Project.Id
+	query.projectName = result.Project.Name
+
+	return result.Project.Comments.Nodes,
+		result.Project.Comments.PageInfo.HasNextPage,
+		result.Project.Comments.PageInfo.EndCursor,
+		nil
+}
+
+func (query *projectChildQuery) labels(
+	pageSize int,
+	after *string,
+) ([]projectLabelsForProjectNode, bool, *string, error) {
+	result, err := gql.XProject_labels(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	query.projectID = result.Project.Id
+	query.projectName = result.Project.Name
+
+	return result.Project.Labels.Nodes,
+		result.Project.Labels.PageInfo.HasNextPage,
+		result.Project.Labels.PageInfo.EndCursor,
+		nil
+}
+
+func (query *projectChildQuery) needs(
+	pageSize int,
+	after *string,
+) ([]projectNeedsNode, bool, *string, error) {
+	result, err := gql.XProject_needs(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	query.projectID = result.Project.Id
+	query.projectName = result.Project.Name
+
+	return result.Project.Needs.Nodes,
+		result.Project.Needs.PageInfo.HasNextPage,
+		result.Project.Needs.PageInfo.EndCursor,
+		nil
+}
+
+func (query *projectChildQuery) relations(
+	pageSize int,
+	after *string,
+) ([]projectRelationsForProjectNode, bool, *string, error) {
+	result, err := gql.XProject_relations(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	query.projectID = result.Project.Id
+	query.projectName = result.Project.Name
+
+	return result.Project.Relations.Nodes,
+		result.Project.Relations.PageInfo.HasNextPage,
+		result.Project.Relations.PageInfo.EndCursor,
+		nil
+}
+
+func (query *projectChildQuery) teams(
+	pageSize int,
+	after *string,
+) ([]projectTeamsNode, bool, *string, error) {
+	result, err := gql.XProject_teams(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	query.projectID = result.Project.Id
+	query.projectName = result.Project.Name
+
+	return result.Project.Teams.Nodes,
+		result.Project.Teams.PageInfo.HasNextPage,
+		result.Project.Teams.PageInfo.EndCursor,
+		nil
+}
+
+func (query *projectChildQuery) members(
+	pageSize int,
+	after *string,
+) ([]projectMembersNode, bool, *string, error) {
+	result, err := gql.XProject_members(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	query.projectID = result.Project.Id
+	query.projectName = result.Project.Name
+
+	return result.Project.Members.Nodes,
+		result.Project.Members.PageInfo.HasNextPage,
+		result.Project.Members.PageInfo.EndCursor,
+		nil
+}
+
+func projectAttachmentNodeSummary(node projectAttachmentsNode) AttachmentSummary {
+	return projectAttachmentSummary(node.ProjectAttachmentSummaryFields)
+}
+
+func projectDocumentNodeSummary(node projectDocumentsNode) DocumentSummary {
+	return documentSummary(node.DocumentSummaryFields)
+}
+
+func projectExternalLinkNodeSummary(node projectExternalLinksNode) EntityExternalLinkSummary {
+	return entityExternalLinkSummary(node.EntityExternalLinkSummaryFields)
+}
+
+func projectHistoryNodeSummary(node projectHistoryNode) ProjectHistorySummary {
+	return projectHistorySummary(node.ProjectHistorySummaryFields)
+}
+
+func projectInitiativeToProjectNodeSummary(node initiativeToProjectNode) InitiativeToProjectSummary {
+	return initiativeToProjectSummary(node.InitiativeToProjectSummaryFields)
+}
+
+func projectInitiativeNodeSummary(node projectInitiativesNode) InitiativeSummary {
+	return initiativeSummary(node.InitiativeSummaryFields)
+}
+
+func projectInverseRelationNodeSummary(node projectInverseRelationsNode) ProjectRelationSummary {
+	return projectRelationSummary(node.ProjectRelationSummaryFields)
+}
+
+func projectIssueNodeSummary(node projectIssuesNode) IssueSummary {
+	return issueSummaryFromFields(node.IssueSummaryFields)
+}
+
+func projectCommentNodeSummary(node projectCommentsNode) CommentMetadataSummary {
+	return commentMetadataSummary(node.CommentMetadataFields)
+}
+
+func projectLabelForProjectNodeSummary(node projectLabelsForProjectNode) ProjectLabelSummary {
+	return projectLabelSummary(node.ProjectLabelSummaryFields)
+}
+
+func projectNeedNodeSummary(node projectNeedsNode) CustomerNeedSummary {
+	return customerNeedSummary(node.CustomerNeedSummaryFields)
+}
+
+func projectRelationForProjectNodeSummary(node projectRelationsForProjectNode) ProjectRelationSummary {
+	return projectRelationSummary(node.ProjectRelationSummaryFields)
+}
+
+func projectTeamNodeSummary(node projectTeamsNode) TeamSummary {
+	return teamSummary(node.TeamSummaryFields)
+}
+
+func projectMemberNodeSummary(member projectMembersNode) ProjectMember {
+	return ProjectMember{
+		ID:          member.Id,
+		Name:        member.Name,
+		DisplayName: member.DisplayName,
+		Email:       member.Email,
+	}
 }
 
 func projectHistorySummary(fields gql.ProjectHistorySummaryFields) ProjectHistorySummary {

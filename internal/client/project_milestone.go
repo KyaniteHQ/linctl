@@ -73,6 +73,36 @@ func projectMilestoneSummary(milestone gql.ProjectMilestoneSummaryFields) Projec
 	}
 }
 
+//nolint:lll
+type projectMilestonesNode = gql.XProjectMilestonesProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone
+
+//nolint:lll
+type projectScopedMilestonesNode = gql.XProject_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone
+
+//nolint:lll
+type projectMilestoneIssuesNode = gql.XProjectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue
+
+type projectMilestonesQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
+type projectScopedMilestonesQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+	id            string
+	projectID     string
+	projectName   string
+}
+
+type projectMilestoneIssuesQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+	id            string
+	milestoneID   string
+	milestoneName string
+}
+
 // ListProjectMilestones returns milestones for one project.
 func ListProjectMilestones(
 	ctx context.Context,
@@ -80,23 +110,22 @@ func ListProjectMilestones(
 	id string,
 	limit int,
 ) (ProjectMilestoneList, error) {
-	project, err := gql.XProject_projectMilestones(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &projectScopedMilestonesQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list project milestones "+id, limit, defaultListPageSize,
+		query.page,
+		projectScopedMilestoneNodeSummary,
+	)
 	if err != nil {
-		return ProjectMilestoneList{}, fmt.Errorf("list project milestones %s: %w", id, err)
+		return ProjectMilestoneList{}, err
 	}
 
-	milestones := mapNodes(project.Project.ProjectMilestones.Nodes, func(
-		milestone gql.XProject_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone,
-	) ProjectMilestoneSummary {
-		return projectMilestoneSummary(milestone.ProjectMilestoneSummaryFields)
-	})
-
 	return ProjectMilestoneList{
-		ProjectID:   project.Project.Id,
-		ProjectName: project.Project.Name,
-		Milestones:  milestones,
-		HasNextPage: project.Project.ProjectMilestones.PageInfo.HasNextPage,
-		EndCursor:   project.Project.ProjectMilestones.PageInfo.EndCursor,
+		ProjectID:   query.projectID,
+		ProjectName: query.projectName,
+		Milestones:  page.Items,
+		HasNextPage: page.HasNextPage,
+		EndCursor:   page.EndCursor,
 	}, nil
 }
 
@@ -106,22 +135,17 @@ func ListAllProjectMilestones(
 	graphqlClient graphql.Client,
 	limit int,
 ) (ProjectMilestoneList, error) {
-	result, err := gql.XProjectMilestones(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := projectMilestonesQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list project milestones", limit, defaultListPageSize,
+		query.page,
+		projectMilestoneNodeSummary,
+	)
 	if err != nil {
-		return ProjectMilestoneList{}, fmt.Errorf("list project milestones: %w", err)
+		return ProjectMilestoneList{}, err
 	}
 
-	milestones := mapNodes(result.ProjectMilestones.Nodes, func(
-		milestone gql.XProjectMilestonesProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone,
-	) ProjectMilestoneSummary {
-		return projectMilestoneSummary(milestone.ProjectMilestoneSummaryFields)
-	})
-
-	return ProjectMilestoneList{
-		Milestones:  milestones,
-		HasNextPage: result.ProjectMilestones.PageInfo.HasNextPage,
-		EndCursor:   result.ProjectMilestones.PageInfo.EndCursor,
-	}, nil
+	return ProjectMilestoneList{Milestones: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // ListProjectMilestoneIssues returns issues associated with one ProjectMilestone.
@@ -131,24 +155,90 @@ func ListProjectMilestoneIssues(
 	id string,
 	limit int,
 ) (ProjectMilestoneIssueList, error) {
-	result, err := gql.XProjectMilestone_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &projectMilestoneIssuesQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list project milestone issues "+id, limit, defaultListPageSize,
+		query.page,
+		projectMilestoneIssueNodeSummary,
+	)
 	if err != nil {
-		return ProjectMilestoneIssueList{}, fmt.Errorf("list project milestone issues %s: %w", id, err)
+		return ProjectMilestoneIssueList{}, err
 	}
 
-	issues := mapNodes(result.ProjectMilestone.Issues.Nodes, func(
-		node gql.XProjectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(node.IssueSummaryFields)
-	})
-
 	return ProjectMilestoneIssueList{
-		ProjectMilestoneID:   result.ProjectMilestone.Id,
-		ProjectMilestoneName: result.ProjectMilestone.Name,
-		Issues:               issues,
-		HasNextPage:          result.ProjectMilestone.Issues.PageInfo.HasNextPage,
-		EndCursor:            result.ProjectMilestone.Issues.PageInfo.EndCursor,
+		ProjectMilestoneID:   query.milestoneID,
+		ProjectMilestoneName: query.milestoneName,
+		Issues:               page.Items,
+		HasNextPage:          page.HasNextPage,
+		EndCursor:            page.EndCursor,
 	}, nil
+}
+
+func (query *projectScopedMilestonesQuery) page(
+	pageSize int,
+	after *string,
+) ([]projectScopedMilestonesNode, bool, *string, error) {
+	result, err := gql.XProject_projectMilestones(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	query.projectID = result.Project.Id
+	query.projectName = result.Project.Name
+
+	return result.Project.ProjectMilestones.Nodes,
+		result.Project.ProjectMilestones.PageInfo.HasNextPage,
+		result.Project.ProjectMilestones.PageInfo.EndCursor,
+		nil
+}
+
+func (query projectMilestonesQuery) page(
+	pageSize int,
+	after *string,
+) ([]projectMilestonesNode, bool, *string, error) {
+	result, err := gql.XProjectMilestones(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.ProjectMilestones.Nodes,
+		result.ProjectMilestones.PageInfo.HasNextPage,
+		result.ProjectMilestones.PageInfo.EndCursor,
+		nil
+}
+
+func (query *projectMilestoneIssuesQuery) page(
+	pageSize int,
+	after *string,
+) ([]projectMilestoneIssuesNode, bool, *string, error) {
+	result, err := gql.XProjectMilestone_issues(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	query.milestoneID = result.ProjectMilestone.Id
+	query.milestoneName = result.ProjectMilestone.Name
+
+	return result.ProjectMilestone.Issues.Nodes,
+		result.ProjectMilestone.Issues.PageInfo.HasNextPage,
+		result.ProjectMilestone.Issues.PageInfo.EndCursor,
+		nil
+}
+
+func projectScopedMilestoneNodeSummary(milestone projectScopedMilestonesNode) ProjectMilestoneSummary {
+	return projectMilestoneSummary(milestone.ProjectMilestoneSummaryFields)
+}
+
+func projectMilestoneNodeSummary(milestone projectMilestonesNode) ProjectMilestoneSummary {
+	return projectMilestoneSummary(milestone.ProjectMilestoneSummaryFields)
+}
+
+func projectMilestoneIssueNodeSummary(node projectMilestoneIssuesNode) IssueSummary {
+	return issueSummaryFromFields(node.IssueSummaryFields)
 }
 
 // GetProjectMilestoneByID returns one ProjectMilestone by Linear id.
