@@ -295,14 +295,31 @@ const maxRetryDelay = 30 * time.Second
 const maxResponseBytes = 16 << 20
 
 func retryDelay(header http.Header, attempt int) time.Duration {
-	if retryAfter := header.Get("Retry-After"); retryAfter != "" {
-		seconds, err := strconv.Atoi(retryAfter)
-		if err == nil {
-			return min(time.Duration(seconds)*time.Second, maxRetryDelay)
-		}
+	if delay, ok := retryAfterDelay(header.Get("Retry-After")); ok {
+		return delay
 	}
 
 	return min(time.Duration(attempt+1)*100*time.Millisecond, maxRetryDelay)
+}
+
+// retryAfterDelay parses a Retry-After delay-seconds value. Non-positive and
+// unparsable values are rejected so the caller can use exponential backoff.
+// Seconds are capped before the time.Second multiply, so a large header cannot
+// overflow to a negative duration and bypass maxRetryDelay.
+func retryAfterDelay(retryAfter string) (time.Duration, bool) {
+	if retryAfter == "" {
+		return 0, false
+	}
+	seconds, err := strconv.Atoi(retryAfter)
+	if err != nil || seconds <= 0 {
+		return 0, false
+	}
+	maxSeconds := int(maxRetryDelay / time.Second)
+	if seconds > maxSeconds {
+		seconds = maxSeconds
+	}
+
+	return time.Duration(seconds) * time.Second, true
 }
 
 func waitForRetry(ctx context.Context, delay time.Duration) error {

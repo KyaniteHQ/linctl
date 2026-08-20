@@ -1210,7 +1210,8 @@ linctl files download URL [flags]
 Flags:
 
 ```
-      --output string   local path to write the downloaded file
+      --max-size string   fail if the download exceeds this size (bytes, or KB, MB, GB); unset means no limit
+      --output string     local path to write the downloaded file
 ```
 
 ### linctl files upload

@@ -2,7 +2,9 @@ package client
 
 import (
 	"context"
+	"math"
 	"net/http"
+	"strconv"
 	"testing"
 	"time"
 
@@ -19,6 +21,9 @@ func Test_TransportScenarios_return_actionable_errors(t *testing.T) {
 	require.Equal(t, 100*time.Millisecond, retryDelay(http.Header{"Retry-After": []string{"not-a-number"}}, 0))
 	require.Equal(t, 2*time.Second, retryDelay(http.Header{"Retry-After": []string{"2"}}, 0))
 	require.Equal(t, maxRetryDelay, retryDelay(http.Header{"Retry-After": []string{"120"}}, 0))
+	require.Equal(t, 100*time.Millisecond, retryDelay(http.Header{"Retry-After": []string{"-1"}}, 0))
+	require.Equal(t, 100*time.Millisecond, retryDelay(http.Header{"Retry-After": []string{"0"}}, 0))
+	require.Equal(t, maxRetryDelay, retryDelay(http.Header{"Retry-After": []string{strconv.Itoa(math.MaxInt)}}, 0))
 
 	require.True(t, isRateLimited(http.StatusTooManyRequests, nil))
 	require.True(t, isRateLimited(http.StatusBadRequest, []byte(`{"errors":[{"extensions":{"code":"RATELIMITED"}}]}`)))
@@ -35,6 +40,24 @@ func Test_TransportScenarios_return_actionable_errors(t *testing.T) {
 
 	err = decodeGraphQLResponse([]byte("server down"), http.StatusBadGateway, &response)
 	require.ErrorContains(t, err, "graphql http status 502")
+}
+
+func Test_retryDelay_clamps_non_positive_and_overflow_retry_after_into_max_bound(t *testing.T) {
+	cases := []struct {
+		name       string
+		retryAfter string
+	}{
+		{name: "Retry-After -1", retryAfter: "-1"},
+		{name: "Retry-After 0", retryAfter: "0"},
+		{name: "overflow-scale Retry-After", retryAfter: strconv.Itoa(math.MaxInt)},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			delay := retryDelay(http.Header{"Retry-After": []string{tc.retryAfter}}, 0)
+			require.GreaterOrEqual(t, delay, time.Duration(0))
+			require.LessOrEqual(t, delay, maxRetryDelay)
+		})
+	}
 }
 
 func Test_CustomViewPreferenceReads_return_empty_values_when_organization_defaults_are_absent(t *testing.T) {

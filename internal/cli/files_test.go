@@ -5,9 +5,11 @@ import (
 	"context"
 	"errors"
 	"io"
+	"math"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -385,7 +387,7 @@ func Test_writeDownloadedFile_removes_temp_file_on_copy_error(t *testing.T) {
 	directory := t.TempDir()
 	output := filepath.Join(directory, "got.txt")
 
-	_, err := writeDownloadedFile(errorReader{}, output)
+	_, err := writeDownloadedFile(errorReader{}, output, downloadMaxSize{})
 
 	require.Error(t, err)
 	entries, readErr := os.ReadDir(directory)
@@ -402,7 +404,11 @@ func Test_writeDownloadedFile_reports_close_error(t *testing.T) {
 		createDownloadTempFile = original
 	}()
 
-	_, err := writeDownloadedFile(strings.NewReader("data"), filepath.Join(t.TempDir(), "got.txt"))
+	_, err := writeDownloadedFile(
+		strings.NewReader("data"),
+		filepath.Join(t.TempDir(), "got.txt"),
+		downloadMaxSize{},
+	)
 
 	require.ErrorContains(t, err, "close boom")
 }
@@ -412,13 +418,134 @@ func Test_writeDownloadedFile_removes_temp_file_on_rename_error(t *testing.T) {
 	output := filepath.Join(directory, "existing-dir")
 	require.NoError(t, os.Mkdir(output, 0o700))
 
-	_, err := writeDownloadedFile(strings.NewReader("data"), output)
+	_, err := writeDownloadedFile(strings.NewReader("data"), output, downloadMaxSize{})
 
 	require.Error(t, err)
 	entries, readErr := os.ReadDir(directory)
 	require.NoError(t, readErr)
 	require.Len(t, entries, 1)
 	require.Equal(t, "existing-dir", entries[0].Name())
+}
+
+func Test_Files_download_without_max_size_writes_full_body(t *testing.T) {
+	out := filepath.Join(t.TempDir(), "got.bin")
+	body := strings.Repeat("x", 2048)
+
+	output, err := runFilesCommand(t, &fakeHTTPDoer{status: http.StatusOK, body: body}, []string{
+		"files", "download", "https://assets.example/file.txt", "--output", out,
+	})
+
+	require.NoError(t, err)
+	require.Contains(t, output, out)
+	data, readErr := os.ReadFile(out)
+	require.NoError(t, readErr)
+	require.Equal(t, body, string(data))
+}
+
+func Test_Files_download_rejects_body_over_max_size_and_leaves_no_file(t *testing.T) {
+	directory := t.TempDir()
+	out := filepath.Join(directory, "got.bin")
+	body := strings.Repeat("x", 2048)
+
+	_, err := runFilesCommand(t, &fakeHTTPDoer{status: http.StatusOK, body: body}, []string{
+		"files", "download", "https://assets.example/file.txt",
+		"--output", out, "--max-size", "1KB",
+	})
+
+	require.ErrorIs(t, err, client.ErrWriteInvalid)
+	require.Equal(t, "INVALID_WRITE", errorCode(err))
+	require.ErrorContains(t, err, "1KB")
+	_, statErr := os.Stat(out)
+	require.ErrorIs(t, statErr, os.ErrNotExist)
+	entries, readErr := os.ReadDir(directory)
+	require.NoError(t, readErr)
+	require.Empty(t, entries)
+}
+
+func Test_Files_download_accepts_body_equal_to_max_size(t *testing.T) {
+	out := filepath.Join(t.TempDir(), "got.bin")
+	body := strings.Repeat("x", 1024)
+
+	_, err := runFilesCommand(t, &fakeHTTPDoer{status: http.StatusOK, body: body}, []string{
+		"files", "download", "https://assets.example/file.txt",
+		"--output", out, "--max-size", "1KB",
+	})
+
+	require.NoError(t, err)
+	data, readErr := os.ReadFile(out)
+	require.NoError(t, readErr)
+	require.Equal(t, body, string(data))
+}
+
+func Test_Files_download_rejects_invalid_max_size_before_request(t *testing.T) {
+	doer := &fakeHTTPDoer{status: http.StatusOK, body: "payload"}
+	out := filepath.Join(t.TempDir(), "got.bin")
+
+	_, err := runFilesCommand(t, doer, []string{
+		"files", "download", "https://assets.example/file.txt",
+		"--output", out, "--max-size", "1TB",
+	})
+
+	require.ErrorIs(t, err, client.ErrWriteInvalid)
+	require.Equal(t, "INVALID_WRITE", errorCode(err))
+	require.Nil(t, doer.requestContext)
+	_, statErr := os.Stat(out)
+	require.ErrorIs(t, statErr, os.ErrNotExist)
+}
+
+func Test_parseDownloadMaxSize_accepts_plain_bytes_and_suffixes(t *testing.T) {
+	cases := []struct {
+		raw  string
+		want int64
+	}{
+		{raw: "0", want: 0},
+		{raw: "13", want: 13},
+		{raw: "1KB", want: 1024},
+		{raw: "1kb", want: 1024},
+		{raw: " 2MB ", want: 2 * 1024 * 1024},
+		{raw: "1GB", want: 1024 * 1024 * 1024},
+		{raw: strconv.FormatInt(math.MaxInt64, 10), want: math.MaxInt64},
+	}
+	for _, tc := range cases {
+		t.Run(tc.raw, func(t *testing.T) {
+			got, err := parseDownloadMaxSize(tc.raw)
+			require.NoError(t, err)
+			require.Equal(t, tc.want, got)
+		})
+	}
+}
+
+func Test_parseDownloadMaxSize_rejects_invalid_and_overflowing_values(t *testing.T) {
+	for _, raw := range []string{"", "  ", "nope", "-1", "1TB", "1.5MB", "8589934592GB"} {
+		t.Run(raw, func(t *testing.T) {
+			_, err := parseDownloadMaxSize(raw)
+			require.ErrorIs(t, err, client.ErrWriteInvalid)
+			require.ErrorContains(t, err, raw)
+		})
+	}
+}
+
+func Test_downloadMaxSizeFromFlag_absent_flag_is_unlimited(t *testing.T) {
+	limit, err := downloadMaxSizeFromFlag("1KB", false)
+	require.NoError(t, err)
+	require.False(t, limit.set)
+}
+
+func Test_writeDownloadedFile_treats_max_int64_limit_as_unbounded(t *testing.T) {
+	out := filepath.Join(t.TempDir(), "got.txt")
+	limit := downloadMaxSize{
+		bytes: math.MaxInt64,
+		flag:  strconv.FormatInt(math.MaxInt64, 10),
+		set:   true,
+	}
+
+	size, err := writeDownloadedFile(strings.NewReader("data"), out, limit)
+
+	require.NoError(t, err)
+	require.Equal(t, int64(4), size)
+	data, readErr := os.ReadFile(out)
+	require.NoError(t, readErr)
+	require.Equal(t, "data", string(data))
 }
 
 func Test_commandRuntime_fileHTTPClient_uses_default_client(t *testing.T) {
