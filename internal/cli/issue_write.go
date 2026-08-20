@@ -102,7 +102,7 @@ func addIssueCreateCommand(ctx context.Context, root *cobra.Command, options *ro
 		&request.ProjectMilestoneID, "milestone", "",
 		"assign to a project milestone id, which needs a pinned project",
 	)
-	registerStateCompletion(ctx, command, options)
+	registerStateCompletion(ctx, command, options, workflowStateNameCandidates)
 	addWriteCommand(root, WriteEffectGuarded, command)
 }
 
@@ -206,7 +206,7 @@ func addIssueUpdateCommand(ctx context.Context, root *cobra.Command, options *ro
 				"assign to a project milestone id, which needs a pinned project",
 			)
 			command.Flags().BoolVar(&request.ClearMilestone, "clear-milestone", false, "clear the milestone")
-			registerStateCompletion(ctx, command, options)
+			registerStateCompletion(ctx, command, options, workflowStateNameCandidates)
 		},
 		Run: func(
 			ctx context.Context, command *cobra.Command, runtime commandRuntime, args []string,

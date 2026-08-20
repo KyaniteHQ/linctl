@@ -105,6 +105,55 @@ func Test_workflowStateTypeCandidates_dedupes_and_skips_empty(t *testing.T) {
 	require.Equal(t, []string{"started", "completed"}, types)
 }
 
+func Test_workflowStateNameCandidates_returns_error_when_list_fails(t *testing.T) {
+	_, err := workflowStateNameCandidates(
+		context.Background(), testCommandRuntime(commandFlowFakeClient{failOperation: "workflowStates"}),
+	)
+
+	require.Error(t, err)
+}
+
+func Test_workflowStateNameCandidates_dedupes_case_and_skips_empty(t *testing.T) {
+	runtime := commandRuntime{graphqlClient: payloadGraphQLClient{payload: `{"workflowStates":{"nodes":[
+		{"id":"1","name":"In Review","type":"started","position":1},
+		{"id":"2","name":"in review","type":"started","position":2},
+		{"id":"3","name":"","type":"started","position":3},
+		{"id":"4","name":"Todo","type":"unstarted","position":4}
+	],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`}}
+
+	names, err := workflowStateNameCandidates(context.Background(), runtime)
+
+	require.NoError(t, err)
+	require.Equal(t, []string{"In Review\tstarted", "Todo\tunstarted"}, names)
+}
+
+func Test_IssueList_completes_state_types(t *testing.T) {
+	restore := useCommandRuntime(t, commandFlowFakeClient{})
+	defer restore()
+
+	output := completeCommand(t, []string{"issue", "list", "--state", ""})
+
+	require.Contains(t, output, "started")
+}
+
+func Test_IssueCreate_completes_state_names(t *testing.T) {
+	restore := useCommandRuntime(t, commandFlowFakeClient{})
+	defer restore()
+
+	output := completeCommand(t, []string{"issue", "create", "--state", ""})
+
+	require.Contains(t, output, "Started")
+}
+
+func Test_IssueUpdate_completes_state_names(t *testing.T) {
+	restore := useCommandRuntime(t, commandFlowFakeClient{})
+	defer restore()
+
+	output := completeCommand(t, []string{"issue", "update", "--state", ""})
+
+	require.Contains(t, output, "Started")
+}
+
 func Test_flagCompletion_invokes_loader(t *testing.T) {
 	restore := useCommandRuntime(t, commandFlowFakeClient{})
 	defer restore()

@@ -29795,62 +29795,6 @@ func (v *WorkflowStatesByTeamWorkflowStatesWorkflowStateConnectionPageInfo) GetH
 	return v.HasNextPage
 }
 
-// WorkflowStatesByTypeResponse is returned by WorkflowStatesByType on success.
-type WorkflowStatesByTypeResponse struct {
-	// All issue workflow states (issue statuses). Returns a paginated list of workflow states visible to the authenticated user, across all teams they have access to.
-	WorkflowStates WorkflowStatesByTypeWorkflowStatesWorkflowStateConnection `json:"workflowStates"`
-}
-
-// GetWorkflowStates returns WorkflowStatesByTypeResponse.WorkflowStates, and is useful for accessing the field via an interface.
-func (v *WorkflowStatesByTypeResponse) GetWorkflowStates() WorkflowStatesByTypeWorkflowStatesWorkflowStateConnection {
-	return v.WorkflowStates
-}
-
-// WorkflowStatesByTypeWorkflowStatesWorkflowStateConnection includes the requested fields of the GraphQL type WorkflowStateConnection.
-type WorkflowStatesByTypeWorkflowStatesWorkflowStateConnection struct {
-	Nodes []WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState `json:"nodes"`
-}
-
-// GetNodes returns WorkflowStatesByTypeWorkflowStatesWorkflowStateConnection.Nodes, and is useful for accessing the field via an interface.
-func (v *WorkflowStatesByTypeWorkflowStatesWorkflowStateConnection) GetNodes() []WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState {
-	return v.Nodes
-}
-
-// WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState includes the requested fields of the GraphQL type WorkflowState.
-// The GraphQL type's documentation follows.
-//
-// A state in a team's workflow, representing an issue status such as Triage, Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own set of workflow states that define the progression of issues through the team's process. Workflow states have a type that categorizes them (triage, backlog, unstarted, started, completed, canceled), a position that determines their display order, and a color for visual identification. States can be inherited from parent teams to sub-teams.
-type WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState struct {
-	// The unique identifier of the entity.
-	Id string `json:"id"`
-	// The state's human-readable name (e.g., 'In Progress', 'Done', 'Backlog').
-	Name string `json:"name"`
-	// The type of the state. One of "triage", "backlog", "unstarted", "started", "completed", "canceled", "duplicate".
-	Type string `json:"type"`
-	// The position of the state in the team's workflow. States are displayed in ascending order of position within their type group.
-	Position float64 `json:"position"`
-}
-
-// GetId returns WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState.Id, and is useful for accessing the field via an interface.
-func (v *WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState) GetId() string {
-	return v.Id
-}
-
-// GetName returns WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState.Name, and is useful for accessing the field via an interface.
-func (v *WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState) GetName() string {
-	return v.Name
-}
-
-// GetType returns WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState.Type, and is useful for accessing the field via an interface.
-func (v *WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState) GetType() string {
-	return v.Type
-}
-
-// GetPosition returns WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState.Position, and is useful for accessing the field via an interface.
-func (v *WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState) GetPosition() float64 {
-	return v.Position
-}
-
 // __AttachmentLinkURLInput is used internally by genqlient
 type __AttachmentLinkURLInput struct {
 	Input gqlmodel.LinearAttachmentCreateInput `json:"input"`
@@ -30464,22 +30408,6 @@ func (v *__WorkflowStatesByTeamInput) GetTeamId() string { return v.TeamId }
 
 // GetFirst returns __WorkflowStatesByTeamInput.First, and is useful for accessing the field via an interface.
 func (v *__WorkflowStatesByTeamInput) GetFirst() *int { return v.First }
-
-// __WorkflowStatesByTypeInput is used internally by genqlient
-type __WorkflowStatesByTypeInput struct {
-	TeamId    string `json:"teamId"`
-	StateType string `json:"stateType"`
-	First     *int   `json:"first"`
-}
-
-// GetTeamId returns __WorkflowStatesByTypeInput.TeamId, and is useful for accessing the field via an interface.
-func (v *__WorkflowStatesByTypeInput) GetTeamId() string { return v.TeamId }
-
-// GetStateType returns __WorkflowStatesByTypeInput.StateType, and is useful for accessing the field via an interface.
-func (v *__WorkflowStatesByTypeInput) GetStateType() string { return v.StateType }
-
-// GetFirst returns __WorkflowStatesByTypeInput.First, and is useful for accessing the field via an interface.
-func (v *__WorkflowStatesByTypeInput) GetFirst() *int { return v.First }
 
 // __activeCyclesByTeamInput is used internally by genqlient
 type __activeCyclesByTeamInput struct {
@@ -82302,49 +82230,6 @@ func WorkflowStatesByTeam(
 	}
 
 	data_ = &WorkflowStatesByTeamResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
-// The query executed by WorkflowStatesByType.
-const WorkflowStatesByType_Operation = `
-query WorkflowStatesByType ($teamId: ID!, $stateType: String!, $first: Int) {
-	workflowStates(filter: {team:{id:{eq:$teamId}},type:{eq:$stateType}}, first: $first) {
-		nodes {
-			id
-			name
-			type
-			position
-		}
-	}
-}
-`
-
-func WorkflowStatesByType(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	teamId string,
-	stateType string,
-	first *int,
-) (data_ *WorkflowStatesByTypeResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "WorkflowStatesByType",
-		Query:  WorkflowStatesByType_Operation,
-		Variables: &__WorkflowStatesByTypeInput{
-			TeamId:    teamId,
-			StateType: stateType,
-			First:     first,
-		},
-	}
-
-	data_ = &WorkflowStatesByTypeResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

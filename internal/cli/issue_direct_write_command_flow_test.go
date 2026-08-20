@@ -17,8 +17,7 @@ type expectedIssueWriteNumber struct {
 
 type issueWriteCaptureClient struct {
 	directWriteCaptureClient
-	numbers   []expectedIssueWriteNumber
-	stateType string
+	numbers []expectedIssueWriteNumber
 }
 
 func (client *issueWriteCaptureClient) MakeRequest(
@@ -26,11 +25,6 @@ func (client *issueWriteCaptureClient) MakeRequest(
 	request *graphql.Request,
 	response *graphql.Response,
 ) error {
-	if request.OpName == "WorkflowStatesByType" && client.stateType != "" {
-		if err := requireRequestVariable(request, []string{"stateType"}, client.stateType, "state type"); err != nil {
-			return err
-		}
-	}
 	if request.OpName == client.operation {
 		for _, number := range client.numbers {
 			actual, err := requestVariable[float64](request, number.path...)
@@ -53,7 +47,6 @@ func Test_IssueDirectWriteCommandFlows_forward_mutation_variables(t *testing.T) 
 		operation string
 		variables []expectedWriteVariable
 		numbers   []expectedIssueWriteNumber
-		stateType string
 	}{
 		{
 			name:      "create",
@@ -181,8 +174,7 @@ func Test_IssueDirectWriteCommandFlows_forward_mutation_variables(t *testing.T) 
 					variables: test.variables,
 					delegate:  flow,
 				},
-				numbers:   test.numbers,
-				stateType: test.stateType,
+				numbers: test.numbers,
 			}
 			restore := useCommandRuntime(t, fake)
 			defer restore()

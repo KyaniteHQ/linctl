@@ -499,8 +499,6 @@ func commandFlowIssueWritePayload(operation string, fake commandFlowFakeClient) 
 		return `{"commentCreate":{"success":true,"comment":{"id":"comment-id","body":"Looks good","url":"https://linear.app/comment/comment-id","issue":` + commandIssueJSON("LIT-1", "Detail issue", "todo-state", "Todo", "unstarted") + `}}}`, true
 	case "AttachmentLinkURL":
 		return `{"attachmentCreate":{"success":true,"attachment":{"id":"attachment-id","title":"Linked PR","subtitle":null,"url":"https://example.com/pr/1","sourceType":null}}}`, true
-	case "WorkflowStatesByType":
-		return `{"workflowStates":{"nodes":[{"id":"type-state-id","name":"TypeState","type":"unstarted","position":1}]}}`, true
 	case "WorkflowStatesByTeam":
 		return commandFlowWorkflowStatesByTeamJSON(), true
 	case "IssueClose":

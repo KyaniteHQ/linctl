@@ -19,7 +19,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Upstream SDK root methods with generated local operations | 468 | 156 | 468 |
 | Upstream Query root fields used by generated local operations | 166 | 116 | 166 |
 | Upstream Mutation root fields used by generated local operations | 373 | 42 | 373 |
-| Local generated Go operations declared in GraphQL files | 311 | 311 | 311 |
+| Local generated Go operations declared in GraphQL files | 310 | 310 | 310 |
 | Public CLI commands from command inventory | 441 | 324 | 441 |
 
 ## Upstream SDK Root Methods
@@ -1103,7 +1103,6 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `Teams` | query | `teams` | generated | `internal/client/internal/gql/generated.go` |
 | `Viewer` | query | `viewer` | generated | `internal/client/internal/gql/generated.go` |
 | `WorkflowStatesByTeam` | query | `workflowStates` | generated | `internal/client/internal/gql/generated.go` |
-| `WorkflowStatesByType` | query | `workflowStates` | generated | `internal/client/internal/gql/generated.go` |
 | `activeCyclesByTeam` | query | `cycles` | generated | `internal/client/internal/gql/generated.go` |
 | `agentActivities` | query | `agentActivities` | generated | `internal/client/internal/gql/generated.go` |
 | `agentActivity` | query | `agentActivity` | generated | `internal/client/internal/gql/generated.go` |

@@ -95,6 +95,18 @@ func Test_IssueCreate_dry_run_json_emits_draft(t *testing.T) {
 	require.Contains(t, output, "Draft issue")
 }
 
+func Test_IssueCreate_dry_run_json_emits_exact_state_name(t *testing.T) {
+	output, err := runIssueCreateCommand(t, []string{
+		"--json", "issue", "create", "--dry-run",
+		"--title", "Draft issue", "--state", "In Review",
+	})
+
+	require.NoError(t, err)
+	require.Contains(t, output, `"state"`)
+	require.Contains(t, output, "In Review")
+	require.NotContains(t, output, `"state_type"`)
+}
+
 func Test_IssueCreate_dry_run_quiet_is_silent(t *testing.T) {
 	output, err := runIssueCreateCommand(t, []string{
 		"--quiet", "issue", "create", "--dry-run", "--title", "Draft issue",
