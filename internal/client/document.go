@@ -35,24 +35,37 @@ type DocumentCommentList struct {
 	EndCursor   *string                  `json:"end_cursor,omitempty"`
 }
 
+//nolint:lll
+type documentsNode = gql.DocumentsDocumentsDocumentConnectionNodesDocument
+
+//nolint:lll
+type documentCommentsNode = gql.XDocument_commentsDocumentCommentsCommentConnectionNodesComment
+
+type documentsQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
+type documentCommentsQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+	id            string
+	documentID    string
+}
+
 // ListDocuments returns visible Documents.
 func ListDocuments(ctx context.Context, graphqlClient graphql.Client, limit int) (DocumentList, error) {
-	documents, err := gql.Documents(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := documentsQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list documents", limit, defaultListPageSize,
+		query.page,
+		documentsNodeSummary,
+	)
 	if err != nil {
-		return DocumentList{}, fmt.Errorf("list documents: %w", err)
+		return DocumentList{}, err
 	}
 
-	summaries := mapNodes(documents.Documents.Nodes, func(
-		document gql.DocumentsDocumentsDocumentConnectionNodesDocument,
-	) DocumentSummary {
-		return documentSummary(document.DocumentSummaryFields)
-	})
-
-	return DocumentList{
-		Documents:   summaries,
-		HasNextPage: documents.Documents.PageInfo.HasNextPage,
-		EndCursor:   documents.Documents.PageInfo.EndCursor,
-	}, nil
+	return DocumentList{Documents: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // GetDocumentByID returns one Document by id or slug.
@@ -72,23 +85,61 @@ func ListDocumentComments(
 	id string,
 	limit int,
 ) (DocumentCommentList, error) {
-	result, err := gql.XDocument_comments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &documentCommentsQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list document comments "+id, limit, defaultListPageSize,
+		query.comments,
+		documentCommentsNodeSummary,
+	)
 	if err != nil {
-		return DocumentCommentList{}, fmt.Errorf("list document comments %s: %w", id, err)
+		return DocumentCommentList{}, err
 	}
 
-	comments := mapNodes(result.Document.Comments.Nodes, func(
-		node gql.XDocument_commentsDocumentCommentsCommentConnectionNodesComment,
-	) CommentMetadataSummary {
-		return commentMetadataSummary(node.CommentMetadataFields)
-	})
-
 	return DocumentCommentList{
-		DocumentID:  result.Document.Id,
-		Comments:    comments,
-		HasNextPage: result.Document.Comments.PageInfo.HasNextPage,
-		EndCursor:   result.Document.Comments.PageInfo.EndCursor,
+		DocumentID:  query.documentID,
+		Comments:    page.Items,
+		HasNextPage: page.HasNextPage,
+		EndCursor:   page.EndCursor,
 	}, nil
+}
+
+func (query documentsQuery) page(pageSize int, after *string) ([]documentsNode, bool, *string, error) {
+	result, err := gql.Documents(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Documents.Nodes,
+		result.Documents.PageInfo.HasNextPage,
+		result.Documents.PageInfo.EndCursor,
+		nil
+}
+
+func (query *documentCommentsQuery) comments(
+	pageSize int,
+	after *string,
+) ([]documentCommentsNode, bool, *string, error) {
+	result, err := gql.XDocument_comments(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	query.documentID = result.Document.Id
+
+	return result.Document.Comments.Nodes,
+		result.Document.Comments.PageInfo.HasNextPage,
+		result.Document.Comments.PageInfo.EndCursor,
+		nil
+}
+
+func documentsNodeSummary(document documentsNode) DocumentSummary {
+	return documentSummary(document.DocumentSummaryFields)
+}
+
+func documentCommentsNodeSummary(node documentCommentsNode) CommentMetadataSummary {
+	return commentMetadataSummary(node.CommentMetadataFields)
 }
 
 func documentSummary(document gql.DocumentSummaryFields) DocumentSummary {

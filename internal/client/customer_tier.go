@@ -28,24 +28,27 @@ type CustomerTierList struct {
 	EndCursor   *string               `json:"end_cursor,omitempty"`
 }
 
+//nolint:lll
+type customerTiersNode = gql.XCustomerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier
+
+type customerTiersQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
 // ListCustomerTiers returns organization customer tiers.
 func ListCustomerTiers(ctx context.Context, graphqlClient graphql.Client, limit int) (CustomerTierList, error) {
-	result, err := gql.XCustomerTiers(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := customerTiersQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list customer tiers", limit, defaultListPageSize,
+		query.page,
+		customerTiersNodeSummary,
+	)
 	if err != nil {
-		return CustomerTierList{}, fmt.Errorf("list customer tiers: %w", err)
+		return CustomerTierList{}, err
 	}
 
-	summaries := mapNodes(result.CustomerTiers.Nodes, func(
-		node gql.XCustomerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier,
-	) CustomerTierSummary {
-		return customerTierSummary(node.CustomerTierSummaryFields)
-	})
-
-	return CustomerTierList{
-		Tiers:       summaries,
-		HasNextPage: result.CustomerTiers.PageInfo.HasNextPage,
-		EndCursor:   result.CustomerTiers.PageInfo.EndCursor,
-	}, nil
+	return CustomerTierList{Tiers: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // GetCustomerTierByID returns one customer tier by id.
@@ -56,6 +59,22 @@ func GetCustomerTierByID(ctx context.Context, graphqlClient graphql.Client, id s
 	}
 
 	return customerTierSummary(result.CustomerTier.CustomerTierSummaryFields), nil
+}
+
+func (query customerTiersQuery) page(pageSize int, after *string) ([]customerTiersNode, bool, *string, error) {
+	result, err := gql.XCustomerTiers(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.CustomerTiers.Nodes,
+		result.CustomerTiers.PageInfo.HasNextPage,
+		result.CustomerTiers.PageInfo.EndCursor,
+		nil
+}
+
+func customerTiersNodeSummary(node customerTiersNode) CustomerTierSummary {
+	return customerTierSummary(node.CustomerTierSummaryFields)
 }
 
 func customerTierSummary(fields gql.CustomerTierSummaryFields) CustomerTierSummary {

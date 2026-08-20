@@ -24,22 +24,27 @@ type EmojiList struct {
 	EndCursor   *string        `json:"end_cursor,omitempty"`
 }
 
+//nolint:lll
+type emojisNode = gql.XEmojisEmojisEmojiConnectionNodesEmoji
+
+type emojisQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
 // ListEmojis returns custom emojis visible to the authenticated user.
 func ListEmojis(ctx context.Context, graphqlClient graphql.Client, limit int) (EmojiList, error) {
-	result, err := gql.XEmojis(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := emojisQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list emojis", limit, defaultListPageSize,
+		query.page,
+		emojisNodeSummary,
+	)
 	if err != nil {
-		return EmojiList{}, fmt.Errorf("list emojis: %w", err)
+		return EmojiList{}, err
 	}
 
-	summaries := mapNodes(result.Emojis.Nodes, func(node gql.XEmojisEmojisEmojiConnectionNodesEmoji) EmojiSummary {
-		return emojiSummary(node.EmojiSummaryFields)
-	})
-
-	return EmojiList{
-		Emojis:      summaries,
-		HasNextPage: result.Emojis.PageInfo.HasNextPage,
-		EndCursor:   result.Emojis.PageInfo.EndCursor,
-	}, nil
+	return EmojiList{Emojis: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // GetEmojiByID returns one custom emoji by Linear id or name.
@@ -54,6 +59,22 @@ func GetEmojiByID(
 	}
 
 	return emojiSummary(result.Emoji.EmojiSummaryFields), nil
+}
+
+func (query emojisQuery) page(pageSize int, after *string) ([]emojisNode, bool, *string, error) {
+	result, err := gql.XEmojis(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Emojis.Nodes,
+		result.Emojis.PageInfo.HasNextPage,
+		result.Emojis.PageInfo.EndCursor,
+		nil
+}
+
+func emojisNodeSummary(node emojisNode) EmojiSummary {
+	return emojiSummary(node.EmojiSummaryFields)
 }
 
 func emojiSummary(fields gql.EmojiSummaryFields) EmojiSummary {

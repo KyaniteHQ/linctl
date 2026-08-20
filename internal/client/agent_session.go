@@ -34,23 +34,30 @@ type AgentSessionList struct {
 	EndCursor     *string               `json:"end_cursor,omitempty"`
 }
 
+//nolint:lll
+type agentSessionsNode = gql.XAgentSessionsAgentSessionsAgentSessionConnectionNodesAgentSession
+
+type agentSessionsQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
 // ListAgentSessions returns AgentSessions visible to the authenticated user.
 func ListAgentSessions(ctx context.Context, graphqlClient graphql.Client, limit int) (AgentSessionList, error) {
-	result, err := gql.XAgentSessions(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := agentSessionsQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list agent sessions", limit, defaultListPageSize,
+		query.page,
+		agentSessionsNodeSummary,
+	)
 	if err != nil {
-		return AgentSessionList{}, fmt.Errorf("list agent sessions: %w", err)
+		return AgentSessionList{}, err
 	}
 
-	summaries := mapNodes(result.AgentSessions.Nodes, func(
-		node gql.XAgentSessionsAgentSessionsAgentSessionConnectionNodesAgentSession,
-	) AgentSessionSummary {
-		return agentSessionSummary(node.AgentSessionSummaryFields)
-	})
-
 	return AgentSessionList{
-		AgentSessions: summaries,
-		HasNextPage:   result.AgentSessions.PageInfo.HasNextPage,
-		EndCursor:     result.AgentSessions.PageInfo.EndCursor,
+		AgentSessions: page.Items,
+		HasNextPage:   page.HasNextPage,
+		EndCursor:     page.EndCursor,
 	}, nil
 }
 
@@ -62,6 +69,22 @@ func GetAgentSessionByID(ctx context.Context, graphqlClient graphql.Client, id s
 	}
 
 	return agentSessionSummary(result.AgentSession.AgentSessionSummaryFields), nil
+}
+
+func (query agentSessionsQuery) page(pageSize int, after *string) ([]agentSessionsNode, bool, *string, error) {
+	result, err := gql.XAgentSessions(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.AgentSessions.Nodes,
+		result.AgentSessions.PageInfo.HasNextPage,
+		result.AgentSessions.PageInfo.EndCursor,
+		nil
+}
+
+func agentSessionsNodeSummary(node agentSessionsNode) AgentSessionSummary {
+	return agentSessionSummary(node.AgentSessionSummaryFields)
 }
 
 func agentSessionSummary(fields gql.AgentSessionSummaryFields) AgentSessionSummary {

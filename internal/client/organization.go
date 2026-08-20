@@ -2,31 +2,42 @@ package client
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
 
 	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
+//nolint:lll
+type organizationLabelsNode = gql.XOrganization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel
+
+//nolint:lll
+type organizationProjectLabelsNode = gql.XOrganization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel
+
+//nolint:lll
+type organizationTeamsNode = gql.XOrganization_teamsOrganizationTeamsTeamConnectionNodesTeam
+
+//nolint:lll
+type organizationUsersNode = gql.XOrganization_usersOrganizationUsersUserConnectionNodesUser
+
+type organizationQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
 // ListOrganizationLabels returns organization-wide issue labels.
 func ListOrganizationLabels(ctx context.Context, graphqlClient graphql.Client, limit int) (LabelList, error) {
-	result, err := gql.XOrganization_labels(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
+	query := organizationQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list organization labels", limit, defaultListPageSize,
+		query.labels,
+		organizationLabelsNodeSummary,
+	)
 	if err != nil {
-		return LabelList{}, fmt.Errorf("list organization labels: %w", err)
+		return LabelList{}, err
 	}
 
-	labels := mapNodes(result.Organization.Labels.Nodes, func(
-		label gql.XOrganization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel,
-	) LabelSummary {
-		return labelSummary(label.IssueLabelSummaryFields)
-	})
-
-	return LabelList{
-		Labels:      labels,
-		HasNextPage: result.Organization.Labels.PageInfo.HasNextPage,
-		EndCursor:   result.Organization.Labels.PageInfo.EndCursor,
-	}, nil
+	return LabelList{Labels: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // ListOrganizationProjectLabels returns organization-wide project labels.
@@ -35,60 +46,133 @@ func ListOrganizationProjectLabels(
 	graphqlClient graphql.Client,
 	limit int,
 ) (ProjectLabelList, error) {
-	result, err := gql.XOrganization_projectLabels(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
+	query := organizationQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list organization project labels", limit, defaultListPageSize,
+		query.projectLabels,
+		organizationProjectLabelsNodeSummary,
+	)
 	if err != nil {
-		return ProjectLabelList{}, fmt.Errorf("list organization project labels: %w", err)
+		return ProjectLabelList{}, err
 	}
 
-	labels := mapNodes(result.Organization.ProjectLabels.Nodes, func(
-		label gql.XOrganization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel,
-	) ProjectLabelSummary {
-		return projectLabelSummary(label.ProjectLabelSummaryFields)
-	})
-
 	return ProjectLabelList{
-		ProjectLabels: labels,
-		HasNextPage:   result.Organization.ProjectLabels.PageInfo.HasNextPage,
-		EndCursor:     result.Organization.ProjectLabels.PageInfo.EndCursor,
+		ProjectLabels: page.Items,
+		HasNextPage:   page.HasNextPage,
+		EndCursor:     page.EndCursor,
 	}, nil
 }
 
 // ListOrganizationTeams returns teams visible to the authenticated user.
 func ListOrganizationTeams(ctx context.Context, graphqlClient graphql.Client, limit int) (TeamList, error) {
-	result, err := gql.XOrganization_teams(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
+	query := organizationQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list organization teams", limit, defaultListPageSize,
+		query.teams,
+		organizationTeamsNodeSummary,
+	)
 	if err != nil {
-		return TeamList{}, fmt.Errorf("list organization teams: %w", err)
+		return TeamList{}, err
 	}
 
-	teams := mapNodes(result.Organization.Teams.Nodes, func(
-		team gql.XOrganization_teamsOrganizationTeamsTeamConnectionNodesTeam,
-	) TeamSummary {
-		return teamSummary(team.TeamSummaryFields)
-	})
-
-	return TeamList{
-		Teams:       teams,
-		HasNextPage: result.Organization.Teams.PageInfo.HasNextPage,
-		EndCursor:   result.Organization.Teams.PageInfo.EndCursor,
-	}, nil
+	return TeamList{Teams: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // ListOrganizationUsers returns active users visible to the authenticated user.
 func ListOrganizationUsers(ctx context.Context, graphqlClient graphql.Client, limit int) (UserList, error) {
-	result, err := gql.XOrganization_users(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
+	query := organizationQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list organization users", limit, defaultListPageSize,
+		query.users,
+		organizationUsersNodeSummary,
+	)
 	if err != nil {
-		return UserList{}, fmt.Errorf("list organization users: %w", err)
+		return UserList{}, err
 	}
 
-	users := mapNodes(result.Organization.Users.Nodes, func(
-		user gql.XOrganization_usersOrganizationUsersUserConnectionNodesUser,
-	) UserSummary {
-		return userSummary(user.UserSummaryFields)
-	})
+	return UserList{Users: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+}
 
-	return UserList{
-		Users:       users,
-		HasNextPage: result.Organization.Users.PageInfo.HasNextPage,
-		EndCursor:   result.Organization.Users.PageInfo.EndCursor,
-	}, nil
+func (query organizationQuery) labels(
+	pageSize int,
+	after *string,
+) ([]organizationLabelsNode, bool, *string, error) {
+	result, err := gql.XOrganization_labels(
+		query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(false),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Organization.Labels.Nodes,
+		result.Organization.Labels.PageInfo.HasNextPage,
+		result.Organization.Labels.PageInfo.EndCursor,
+		nil
+}
+
+func (query organizationQuery) projectLabels(
+	pageSize int,
+	after *string,
+) ([]organizationProjectLabelsNode, bool, *string, error) {
+	result, err := gql.XOrganization_projectLabels(
+		query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(false),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Organization.ProjectLabels.Nodes,
+		result.Organization.ProjectLabels.PageInfo.HasNextPage,
+		result.Organization.ProjectLabels.PageInfo.EndCursor,
+		nil
+}
+
+func (query organizationQuery) teams(
+	pageSize int,
+	after *string,
+) ([]organizationTeamsNode, bool, *string, error) {
+	result, err := gql.XOrganization_teams(
+		query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(false),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Organization.Teams.Nodes,
+		result.Organization.Teams.PageInfo.HasNextPage,
+		result.Organization.Teams.PageInfo.EndCursor,
+		nil
+}
+
+func (query organizationQuery) users(
+	pageSize int,
+	after *string,
+) ([]organizationUsersNode, bool, *string, error) {
+	result, err := gql.XOrganization_users(
+		query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(false),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Organization.Users.Nodes,
+		result.Organization.Users.PageInfo.HasNextPage,
+		result.Organization.Users.PageInfo.EndCursor,
+		nil
+}
+
+func organizationLabelsNodeSummary(label organizationLabelsNode) LabelSummary {
+	return labelSummary(label.IssueLabelSummaryFields)
+}
+
+func organizationProjectLabelsNodeSummary(label organizationProjectLabelsNode) ProjectLabelSummary {
+	return projectLabelSummary(label.ProjectLabelSummaryFields)
+}
+
+func organizationTeamsNodeSummary(team organizationTeamsNode) TeamSummary {
+	return teamSummary(team.TeamSummaryFields)
+}
+
+func organizationUsersNodeSummary(user organizationUsersNode) UserSummary {
+	return userSummary(user.UserSummaryFields)
 }

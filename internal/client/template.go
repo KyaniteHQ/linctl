@@ -39,24 +39,31 @@ type TemplateList struct {
 	EndCursor   *string           `json:"end_cursor,omitempty"`
 }
 
+//nolint:lll
+type organizationTemplatesNode = gql.XOrganization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate
+
+type organizationTemplatesQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
 // ListOrganizationTemplates returns organization-wide Linear templates.
 func ListOrganizationTemplates(ctx context.Context, graphqlClient graphql.Client, limit int) (TemplateList, error) {
-	result, err := gql.XOrganization_templates(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := organizationTemplatesQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list organization templates", limit, defaultListPageSize,
+		query.page,
+		organizationTemplatesNodeSummary,
+	)
 	if err != nil {
-		return TemplateList{}, fmt.Errorf("list organization templates: %w", err)
+		return TemplateList{}, err
 	}
 
-	summaries := mapNodes(result.Organization.Templates.Nodes, func(
-		node gql.XOrganization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate,
-	) TemplateSummary {
-		return templateSummary(node.TemplateSummaryFields)
-	})
-
 	return TemplateList{
-		Templates:   summaries,
-		TotalCount:  len(summaries),
-		HasNextPage: result.Organization.Templates.PageInfo.HasNextPage,
-		EndCursor:   result.Organization.Templates.PageInfo.EndCursor,
+		Templates:   page.Items,
+		TotalCount:  len(page.Items),
+		HasNextPage: page.HasNextPage,
+		EndCursor:   page.EndCursor,
 	}, nil
 }
 
@@ -90,6 +97,27 @@ func GetTemplateByID(ctx context.Context, graphqlClient graphql.Client, id strin
 	}
 
 	return templateSummary(result.Template.TemplateSummaryFields), nil
+}
+
+func (query organizationTemplatesQuery) page(
+	pageSize int,
+	after *string,
+) ([]organizationTemplatesNode, bool, *string, error) {
+	result, err := gql.XOrganization_templates(
+		query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Organization.Templates.Nodes,
+		result.Organization.Templates.PageInfo.HasNextPage,
+		result.Organization.Templates.PageInfo.EndCursor,
+		nil
+}
+
+func organizationTemplatesNodeSummary(node organizationTemplatesNode) TemplateSummary {
+	return templateSummary(node.TemplateSummaryFields)
 }
 
 func templateSummary(fields gql.TemplateSummaryFields) TemplateSummary {

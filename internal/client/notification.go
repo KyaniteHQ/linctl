@@ -62,23 +62,35 @@ type NotificationSubscriptionList struct {
 	EndCursor     *string                           `json:"end_cursor,omitempty"`
 }
 
+//nolint:lll
+type notificationsNode = gql.XNotificationsNotificationsNotificationConnectionNodesNotification
+
+type notificationsQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
+type notificationSubscriptionsQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
 // ListNotifications returns the authenticated user's notifications.
 func ListNotifications(ctx context.Context, graphqlClient graphql.Client, limit int) (NotificationList, error) {
-	result, err := gql.XNotifications(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := notificationsQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list notifications", limit, defaultListPageSize,
+		query.page,
+		notificationsNodeSummary,
+	)
 	if err != nil {
-		return NotificationList{}, fmt.Errorf("list notifications: %w", err)
+		return NotificationList{}, err
 	}
 
-	summaries := mapNodes(result.Notifications.Nodes, func(
-		node gql.XNotificationsNotificationsNotificationConnectionNodesNotification,
-	) NotificationSummary {
-		return notificationSummary(node)
-	})
-
 	return NotificationList{
-		Notifications: summaries,
-		HasNextPage:   result.Notifications.PageInfo.HasNextPage,
-		EndCursor:     result.Notifications.PageInfo.EndCursor,
+		Notifications: page.Items,
+		HasNextPage:   page.HasNextPage,
+		EndCursor:     page.EndCursor,
 	}, nil
 }
 
@@ -108,20 +120,20 @@ func ListNotificationSubscriptions(
 	graphqlClient graphql.Client,
 	limit int,
 ) (NotificationSubscriptionList, error) {
-	result, err := gql.XNotificationSubscriptions(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := notificationSubscriptionsQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list notification subscriptions", limit, defaultListPageSize,
+		query.page,
+		notificationSubscriptionSummary,
+	)
 	if err != nil {
-		return NotificationSubscriptionList{}, fmt.Errorf("list notification subscriptions: %w", err)
-	}
-
-	summaries := make([]NotificationSubscriptionSummary, 0, len(result.NotificationSubscriptions.Nodes))
-	for _, node := range result.NotificationSubscriptions.Nodes {
-		summaries = append(summaries, notificationSubscriptionSummary(node))
+		return NotificationSubscriptionList{}, err
 	}
 
 	return NotificationSubscriptionList{
-		Subscriptions: summaries,
-		HasNextPage:   result.NotificationSubscriptions.PageInfo.HasNextPage,
-		EndCursor:     result.NotificationSubscriptions.PageInfo.EndCursor,
+		Subscriptions: page.Items,
+		HasNextPage:   page.HasNextPage,
+		EndCursor:     page.EndCursor,
 	}, nil
 }
 
@@ -137,6 +149,44 @@ func GetNotificationSubscriptionByID(
 	}
 
 	return notificationSubscriptionSummary(result.NotificationSubscription), nil
+}
+
+func (query notificationsQuery) page(pageSize int, after *string) ([]notificationsNode, bool, *string, error) {
+	result, err := gql.XNotifications(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Notifications.Nodes,
+		result.Notifications.PageInfo.HasNextPage,
+		result.Notifications.PageInfo.EndCursor,
+		nil
+}
+
+func (query notificationSubscriptionsQuery) page(
+	pageSize int,
+	after *string,
+) ([]gql.NotificationSubscriptionSummaryFields, bool, *string, error) {
+	result, err := gql.XNotificationSubscriptions(
+		query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	nodes := make([]gql.NotificationSubscriptionSummaryFields, len(result.NotificationSubscriptions.Nodes))
+	for i, node := range result.NotificationSubscriptions.Nodes {
+		nodes[i] = node
+	}
+
+	return nodes,
+		result.NotificationSubscriptions.PageInfo.HasNextPage,
+		result.NotificationSubscriptions.PageInfo.EndCursor,
+		nil
+}
+
+func notificationsNodeSummary(node notificationsNode) NotificationSummary {
+	return notificationSummary(node)
 }
 
 func notificationSummary(fields gql.NotificationSummaryFields) NotificationSummary {

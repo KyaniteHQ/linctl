@@ -41,24 +41,27 @@ type CustomerNeedProjectAttachment struct {
 	Attachment     *AttachmentSummary `json:"attachment,omitempty"`
 }
 
+//nolint:lll
+type customerNeedsNode = gql.XCustomerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed
+
+type customerNeedsQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
 // ListCustomerNeeds returns visible Linear customer needs.
 func ListCustomerNeeds(ctx context.Context, graphqlClient graphql.Client, limit int) (CustomerNeedList, error) {
-	result, err := gql.XCustomerNeeds(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := customerNeedsQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list customer needs", limit, defaultListPageSize,
+		query.page,
+		customerNeedsNodeSummary,
+	)
 	if err != nil {
-		return CustomerNeedList{}, fmt.Errorf("list customer needs: %w", err)
+		return CustomerNeedList{}, err
 	}
 
-	summaries := mapNodes(result.CustomerNeeds.Nodes, func(
-		node gql.XCustomerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed,
-	) CustomerNeedSummary {
-		return customerNeedSummary(node.CustomerNeedSummaryFields)
-	})
-
-	return CustomerNeedList{
-		Needs:       summaries,
-		HasNextPage: result.CustomerNeeds.PageInfo.HasNextPage,
-		EndCursor:   result.CustomerNeeds.PageInfo.EndCursor,
-	}, nil
+	return CustomerNeedList{Needs: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // GetCustomerNeedByID returns one Linear customer need by id.
@@ -92,6 +95,22 @@ func GetCustomerNeedProjectAttachment(
 		CustomerNeedID: result.CustomerNeed.Id,
 		Attachment:     attachment,
 	}, nil
+}
+
+func (query customerNeedsQuery) page(pageSize int, after *string) ([]customerNeedsNode, bool, *string, error) {
+	result, err := gql.XCustomerNeeds(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.CustomerNeeds.Nodes,
+		result.CustomerNeeds.PageInfo.HasNextPage,
+		result.CustomerNeeds.PageInfo.EndCursor,
+		nil
+}
+
+func customerNeedsNodeSummary(node customerNeedsNode) CustomerNeedSummary {
+	return customerNeedSummary(node.CustomerNeedSummaryFields)
 }
 
 func customerNeedSummary(fields gql.CustomerNeedSummaryFields) CustomerNeedSummary {
