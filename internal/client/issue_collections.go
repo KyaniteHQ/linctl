@@ -9,6 +9,47 @@ import (
 	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
+//nolint:lll
+type issueAttachmentsNode = gql.IssueAttachmentsProjectionAttachmentsAttachmentConnectionNodesAttachment
+
+//nolint:lll
+type issueChildrenNode = gql.IssueChildrenProjectionChildrenIssueConnectionNodesIssue
+
+//nolint:lll
+type issueDocumentsNode = gql.IssueDocumentsProjectionDocumentsDocumentConnectionNodesDocument
+
+//nolint:lll
+type issueFormerAttachmentsNode = gql.IssueFormerAttachmentsProjectionFormerAttachmentsAttachmentConnectionNodesAttachment
+
+//nolint:lll
+type issueHistoryNode = gql.IssueHistoryProjectionHistoryIssueHistoryConnectionNodesIssueHistory
+
+//nolint:lll
+type issueInverseRelationsNode = gql.IssueInverseRelationsProjectionInverseRelationsIssueRelationConnectionNodesIssueRelation
+
+//nolint:lll
+type issueLabelsNode = gql.IssueLabelsProjectionLabelsIssueLabelConnectionNodesIssueLabel
+
+//nolint:lll
+type issueRelationsForIssueNode = gql.IssueRelationsProjectionRelationsIssueRelationConnectionNodesIssueRelation
+
+//nolint:lll
+type issueReleasesNode = gql.IssueReleasesProjectionReleasesReleaseConnectionNodesRelease
+
+//nolint:lll
+type issueStateHistoryNode = gql.IssueStateHistoryProjectionStateHistoryIssueStateSpanConnectionNodesIssueStateSpan
+
+//nolint:lll
+type issueSubscribersNode = gql.IssueSubscribersProjectionSubscribersUserConnectionNodesUser
+
+type issueChildQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+	id            string
+	issueID       string
+	identifier    string
+}
+
 // ListIssueAttachments returns attachments associated with one issue.
 func ListIssueAttachments(
 	ctx context.Context,
@@ -16,22 +57,17 @@ func ListIssueAttachments(
 	id string,
 	limit int,
 ) (AttachmentList, error) {
-	result, err := gql.XIssue_attachments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &issueChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list issue attachments "+id, limit, defaultListPageSize,
+		query.attachments,
+		issueAttachmentNodeSummary,
+	)
 	if err != nil {
-		return AttachmentList{}, fmt.Errorf("list issue attachments %s: %w", id, err)
+		return AttachmentList{}, err
 	}
 
-	attachments := mapNodes(result.Issue.Attachments.Nodes, func(
-		attachment gql.IssueAttachmentsProjectionAttachmentsAttachmentConnectionNodesAttachment,
-	) AttachmentSummary {
-		return attachmentSummary(attachment.AttachmentSummaryFields)
-	})
-
-	return AttachmentList{
-		Attachments: attachments,
-		HasNextPage: result.Issue.Attachments.PageInfo.HasNextPage,
-		EndCursor:   result.Issue.Attachments.PageInfo.EndCursor,
-	}, nil
+	return AttachmentList{Attachments: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // GetIssueBotActor returns the bot actor that created an issue, when present.
@@ -54,22 +90,17 @@ func ListIssueChildren(
 	id string,
 	limit int,
 ) (IssueList, error) {
-	result, err := gql.XIssue_children(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &issueChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list issue children "+id, limit, defaultListPageSize,
+		query.children,
+		issueChildNodeSummary,
+	)
 	if err != nil {
-		return IssueList{}, fmt.Errorf("list issue children %s: %w", id, err)
+		return IssueList{}, err
 	}
 
-	issues := mapNodes(result.Issue.Children.Nodes, func(
-		issue gql.IssueChildrenProjectionChildrenIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(issue.IssueSummaryFields)
-	})
-
-	return IssueList{
-		Issues:      issues,
-		HasNextPage: result.Issue.Children.PageInfo.HasNextPage,
-		EndCursor:   result.Issue.Children.PageInfo.EndCursor,
-	}, nil
+	return IssueList{Issues: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // ListIssueDocuments returns documents associated with one issue.
@@ -79,22 +110,17 @@ func ListIssueDocuments(
 	id string,
 	limit int,
 ) (DocumentList, error) {
-	result, err := gql.XIssue_documents(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &issueChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list issue documents "+id, limit, defaultListPageSize,
+		query.documents,
+		issueDocumentNodeSummary,
+	)
 	if err != nil {
-		return DocumentList{}, fmt.Errorf("list issue documents %s: %w", id, err)
+		return DocumentList{}, err
 	}
 
-	documents := mapNodes(result.Issue.Documents.Nodes, func(
-		document gql.IssueDocumentsProjectionDocumentsDocumentConnectionNodesDocument,
-	) DocumentSummary {
-		return documentSummary(document.DocumentSummaryFields)
-	})
-
-	return DocumentList{
-		Documents:   documents,
-		HasNextPage: result.Issue.Documents.PageInfo.HasNextPage,
-		EndCursor:   result.Issue.Documents.PageInfo.EndCursor,
-	}, nil
+	return DocumentList{Documents: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // ListIssueFormerAttachments returns attachments formerly associated with one issue.
@@ -104,22 +130,17 @@ func ListIssueFormerAttachments(
 	id string,
 	limit int,
 ) (AttachmentList, error) {
-	result, err := gql.XIssue_formerAttachments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &issueChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list issue former attachments "+id, limit, defaultListPageSize,
+		query.formerAttachments,
+		issueFormerAttachmentNodeSummary,
+	)
 	if err != nil {
-		return AttachmentList{}, fmt.Errorf("list issue former attachments %s: %w", id, err)
+		return AttachmentList{}, err
 	}
 
-	attachments := mapNodes(result.Issue.FormerAttachments.Nodes, func(
-		attachment gql.IssueFormerAttachmentsProjectionFormerAttachmentsAttachmentConnectionNodesAttachment,
-	) AttachmentSummary {
-		return attachmentSummary(attachment.AttachmentSummaryFields)
-	})
-
-	return AttachmentList{
-		Attachments: attachments,
-		HasNextPage: result.Issue.FormerAttachments.PageInfo.HasNextPage,
-		EndCursor:   result.Issue.FormerAttachments.PageInfo.EndCursor,
-	}, nil
+	return AttachmentList{Attachments: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // ListIssueHistory returns compact history metadata for one issue.
@@ -129,18 +150,17 @@ func ListIssueHistory(
 	id string,
 	limit int,
 ) (IssueHistoryList, error) {
-	result, err := gql.XIssue_history(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &issueChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list issue history "+id, limit, defaultListPageSize,
+		query.history,
+		issueHistorySummary,
+	)
 	if err != nil {
-		return IssueHistoryList{}, fmt.Errorf("list issue history %s: %w", id, err)
+		return IssueHistoryList{}, err
 	}
 
-	history := mapNodes(result.Issue.History.Nodes, issueHistorySummary)
-
-	return IssueHistoryList{
-		History:     history,
-		HasNextPage: result.Issue.History.PageInfo.HasNextPage,
-		EndCursor:   result.Issue.History.PageInfo.EndCursor,
-	}, nil
+	return IssueHistoryList{History: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // ListIssueInverseRelations returns inverse relations associated with one issue.
@@ -150,22 +170,17 @@ func ListIssueInverseRelations(
 	id string,
 	limit int,
 ) (IssueRelationList, error) {
-	result, err := gql.XIssue_inverseRelations(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &issueChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list issue inverse relations "+id, limit, defaultListPageSize,
+		query.inverseRelations,
+		issueInverseRelationNodeSummary,
+	)
 	if err != nil {
-		return IssueRelationList{}, fmt.Errorf("list issue inverse relations %s: %w", id, err)
+		return IssueRelationList{}, err
 	}
 
-	relations := mapNodes(result.Issue.InverseRelations.Nodes, func(
-		relation gql.IssueInverseRelationsProjectionInverseRelationsIssueRelationConnectionNodesIssueRelation,
-	) IssueRelationSummary {
-		return issueRelationSummary(relation.IssueRelationSummaryFields)
-	})
-
-	return IssueRelationList{
-		Relations:   relations,
-		HasNextPage: result.Issue.InverseRelations.PageInfo.HasNextPage,
-		EndCursor:   result.Issue.InverseRelations.PageInfo.EndCursor,
-	}, nil
+	return IssueRelationList{Relations: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // ListIssueLabels returns labels associated with one issue.
@@ -175,22 +190,17 @@ func ListIssueLabels(
 	id string,
 	limit int,
 ) (LabelList, error) {
-	result, err := gql.XIssue_labels(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &issueChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list issue labels "+id, limit, defaultListPageSize,
+		query.labels,
+		issueLabelNodeSummary,
+	)
 	if err != nil {
-		return LabelList{}, fmt.Errorf("list issue labels %s: %w", id, err)
+		return LabelList{}, err
 	}
 
-	labels := mapNodes(result.Issue.Labels.Nodes, func(
-		label gql.IssueLabelsProjectionLabelsIssueLabelConnectionNodesIssueLabel,
-	) LabelSummary {
-		return labelSummary(label.IssueLabelSummaryFields)
-	})
-
-	return LabelList{
-		Labels:      labels,
-		HasNextPage: result.Issue.Labels.PageInfo.HasNextPage,
-		EndCursor:   result.Issue.Labels.PageInfo.EndCursor,
-	}, nil
+	return LabelList{Labels: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // ListIssueRelationsForIssue returns relations associated with one issue.
@@ -200,22 +210,17 @@ func ListIssueRelationsForIssue(
 	id string,
 	limit int,
 ) (IssueRelationList, error) {
-	result, err := gql.XIssue_relations(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &issueChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list issue relations "+id, limit, defaultListPageSize,
+		query.relations,
+		issueRelationForIssueNodeSummary,
+	)
 	if err != nil {
-		return IssueRelationList{}, fmt.Errorf("list issue relations %s: %w", id, err)
+		return IssueRelationList{}, err
 	}
 
-	relations := mapNodes(result.Issue.Relations.Nodes, func(
-		relation gql.IssueRelationsProjectionRelationsIssueRelationConnectionNodesIssueRelation,
-	) IssueRelationSummary {
-		return issueRelationSummary(relation.IssueRelationSummaryFields)
-	})
-
-	return IssueRelationList{
-		Relations:   relations,
-		HasNextPage: result.Issue.Relations.PageInfo.HasNextPage,
-		EndCursor:   result.Issue.Relations.PageInfo.EndCursor,
-	}, nil
+	return IssueRelationList{Relations: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // ListIssueReleases returns releases associated with one issue.
@@ -225,22 +230,17 @@ func ListIssueReleases(
 	id string,
 	limit int,
 ) (ReleaseList, error) {
-	result, err := gql.XIssue_releases(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &issueChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list issue releases "+id, limit, defaultListPageSize,
+		query.releases,
+		issueReleaseNodeSummary,
+	)
 	if err != nil {
-		return ReleaseList{}, fmt.Errorf("list issue releases %s: %w", id, err)
+		return ReleaseList{}, err
 	}
 
-	releases := mapNodes(result.Issue.Releases.Nodes, func(
-		release gql.IssueReleasesProjectionReleasesReleaseConnectionNodesRelease,
-	) ReleaseSummary {
-		return releaseSummary(release.ReleaseSummaryFields)
-	})
-
-	return ReleaseList{
-		Releases:    releases,
-		HasNextPage: result.Issue.Releases.PageInfo.HasNextPage,
-		EndCursor:   result.Issue.Releases.PageInfo.EndCursor,
-	}, nil
+	return ReleaseList{Releases: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
 // ListIssueStateHistory returns workflow-state spans for one issue.
@@ -250,18 +250,21 @@ func ListIssueStateHistory(
 	id string,
 	limit int,
 ) (IssueStateHistoryList, error) {
-	result, err := gql.XIssue_stateHistory(ctx, graphqlClient, id, intPtr(limit), nil)
+	query := &issueChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list issue state history "+id, limit, defaultListPageSize,
+		query.stateHistory,
+		issueStateSpanSummary,
+	)
 	if err != nil {
-		return IssueStateHistoryList{}, fmt.Errorf("list issue state history %s: %w", id, err)
+		return IssueStateHistoryList{}, err
 	}
 
-	spans := mapNodes(result.Issue.StateHistory.Nodes, issueStateSpanSummary)
-
 	return IssueStateHistoryList{
-		IssueID:     result.Issue.Id,
-		Spans:       spans,
-		HasNextPage: result.Issue.StateHistory.PageInfo.HasNextPage,
-		EndCursor:   result.Issue.StateHistory.PageInfo.EndCursor,
+		IssueID:     query.issueID,
+		Spans:       page.Items,
+		HasNextPage: page.HasNextPage,
+		EndCursor:   page.EndCursor,
 	}, nil
 }
 
@@ -272,22 +275,222 @@ func ListIssueSubscribers(
 	id string,
 	limit int,
 ) (UserList, error) {
-	result, err := gql.XIssue_subscribers(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &issueChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list issue subscribers "+id, limit, defaultListPageSize,
+		query.subscribers,
+		issueSubscriberNodeSummary,
+	)
 	if err != nil {
-		return UserList{}, fmt.Errorf("list issue subscribers %s: %w", id, err)
+		return UserList{}, err
 	}
 
-	users := mapNodes(result.Issue.Subscribers.Nodes, func(
-		node gql.IssueSubscribersProjectionSubscribersUserConnectionNodesUser,
-	) UserSummary {
-		return userSummary(node.UserSummaryFields)
-	})
+	return UserList{Users: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
+}
 
-	return UserList{
-		Users:       users,
-		HasNextPage: result.Issue.Subscribers.PageInfo.HasNextPage,
-		EndCursor:   result.Issue.Subscribers.PageInfo.EndCursor,
-	}, nil
+func (query *issueChildQuery) attachments(
+	pageSize int,
+	after *string,
+) ([]issueAttachmentsNode, bool, *string, error) {
+	result, err := gql.XIssue_attachments(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Issue.Attachments.Nodes,
+		result.Issue.Attachments.PageInfo.HasNextPage,
+		result.Issue.Attachments.PageInfo.EndCursor,
+		nil
+}
+
+func (query *issueChildQuery) children(pageSize int, after *string) ([]issueChildrenNode, bool, *string, error) {
+	result, err := gql.XIssue_children(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Issue.Children.Nodes,
+		result.Issue.Children.PageInfo.HasNextPage,
+		result.Issue.Children.PageInfo.EndCursor,
+		nil
+}
+
+func (query *issueChildQuery) documents(pageSize int, after *string) ([]issueDocumentsNode, bool, *string, error) {
+	result, err := gql.XIssue_documents(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Issue.Documents.Nodes,
+		result.Issue.Documents.PageInfo.HasNextPage,
+		result.Issue.Documents.PageInfo.EndCursor,
+		nil
+}
+
+func (query *issueChildQuery) formerAttachments(
+	pageSize int,
+	after *string,
+) ([]issueFormerAttachmentsNode, bool, *string, error) {
+	result, err := gql.XIssue_formerAttachments(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Issue.FormerAttachments.Nodes,
+		result.Issue.FormerAttachments.PageInfo.HasNextPage,
+		result.Issue.FormerAttachments.PageInfo.EndCursor,
+		nil
+}
+
+func (query *issueChildQuery) history(pageSize int, after *string) ([]issueHistoryNode, bool, *string, error) {
+	result, err := gql.XIssue_history(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Issue.History.Nodes,
+		result.Issue.History.PageInfo.HasNextPage,
+		result.Issue.History.PageInfo.EndCursor,
+		nil
+}
+
+func (query *issueChildQuery) inverseRelations(
+	pageSize int,
+	after *string,
+) ([]issueInverseRelationsNode, bool, *string, error) {
+	result, err := gql.XIssue_inverseRelations(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Issue.InverseRelations.Nodes,
+		result.Issue.InverseRelations.PageInfo.HasNextPage,
+		result.Issue.InverseRelations.PageInfo.EndCursor,
+		nil
+}
+
+func (query *issueChildQuery) labels(pageSize int, after *string) ([]issueLabelsNode, bool, *string, error) {
+	result, err := gql.XIssue_labels(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Issue.Labels.Nodes,
+		result.Issue.Labels.PageInfo.HasNextPage,
+		result.Issue.Labels.PageInfo.EndCursor,
+		nil
+}
+
+func (query *issueChildQuery) relations(
+	pageSize int,
+	after *string,
+) ([]issueRelationsForIssueNode, bool, *string, error) {
+	result, err := gql.XIssue_relations(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Issue.Relations.Nodes,
+		result.Issue.Relations.PageInfo.HasNextPage,
+		result.Issue.Relations.PageInfo.EndCursor,
+		nil
+}
+
+func (query *issueChildQuery) releases(pageSize int, after *string) ([]issueReleasesNode, bool, *string, error) {
+	result, err := gql.XIssue_releases(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Issue.Releases.Nodes,
+		result.Issue.Releases.PageInfo.HasNextPage,
+		result.Issue.Releases.PageInfo.EndCursor,
+		nil
+}
+
+func (query *issueChildQuery) stateHistory(
+	pageSize int,
+	after *string,
+) ([]issueStateHistoryNode, bool, *string, error) {
+	result, err := gql.XIssue_stateHistory(query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	query.issueID = result.Issue.Id
+
+	return result.Issue.StateHistory.Nodes,
+		result.Issue.StateHistory.PageInfo.HasNextPage,
+		result.Issue.StateHistory.PageInfo.EndCursor,
+		nil
+}
+
+func (query *issueChildQuery) subscribers(pageSize int, after *string) ([]issueSubscribersNode, bool, *string, error) {
+	result, err := gql.XIssue_subscribers(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Issue.Subscribers.Nodes,
+		result.Issue.Subscribers.PageInfo.HasNextPage,
+		result.Issue.Subscribers.PageInfo.EndCursor,
+		nil
+}
+
+func issueAttachmentNodeSummary(attachment issueAttachmentsNode) AttachmentSummary {
+	return attachmentSummary(attachment.AttachmentSummaryFields)
+}
+
+func issueChildNodeSummary(issue issueChildrenNode) IssueSummary {
+	return issueSummaryFromFields(issue.IssueSummaryFields)
+}
+
+func issueDocumentNodeSummary(document issueDocumentsNode) DocumentSummary {
+	return documentSummary(document.DocumentSummaryFields)
+}
+
+func issueFormerAttachmentNodeSummary(attachment issueFormerAttachmentsNode) AttachmentSummary {
+	return attachmentSummary(attachment.AttachmentSummaryFields)
+}
+
+func issueInverseRelationNodeSummary(relation issueInverseRelationsNode) IssueRelationSummary {
+	return issueRelationSummary(relation.IssueRelationSummaryFields)
+}
+
+func issueLabelNodeSummary(label issueLabelsNode) LabelSummary {
+	return labelSummary(label.IssueLabelSummaryFields)
+}
+
+func issueRelationForIssueNodeSummary(relation issueRelationsForIssueNode) IssueRelationSummary {
+	return issueRelationSummary(relation.IssueRelationSummaryFields)
+}
+
+func issueReleaseNodeSummary(release issueReleasesNode) ReleaseSummary {
+	return releaseSummary(release.ReleaseSummaryFields)
+}
+
+func issueSubscriberNodeSummary(node issueSubscribersNode) UserSummary {
+	return userSummary(node.UserSummaryFields)
 }
 
 func issueHistorySummary(

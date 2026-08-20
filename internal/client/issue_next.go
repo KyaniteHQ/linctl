@@ -2,13 +2,15 @@ package client
 
 import (
 	"context"
-	"fmt"
 	"sort"
 
 	"github.com/Khan/genqlient/graphql"
 
 	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
+
+//nolint:lll
+type nextIssueNode = gql.NextIssuesByTeamIssuesIssueConnectionNodesIssue
 
 // ListNextIssuesByTeam returns unstarted issues that are not blocked by another issue.
 func ListNextIssuesByTeam(
@@ -17,22 +19,33 @@ func ListNextIssuesByTeam(
 	teamID string,
 	limit int,
 ) (IssueList, error) {
-	issues, err := gql.NextIssuesByTeam(ctx, graphqlClient, teamID, &limit, nil, boolPtr(true))
+	page, err := listConnection(
+		"list next issues", limit, defaultListPageSize,
+		func(pageSize int, after *string) ([]nextIssueNode, bool, *string, error) {
+			issues, err := gql.NextIssuesByTeam(
+				ctx, graphqlClient, teamID, intPtr(pageSize), after, boolPtr(true),
+			)
+			if err != nil {
+				return nil, false, nil, err
+			}
+
+			return issues.Issues.Nodes,
+				issues.Issues.PageInfo.HasNextPage,
+				issues.Issues.PageInfo.EndCursor,
+				nil
+		},
+		nextIssueSummary,
+	)
 	if err != nil {
-		return IssueList{}, fmt.Errorf("list next issues: %w", err)
+		return IssueList{}, err
 	}
 
-	summaries := mapNodes(issues.Issues.Nodes, nextIssueSummary)
-	sortNextIssueCandidates(summaries)
+	sortNextIssueCandidates(page.Items)
 
-	return IssueList{
-		Issues:      summaries,
-		HasNextPage: issues.Issues.PageInfo.HasNextPage,
-		EndCursor:   issues.Issues.PageInfo.EndCursor,
-	}, nil
+	return IssueList{Issues: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}, nil
 }
 
-func nextIssueSummary(issue gql.NextIssuesByTeamIssuesIssueConnectionNodesIssue) IssueSummary {
+func nextIssueSummary(issue nextIssueNode) IssueSummary {
 	summary := issueSummaryFromFields(issue.IssueSummaryFields)
 	summary.CreatedAt = issue.CreatedAt
 	summary.UnblocksCount = nextIssueUnblocksCount(issue.Relations.Nodes)

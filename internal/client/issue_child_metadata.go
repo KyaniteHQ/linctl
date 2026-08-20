@@ -54,6 +54,21 @@ type IssueSharedAccessSummary struct {
 	DisallowedIssueFields     []string `json:"disallowed_issue_fields,omitempty"`
 }
 
+//nolint:lll
+type issueNeedsNode = gql.IssueNeedsProjectionNeedsCustomerNeedConnectionNodesCustomerNeed
+
+//nolint:lll
+type issueFormerNeedsNode = gql.IssueFormerNeedsProjectionFormerNeedsCustomerNeedConnectionNodesCustomerNeed
+
+//nolint:lll
+type issueVCSBranchCommentsNode = gql.IssueCommentMetadataProjectionCommentsCommentConnectionNodesComment
+
+//nolint:lll
+type issueVCSBranchNeedsNode = gql.IssueNeedsProjectionNeedsCustomerNeedConnectionNodesCustomerNeed
+
+//nolint:lll
+type issueVCSBranchFormerNeedsNode = gql.IssueFormerNeedsProjectionFormerNeedsCustomerNeedConnectionNodesCustomerNeed
+
 // ListIssueNeeds returns body-free customer needs associated with one issue.
 func ListIssueNeeds(
 	ctx context.Context,
@@ -61,23 +76,22 @@ func ListIssueNeeds(
 	id string,
 	limit int,
 ) (IssueCustomerNeedMetadataList, error) {
-	result, err := gql.XIssue_needs(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &issueChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list issue customer needs "+id, limit, defaultListPageSize,
+		query.needs,
+		issueNeedNodeSummary,
+	)
 	if err != nil {
-		return IssueCustomerNeedMetadataList{}, fmt.Errorf("list issue customer needs %s: %w", id, err)
+		return IssueCustomerNeedMetadataList{}, err
 	}
 
-	needs := mapNodes(result.Issue.Needs.Nodes, func(
-		need gql.IssueNeedsProjectionNeedsCustomerNeedConnectionNodesCustomerNeed,
-	) CustomerNeedMetadataSummary {
-		return customerNeedMetadataSummary(need.CustomerNeedMetadataFields)
-	})
-
 	return IssueCustomerNeedMetadataList{
-		IssueID:     result.Issue.Id,
-		Identifier:  result.Issue.Identifier,
-		Needs:       needs,
-		HasNextPage: result.Issue.Needs.PageInfo.HasNextPage,
-		EndCursor:   result.Issue.Needs.PageInfo.EndCursor,
+		IssueID:     query.issueID,
+		Identifier:  query.identifier,
+		Needs:       page.Items,
+		HasNextPage: page.HasNextPage,
+		EndCursor:   page.EndCursor,
 	}, nil
 }
 
@@ -88,23 +102,22 @@ func ListIssueFormerNeeds(
 	id string,
 	limit int,
 ) (IssueCustomerNeedMetadataList, error) {
-	result, err := gql.XIssue_formerNeeds(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &issueChildQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list issue former customer needs "+id, limit, defaultListPageSize,
+		query.formerNeeds,
+		issueFormerNeedNodeSummary,
+	)
 	if err != nil {
-		return IssueCustomerNeedMetadataList{}, fmt.Errorf("list issue former customer needs %s: %w", id, err)
+		return IssueCustomerNeedMetadataList{}, err
 	}
 
-	needs := mapNodes(result.Issue.FormerNeeds.Nodes, func(
-		need gql.IssueFormerNeedsProjectionFormerNeedsCustomerNeedConnectionNodesCustomerNeed,
-	) CustomerNeedMetadataSummary {
-		return customerNeedMetadataSummary(need.CustomerNeedMetadataFields)
-	})
-
 	return IssueCustomerNeedMetadataList{
-		IssueID:     result.Issue.Id,
-		Identifier:  result.Issue.Identifier,
-		Needs:       needs,
-		HasNextPage: result.Issue.FormerNeeds.PageInfo.HasNextPage,
-		EndCursor:   result.Issue.FormerNeeds.PageInfo.EndCursor,
+		IssueID:     query.issueID,
+		Identifier:  query.identifier,
+		Needs:       page.Items,
+		HasNextPage: page.HasNextPage,
+		EndCursor:   page.EndCursor,
 	}, nil
 }
 
@@ -127,111 +140,80 @@ func GetIssueSharedAccess(
 }
 
 // ListIssueVCSBranchComments returns body-free comments for the issue matched by a VCS branch.
-//
-//nolint:dupl // VCS branch child-read methods intentionally mirror generated GraphQL connection shapes.
 func ListIssueVCSBranchComments(
 	ctx context.Context,
 	graphqlClient graphql.Client,
 	branchName string,
 	limit int,
 ) (IssueCommentMetadataList, error) {
-	result, err := gql.XIssueVcsBranchSearch_comments(ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true))
+	query := &issueVCSBranchQuery{ctx: ctx, graphqlClient: graphqlClient, branchName: branchName}
+	page, err := listConnection(
+		"list issue vcs branch comments "+branchName, limit, defaultListPageSize,
+		query.comments,
+		issueVCSBranchCommentNodeSummary,
+	)
 	if err != nil {
-		return IssueCommentMetadataList{}, fmt.Errorf("list issue vcs branch comments %s: %w", branchName, err)
+		return IssueCommentMetadataList{}, err
 	}
-	if result.IssueVcsBranchSearch == nil {
-		return IssueCommentMetadataList{}, notFoundError("list issue vcs branch comments %s", branchName)
-	}
-
-	comments := mapNodes(result.IssueVcsBranchSearch.Comments.Nodes, func(
-		comment gql.IssueCommentMetadataProjectionCommentsCommentConnectionNodesComment,
-	) CommentMetadataSummary {
-		return commentMetadataSummary(comment.CommentMetadataFields)
-	})
 
 	return IssueCommentMetadataList{
-		IssueID:     result.IssueVcsBranchSearch.Id,
-		Identifier:  result.IssueVcsBranchSearch.Identifier,
-		Comments:    comments,
-		HasNextPage: result.IssueVcsBranchSearch.Comments.PageInfo.HasNextPage,
-		EndCursor:   result.IssueVcsBranchSearch.Comments.PageInfo.EndCursor,
+		IssueID:     query.issueID,
+		Identifier:  query.identifier,
+		Comments:    page.Items,
+		HasNextPage: page.HasNextPage,
+		EndCursor:   page.EndCursor,
 	}, nil
 }
 
 // ListIssueVCSBranchNeeds returns body-free customer needs for the issue matched by a VCS branch.
-//
-//nolint:dupl // VCS branch child-read methods intentionally mirror generated GraphQL connection shapes.
 func ListIssueVCSBranchNeeds(
 	ctx context.Context,
 	graphqlClient graphql.Client,
 	branchName string,
 	limit int,
 ) (IssueCustomerNeedMetadataList, error) {
-	result, err := gql.XIssueVcsBranchSearch_needs(ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true))
+	query := &issueVCSBranchQuery{ctx: ctx, graphqlClient: graphqlClient, branchName: branchName}
+	page, err := listConnection(
+		"list issue vcs branch customer needs "+branchName, limit, defaultListPageSize,
+		query.needs,
+		issueVCSBranchNeedNodeSummary,
+	)
 	if err != nil {
-		return IssueCustomerNeedMetadataList{}, fmt.Errorf(
-			"list issue vcs branch customer needs %s: %w",
-			branchName,
-			err,
-		)
+		return IssueCustomerNeedMetadataList{}, err
 	}
-	if result.IssueVcsBranchSearch == nil {
-		return IssueCustomerNeedMetadataList{}, notFoundError("list issue vcs branch customer needs %s", branchName)
-	}
-
-	needs := mapNodes(result.IssueVcsBranchSearch.Needs.Nodes, func(
-		need gql.IssueNeedsProjectionNeedsCustomerNeedConnectionNodesCustomerNeed,
-	) CustomerNeedMetadataSummary {
-		return customerNeedMetadataSummary(need.CustomerNeedMetadataFields)
-	})
 
 	return IssueCustomerNeedMetadataList{
-		IssueID:     result.IssueVcsBranchSearch.Id,
-		Identifier:  result.IssueVcsBranchSearch.Identifier,
-		Needs:       needs,
-		HasNextPage: result.IssueVcsBranchSearch.Needs.PageInfo.HasNextPage,
-		EndCursor:   result.IssueVcsBranchSearch.Needs.PageInfo.EndCursor,
+		IssueID:     query.issueID,
+		Identifier:  query.identifier,
+		Needs:       page.Items,
+		HasNextPage: page.HasNextPage,
+		EndCursor:   page.EndCursor,
 	}, nil
 }
 
 // ListIssueVCSBranchFormerNeeds returns body-free former customer needs for the issue matched by a VCS branch.
-//
-//nolint:dupl // VCS branch child-read methods intentionally mirror generated GraphQL connection shapes.
 func ListIssueVCSBranchFormerNeeds(
 	ctx context.Context,
 	graphqlClient graphql.Client,
 	branchName string,
 	limit int,
 ) (IssueCustomerNeedMetadataList, error) {
-	result, err := gql.XIssueVcsBranchSearch_formerNeeds(
-		ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true),
+	query := &issueVCSBranchQuery{ctx: ctx, graphqlClient: graphqlClient, branchName: branchName}
+	page, err := listConnection(
+		"list issue vcs branch former customer needs "+branchName, limit, defaultListPageSize,
+		query.formerNeeds,
+		issueVCSBranchFormerNeedNodeSummary,
 	)
 	if err != nil {
-		return IssueCustomerNeedMetadataList{}, fmt.Errorf(
-			"list issue vcs branch former customer needs %s: %w",
-			branchName,
-			err,
-		)
+		return IssueCustomerNeedMetadataList{}, err
 	}
-	if result.IssueVcsBranchSearch == nil {
-		return IssueCustomerNeedMetadataList{}, notFoundError(
-			"list issue vcs branch former customer needs %s",
-			branchName,
-		)
-	}
-
-	needs := mapNodes(result.IssueVcsBranchSearch.FormerNeeds.Nodes, func(
-		need gql.IssueFormerNeedsProjectionFormerNeedsCustomerNeedConnectionNodesCustomerNeed,
-	) CustomerNeedMetadataSummary {
-		return customerNeedMetadataSummary(need.CustomerNeedMetadataFields)
-	})
 
 	return IssueCustomerNeedMetadataList{
-		IssueID:     result.IssueVcsBranchSearch.Id,
-		Identifier:  result.IssueVcsBranchSearch.Identifier,
-		Needs:       needs,
-		HasNextPage: result.IssueVcsBranchSearch.FormerNeeds.PageInfo.HasNextPage,
-		EndCursor:   result.IssueVcsBranchSearch.FormerNeeds.PageInfo.EndCursor,
+		IssueID:     query.issueID,
+		Identifier:  query.identifier,
+		Needs:       page.Items,
+		HasNextPage: page.HasNextPage,
+		EndCursor:   page.EndCursor,
 	}, nil
 }
 
@@ -254,6 +236,132 @@ func GetIssueVCSBranchSharedAccess(
 		result.IssueVcsBranchSearch.Identifier,
 		result.IssueVcsBranchSearch.SharedAccess.IssueSharedAccessFields,
 	), nil
+}
+
+func (query *issueChildQuery) needs(pageSize int, after *string) ([]issueNeedsNode, bool, *string, error) {
+	result, err := gql.XIssue_needs(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	query.issueID = result.Issue.Id
+	query.identifier = result.Issue.Identifier
+
+	return result.Issue.Needs.Nodes,
+		result.Issue.Needs.PageInfo.HasNextPage,
+		result.Issue.Needs.PageInfo.EndCursor,
+		nil
+}
+
+func (query *issueChildQuery) formerNeeds(
+	pageSize int,
+	after *string,
+) ([]issueFormerNeedsNode, bool, *string, error) {
+	result, err := gql.XIssue_formerNeeds(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	query.issueID = result.Issue.Id
+	query.identifier = result.Issue.Identifier
+
+	return result.Issue.FormerNeeds.Nodes,
+		result.Issue.FormerNeeds.PageInfo.HasNextPage,
+		result.Issue.FormerNeeds.PageInfo.EndCursor,
+		nil
+}
+
+func (query *issueVCSBranchQuery) comments(
+	pageSize int,
+	after *string,
+) ([]issueVCSBranchCommentsNode, bool, *string, error) {
+	result, err := gql.XIssueVcsBranchSearch_comments(
+		query.ctx, query.graphqlClient, query.branchName, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+	if result.IssueVcsBranchSearch == nil {
+		return nil, false, nil, ErrNotFound
+	}
+
+	query.issueID = result.IssueVcsBranchSearch.Id
+	query.identifier = result.IssueVcsBranchSearch.Identifier
+
+	return result.IssueVcsBranchSearch.Comments.Nodes,
+		result.IssueVcsBranchSearch.Comments.PageInfo.HasNextPage,
+		result.IssueVcsBranchSearch.Comments.PageInfo.EndCursor,
+		nil
+}
+
+func (query *issueVCSBranchQuery) needs(
+	pageSize int,
+	after *string,
+) ([]issueVCSBranchNeedsNode, bool, *string, error) {
+	result, err := gql.XIssueVcsBranchSearch_needs(
+		query.ctx, query.graphqlClient, query.branchName, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+	if result.IssueVcsBranchSearch == nil {
+		return nil, false, nil, ErrNotFound
+	}
+
+	query.issueID = result.IssueVcsBranchSearch.Id
+	query.identifier = result.IssueVcsBranchSearch.Identifier
+
+	return result.IssueVcsBranchSearch.Needs.Nodes,
+		result.IssueVcsBranchSearch.Needs.PageInfo.HasNextPage,
+		result.IssueVcsBranchSearch.Needs.PageInfo.EndCursor,
+		nil
+}
+
+func (query *issueVCSBranchQuery) formerNeeds(
+	pageSize int,
+	after *string,
+) ([]issueVCSBranchFormerNeedsNode, bool, *string, error) {
+	result, err := gql.XIssueVcsBranchSearch_formerNeeds(
+		query.ctx, query.graphqlClient, query.branchName, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+	if result.IssueVcsBranchSearch == nil {
+		return nil, false, nil, ErrNotFound
+	}
+
+	query.issueID = result.IssueVcsBranchSearch.Id
+	query.identifier = result.IssueVcsBranchSearch.Identifier
+
+	return result.IssueVcsBranchSearch.FormerNeeds.Nodes,
+		result.IssueVcsBranchSearch.FormerNeeds.PageInfo.HasNextPage,
+		result.IssueVcsBranchSearch.FormerNeeds.PageInfo.EndCursor,
+		nil
+}
+
+func issueNeedNodeSummary(need issueNeedsNode) CustomerNeedMetadataSummary {
+	return customerNeedMetadataSummary(need.CustomerNeedMetadataFields)
+}
+
+func issueFormerNeedNodeSummary(need issueFormerNeedsNode) CustomerNeedMetadataSummary {
+	return customerNeedMetadataSummary(need.CustomerNeedMetadataFields)
+}
+
+func issueVCSBranchCommentNodeSummary(comment issueVCSBranchCommentsNode) CommentMetadataSummary {
+	return commentMetadataSummary(comment.CommentMetadataFields)
+}
+
+func issueVCSBranchNeedNodeSummary(need issueVCSBranchNeedsNode) CustomerNeedMetadataSummary {
+	return customerNeedMetadataSummary(need.CustomerNeedMetadataFields)
+}
+
+func issueVCSBranchFormerNeedNodeSummary(need issueVCSBranchFormerNeedsNode) CustomerNeedMetadataSummary {
+	return customerNeedMetadataSummary(need.CustomerNeedMetadataFields)
 }
 
 func customerNeedMetadataSummary(fields gql.CustomerNeedMetadataFields) CustomerNeedMetadataSummary {
