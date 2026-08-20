@@ -198,6 +198,9 @@ func runReadListCommand[Page any, Item any](
 	if err != nil {
 		return err
 	}
+	if err := noteListTruncation(command, options, page, limit); err != nil {
+		return err
+	}
 	if options.json {
 		return writePageJSON(command, options, page, items)
 	}
@@ -208,6 +211,44 @@ func runReadListCommand[Page any, Item any](
 	}
 
 	return nil
+}
+
+// noteListTruncation writes a stderr note when more pages exist. JSON already
+// carries has_next_page on stdout. --id-only and pipes stay on stdout, so the
+// note goes to stderr. --quiet suppresses it.
+func noteListTruncation[Page any](
+	command *cobra.Command,
+	options *rootOptions,
+	page Page,
+	limit int,
+) error {
+	if options.quiet || !pageHasNextPage(page) {
+		return nil
+	}
+
+	return writeNote(command, "listing capped at %d items; more pages exist", limit)
+}
+
+func pageHasNextPage[Page any](page Page) bool {
+	value := reflect.ValueOf(page)
+	if !value.IsValid() {
+		return false
+	}
+	if value.Kind() == reflect.Pointer {
+		if value.IsNil() {
+			return false
+		}
+		value = value.Elem()
+	}
+	if value.Kind() != reflect.Struct {
+		return false
+	}
+	field := value.FieldByName("HasNextPage")
+	if !field.IsValid() || field.Kind() != reflect.Bool {
+		return false
+	}
+
+	return field.Bool()
 }
 
 func writePageJSON[Page any, Item any](

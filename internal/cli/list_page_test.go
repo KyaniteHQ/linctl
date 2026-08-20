@@ -2,6 +2,7 @@ package cli
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"reflect"
 	"testing"
@@ -129,4 +130,133 @@ func compactJSON(t *testing.T, value any) []byte {
 	encoded, err := json.Marshal(value)
 	require.NoError(t, err)
 	return encoded
+}
+
+func Test_pageHasNextPage_reads_exported_bool_field(t *testing.T) {
+	type flagged struct {
+		HasNextPage bool
+	}
+	type missing struct {
+		Items []string
+	}
+	type wrongKind struct {
+		HasNextPage string
+	}
+
+	require.True(t, pageHasNextPage(flagged{HasNextPage: true}))
+	require.False(t, pageHasNextPage(flagged{HasNextPage: false}))
+	require.True(t, pageHasNextPage(&flagged{HasNextPage: true}))
+	require.False(t, pageHasNextPage(missing{}))
+	require.False(t, pageHasNextPage(wrongKind{HasNextPage: "true"}))
+	require.False(t, pageHasNextPage("not a page"))
+	require.False(t, pageHasNextPage[any](nil))
+	var nilFlagged *flagged
+	require.False(t, pageHasNextPage(nilFlagged))
+	label := "not a struct"
+	require.False(t, pageHasNextPage(&label))
+}
+
+func Test_runReadListCommand_notes_truncation_on_stderr(t *testing.T) {
+	type item struct {
+		ID string `json:"id"`
+	}
+	type page struct {
+		Items       []item `json:"items"`
+		HasNextPage bool   `json:"has_next_page"`
+		EndCursor   string `json:"end_cursor,omitempty"`
+	}
+	original := buildCommandRuntime
+	buildCommandRuntime = func(context.Context, *rootOptions) (commandRuntime, error) {
+		return commandRuntime{}, nil
+	}
+	t.Cleanup(func() {
+		buildCommandRuntime = original
+	})
+
+	tests := []struct {
+		name       string
+		options    rootOptions
+		truncated  bool
+		failStderr bool
+		wantStdout string
+		wantStderr string
+		wantErr    string
+	}{
+		{
+			name:       "text",
+			truncated:  true,
+			wantStdout: "item-id\n",
+			wantStderr: "note: listing capped at 50 items; more pages exist\n",
+		},
+		{
+			name:       "id-only",
+			options:    rootOptions{idOnly: true},
+			truncated:  true,
+			wantStdout: "item-id\n",
+			wantStderr: "note: listing capped at 50 items; more pages exist\n",
+		},
+		{
+			name:       "quiet",
+			options:    rootOptions{quiet: true},
+			truncated:  true,
+			wantStdout: "",
+			wantStderr: "",
+		},
+		{
+			name:       "json",
+			options:    rootOptions{json: true, compact: true},
+			truncated:  true,
+			wantStdout: `{"items":[{"id":"item-id"}],"has_next_page":true,"end_cursor":"next"}` + "\n",
+			wantStderr: "note: listing capped at 50 items; more pages exist\n",
+		},
+		{
+			name:       "complete page",
+			wantStdout: "item-id\n",
+			wantStderr: "",
+		},
+		{
+			name:       "stderr write error",
+			truncated:  true,
+			failStderr: true,
+			wantErr:    "write failed",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			command, stdout, stderr := bufferedCommand()
+			if test.failStderr {
+				command.SetErr(commandFailingWriter{})
+			}
+			loaded := page{
+				Items:       []item{{ID: "item-id"}},
+				HasNextPage: test.truncated,
+			}
+			if test.truncated {
+				loaded.EndCursor = "next"
+			}
+
+			err := runReadListCommand(
+				context.Background(),
+				command,
+				nil,
+				&test.options,
+				50,
+				func(context.Context, commandRuntime, []string, int) (page, error) {
+					return loaded, nil
+				},
+				func(command *cobra.Command, options *rootOptions, row item) error {
+					return writeItemLine(command, options, row, row.ID, "%s", row.ID)
+				},
+			)
+
+			if test.wantErr != "" {
+				require.ErrorContains(t, err, test.wantErr)
+				return
+			}
+			require.NoError(t, err)
+			require.Equal(t, test.wantStdout, stdout.String())
+			require.Equal(t, test.wantStderr, stderr.String())
+		})
+	}
 }
