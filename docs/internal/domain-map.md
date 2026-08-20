@@ -10,7 +10,7 @@ Command names below are either implemented CLI surface or intentionally deferred
 | `whoami` | `Query.viewer`, `User` | Reads the authenticated user. |
 | `target` | `Query.organization`, `Query.teams`, `Query.team`, `Query.projects`, `Query.project` | Resolves the active auth credential's organization, team, and optional project. |
 | `init` | `Query.teams` (`teams_list`); optional `Query.project` when `--project` is set; local file write of cwd `.linctl.toml` | Local command: scaffolds a target-only pin from the active credential. Never mutates Linear. Never writes auth material. Refuses to overwrite an existing pin. |
-| `doctor` | `Query.viewer`, `Query.teams`, `TargetProject` (`Query.project`) when `project_id` is pinned | Read-only health check for config load, OAuth auth readiness, and pinned-target confirmation. Reports the selected repo config path and load status. Does not print secret values. |
+| `doctor` | `Query.viewer`, `Query.teams`, `TargetProject` (`Query.project`) when `project_id` is pinned | Read-only health check for config load, token presence, and pinned-target confirmation. It does not prove Auth Readiness or scope adequacy; use `auth status` for that. Reports the selected repo config path and load status. Does not print secret values. |
 | `application info` | `Query.applicationInfo` | Read-only public OAuth application metadata by client id. |
 | `organization exists` | `Query.organizationExists` | Read-only URL-key existence check for organization lookup. |
 | `organization labels` | `Organization.labels` via `Query.organization` | Read-only organization-level issue labels. |

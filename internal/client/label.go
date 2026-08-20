@@ -23,47 +23,59 @@ type LabelSummary struct {
 
 // LabelList is a page of labels.
 type LabelList struct {
-	Labels      []LabelSummary `json:"labels"`
-	HasNextPage bool           `json:"has_next_page"`
-	EndCursor   *string        `json:"end_cursor,omitempty"`
+	Labels []LabelSummary `json:"labels"`
+	Page
 }
 
 // LabelChildList is a page of child labels for one IssueLabel group.
 type LabelChildList struct {
-	LabelID     string         `json:"label_id"`
-	LabelName   string         `json:"label_name"`
-	Labels      []LabelSummary `json:"labels"`
-	HasNextPage bool           `json:"has_next_page"`
-	EndCursor   *string        `json:"end_cursor,omitempty"`
+	LabelID   string         `json:"label_id"`
+	LabelName string         `json:"label_name"`
+	Labels    []LabelSummary `json:"labels"`
+	Page
 }
 
 // LabelIssueList is a page of issues associated with one IssueLabel.
 type LabelIssueList struct {
-	LabelID     string         `json:"label_id"`
-	LabelName   string         `json:"label_name"`
-	Issues      []IssueSummary `json:"issues"`
-	HasNextPage bool           `json:"has_next_page"`
-	EndCursor   *string        `json:"end_cursor,omitempty"`
+	LabelID   string         `json:"label_id"`
+	LabelName string         `json:"label_name"`
+	Issues    []IssueSummary `json:"issues"`
+	Page
+}
+
+//nolint:lll
+type labelsNode = gql.IssueLabelsIssueLabelsIssueLabelConnectionNodesIssueLabel
+
+//nolint:lll
+type labelChildrenNode = gql.XIssueLabel_childrenIssueLabelChildrenIssueLabelConnectionNodesIssueLabel
+
+//nolint:lll
+type labelIssuesNode = gql.XIssueLabel_issuesIssueLabelIssuesIssueConnectionNodesIssue
+
+type labelsQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
+type labelScopedQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+	id            string
 }
 
 // ListLabels returns visible IssueLabels.
 func ListLabels(ctx context.Context, graphqlClient graphql.Client, limit int) (LabelList, error) {
-	labels, err := gql.IssueLabels(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := labelsQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list labels", limit, defaultListPageSize,
+		query.page,
+		labelsNodeSummary,
+	)
 	if err != nil {
-		return LabelList{}, fmt.Errorf("list labels: %w", err)
+		return LabelList{}, err
 	}
 
-	summaries := mapNodes(labels.IssueLabels.Nodes, func(
-		label gql.IssueLabelsIssueLabelsIssueLabelConnectionNodesIssueLabel,
-	) LabelSummary {
-		return labelSummary(label.IssueLabelSummaryFields)
-	})
-
-	return LabelList{
-		Labels:      summaries,
-		HasNextPage: labels.IssueLabels.PageInfo.HasNextPage,
-		EndCursor:   labels.IssueLabels.PageInfo.EndCursor,
-	}, nil
+	return LabelList{Labels: page.Items, Page: page.Page}, nil
 }
 
 // GetLabelByID returns one IssueLabel by id.
@@ -83,46 +95,102 @@ func ListLabelChildren(
 	id string,
 	limit int,
 ) (LabelChildList, error) {
-	childPage, err := gql.XIssueLabel_children(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &labelScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, parent, err := listConnectionWithParent(
+		"list label children "+id, limit, defaultListPageSize,
+		query.children,
+		labelChildrenNodeSummary,
+	)
 	if err != nil {
-		return LabelChildList{}, fmt.Errorf("list label children %s: %w", id, err)
+		return LabelChildList{}, err
 	}
 
-	labels := mapNodes(childPage.IssueLabel.Children.Nodes, func(
-		label gql.XIssueLabel_childrenIssueLabelChildrenIssueLabelConnectionNodesIssueLabel,
-	) LabelSummary {
-		return labelSummary(label.IssueLabelSummaryFields)
-	})
-
 	return LabelChildList{
-		LabelID:     childPage.IssueLabel.Id,
-		LabelName:   childPage.IssueLabel.Name,
-		Labels:      labels,
-		HasNextPage: childPage.IssueLabel.Children.PageInfo.HasNextPage,
-		EndCursor:   childPage.IssueLabel.Children.PageInfo.EndCursor,
+		LabelID:   parent.labelID,
+		LabelName: parent.labelName,
+		Labels:    page.Items,
+		Page:      page.Page,
 	}, nil
 }
 
 // ListLabelIssues returns issues associated with one IssueLabel.
 func ListLabelIssues(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (LabelIssueList, error) {
-	issuePage, err := gql.XIssueLabel_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &labelScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, parent, err := listConnectionWithParent(
+		"list label issues "+id, limit, defaultListPageSize,
+		query.issues,
+		labelIssuesNodeSummary,
+	)
 	if err != nil {
-		return LabelIssueList{}, fmt.Errorf("list label issues %s: %w", id, err)
+		return LabelIssueList{}, err
 	}
 
-	issues := mapNodes(issuePage.IssueLabel.Issues.Nodes, func(
-		issue gql.XIssueLabel_issuesIssueLabelIssuesIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(issue.IssueSummaryFields)
-	})
-
 	return LabelIssueList{
-		LabelID:     issuePage.IssueLabel.Id,
-		LabelName:   issuePage.IssueLabel.Name,
-		Issues:      issues,
-		HasNextPage: issuePage.IssueLabel.Issues.PageInfo.HasNextPage,
-		EndCursor:   issuePage.IssueLabel.Issues.PageInfo.EndCursor,
+		LabelID:   parent.labelID,
+		LabelName: parent.labelName,
+		Issues:    page.Items,
+		Page:      page.Page,
 	}, nil
+}
+
+func (query labelsQuery) page(pageSize int, after *string) ([]labelsNode, bool, *string, error) {
+	result, err := gql.IssueLabels(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.IssueLabels.Nodes,
+		result.IssueLabels.PageInfo.HasNextPage,
+		result.IssueLabels.PageInfo.EndCursor,
+		nil
+}
+
+func (query *labelScopedQuery) children(
+	pageSize int,
+	after *string,
+) ([]labelChildrenNode, labelParent, bool, *string, error) {
+	result, err := gql.XIssueLabel_children(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, labelParent{}, false, nil, err
+	}
+
+	return result.IssueLabel.Children.Nodes,
+		labelParent{labelID: result.IssueLabel.Id, labelName: result.IssueLabel.Name},
+		result.IssueLabel.Children.PageInfo.HasNextPage,
+		result.IssueLabel.Children.PageInfo.EndCursor,
+		nil
+}
+
+func (query *labelScopedQuery) issues(
+	pageSize int,
+	after *string,
+) ([]labelIssuesNode, labelParent, bool, *string, error) {
+	result, err := gql.XIssueLabel_issues(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, labelParent{}, false, nil, err
+	}
+
+	return result.IssueLabel.Issues.Nodes,
+		labelParent{labelID: result.IssueLabel.Id, labelName: result.IssueLabel.Name},
+		result.IssueLabel.Issues.PageInfo.HasNextPage,
+		result.IssueLabel.Issues.PageInfo.EndCursor,
+		nil
+}
+
+func labelsNodeSummary(label labelsNode) LabelSummary {
+	return labelSummary(label.IssueLabelSummaryFields)
+}
+
+func labelChildrenNodeSummary(label labelChildrenNode) LabelSummary {
+	return labelSummary(label.IssueLabelSummaryFields)
+}
+
+func labelIssuesNodeSummary(issue labelIssuesNode) IssueSummary {
+	return issueSummaryFromFields(issue.IssueSummaryFields)
 }
 
 func labelSummary(label gql.IssueLabelSummaryFields) LabelSummary {

@@ -23,8 +23,7 @@ type CustomViewSummary struct {
 // CustomViewList is a page of custom views.
 type CustomViewList struct {
 	CustomViews []CustomViewSummary `json:"custom_views"`
-	HasNextPage bool                `json:"has_next_page"`
-	EndCursor   *string             `json:"end_cursor,omitempty"`
+	Page
 }
 
 // CustomViewSubscriberStatus reports whether a custom view has active subscribers.
@@ -72,24 +71,42 @@ type CustomViewPreferencesValues struct {
 	HasEffectivePreferenceValue bool     `json:"has_effective_preference_value,omitempty"`
 }
 
+//nolint:lll
+type customViewsNode = gql.XCustomViewsCustomViewsCustomViewConnectionNodesCustomView
+
+//nolint:lll
+type customViewInitiativesNode = gql.XCustomView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative
+
+//nolint:lll
+type customViewIssuesNode = gql.XCustomView_issuesCustomViewIssuesIssueConnectionNodesIssue
+
+//nolint:lll
+type customViewProjectsNode = gql.XCustomView_projectsCustomViewProjectsProjectConnectionNodesProject
+
+type customViewsQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
+type customViewScopedQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+	id            string
+}
+
 // ListCustomViews returns visible custom views.
 func ListCustomViews(ctx context.Context, graphqlClient graphql.Client, limit int) (CustomViewList, error) {
-	result, err := gql.XCustomViews(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := customViewsQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list custom views", limit, defaultListPageSize,
+		query.page,
+		customViewsNodeSummary,
+	)
 	if err != nil {
-		return CustomViewList{}, fmt.Errorf("list custom views: %w", err)
+		return CustomViewList{}, err
 	}
 
-	summaries := mapNodes(result.CustomViews.Nodes, func(
-		node gql.XCustomViewsCustomViewsCustomViewConnectionNodesCustomView,
-	) CustomViewSummary {
-		return customViewSummary(node.CustomViewSummaryFields)
-	})
-
-	return CustomViewList{
-		CustomViews: summaries,
-		HasNextPage: result.CustomViews.PageInfo.HasNextPage,
-		EndCursor:   result.CustomViews.PageInfo.EndCursor,
-	}, nil
+	return CustomViewList{CustomViews: page.Items, Page: page.Page}, nil
 }
 
 // GetCustomViewByID returns one custom view by Linear id or slug.
@@ -130,22 +147,17 @@ func ListCustomViewInitiatives(
 	id string,
 	limit int,
 ) (InitiativeList, error) {
-	result, err := gql.XCustomView_initiatives(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := customViewScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list custom view initiatives "+id, limit, defaultListPageSize,
+		query.initiatives,
+		customViewInitiativesNodeSummary,
+	)
 	if err != nil {
-		return InitiativeList{}, fmt.Errorf("list custom view initiatives %s: %w", id, err)
+		return InitiativeList{}, err
 	}
 
-	initiatives := mapNodes(result.CustomView.Initiatives.Nodes, func(
-		node gql.XCustomView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative,
-	) InitiativeSummary {
-		return initiativeSummary(node.InitiativeSummaryFields)
-	})
-
-	return InitiativeList{
-		Initiatives: initiatives,
-		HasNextPage: result.CustomView.Initiatives.PageInfo.HasNextPage,
-		EndCursor:   result.CustomView.Initiatives.PageInfo.EndCursor,
-	}, nil
+	return InitiativeList{Initiatives: page.Items, Page: page.Page}, nil
 }
 
 // ListCustomViewIssues returns issues matching one custom view's issue filter.
@@ -155,22 +167,17 @@ func ListCustomViewIssues(
 	id string,
 	limit int,
 ) (IssueList, error) {
-	result, err := gql.XCustomView_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
+	query := customViewScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list custom view issues "+id, limit, defaultListPageSize,
+		query.issues,
+		customViewIssuesNodeSummary,
+	)
 	if err != nil {
-		return IssueList{}, fmt.Errorf("list custom view issues %s: %w", id, err)
+		return IssueList{}, err
 	}
 
-	issues := mapNodes(result.CustomView.Issues.Nodes, func(
-		node gql.XCustomView_issuesCustomViewIssuesIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(node.IssueSummaryFields)
-	})
-
-	return IssueList{
-		Issues:      issues,
-		HasNextPage: result.CustomView.Issues.PageInfo.HasNextPage,
-		EndCursor:   result.CustomView.Issues.PageInfo.EndCursor,
-	}, nil
+	return IssueList{Issues: page.Items, Page: page.Page}, nil
 }
 
 // GetCustomViewOrganizationPreferences returns organization defaults for one custom view.
@@ -237,22 +244,17 @@ func ListCustomViewProjects(
 	id string,
 	limit int,
 ) (ProjectList, error) {
-	result, err := gql.XCustomView_projects(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
+	query := customViewScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list custom view projects "+id, limit, defaultListPageSize,
+		query.projects,
+		customViewProjectsNodeSummary,
+	)
 	if err != nil {
-		return ProjectList{}, fmt.Errorf("list custom view projects %s: %w", id, err)
+		return ProjectList{}, err
 	}
 
-	projects := mapNodes(result.CustomView.Projects.Nodes, func(
-		node gql.XCustomView_projectsCustomViewProjectsProjectConnectionNodesProject,
-	) ProjectSummary {
-		return projectSummaryFromFields(node.ProjectSummaryFields)
-	})
-
-	return ProjectList{
-		Projects:    projects,
-		HasNextPage: result.CustomView.Projects.PageInfo.HasNextPage,
-		EndCursor:   result.CustomView.Projects.PageInfo.EndCursor,
-	}, nil
+	return ProjectList{Projects: page.Items, Page: page.Page}, nil
 }
 
 // GetCustomViewUserPreferences returns current-user preferences for one custom view.
@@ -309,6 +311,85 @@ func GetCustomViewPreferenceValues(
 	values := customViewPreferencesValues(id, result.CustomView.ViewPreferencesValues.CustomViewPreferencesValueFields)
 	values.HasEffectivePreferenceValue = true
 	return values, nil
+}
+
+func (query customViewsQuery) page(pageSize int, after *string) ([]customViewsNode, bool, *string, error) {
+	result, err := gql.XCustomViews(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.CustomViews.Nodes,
+		result.CustomViews.PageInfo.HasNextPage,
+		result.CustomViews.PageInfo.EndCursor,
+		nil
+}
+
+func (query customViewScopedQuery) initiatives(
+	pageSize int,
+	after *string,
+) ([]customViewInitiativesNode, bool, *string, error) {
+	result, err := gql.XCustomView_initiatives(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.CustomView.Initiatives.Nodes,
+		result.CustomView.Initiatives.PageInfo.HasNextPage,
+		result.CustomView.Initiatives.PageInfo.EndCursor,
+		nil
+}
+
+func (query customViewScopedQuery) issues(
+	pageSize int,
+	after *string,
+) ([]customViewIssuesNode, bool, *string, error) {
+	result, err := gql.XCustomView_issues(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(false),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.CustomView.Issues.Nodes,
+		result.CustomView.Issues.PageInfo.HasNextPage,
+		result.CustomView.Issues.PageInfo.EndCursor,
+		nil
+}
+
+func (query customViewScopedQuery) projects(
+	pageSize int,
+	after *string,
+) ([]customViewProjectsNode, bool, *string, error) {
+	result, err := gql.XCustomView_projects(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(false),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.CustomView.Projects.Nodes,
+		result.CustomView.Projects.PageInfo.HasNextPage,
+		result.CustomView.Projects.PageInfo.EndCursor,
+		nil
+}
+
+func customViewsNodeSummary(node customViewsNode) CustomViewSummary {
+	return customViewSummary(node.CustomViewSummaryFields)
+}
+
+func customViewInitiativesNodeSummary(node customViewInitiativesNode) InitiativeSummary {
+	return initiativeSummary(node.InitiativeSummaryFields)
+}
+
+func customViewIssuesNodeSummary(node customViewIssuesNode) IssueSummary {
+	return issueSummaryFromFields(node.IssueSummaryFields)
+}
+
+func customViewProjectsNodeSummary(node customViewProjectsNode) ProjectSummary {
+	return projectSummaryFromFields(node.ProjectSummaryFields)
 }
 
 func customViewSummary(fields gql.CustomViewSummaryFields) CustomViewSummary {

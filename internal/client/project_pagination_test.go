@@ -73,6 +73,19 @@ func Test_ListProjects_pages_in_API_safe_chunks(t *testing.T) {
 	require.Equal(t, len(graphqlClient.fixtures), graphqlClient.next)
 }
 
+func Test_ListProjects_reports_ErrGraphQL_when_next_page_has_no_end_cursor(t *testing.T) {
+	graphqlClient := fakeGraphQLClient{
+		"projects": `{"projects":{"nodes":[` + projectJSON(projectFixture{
+			ID: "project-1", Name: "First", Status: "Backlog",
+		}) + `],"pageInfo":{"hasNextPage":true,"endCursor":null}}}`,
+	}
+
+	_, err := ListProjects(context.Background(), graphqlClient, 100)
+
+	require.ErrorIs(t, err, ErrGraphQL)
+	require.ErrorContains(t, err, "list projects: next page has no end cursor")
+}
+
 func Test_collectNodePages_rejects_invalid_limit(t *testing.T) {
 	_, err := collectNodePages(
 		"list projects", 0, projectListPageSize,
@@ -89,9 +102,10 @@ func Test_collectNodePages_rejects_missing_next_cursor(t *testing.T) {
 	_, err := collectNodePages(
 		"list projects", 100, projectListPageSize,
 		func(int, *string) (nodePage[ProjectSummary], error) {
-			return nodePage[ProjectSummary]{HasNextPage: true}, nil
+			return nodePage[ProjectSummary]{Page: Page{HasNextPage: true}}, nil
 		},
 	)
 
+	require.ErrorIs(t, err, ErrGraphQL)
 	require.ErrorContains(t, err, "list projects: next page has no end cursor")
 }

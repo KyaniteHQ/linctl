@@ -18,6 +18,22 @@ func commandIssueJSON(identifier string, title string, stateID string, state str
 	return commandIssueJSONWithTeam(identifier, title, stateID, state, stateType, "team-id", "LIT")
 }
 
+func commandIssueJSONWithID(
+	id string,
+	identifier string,
+	title string,
+	stateID string,
+	state string,
+	stateType string,
+) string {
+	return strings.Replace(
+		commandIssueJSON(identifier, title, stateID, state, stateType),
+		`"id":"issue-id"`,
+		`"id":"`+id+`"`,
+		1,
+	)
+}
+
 func commandIssueJSONWithTeam(
 	identifier string,
 	title string,

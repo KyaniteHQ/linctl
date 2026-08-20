@@ -23,6 +23,12 @@ type SemanticSearchList struct {
 	Results []SemanticSearchResultSummary `json:"results"`
 }
 
+// HasMore always reports false: Linear's semantic search returns one ranked
+// set with no connection, so there is no further page to fetch.
+func (list SemanticSearchList) HasMore() bool {
+	return false
+}
+
 // SearchSemantic returns compact references from Linear semantic search.
 func SearchSemantic(
 	ctx context.Context,

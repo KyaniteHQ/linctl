@@ -32,8 +32,15 @@ type TeamMembershipSummary struct {
 // TeamMembershipList is a page of team memberships.
 type TeamMembershipList struct {
 	Memberships []TeamMembershipSummary `json:"memberships"`
-	HasNextPage bool                    `json:"has_next_page"`
-	EndCursor   *string                 `json:"end_cursor,omitempty"`
+	Page
+}
+
+//nolint:lll
+type teamMembershipsNode = gql.XTeamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership
+
+type teamMembershipsQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
 }
 
 // ListTeamMemberships returns team memberships visible to the authenticated user.
@@ -42,22 +49,17 @@ func ListTeamMemberships(
 	graphqlClient graphql.Client,
 	limit int,
 ) (TeamMembershipList, error) {
-	result, err := gql.XTeamMemberships(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := teamMembershipsQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list team memberships", limit, defaultListPageSize,
+		query.page,
+		teamMembershipsNodeSummary,
+	)
 	if err != nil {
-		return TeamMembershipList{}, fmt.Errorf("list team memberships: %w", err)
+		return TeamMembershipList{}, err
 	}
 
-	memberships := mapNodes(result.TeamMemberships.Nodes, func(
-		membership gql.XTeamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership,
-	) TeamMembershipSummary {
-		return teamMembershipSummary(membership.TeamMembershipSummaryFields)
-	})
-
-	return TeamMembershipList{
-		Memberships: memberships,
-		HasNextPage: result.TeamMemberships.PageInfo.HasNextPage,
-		EndCursor:   result.TeamMemberships.PageInfo.EndCursor,
-	}, nil
+	return TeamMembershipList{Memberships: page.Items, Page: page.Page}, nil
 }
 
 // GetTeamMembershipByID returns one team membership by Linear id.
@@ -72,6 +74,22 @@ func GetTeamMembershipByID(
 	}
 
 	return teamMembershipSummary(result.TeamMembership.TeamMembershipSummaryFields), nil
+}
+
+func (query teamMembershipsQuery) page(pageSize int, after *string) ([]teamMembershipsNode, bool, *string, error) {
+	result, err := gql.XTeamMemberships(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.TeamMemberships.Nodes,
+		result.TeamMemberships.PageInfo.HasNextPage,
+		result.TeamMemberships.PageInfo.EndCursor,
+		nil
+}
+
+func teamMembershipsNodeSummary(membership teamMembershipsNode) TeamMembershipSummary {
+	return teamMembershipSummary(membership.TeamMembershipSummaryFields)
 }
 
 func teamMembershipSummary(membership gql.TeamMembershipSummaryFields) TeamMembershipSummary {

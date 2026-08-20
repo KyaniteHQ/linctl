@@ -31,8 +31,7 @@ type ReleasePipelineSummary struct {
 // ReleasePipelineList is a page of Linear release pipelines.
 type ReleasePipelineList struct {
 	ReleasePipelines []ReleasePipelineSummary `json:"release_pipelines"`
-	HasNextPage      bool                     `json:"has_next_page"`
-	EndCursor        *string                  `json:"end_cursor,omitempty"`
+	Page
 }
 
 // ReleaseStageSummary is the compact release stage model used by read-only commands.
@@ -54,27 +53,64 @@ type ReleaseStageSummary struct {
 // ReleaseStageList is a page of Linear release stages.
 type ReleaseStageList struct {
 	ReleaseStages []ReleaseStageSummary `json:"release_stages"`
-	HasNextPage   bool                  `json:"has_next_page"`
-	EndCursor     *string               `json:"end_cursor,omitempty"`
+	Page
+}
+
+//nolint:lll
+type releasePipelinesNode = gql.XReleasePipelinesReleasePipelinesReleasePipelineConnectionNodesReleasePipeline
+
+//nolint:lll
+type releasePipelineReleasesNode = gql.XReleasePipeline_releasesReleasePipelineReleasesReleaseConnectionNodesRelease
+
+//nolint:lll
+type releasePipelineStagesNode = gql.XReleasePipeline_stagesReleasePipelineStagesReleaseStageConnectionNodesReleaseStage
+
+//nolint:lll
+type releasePipelineTeamsNode = gql.XReleasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam
+
+//nolint:lll
+type releaseStagesNode = gql.XReleaseStagesReleaseStagesReleaseStageConnectionNodesReleaseStage
+
+//nolint:lll
+type releaseStageReleasesNode = gql.XReleaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease
+
+type releasePipelinesQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
+type releasePipelineScopedQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+	id            string
+}
+
+type releaseStagesQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
+type releaseStageScopedQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+	id            string
 }
 
 // ListReleasePipelines returns visible Linear release pipelines.
 func ListReleasePipelines(ctx context.Context, graphqlClient graphql.Client, limit int) (ReleasePipelineList, error) {
-	result, err := gql.XReleasePipelines(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := releasePipelinesQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list release pipelines", limit, defaultListPageSize,
+		query.page,
+		releasePipelinesNodeSummary,
+	)
 	if err != nil {
-		return ReleasePipelineList{}, fmt.Errorf("list release pipelines: %w", err)
+		return ReleasePipelineList{}, err
 	}
 
-	summaries := mapNodes(result.ReleasePipelines.Nodes, func(
-		node gql.XReleasePipelinesReleasePipelinesReleasePipelineConnectionNodesReleasePipeline,
-	) ReleasePipelineSummary {
-		return releasePipelineSummary(node.ReleasePipelineSummaryFields)
-	})
-
 	return ReleasePipelineList{
-		ReleasePipelines: summaries,
-		HasNextPage:      result.ReleasePipelines.PageInfo.HasNextPage,
-		EndCursor:        result.ReleasePipelines.PageInfo.EndCursor,
+		ReleasePipelines: page.Items,
+		Page:             page.Page,
 	}, nil
 }
 
@@ -99,22 +135,17 @@ func ListReleasePipelineReleases(
 	id string,
 	limit int,
 ) (ReleaseList, error) {
-	result, err := gql.XReleasePipeline_releases(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := releasePipelineScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list release pipeline releases "+id, limit, defaultListPageSize,
+		query.releases,
+		releasePipelineReleasesNodeSummary,
+	)
 	if err != nil {
-		return ReleaseList{}, fmt.Errorf("list release pipeline releases %s: %w", id, err)
+		return ReleaseList{}, err
 	}
 
-	summaries := mapNodes(result.ReleasePipeline.Releases.Nodes, func(
-		node gql.XReleasePipeline_releasesReleasePipelineReleasesReleaseConnectionNodesRelease,
-	) ReleaseSummary {
-		return releaseSummary(node.ReleaseSummaryFields)
-	})
-
-	return ReleaseList{
-		Releases:    summaries,
-		HasNextPage: result.ReleasePipeline.Releases.PageInfo.HasNextPage,
-		EndCursor:   result.ReleasePipeline.Releases.PageInfo.EndCursor,
-	}, nil
+	return ReleaseList{Releases: page.Items, Page: page.Page}, nil
 }
 
 // ListReleasePipelineStages returns stages associated with one Linear release pipeline.
@@ -124,22 +155,17 @@ func ListReleasePipelineStages(
 	id string,
 	limit int,
 ) (ReleaseStageList, error) {
-	result, err := gql.XReleasePipeline_stages(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := releasePipelineScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list release pipeline stages "+id, limit, defaultListPageSize,
+		query.stages,
+		releasePipelineStagesNodeSummary,
+	)
 	if err != nil {
-		return ReleaseStageList{}, fmt.Errorf("list release pipeline stages %s: %w", id, err)
+		return ReleaseStageList{}, err
 	}
 
-	summaries := mapNodes(result.ReleasePipeline.Stages.Nodes, func(
-		node gql.XReleasePipeline_stagesReleasePipelineStagesReleaseStageConnectionNodesReleaseStage,
-	) ReleaseStageSummary {
-		return releaseStageSummary(node.ReleaseStageSummaryFields)
-	})
-
-	return ReleaseStageList{
-		ReleaseStages: summaries,
-		HasNextPage:   result.ReleasePipeline.Stages.PageInfo.HasNextPage,
-		EndCursor:     result.ReleasePipeline.Stages.PageInfo.EndCursor,
-	}, nil
+	return ReleaseStageList{ReleaseStages: page.Items, Page: page.Page}, nil
 }
 
 // ListReleasePipelineTeams returns teams associated with one Linear release pipeline.
@@ -149,42 +175,32 @@ func ListReleasePipelineTeams(
 	id string,
 	limit int,
 ) (TeamList, error) {
-	result, err := gql.XReleasePipeline_teams(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := releasePipelineScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list release pipeline teams "+id, limit, defaultListPageSize,
+		query.teams,
+		releasePipelineTeamsNodeSummary,
+	)
 	if err != nil {
-		return TeamList{}, fmt.Errorf("list release pipeline teams %s: %w", id, err)
+		return TeamList{}, err
 	}
 
-	teams := mapNodes(result.ReleasePipeline.Teams.Nodes, func(
-		node gql.XReleasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam,
-	) TeamSummary {
-		return teamSummary(node.TeamSummaryFields)
-	})
-
-	return TeamList{
-		Teams:       teams,
-		HasNextPage: result.ReleasePipeline.Teams.PageInfo.HasNextPage,
-		EndCursor:   result.ReleasePipeline.Teams.PageInfo.EndCursor,
-	}, nil
+	return TeamList{Teams: page.Items, Page: page.Page}, nil
 }
 
 // ListReleaseStages returns visible Linear release stages.
 func ListReleaseStages(ctx context.Context, graphqlClient graphql.Client, limit int) (ReleaseStageList, error) {
-	result, err := gql.XReleaseStages(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := releaseStagesQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list release stages", limit, defaultListPageSize,
+		query.page,
+		releaseStagesNodeSummary,
+	)
 	if err != nil {
-		return ReleaseStageList{}, fmt.Errorf("list release stages: %w", err)
+		return ReleaseStageList{}, err
 	}
 
-	summaries := mapNodes(result.ReleaseStages.Nodes, func(
-		node gql.XReleaseStagesReleaseStagesReleaseStageConnectionNodesReleaseStage,
-	) ReleaseStageSummary {
-		return releaseStageSummary(node.ReleaseStageSummaryFields)
-	})
-
-	return ReleaseStageList{
-		ReleaseStages: summaries,
-		HasNextPage:   result.ReleaseStages.PageInfo.HasNextPage,
-		EndCursor:     result.ReleaseStages.PageInfo.EndCursor,
-	}, nil
+	return ReleaseStageList{ReleaseStages: page.Items, Page: page.Page}, nil
 }
 
 // GetReleaseStageByID returns one Linear release stage by id.
@@ -204,22 +220,136 @@ func ListReleaseStageReleases(
 	id string,
 	limit int,
 ) (ReleaseList, error) {
-	result, err := gql.XReleaseStage_releases(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := releaseStageScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list release stage releases "+id, limit, defaultListPageSize,
+		query.releases,
+		releaseStageReleasesNodeSummary,
+	)
 	if err != nil {
-		return ReleaseList{}, fmt.Errorf("list release stage releases %s: %w", id, err)
+		return ReleaseList{}, err
 	}
 
-	summaries := mapNodes(result.ReleaseStage.Releases.Nodes, func(
-		node gql.XReleaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease,
-	) ReleaseSummary {
-		return releaseSummary(node.ReleaseSummaryFields)
-	})
+	return ReleaseList{Releases: page.Items, Page: page.Page}, nil
+}
 
-	return ReleaseList{
-		Releases:    summaries,
-		HasNextPage: result.ReleaseStage.Releases.PageInfo.HasNextPage,
-		EndCursor:   result.ReleaseStage.Releases.PageInfo.EndCursor,
-	}, nil
+func (query releasePipelinesQuery) page(
+	pageSize int,
+	after *string,
+) ([]releasePipelinesNode, bool, *string, error) {
+	result, err := gql.XReleasePipelines(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.ReleasePipelines.Nodes,
+		result.ReleasePipelines.PageInfo.HasNextPage,
+		result.ReleasePipelines.PageInfo.EndCursor,
+		nil
+}
+
+func (query releasePipelineScopedQuery) releases(
+	pageSize int,
+	after *string,
+) ([]releasePipelineReleasesNode, bool, *string, error) {
+	result, err := gql.XReleasePipeline_releases(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.ReleasePipeline.Releases.Nodes,
+		result.ReleasePipeline.Releases.PageInfo.HasNextPage,
+		result.ReleasePipeline.Releases.PageInfo.EndCursor,
+		nil
+}
+
+func (query releasePipelineScopedQuery) stages(
+	pageSize int,
+	after *string,
+) ([]releasePipelineStagesNode, bool, *string, error) {
+	result, err := gql.XReleasePipeline_stages(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.ReleasePipeline.Stages.Nodes,
+		result.ReleasePipeline.Stages.PageInfo.HasNextPage,
+		result.ReleasePipeline.Stages.PageInfo.EndCursor,
+		nil
+}
+
+func (query releasePipelineScopedQuery) teams(
+	pageSize int,
+	after *string,
+) ([]releasePipelineTeamsNode, bool, *string, error) {
+	result, err := gql.XReleasePipeline_teams(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.ReleasePipeline.Teams.Nodes,
+		result.ReleasePipeline.Teams.PageInfo.HasNextPage,
+		result.ReleasePipeline.Teams.PageInfo.EndCursor,
+		nil
+}
+
+func (query releaseStagesQuery) page(pageSize int, after *string) ([]releaseStagesNode, bool, *string, error) {
+	result, err := gql.XReleaseStages(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.ReleaseStages.Nodes,
+		result.ReleaseStages.PageInfo.HasNextPage,
+		result.ReleaseStages.PageInfo.EndCursor,
+		nil
+}
+
+func (query releaseStageScopedQuery) releases(
+	pageSize int,
+	after *string,
+) ([]releaseStageReleasesNode, bool, *string, error) {
+	result, err := gql.XReleaseStage_releases(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.ReleaseStage.Releases.Nodes,
+		result.ReleaseStage.Releases.PageInfo.HasNextPage,
+		result.ReleaseStage.Releases.PageInfo.EndCursor,
+		nil
+}
+
+func releasePipelinesNodeSummary(node releasePipelinesNode) ReleasePipelineSummary {
+	return releasePipelineSummary(node.ReleasePipelineSummaryFields)
+}
+
+func releasePipelineReleasesNodeSummary(node releasePipelineReleasesNode) ReleaseSummary {
+	return releaseSummary(node.ReleaseSummaryFields)
+}
+
+func releasePipelineStagesNodeSummary(node releasePipelineStagesNode) ReleaseStageSummary {
+	return releaseStageSummary(node.ReleaseStageSummaryFields)
+}
+
+func releasePipelineTeamsNodeSummary(node releasePipelineTeamsNode) TeamSummary {
+	return teamSummary(node.TeamSummaryFields)
+}
+
+func releaseStagesNodeSummary(node releaseStagesNode) ReleaseStageSummary {
+	return releaseStageSummary(node.ReleaseStageSummaryFields)
+}
+
+func releaseStageReleasesNodeSummary(node releaseStageReleasesNode) ReleaseSummary {
+	return releaseSummary(node.ReleaseSummaryFields)
 }
 
 func releasePipelineSummary(fields gql.ReleasePipelineSummaryFields) ReleasePipelineSummary {

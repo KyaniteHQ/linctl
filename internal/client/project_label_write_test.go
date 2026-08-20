@@ -43,6 +43,16 @@ func Test_CreateProjectLabel_requires_name(t *testing.T) {
 	require.ErrorIs(t, err, ErrWriteInvalid)
 }
 
+func Test_CreateProjectLabel_rejects_invalid_color(t *testing.T) {
+	_, err := CreateProjectLabel(
+		context.Background(), projectWriteFakeClient(map[string]string{}), matchingTarget(),
+		ProjectLabelCreateRequest{Name: "priority", Color: "notacolor", OrgWide: true},
+	)
+
+	require.ErrorIs(t, err, ErrWriteInvalid)
+	require.ErrorContains(t, err, "color must be #RRGGBB")
+}
+
 func Test_CreateProjectLabel_refuses_when_target_unresolved(t *testing.T) {
 	_, err := CreateProjectLabel(context.Background(), projectWriteFakeClient(map[string]string{}), config.Target{
 		OrgID: "org-id", TeamKey: "WRONG", TeamID: "wrong-id",
@@ -141,6 +151,16 @@ func Test_UpdateProjectLabel_requires_a_field(t *testing.T) {
 	)
 
 	require.ErrorIs(t, err, ErrWriteInvalid)
+}
+
+func Test_UpdateProjectLabel_rejects_invalid_color(t *testing.T) {
+	_, err := UpdateProjectLabel(
+		context.Background(), projectWriteFakeClient(map[string]string{}), matchingTarget(),
+		ProjectLabelUpdateRequest{ID: "label-id", Color: "notacolor", OrgWide: true},
+	)
+
+	require.ErrorIs(t, err, ErrWriteInvalid)
+	require.ErrorContains(t, err, "color must be #RRGGBB")
 }
 
 func Test_UpdateProjectLabel_wraps_resolution_error(t *testing.T) {

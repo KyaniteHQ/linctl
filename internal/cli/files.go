@@ -5,10 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math"
 	"mime"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -161,15 +164,29 @@ func putFileContents(
 
 func addFilesDownloadCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	output := ""
+	maxSize := ""
 	command := &cobra.Command{
 		Use:   "download URL",
 		Short: "Download a file asset to a local path",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
-			return runFileDownload(ctx, command, options, args[0], output)
+			var limit *downloadMaxSize
+			if command.Flags().Changed("max-size") {
+				bytes, err := parseDownloadMaxSize(maxSize)
+				if err != nil {
+					return err
+				}
+				limit = &downloadMaxSize{bytes: bytes, flag: maxSize}
+			}
+
+			return runFileDownload(ctx, command, options, args[0], output, limit)
 		},
 	}
 	command.Flags().StringVar(&output, "output", "", "local path to write the downloaded file")
+	command.Flags().StringVar(
+		&maxSize, "max-size", "",
+		"fail if the download exceeds this size (bytes, or KB, MB, GB); unset means no limit",
+	)
 	addWriteCommand(root, WriteEffectLocal, command)
 }
 
@@ -179,6 +196,7 @@ func runFileDownload(
 	options *rootOptions,
 	url string,
 	output string,
+	limit *downloadMaxSize,
 ) error {
 	if output == "" {
 		return errors.New("--output is required")
@@ -196,7 +214,7 @@ func runFileDownload(
 	if response.StatusCode < http.StatusOK || response.StatusCode >= http.StatusMultipleChoices {
 		return fmt.Errorf("download %s: unexpected status %d", url, response.StatusCode)
 	}
-	size, err := writeDownloadedFile(response.Body, output)
+	size, err := writeDownloadedFile(response.Body, output, limit)
 	if err != nil {
 		return fmt.Errorf("write %s: %w", output, err)
 	}
@@ -212,12 +230,94 @@ func (runtime commandRuntime) fileHTTPClient() httpDoer {
 	return http.DefaultClient
 }
 
-func writeDownloadedFile(body io.Reader, output string) (int64, error) {
-	directory := filepath.Dir(output)
-	pattern := "." + filepath.Base(output) + ".tmp-*"
-	file, err := createDownloadTempFile(directory, pattern)
+// downloadMaxSize is the opt-in byte cap for files download. A nil
+// *downloadMaxSize means --max-size was absent and the copy stays unbounded,
+// so the absent case needs no separate flag alongside the value.
+type downloadMaxSize struct {
+	bytes int64
+	flag  string
+}
+
+func parseDownloadMaxSize(value string) (int64, error) {
+	numberText, multiplier := splitDownloadSizeSuffix(strings.TrimSpace(value))
+	number, err := strconv.ParseInt(numberText, 10, 64)
+	if err != nil || number < 0 {
+		return 0, invalidDownloadMaxSize(value)
+	}
+	if multiplier > 1 && number > math.MaxInt64/multiplier {
+		return 0, invalidDownloadMaxSize(value)
+	}
+
+	return number * multiplier, nil
+}
+
+var downloadSizeMultipliers = []struct {
+	suffix     string
+	multiplier int64
+}{
+	{"GB", 1024 * 1024 * 1024},
+	{"MB", 1024 * 1024},
+	{"KB", 1024},
+}
+
+func splitDownloadSizeSuffix(value string) (string, int64) {
+	upper := strings.ToUpper(value)
+	for _, unit := range downloadSizeMultipliers {
+		if strings.HasSuffix(upper, unit.suffix) {
+			return strings.TrimSuffix(upper, unit.suffix), unit.multiplier
+		}
+	}
+
+	return upper, 1
+}
+
+func invalidDownloadMaxSize(value string) error {
+	return fmt.Errorf(
+		"%w: --max-size must be a byte count or KB, MB, or GB, got %q",
+		client.ErrWriteInvalid,
+		value,
+	)
+}
+
+func writeDownloadedFile(body io.Reader, output string, limit *downloadMaxSize) (int64, error) {
+	var size int64
+	err := writeFileAtomically(output, func(writer io.Writer) error {
+		var copyErr error
+		size, copyErr = io.Copy(writer, limitedDownloadBody(body, limit))
+		if copyErr != nil {
+			return copyErr
+		}
+		if downloadExceedsMaxSize(size, limit) {
+			return fmt.Errorf("%w: download exceeds --max-size %s", client.ErrWriteInvalid, limit.flag)
+		}
+
+		return nil
+	})
 	if err != nil {
 		return 0, err
+	}
+
+	return size, nil
+}
+
+func limitedDownloadBody(body io.Reader, limit *downloadMaxSize) io.Reader {
+	if limit == nil || limit.bytes == math.MaxInt64 {
+		return body
+	}
+
+	return io.LimitReader(body, limit.bytes+1)
+}
+
+func downloadExceedsMaxSize(size int64, limit *downloadMaxSize) bool {
+	return limit != nil && size > limit.bytes
+}
+
+func writeFileAtomically(path string, write func(io.Writer) error) error {
+	directory := filepath.Dir(path)
+	pattern := "." + filepath.Base(path) + ".tmp-*"
+	file, err := createDownloadTempFile(directory, pattern)
+	if err != nil {
+		return err
 	}
 	tempPath := file.Name()
 	keepTemp := false
@@ -227,20 +327,20 @@ func writeDownloadedFile(body io.Reader, output string) (int64, error) {
 		}
 	}()
 
-	size, copyErr := io.Copy(file, body)
+	writeErr := write(file)
 	closeErr := file.Close()
-	if copyErr != nil {
-		return 0, copyErr
+	if writeErr != nil {
+		return writeErr
 	}
 	if closeErr != nil {
-		return 0, closeErr
+		return closeErr
 	}
-	if err := os.Rename(tempPath, output); err != nil {
-		return 0, err
+	if err := os.Rename(tempPath, path); err != nil {
+		return err
 	}
 	keepTemp = true
 
-	return size, nil
+	return nil
 }
 
 func writeAssetURL(command *cobra.Command, options *rootOptions, assetURL string) error {

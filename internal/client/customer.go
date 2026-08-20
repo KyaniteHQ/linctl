@@ -31,29 +31,31 @@ type CustomerSummary struct {
 
 // CustomerList is a page of Linear customers.
 type CustomerList struct {
-	Customers   []CustomerSummary `json:"customers"`
-	HasNextPage bool              `json:"has_next_page"`
-	EndCursor   *string           `json:"end_cursor,omitempty"`
+	Customers []CustomerSummary `json:"customers"`
+	Page
+}
+
+//nolint:lll
+type customersNode = gql.XCustomersCustomersCustomerConnectionNodesCustomer
+
+type customersQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
 }
 
 // ListCustomers returns visible Linear customers.
 func ListCustomers(ctx context.Context, graphqlClient graphql.Client, limit int) (CustomerList, error) {
-	result, err := gql.XCustomers(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := customersQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list customers", limit, defaultListPageSize,
+		query.page,
+		customersNodeSummary,
+	)
 	if err != nil {
-		return CustomerList{}, fmt.Errorf("list customers: %w", err)
+		return CustomerList{}, err
 	}
 
-	summaries := mapNodes(result.Customers.Nodes, func(
-		node gql.XCustomersCustomersCustomerConnectionNodesCustomer,
-	) CustomerSummary {
-		return customerSummary(node.CustomerSummaryFields)
-	})
-
-	return CustomerList{
-		Customers:   summaries,
-		HasNextPage: result.Customers.PageInfo.HasNextPage,
-		EndCursor:   result.Customers.PageInfo.EndCursor,
-	}, nil
+	return CustomerList{Customers: page.Items, Page: page.Page}, nil
 }
 
 // GetCustomerByID returns one Linear customer by id or slug.
@@ -64,6 +66,22 @@ func GetCustomerByID(ctx context.Context, graphqlClient graphql.Client, id strin
 	}
 
 	return customerSummary(result.Customer.CustomerSummaryFields), nil
+}
+
+func (query customersQuery) page(pageSize int, after *string) ([]customersNode, bool, *string, error) {
+	result, err := gql.XCustomers(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Customers.Nodes,
+		result.Customers.PageInfo.HasNextPage,
+		result.Customers.PageInfo.EndCursor,
+		nil
+}
+
+func customersNodeSummary(node customersNode) CustomerSummary {
+	return customerSummary(node.CustomerSummaryFields)
 }
 
 func customerSummary(fields gql.CustomerSummaryFields) CustomerSummary {

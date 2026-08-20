@@ -660,9 +660,22 @@ func Test_CommandFlows_cover_user_settings_error_and_writer_branches(t *testing.
 	require.NoError(t, writeUserSettings(command, &rootOptions{quiet: true}, settings))
 	require.NoError(t, writeUserSettingsValue(command, &rootOptions{quiet: true}, settings, "settings"))
 	require.NoError(t, writeUserSettingsValue(command, &rootOptions{json: true}, settings, "settings"))
-	require.NoError(t, writeUserSettingsNullableValue(command, &rootOptions{quiet: true}, nil, "nullable"))
-	require.NoError(t, writeUserSettingsNullableValue(command, &rootOptions{json: true}, nil, "nullable"))
-	require.NoError(t, writeUserSettingsNullableValue(command, &rootOptions{}, nil, "nullable"))
+	var nilChannel *client.NotificationDeliveryChannel
+	var nilSchedule *client.NotificationDeliverySchedule
+	var nilTheme *client.UserSettingsThemeSummary
+	require.NoError(t, writeUserSettingsNullableValue(command, &rootOptions{quiet: true}, nilChannel, "nullable"))
+	require.NoError(t, writeUserSettingsNullableValue(command, &rootOptions{json: true}, nilSchedule, "nullable"))
+	output.Reset()
+	require.NoError(t, writeUserSettingsNullableValue(command, &rootOptions{}, nilTheme, "nullable"))
+	require.Equal(t, "nullable none\n", output.String())
+	output.Reset()
+	require.NoError(t, writeUserSettingsNullableValue(
+		command, &rootOptions{json: true, compact: true, fields: "notifications_disabled"},
+		&client.NotificationDeliveryChannel{NotificationsDisabled: boolPointerForUserSettingsTest(false)},
+		"nullable",
+	))
+	require.Contains(t, output.String(), `"notifications_disabled"`)
+	require.NotContains(t, output.String(), `"schedule"`)
 	require.Empty(t, pointerString(nil))
 	require.Equal(t, "value", pointerString(stringPointerForUserSettingsTest("value")))
 
@@ -680,6 +693,43 @@ func Test_CommandFlows_cover_user_settings_error_and_writer_branches(t *testing.
 
 func stringPointerForUserSettingsTest(value string) *string {
 	return &value
+}
+
+func boolPointerForUserSettingsTest(value bool) *bool {
+	return &value
+}
+
+func Test_UserSettings_prints_none_when_mobile_delivery_is_null(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, payloadGraphQLClient{
+		payload: `{"userSettings":{"notificationDeliveryPreferences":{"mobile":null}}}`,
+	})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"user", "settings", "mobile-delivery"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Equal(t, "mobile delivery none\n", output.String())
+}
+
+func Test_UserSettings_projects_json_fields_for_nullable_mobile_delivery(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, commandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{
+		"--json", "--fields", "notifications_disabled", "user", "settings", "mobile-delivery",
+	})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Contains(t, output.String(), `"notifications_disabled"`)
+	require.NotContains(t, output.String(), `"schedule"`)
 }
 
 type commandFailingReader struct{}

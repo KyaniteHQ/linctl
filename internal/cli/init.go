@@ -87,6 +87,8 @@ func addInitCommand(ctx context.Context, root *cobra.Command, options *rootOptio
 	command.Flags().StringVar(&request.TeamKey, "team", "", "team key when multiple teams are visible")
 	command.Flags().StringVar(&request.TeamID, "team-id", "", "team id when multiple teams are visible")
 	command.Flags().StringVar(&request.ProjectID, "project", "", "optional project id to pin after team selection")
+	registerFlagCompletion(command, "team", flagCompletion(ctx, options, teamKeyCandidates))
+	registerFlagCompletion(command, "project", flagCompletion(ctx, options, projectIDCandidates))
 	addCommandWithSafety(root, CommandSafetyLocal, command)
 }
 

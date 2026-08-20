@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"cmp"
 	"context"
 	"log/slog"
 	"net/http"
@@ -43,7 +44,7 @@ func finalizeRefreshedToken(
 
 	return stampAndRequireScopes(
 		refreshed,
-		firstNonEmptyString(previous.Actor, appActor),
+		cmp.Or(previous.Actor, appActor),
 		authGrantAuthorizationCode,
 		scopes,
 	)
@@ -279,7 +280,7 @@ func refreshedAuthReadiness(
 		TokenActor:     token.Actor,
 		TokenScopes:    token.Scopes,
 		ExpectedTarget: authContext.target,
-		ExpectedActor:  firstNonEmptyString(expectedActor, appActor),
+		ExpectedActor:  cmp.Or(expectedActor, appActor),
 		RequiredScopes: requiredScopes(app),
 		Timeout:        timeout,
 	})

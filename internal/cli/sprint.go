@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addSprintCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -34,17 +33,8 @@ func addSprintCurrentCommand(ctx context.Context, root *cobra.Command, options *
 			if err != nil {
 				return err
 			}
-			if options.json {
-				return writeJSONValue(command, options, cycle)
-			}
 
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s %s [%s]",
-				cycle.ID,
-				cycle.Name,
-				cycle.Status,
-			)
+			return writeCycle(command, options, cycle)
 		},
 	})
 }
@@ -71,31 +61,16 @@ func addSprintReportCommand(ctx context.Context, root *cobra.Command, options *r
 			if err != nil {
 				return err
 			}
-			if options.json {
+			// Combined JSON keeps Cycle and issues in one object so --fields
+			// still projects the issues collection.
+			if options.json && !options.idOnly && !options.quiet {
 				return writeJSONValue(command, options, report)
 			}
-			if err := render.WriteLine(
-				command.OutOrStdout(),
-				"%s %s [%s]",
-				report.Cycle.ID,
-				report.Cycle.Name,
-				report.Cycle.Status,
-			); err != nil {
+			if err := writeCycle(command, options, report.Cycle); err != nil {
 				return err
 			}
-			for _, issue := range report.Issues {
-				if err := render.WriteLine(
-					command.OutOrStdout(),
-					"%s %s [%s]",
-					issue.Identifier,
-					issue.Title,
-					issue.State,
-				); err != nil {
-					return err
-				}
-			}
 
-			return nil
+			return writeIssues(command, options, report.Issues)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum issues to include")

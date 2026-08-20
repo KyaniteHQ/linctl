@@ -27,6 +27,7 @@ type SLAConfigurationList struct {
 }
 
 // ListSLAConfigurations returns active SLA rules that can apply to one team.
+// It cannot paginate: Linear exposes a flat array with no connection or PageInfo.
 func ListSLAConfigurations(
 	ctx context.Context,
 	graphqlClient graphql.Client,

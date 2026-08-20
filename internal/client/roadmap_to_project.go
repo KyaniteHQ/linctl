@@ -28,9 +28,11 @@ type RoadmapToProjectSummary struct {
 // RoadmapToProjectList is a page of Roadmap-to-Project associations.
 type RoadmapToProjectList struct {
 	Associations []RoadmapToProjectSummary `json:"associations"`
-	HasNextPage  bool                      `json:"has_next_page"`
-	EndCursor    *string                   `json:"end_cursor,omitempty"`
+	Page
 }
+
+//nolint:lll
+type roadmapToProjectsNode = gql.XRoadmapToProjectsRoadmapToProjectsRoadmapToProjectConnectionNodesRoadmapToProject
 
 // ListRoadmapToProjects returns visible Roadmap-to-Project associations.
 func ListRoadmapToProjects(
@@ -38,21 +40,28 @@ func ListRoadmapToProjects(
 	graphqlClient graphql.Client,
 	limit int,
 ) (RoadmapToProjectList, error) {
-	result, err := gql.XRoadmapToProjects(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	page, err := listConnection(
+		"list roadmap to projects", limit, defaultListPageSize,
+		func(pageSize int, after *string) ([]roadmapToProjectsNode, bool, *string, error) {
+			result, err := gql.XRoadmapToProjects(ctx, graphqlClient, intPtr(pageSize), after, boolPtr(true))
+			if err != nil {
+				return nil, false, nil, err
+			}
+
+			return result.RoadmapToProjects.Nodes,
+				result.RoadmapToProjects.PageInfo.HasNextPage,
+				result.RoadmapToProjects.PageInfo.EndCursor,
+				nil
+		},
+		roadmapToProjectsNodeSummary,
+	)
 	if err != nil {
-		return RoadmapToProjectList{}, fmt.Errorf("list roadmap to projects: %w", err)
+		return RoadmapToProjectList{}, err
 	}
 
-	associations := mapNodes(result.RoadmapToProjects.Nodes, func(
-		association gql.XRoadmapToProjectsRoadmapToProjectsRoadmapToProjectConnectionNodesRoadmapToProject,
-	) RoadmapToProjectSummary {
-		return roadmapToProjectSummary(association.RoadmapToProjectSummaryFields)
-	})
-
 	return RoadmapToProjectList{
-		Associations: associations,
-		HasNextPage:  result.RoadmapToProjects.PageInfo.HasNextPage,
-		EndCursor:    result.RoadmapToProjects.PageInfo.EndCursor,
+		Associations: page.Items,
+		Page:         page.Page,
 	}, nil
 }
 
@@ -68,6 +77,10 @@ func GetRoadmapToProjectByID(
 	}
 
 	return roadmapToProjectSummary(result.RoadmapToProject.RoadmapToProjectSummaryFields), nil
+}
+
+func roadmapToProjectsNodeSummary(association roadmapToProjectsNode) RoadmapToProjectSummary {
+	return roadmapToProjectSummary(association.RoadmapToProjectSummaryFields)
 }
 
 func roadmapToProjectSummary(association gql.RoadmapToProjectSummaryFields) RoadmapToProjectSummary {

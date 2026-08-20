@@ -26,6 +26,91 @@ func Test_CycleCommandFlows_list_cycles(t *testing.T) {
 	require.Contains(t, output.String(), "cycle-id Cycle 12 [active]")
 }
 
+func Test_CycleCommandFlows_list_cycles_notes_truncation(t *testing.T) {
+	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{truncatedCycles: true})
+	defer restore()
+	var stdout, stderr bytes.Buffer
+	err := execute(
+		context.Background(),
+		BuildInfo{},
+		strings.NewReader(""),
+		&stdout,
+		&stderr,
+		[]string{"cycle", "list", "--limit", "1"},
+	)
+
+	require.NoError(t, err)
+	require.Equal(t, "cycle-id Cycle 12 [active]\n", stdout.String())
+	require.Equal(t, "note: listing capped at 1 items; more pages exist\n", stderr.String())
+}
+
+func Test_CycleCommandFlows_list_cycles_quiet_suppresses_truncation_note(t *testing.T) {
+	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{truncatedCycles: true})
+	defer restore()
+	var stdout, stderr bytes.Buffer
+	err := execute(
+		context.Background(),
+		BuildInfo{},
+		strings.NewReader(""),
+		&stdout,
+		&stderr,
+		[]string{"--quiet", "cycle", "list", "--limit", "1"},
+	)
+
+	require.NoError(t, err)
+	require.Empty(t, stdout.String())
+	require.Empty(t, stderr.String())
+}
+
+func Test_CycleCommandFlows_list_cycles_id_only_keeps_stdout_clean(t *testing.T) {
+	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{truncatedCycles: true})
+	defer restore()
+	var stdout, stderr bytes.Buffer
+	err := execute(
+		context.Background(),
+		BuildInfo{},
+		strings.NewReader(""),
+		&stdout,
+		&stderr,
+		[]string{"--id-only", "cycle", "list", "--limit", "1"},
+	)
+
+	require.NoError(t, err)
+	require.Equal(t, "cycle-id\n", stdout.String())
+	require.Equal(t, "note: listing capped at 1 items; more pages exist\n", stderr.String())
+}
+
+func Test_CycleCommandFlows_list_cycles_json_keeps_pagination_fields(t *testing.T) {
+	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{truncatedCycles: true})
+	defer restore()
+	var stdout, stderr bytes.Buffer
+	err := execute(
+		context.Background(),
+		BuildInfo{},
+		strings.NewReader(""),
+		&stdout,
+		&stderr,
+		[]string{"--json", "--compact", "cycle", "list", "--limit", "1"},
+	)
+
+	require.NoError(t, err)
+	require.Contains(t, stdout.String(), `"has_next_page":true`)
+	require.Contains(t, stdout.String(), `"end_cursor":"cycle-cursor"`)
+	require.Equal(t, "note: listing capped at 1 items; more pages exist\n", stderr.String())
+}
+
+func Test_CycleCommandFlows_list_cycles_surfaces_truncation_note_writer_errors(t *testing.T) {
+	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{truncatedCycles: true})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetErr(commandFailingWriter{})
+	command.SetArgs([]string{"cycle", "list", "--limit", "1"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.ErrorContains(t, err, "write failed")
+}
+
 func Test_CycleCommandFlows_list_cycles_json(t *testing.T) {
 	output := bytes.Buffer{}
 	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{})
@@ -133,6 +218,49 @@ func Test_CycleCommandFlows_get_current_sprint(t *testing.T) {
 	require.Contains(t, output.String(), "cycle-id Cycle 12 [active]")
 }
 
+func Test_CycleCommandFlows_get_current_sprint_id_only(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"--id-only", "sprint", "current"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Equal(t, "cycle-id\n", output.String())
+}
+
+func Test_CycleCommandFlows_get_current_sprint_quiet(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"--quiet", "sprint", "current"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Empty(t, output.String())
+}
+
+func Test_CycleCommandFlows_get_current_sprint_full_format(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"--format", "full", "sprint", "current"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Contains(t, output.String(), "starts_at=")
+	require.Contains(t, output.String(), "progress=")
+}
+
 func Test_CycleCommandFlows_get_current_sprint_json(t *testing.T) {
 	output := bytes.Buffer{}
 	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{})
@@ -226,6 +354,49 @@ func Test_CycleCommandFlows_report_sprint(t *testing.T) {
 	require.NoError(t, err)
 	require.Contains(t, output.String(), "cycle-id Current sprint [active]")
 	require.Contains(t, output.String(), "LIT-1 Ship report [Started]")
+}
+
+func Test_CycleCommandFlows_report_sprint_id_only(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"--id-only", "sprint", "report", "cycle-id", "--limit", "1"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Equal(t, "cycle-id\nissue-id\n", output.String())
+}
+
+func Test_CycleCommandFlows_report_sprint_quiet(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"--quiet", "sprint", "report", "cycle-id", "--limit", "1"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Empty(t, output.String())
+}
+
+func Test_CycleCommandFlows_report_sprint_full_format(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"--format", "full", "sprint", "report", "cycle-id", "--limit", "1"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Contains(t, output.String(), "starts_at=")
+	require.Contains(t, output.String(), "url=")
 }
 
 func Test_CycleCommandFlows_report_sprint_json(t *testing.T) {
@@ -663,9 +834,10 @@ func Test_CycleCommandFlows_report_cycle_list_writer_error(t *testing.T) {
 }
 
 type cycleCommandFlowFakeClient struct {
-	emptyCycles   bool
-	emptyReport   bool
-	failOperation string
+	emptyCycles     bool
+	emptyReport     bool
+	failOperation   string
+	truncatedCycles bool
 }
 
 func (client cycleCommandFlowFakeClient) MakeRequest(
@@ -679,7 +851,12 @@ func (client cycleCommandFlowFakeClient) MakeRequest(
 	if client.failOperation == request.OpName {
 		return errors.New(strings.ToLower(request.OpName) + " failed")
 	}
-	payload, ok := cycleCommandFlowPayload(request.OpName, client.emptyCycles, client.emptyReport)
+	payload, ok := cycleCommandFlowPayload(
+		request.OpName,
+		client.emptyCycles,
+		client.emptyReport,
+		client.truncatedCycles,
+	)
 	if !ok {
 		return errors.New("missing fake response for " + request.OpName)
 	}
@@ -701,8 +878,13 @@ func (writer *cycleCommandFailingSecondWriter) Write(payload []byte) (int, error
 	return 0, errors.New("second write failed")
 }
 
-func cycleCommandFlowPayload(operation string, emptyCycles bool, emptyReport bool) (string, bool) {
-	if payload, ok := cycleCommandFlowCyclePayload(operation, emptyCycles, emptyReport); ok {
+func cycleCommandFlowPayload(
+	operation string,
+	emptyCycles bool,
+	emptyReport bool,
+	truncatedCycles bool,
+) (string, bool) {
+	if payload, ok := cycleCommandFlowCyclePayload(operation, emptyCycles, emptyReport, truncatedCycles); ok {
 		return payload, true
 	}
 
@@ -718,13 +900,15 @@ func cycleCommandFlowPayload(operation string, emptyCycles bool, emptyReport boo
 	}
 }
 
-func cycleCommandFlowCyclePayload(operation string, emptyCycles bool, emptyReport bool) (string, bool) {
+func cycleCommandFlowCyclePayload(
+	operation string,
+	emptyCycles bool,
+	emptyReport bool,
+	truncatedCycles bool,
+) (string, bool) {
 	switch operation {
 	case "cycles":
-		if emptyCycles {
-			return `{"cycles":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
-		}
-		return `{"cycles":{"nodes":[{"id":"cycle-id","number":12,"name":null,"description":"cycle body","startsAt":"2026-01-01T00:00:00Z","endsAt":"2099-01-01T00:00:00Z","completedAt":null,"progress":0.25,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+		return cycleCommandCyclesJSON(emptyCycles, truncatedCycles), true
 	case "activeCyclesByTeam":
 		if emptyCycles {
 			return `{"cycles":{"nodes":[]}}`, true
@@ -756,6 +940,19 @@ func cycleCommandFlowCyclePayload(operation string, emptyCycles bool, emptyRepor
 	default:
 		return "", false
 	}
+}
+
+func cycleCommandCyclesJSON(empty bool, truncated bool) string {
+	pageInfo := `{"hasNextPage":false,"endCursor":null}`
+	if truncated {
+		pageInfo = `{"hasNextPage":true,"endCursor":"cycle-cursor"}`
+	}
+	nodes := ""
+	if !empty {
+		nodes = `{"id":"cycle-id","number":12,"name":null,"description":"cycle body","startsAt":"2026-01-01T00:00:00Z","endsAt":"2099-01-01T00:00:00Z","completedAt":null,"progress":0.25,"team":{"id":"team-id","key":"LIT","name":"linctl"}}`
+	}
+
+	return `{"cycles":{"nodes":[` + nodes + `],"pageInfo":` + pageInfo + `}}`
 }
 
 func cycleCommandCycleJSON(name string) string {

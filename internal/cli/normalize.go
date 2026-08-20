@@ -93,16 +93,6 @@ func normalizedStateType(raw string) (value string, changed bool, err error) {
 	return canonical, canonical != raw, nil
 }
 
-// firstNonEmpty returns primary when non-empty, and fallback otherwise: the
-// canonical flag wins over its alias.
-func firstNonEmpty(primary string, fallback string) string {
-	if primary != "" {
-		return primary
-	}
-
-	return fallback
-}
-
 // normalizeAndNote normalizes raw with normalize, emitting a single stderr note
 // (labelled by field) when normalization changed the value. An empty raw is
 // returned unchanged without invoking normalize.

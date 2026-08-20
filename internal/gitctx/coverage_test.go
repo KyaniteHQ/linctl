@@ -16,7 +16,7 @@ func Test_GitContextScenarios_resolve_or_report_issue_references(t *testing.T) {
 	}
 
 	t.Run("non git directory returns current branch error", func(t *testing.T) {
-		_, err := CurrentIssueIdentifier(context.Background(), t.TempDir())
+		_, err := CurrentIssueIdentifierForTeam(context.Background(), t.TempDir(), "")
 
 		require.ErrorContains(t, err, "git branch --show-current")
 	})
@@ -30,7 +30,7 @@ func Test_GitContextScenarios_resolve_or_report_issue_references(t *testing.T) {
 		require.NoError(t, os.WriteFile(jjPath, []byte("#!/usr/bin/env bash\nprintf 'Work item\\n\\nLinear-Issue: LIT-77\\n'\n"), 0o700))
 		t.Setenv("PATH", dir+string(os.PathListSeparator)+os.Getenv("PATH"))
 
-		identifier, err := CurrentIssueIdentifier(context.Background(), dir)
+		identifier, err := CurrentIssueIdentifierForTeam(context.Background(), dir, "")
 
 		require.NoError(t, err)
 		require.Equal(t, "LIT-77", identifier)
@@ -43,7 +43,7 @@ func Test_GitContextScenarios_resolve_or_report_issue_references(t *testing.T) {
 		require.NoError(t, os.WriteFile(jjPath, []byte("#!/usr/bin/env bash\nexit 0\n"), 0o700))
 		t.Setenv("PATH", dir+string(os.PathListSeparator)+os.Getenv("PATH"))
 
-		_, err := CurrentIssueIdentifier(context.Background(), dir)
+		_, err := CurrentIssueIdentifierForTeam(context.Background(), dir, "")
 
 		require.ErrorContains(t, err, `git branch "master"`)
 		require.ErrorContains(t, err, "jj description empty")
@@ -57,7 +57,7 @@ func Test_GitContextScenarios_resolve_or_report_issue_references(t *testing.T) {
 		require.NoError(t, os.WriteFile(jjPath, []byte("#!/usr/bin/env bash\nprintf 'no issue here\\n'\n"), 0o700))
 		t.Setenv("PATH", dir+string(os.PathListSeparator)+os.Getenv("PATH"))
 
-		_, err := CurrentIssueIdentifier(context.Background(), dir)
+		_, err := CurrentIssueIdentifierForTeam(context.Background(), dir, "")
 
 		require.ErrorContains(t, err, "jj description has no identifier")
 	})
@@ -70,7 +70,7 @@ func Test_GitContextScenarios_resolve_or_report_issue_references(t *testing.T) {
 		require.NoError(t, os.WriteFile(jjPath, []byte("#!/usr/bin/env bash\nprintf 'no issue here\\n'\n"), 0o700))
 		t.Setenv("PATH", dir+string(os.PathListSeparator)+os.Getenv("PATH"))
 
-		_, err := CurrentIssueIdentifier(context.Background(), dir)
+		_, err := CurrentIssueIdentifierForTeam(context.Background(), dir, "")
 
 		require.ErrorContains(t, err, "git branch empty")
 	})

@@ -116,6 +116,9 @@ func runNextWithPicker(
 	if len(issues.Issues) == 0 {
 		return errors.New("next issue not found")
 	}
+	if err := noteNextRankingTruncation(command, options, issues); err != nil {
+		return err
+	}
 	picked := issues.Issues[0]
 	if flags.dryRun {
 		return writeIssue(command, options, picked)
@@ -131,4 +134,16 @@ func runNextWithPicker(
 	}
 
 	return writeIssue(command, options, started)
+}
+
+func noteNextRankingTruncation(command *cobra.Command, options *rootOptions, issues client.IssueList) error {
+	if !issues.HasNextPage || options.quiet {
+		return nil
+	}
+
+	return writeNote(
+		command,
+		"next ranking inspected %d candidates; more unstarted issues exist",
+		len(issues.Issues),
+	)
 }

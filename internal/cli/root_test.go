@@ -4,9 +4,12 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
+	"io"
 	"strings"
 	"testing"
 
+	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/require"
 )
 
@@ -44,6 +47,93 @@ func Test_RootCommand_exposes_global_flags_when_created(t *testing.T) {
 	}
 	require.Equal(t, "pinned Linear team key", flags.Lookup("team").Usage)
 	require.Equal(t, "pinned Linear team id", flags.Lookup("team-id").Usage)
+}
+
+func Test_RootCommand_treats_explicit_empty_config_flag_as_missing_error(t *testing.T) {
+	dir := t.TempDir()
+	t.Chdir(dir)
+
+	err := execute(
+		context.Background(),
+		BuildInfo{},
+		nil,
+		&bytes.Buffer{},
+		&bytes.Buffer{},
+		[]string{"--config", "", "whoami"},
+	)
+
+	require.ErrorContains(t, err, "read explicit repo config")
+}
+
+func Test_RootCommand_threads_injected_stderr_into_root_options(t *testing.T) {
+	var captured io.Writer
+	original := buildCommandRuntime
+	buildCommandRuntime = func(_ context.Context, options *rootOptions) (commandRuntime, error) {
+		captured = options.stderr
+		return commandRuntime{}, errors.New("stop after capturing stderr")
+	}
+	defer func() {
+		buildCommandRuntime = original
+	}()
+	stderrBuf := &bytes.Buffer{}
+
+	err := execute(context.Background(), BuildInfo{}, nil, &bytes.Buffer{}, stderrBuf, []string{"whoami"})
+
+	require.ErrorContains(t, err, "stop after capturing stderr")
+	require.Same(t, stderrBuf, captured)
+}
+
+func Test_RootCommand_rejects_invalid_order_before_any_request(t *testing.T) {
+	recorder := &recordingGraphQLClient{}
+	restore := useCommandRuntime(t, recorder)
+	defer restore()
+
+	err := execute(
+		context.Background(),
+		BuildInfo{},
+		nil,
+		&bytes.Buffer{},
+		&bytes.Buffer{},
+		[]string{"--order", "sideways", "issue", "list"},
+	)
+
+	require.ErrorContains(t, err, `invalid sort order "sideways"`)
+	require.Empty(t, recorder.calls)
+}
+
+func Test_RootCommand_rejects_order_without_sort_before_any_request(t *testing.T) {
+	recorder := &recordingGraphQLClient{}
+	restore := useCommandRuntime(t, recorder)
+	defer restore()
+
+	err := execute(
+		context.Background(),
+		BuildInfo{},
+		nil,
+		&bytes.Buffer{},
+		&bytes.Buffer{},
+		[]string{"--order", "desc", "issue", "list"},
+	)
+
+	require.ErrorContains(t, err, `invalid --order "desc": --sort is required`)
+	require.Empty(t, recorder.calls)
+}
+
+func Test_ValidateCommandFlags_reports_order_parse_error(t *testing.T) {
+	command := &cobra.Command{}
+	command.Flags().Int("order", 0, "")
+
+	err := validateCommandFlags(command)
+
+	require.ErrorContains(t, err, "read --order")
+}
+
+func Test_ValidateCommandFlags_skips_missing_order_flag(t *testing.T) {
+	command := &cobra.Command{}
+
+	err := validateCommandFlags(command)
+
+	require.NoError(t, err)
 }
 
 func Test_RootCommand_rejects_non_positive_limit_before_runtime(t *testing.T) {

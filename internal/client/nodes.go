@@ -14,9 +14,8 @@ func mapNodes[Node any, Summary any](nodes []Node, mapOne func(Node) Summary) []
 
 // nodePage is one accumulated connection page: its items plus cursor state.
 type nodePage[Item any] struct {
-	Items       []Item
-	HasNextPage bool
-	EndCursor   *string
+	Items []Item
+	Page
 }
 
 // collectNodePages accumulates connection items until limit items are
@@ -48,8 +47,86 @@ func collectNodePages[Item any](
 			return page, nil
 		}
 		if page.EndCursor == nil {
-			return nodePage[Item]{}, fmt.Errorf("%s: next page has no end cursor", operation)
+			return nodePage[Item]{}, fmt.Errorf("%s: next page has no end cursor: %w", operation, ErrGraphQL)
 		}
 		after = page.EndCursor
 	}
 }
+
+// listConnection is listConnectionWithParent for the common shape: a connection
+// with no denormalized parent to carry back.
+func listConnection[Node, Summary any](
+	operation string,
+	limit int,
+	pageSize int,
+	fetch func(pageSize int, after *string) (nodes []Node, hasNextPage bool, endCursor *string, err error),
+	mapOne func(Node) Summary,
+) (nodePage[Summary], error) {
+	withoutParent := func(pageSize int, after *string) ([]Node, struct{}, bool, *string, error) {
+		nodes, hasNextPage, endCursor, err := fetch(pageSize, after)
+
+		return nodes, struct{}{}, hasNextPage, endCursor, err
+	}
+	page, _, err := listConnectionWithParent(operation, limit, pageSize, withoutParent, mapOne)
+
+	return page, err
+}
+
+// listConnectionWithParent wraps collectNodePages: fetch one page, map its
+// nodes to a Summary, thread its page info through, and carry back the parent
+// entity the read denormalizes into every page (a project id, an issue
+// identifier, a team key). The fetch returns that parent instead of
+// writing it into a captured struct field, so the data flow stays visible in
+// the signature. Linear repeats the parent on every page, so the last page's
+// value is the one returned; a zero Parent comes back with any error.
+func listConnectionWithParent[Node, Summary, Parent any](
+	operation string,
+	limit int,
+	pageSize int,
+	fetch func(pageSize int, after *string) ([]Node, Parent, bool, *string, error),
+	mapOne func(Node) Summary,
+) (nodePage[Summary], Parent, error) {
+	var parent Parent
+	collect := func(pageSize int, after *string) (nodePage[Summary], error) {
+		nodes, pageParent, hasNextPage, endCursor, err := fetch(pageSize, after)
+		if err != nil {
+			return nodePage[Summary]{}, err
+		}
+		parent = pageParent
+
+		return nodePage[Summary]{
+			Items: mapNodes(nodes, mapOne),
+			Page:  Page{HasNextPage: hasNextPage, EndCursor: endCursor},
+		}, nil
+	}
+	page, err := collectNodePages(operation, limit, pageSize, collect)
+	if err != nil {
+		var zero Parent
+		return nodePage[Summary]{}, zero, err
+	}
+
+	return page, parent, nil
+}
+
+// issueParent, projectParent, and labelParent are the connection parents that
+// several reads share. identifier, projectName, and labelName stay empty when
+// the operation's selection set does not carry them; the consuming list type
+// has no field for them in that case.
+type issueParent struct {
+	issueID    string
+	identifier string
+}
+
+type projectParent struct {
+	projectID   string
+	projectName string
+}
+
+type labelParent struct {
+	labelID   string
+	labelName string
+}
+
+// defaultListPageSize matches Linear's per-request cap, the same authority
+// issueListPageSize cites at issue.go:134.
+const defaultListPageSize = 250

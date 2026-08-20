@@ -96,7 +96,7 @@ project_id = "case-scraper-project"
 
 	resolved, source, err := resolveConfigWithSource(
 		context.Background(),
-		&rootOptions{configPath: configPath},
+		&rootOptions{configPath: configPath, configPathExplicit: true},
 	)
 
 	require.NoError(t, err)
@@ -110,7 +110,7 @@ func Test_ResolveConfig_refuses_missing_explicit_repo_config(t *testing.T) {
 
 	_, _, err := resolveConfigWithSource(
 		context.Background(),
-		&rootOptions{configPath: missingPath},
+		&rootOptions{configPath: missingPath, configPathExplicit: true},
 	)
 
 	require.ErrorContains(t, err, "read explicit repo config")
@@ -192,8 +192,8 @@ func Test_CommandRuntime_reports_local_auth_state_load_error_without_env_token(t
 func Test_NewRecoveringGraphQLClient_uses_defaults_and_empty_authorization(t *testing.T) {
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{})
 
-	require.Empty(t, runtimeClient.token.AccessToken)
-	require.NotNil(t, runtimeClient.client)
+	require.Empty(t, runtimeClient.state.token.AccessToken)
+	require.NotNil(t, runtimeClient.state.client)
 	require.NotNil(t, runtimeClient.oauthClient)
 }
 
@@ -394,6 +394,7 @@ func Test_CommandRuntime_surfaces_rejected_injected_token_without_identity_subst
 	)
 
 	require.ErrorIs(t, err, client.ErrAuthFailed)
+	require.Equal(t, string(auth.ErrorCodeReauthRequired), errorCode(err))
 	require.Zero(t, fakeOAuth.clientCredentialsCalls)
 	require.Zero(t, fakeOAuth.refreshTokenCalls)
 	require.Equal(t, []string{"injected-access-token"}, factory.tokens)
@@ -717,7 +718,7 @@ func Test_CommandRuntime_refresh_authorization_code_edge_cases(t *testing.T) {
 			Store: auth.NewStore(cliAuthTestPaths(t)),
 		})
 
-		_, err := runtimeClient.refreshAuthorizationCode(context.Background(), runtimeClient.token)
+		_, err := runtimeClient.refreshAuthorizationCode(context.Background(), runtimeClient.state.token)
 
 		require.Error(t, err)
 		require.Equal(t, string(auth.ErrorCodeReauthRequired), errorCode(err))
@@ -744,7 +745,7 @@ func Test_CommandRuntime_refresh_authorization_code_edge_cases(t *testing.T) {
 			OAuthClient: fakeOAuth,
 		})
 
-		token, err := runtimeClient.refreshAuthorizationCode(context.Background(), runtimeClient.token)
+		token, err := runtimeClient.refreshAuthorizationCode(context.Background(), runtimeClient.state.token)
 
 		require.NoError(t, err)
 		require.Equal(t, "old-refresh-token", token.RefreshToken)
@@ -769,7 +770,7 @@ func Test_CommandRuntime_refresh_authorization_code_edge_cases(t *testing.T) {
 			OAuthClient: fakeOAuth,
 		})
 
-		_, err := runtimeClient.refreshAuthorizationCode(context.Background(), runtimeClient.token)
+		_, err := runtimeClient.refreshAuthorizationCode(context.Background(), runtimeClient.state.token)
 
 		require.Error(t, err)
 		require.Equal(t, string(auth.ErrorCodeMissingScope), errorCode(err))
@@ -801,15 +802,38 @@ func Test_CommandRuntime_rejects_persisted_token_without_recovery_grant(t *testi
 	require.ErrorContains(t, err, "persisted OAuth token is not recoverable")
 }
 
+func Test_CommandRuntime_debug_logger_writes_to_options_stderr(t *testing.T) {
+	dir := t.TempDir()
+	t.Chdir(dir)
+	configureTestAuthEnvironment(t)
+	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "test-token")
+	require.NoError(t, os.WriteFile(".linctl.toml", []byte(`
+[target]
+org_id = "org-id"
+team_key = "LIT"
+team_id = "team-id"
+`), 0o600))
+	var stderr bytes.Buffer
+
+	_, err := newCommandRuntime(context.Background(), &rootOptions{
+		timeout: time.Second,
+		debug:   true,
+		stderr:  &stderr,
+	})
+
+	require.NoError(t, err)
+	require.Contains(t, stderr.String(), "runtime ready")
+}
+
 func runtimeGraphQLAuthorizationHeader(t *testing.T, runtime commandRuntime) string {
 	t.Helper()
 
 	if client, ok := runtime.graphqlClient.(*recoveringGraphQLClient); ok {
-		if client.token.AccessToken == "" {
+		if client.state.token.AccessToken == "" {
 			return ""
 		}
 
-		return "Bearer " + client.token.AccessToken
+		return "Bearer " + client.state.token.AccessToken
 	}
 	value := reflect.ValueOf(runtime.graphqlClient)
 	require.Equal(t, "*client.Transport", value.Type().String())

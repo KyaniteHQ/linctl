@@ -21,6 +21,7 @@ type AuditEntryTypeList struct {
 }
 
 // ListAuditEntryTypes returns the audit entry type catalog.
+// It cannot paginate: Linear exposes a flat array with no connection or PageInfo.
 func ListAuditEntryTypes(ctx context.Context, graphqlClient graphql.Client) (AuditEntryTypeList, error) {
 	result, err := gql.XAuditEntryTypes(ctx, graphqlClient)
 	if err != nil {

@@ -1,5 +1,7 @@
 package cli
 
+import "strings"
+
 func commandFlowProjectPayload(operation string, fake commandFlowFakeClient) (string, bool) {
 	if payload, ok := commandFlowProjectStatusPayload(operation); ok {
 		return payload, true
@@ -43,12 +45,18 @@ func commandFlowProjectReadPayload(operation string, fake commandFlowFakeClient)
 			"Detail project", "Backlog", "backlog", "Existing project content",
 		) + `}`, true
 	case "project_attachments":
+		nodes := []string{commandAttachmentJSON()}
 		hasNextPage := "false"
 		if fake.truncatedExport {
 			hasNextPage = "true"
+			attachment := commandAttachmentJSON()
+			nodes = make([]string, exportPageLimit)
+			for i := range nodes {
+				nodes[i] = attachment
+			}
 		}
 		return `{"project":{"id":"project-id","name":"Detail project","attachments":{"nodes":[` +
-			commandAttachmentJSON() +
+			strings.Join(nodes, ",") +
 			`],"pageInfo":{"hasNextPage":` + hasNextPage + `,"endCursor":null}}}}`, true
 	case "project_documents":
 		return `{"project":{"id":"project-id","name":"Detail project","documents":{"nodes":[` +

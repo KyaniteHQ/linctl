@@ -185,8 +185,33 @@ func (client commandFlowFakeClient) MakeRequest(
 	if crossTeamPayload, ok := commandFlowCrossTeamPayload(request); ok {
 		payload = crossTeamPayload
 	}
+	if issuePayload, ok := commandFlowIssueLookupPayload(request); ok {
+		payload = issuePayload
+	}
 
 	return json.Unmarshal([]byte(`{"data":`+payload+`}`), response)
+}
+
+func commandFlowIssueLookupPayload(request *graphql.Request) (string, bool) {
+	if request.OpName != "issue" {
+		return "", false
+	}
+	id, err := requestVariable[string](request, "id")
+	if err != nil {
+		return "", false
+	}
+	switch id {
+	case "LIT-2", "related-issue-id":
+		return `{"issue":` + commandIssueJSONWithID(
+			"related-issue-id", "LIT-2", "Related issue", "todo-state", "Todo", "unstarted",
+		) + `}`, true
+	case "LIT-42", "issue-uuid-42":
+		return `{"issue":` + commandIssueJSONWithID(
+			"issue-uuid-42", "LIT-42", "Self relation issue", "todo-state", "Todo", "unstarted",
+		) + `}`, true
+	default:
+		return "", false
+	}
 }
 
 // commandFlowCrossTeamPayload returns destination-aware fixtures for the

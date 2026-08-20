@@ -61,13 +61,16 @@ func WritePin(path string, target Target) error {
 
 		return fmt.Errorf("write pin %s: %w", path, err)
 	}
-	defer file.Close() //nolint:errcheck // close error checked after write
 
-	if _, err := file.Write(payload); err != nil {
-		return fmt.Errorf("write pin %s: %w", path, err)
+	_, writeErr := file.Write(payload)
+	closeErr := file.Close()
+	if writeErr != nil {
+		_ = os.Remove(path) //nolint:errcheck // a partial pin must not block the next init.
+		return fmt.Errorf("write pin %s: %w", path, writeErr)
 	}
-	if err := file.Close(); err != nil {
-		return fmt.Errorf("write pin %s: %w", path, err)
+	if closeErr != nil {
+		_ = os.Remove(path) //nolint:errcheck // a partial pin must not block the next init.
+		return fmt.Errorf("write pin %s: %w", path, closeErr)
 	}
 
 	return nil

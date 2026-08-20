@@ -2,6 +2,7 @@
 package oauth
 
 import (
+	"cmp"
 	"context"
 	"encoding/json"
 	"errors"
@@ -77,8 +78,8 @@ func NewClient(config ClientConfig) *Client {
 	}
 
 	return &Client{
-		endpoint:           firstNonEmpty(config.Endpoint, defaultTokenEndpoint),
-		revocationEndpoint: firstNonEmpty(config.RevocationEndpoint, defaultRevocationEndpoint),
+		endpoint:           cmp.Or(config.Endpoint, defaultTokenEndpoint),
+		revocationEndpoint: cmp.Or(config.RevocationEndpoint, defaultRevocationEndpoint),
 		httpClient:         httpClient,
 		now:                now,
 	}
@@ -272,12 +273,4 @@ func (list *scopeList) UnmarshalJSON(data []byte) error {
 	}
 
 	return errors.New("scope must be a string or array")
-}
-
-func firstNonEmpty(primary string, fallback string) string {
-	if primary != "" {
-		return primary
-	}
-
-	return fallback
 }

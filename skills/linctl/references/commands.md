@@ -458,7 +458,7 @@ Flags:
 
 ```
       --client-id string       OAuth app client id
-      --client-secret string   OAuth app client secret
+      --client-secret string   OAuth app client secret, or - to read the value from stdin
       --redirect-uri string    OAuth redirect URI
       --scopes strings         OAuth scopes
 ```
@@ -981,7 +981,7 @@ linctl cycle usage
 
 ### linctl doctor
 
-Check linctl config, token, and target health
+Check config load, token presence, and pinned-target confirmation
 
 ```
 linctl doctor
@@ -1210,7 +1210,8 @@ linctl files download URL [flags]
 Flags:
 
 ```
-      --output string   local path to write the downloaded file
+      --max-size string   fail if the download exceeds this size (bytes, or KB, MB, GB); unset means no limit
+      --output string     local path to write the downloaded file
 ```
 
 ### linctl files upload
@@ -3293,7 +3294,7 @@ Flags:
 
 ### linctl project-milestone list
 
-List milestones for one project
+List ProjectMilestones for one project
 
 ```
 linctl project-milestone list PROJECT_ID [flags]

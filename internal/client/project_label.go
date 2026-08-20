@@ -30,8 +30,7 @@ type ProjectLabelSummary struct {
 // ProjectLabelList is a page of Linear project labels.
 type ProjectLabelList struct {
 	ProjectLabels []ProjectLabelSummary `json:"project_labels"`
-	HasNextPage   bool                  `json:"has_next_page"`
-	EndCursor     *string               `json:"end_cursor,omitempty"`
+	Page
 }
 
 // ProjectLabelChildrenList is a page of child labels for one ProjectLabel.
@@ -39,8 +38,7 @@ type ProjectLabelChildrenList struct {
 	ProjectLabelID   string                `json:"project_label_id"`
 	ProjectLabelName string                `json:"project_label_name"`
 	ProjectLabels    []ProjectLabelSummary `json:"project_labels"`
-	HasNextPage      bool                  `json:"has_next_page"`
-	EndCursor        *string               `json:"end_cursor,omitempty"`
+	Page
 }
 
 // ProjectLabelProjectsList is a page of projects associated with one ProjectLabel.
@@ -48,28 +46,42 @@ type ProjectLabelProjectsList struct {
 	ProjectLabelID   string           `json:"project_label_id"`
 	ProjectLabelName string           `json:"project_label_name"`
 	Projects         []ProjectSummary `json:"projects"`
-	HasNextPage      bool             `json:"has_next_page"`
-	EndCursor        *string          `json:"end_cursor,omitempty"`
+	Page
+}
+
+//nolint:lll
+type projectLabelsNode = gql.XProjectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel
+
+//nolint:lll
+type projectLabelChildrenNode = gql.XProjectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel
+
+//nolint:lll
+type projectLabelProjectsNode = gql.XProjectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject
+
+type projectLabelsQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
+type projectLabelScopedQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+	id            string
 }
 
 // ListProjectLabels returns visible Linear project labels.
 func ListProjectLabels(ctx context.Context, graphqlClient graphql.Client, limit int) (ProjectLabelList, error) {
-	result, err := gql.XProjectLabels(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := projectLabelsQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list project labels", limit, defaultListPageSize,
+		query.page,
+		projectLabelsNodeSummary,
+	)
 	if err != nil {
-		return ProjectLabelList{}, fmt.Errorf("list project labels: %w", err)
+		return ProjectLabelList{}, err
 	}
 
-	labels := mapNodes(result.ProjectLabels.Nodes, func(
-		label gql.XProjectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel,
-	) ProjectLabelSummary {
-		return projectLabelSummary(label.ProjectLabelSummaryFields)
-	})
-
-	return ProjectLabelList{
-		ProjectLabels: labels,
-		HasNextPage:   result.ProjectLabels.PageInfo.HasNextPage,
-		EndCursor:     result.ProjectLabels.PageInfo.EndCursor,
-	}, nil
+	return ProjectLabelList{ProjectLabels: page.Items, Page: page.Page}, nil
 }
 
 // GetProjectLabelByID returns one Linear project label by id.
@@ -89,23 +101,21 @@ func ListProjectLabelChildren(
 	id string,
 	limit int,
 ) (ProjectLabelChildrenList, error) {
-	result, err := gql.XProjectLabel_children(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &projectLabelScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, parent, err := listConnectionWithParent(
+		"list project label children "+id, limit, defaultListPageSize,
+		query.children,
+		projectLabelChildrenNodeSummary,
+	)
 	if err != nil {
-		return ProjectLabelChildrenList{}, fmt.Errorf("list project label children %s: %w", id, err)
+		return ProjectLabelChildrenList{}, err
 	}
 
-	labels := mapNodes(result.ProjectLabel.Children.Nodes, func(
-		label gql.XProjectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel,
-	) ProjectLabelSummary {
-		return projectLabelSummary(label.ProjectLabelSummaryFields)
-	})
-
 	return ProjectLabelChildrenList{
-		ProjectLabelID:   result.ProjectLabel.Id,
-		ProjectLabelName: result.ProjectLabel.Name,
-		ProjectLabels:    labels,
-		HasNextPage:      result.ProjectLabel.Children.PageInfo.HasNextPage,
-		EndCursor:        result.ProjectLabel.Children.PageInfo.EndCursor,
+		ProjectLabelID:   parent.labelID,
+		ProjectLabelName: parent.labelName,
+		ProjectLabels:    page.Items,
+		Page:             page.Page,
 	}, nil
 }
 
@@ -116,24 +126,82 @@ func ListProjectLabelProjects(
 	id string,
 	limit int,
 ) (ProjectLabelProjectsList, error) {
-	result, err := gql.XProjectLabel_projects(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &projectLabelScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, parent, err := listConnectionWithParent(
+		"list project label projects "+id, limit, defaultListPageSize,
+		query.projects,
+		projectLabelProjectsNodeSummary,
+	)
 	if err != nil {
-		return ProjectLabelProjectsList{}, fmt.Errorf("list project label projects %s: %w", id, err)
+		return ProjectLabelProjectsList{}, err
 	}
 
-	projects := mapNodes(result.ProjectLabel.Projects.Nodes, func(
-		project gql.XProjectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject,
-	) ProjectSummary {
-		return projectSummaryFromFields(project.ProjectSummaryFields)
-	})
-
 	return ProjectLabelProjectsList{
-		ProjectLabelID:   result.ProjectLabel.Id,
-		ProjectLabelName: result.ProjectLabel.Name,
-		Projects:         projects,
-		HasNextPage:      result.ProjectLabel.Projects.PageInfo.HasNextPage,
-		EndCursor:        result.ProjectLabel.Projects.PageInfo.EndCursor,
+		ProjectLabelID:   parent.labelID,
+		ProjectLabelName: parent.labelName,
+		Projects:         page.Items,
+		Page:             page.Page,
 	}, nil
+}
+
+func (query projectLabelsQuery) page(pageSize int, after *string) ([]projectLabelsNode, bool, *string, error) {
+	result, err := gql.XProjectLabels(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.ProjectLabels.Nodes,
+		result.ProjectLabels.PageInfo.HasNextPage,
+		result.ProjectLabels.PageInfo.EndCursor,
+		nil
+}
+
+func (query *projectLabelScopedQuery) children(
+	pageSize int,
+	after *string,
+) ([]projectLabelChildrenNode, labelParent, bool, *string, error) {
+	result, err := gql.XProjectLabel_children(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, labelParent{}, false, nil, err
+	}
+
+	return result.ProjectLabel.Children.Nodes,
+		labelParent{labelID: result.ProjectLabel.Id, labelName: result.ProjectLabel.Name},
+		result.ProjectLabel.Children.PageInfo.HasNextPage,
+		result.ProjectLabel.Children.PageInfo.EndCursor,
+		nil
+}
+
+func (query *projectLabelScopedQuery) projects(
+	pageSize int,
+	after *string,
+) ([]projectLabelProjectsNode, labelParent, bool, *string, error) {
+	result, err := gql.XProjectLabel_projects(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, labelParent{}, false, nil, err
+	}
+
+	return result.ProjectLabel.Projects.Nodes,
+		labelParent{labelID: result.ProjectLabel.Id, labelName: result.ProjectLabel.Name},
+		result.ProjectLabel.Projects.PageInfo.HasNextPage,
+		result.ProjectLabel.Projects.PageInfo.EndCursor,
+		nil
+}
+
+func projectLabelsNodeSummary(label projectLabelsNode) ProjectLabelSummary {
+	return projectLabelSummary(label.ProjectLabelSummaryFields)
+}
+
+func projectLabelChildrenNodeSummary(label projectLabelChildrenNode) ProjectLabelSummary {
+	return projectLabelSummary(label.ProjectLabelSummaryFields)
+}
+
+func projectLabelProjectsNodeSummary(project projectLabelProjectsNode) ProjectSummary {
+	return projectSummaryFromFields(project.ProjectSummaryFields)
 }
 
 func projectLabelSummary(fields gql.ProjectLabelSummaryFields) ProjectLabelSummary {

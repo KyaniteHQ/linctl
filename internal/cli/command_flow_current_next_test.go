@@ -134,7 +134,7 @@ func Test_CommandFlows_print_issue_pr_from_current_branch(t *testing.T) {
 	output, err := runCurrentCommandInGitBranch(t, []string{"issue", "pr"})
 
 	require.NoError(t, err)
-	require.Contains(t, output, `gh pr create --title "LIT-1 Detail issue"`)
+	require.Contains(t, output, "gh pr create --title 'LIT-1 Detail issue'")
 }
 
 func Test_CommandFlows_close_current_issue_from_done(t *testing.T) {
@@ -247,6 +247,93 @@ func Test_CommandFlows_next_checkout_failure_aborts(t *testing.T) {
 	err := command.ExecuteContext(context.Background())
 
 	require.ErrorContains(t, err, "checkout boom")
+}
+
+func Test_runNextWithPicker_notes_truncated_ranking(t *testing.T) {
+	command, stdout, stderr := bufferedCommand()
+	port := &fakeIssueWorkflow{
+		resolved: client.ResolvedTarget{Team: client.TargetTeam{ID: "team-id"}},
+		nextList: client.IssueList{
+			Issues: []client.IssueSummary{
+				{
+					Identifier: "LIT-12",
+					Title:      "Picked from truncated window",
+					State:      "Todo",
+				},
+			},
+			Page: client.Page{HasNextPage: true},
+		},
+	}
+
+	err := runNextWithPicker(
+		context.Background(),
+		command,
+		&rootOptions{},
+		port,
+		nextFlags{dryRun: true, limit: 20},
+	)
+
+	require.NoError(t, err)
+	require.Contains(t, stdout.String(), "LIT-12")
+	require.Contains(t, stderr.String(), "next ranking inspected 1 candidates")
+	require.Contains(t, stderr.String(), "more unstarted issues exist")
+}
+
+func Test_runNextWithPicker_suppresses_truncated_ranking_note_when_quiet(t *testing.T) {
+	command, stdout, stderr := bufferedCommand()
+	port := &fakeIssueWorkflow{
+		resolved: client.ResolvedTarget{Team: client.TargetTeam{ID: "team-id"}},
+		nextList: client.IssueList{
+			Issues: []client.IssueSummary{
+				{
+					Identifier: "LIT-12",
+					Title:      "Picked from truncated window",
+					State:      "Todo",
+				},
+			},
+			Page: client.Page{HasNextPage: true},
+		},
+	}
+
+	err := runNextWithPicker(
+		context.Background(),
+		command,
+		&rootOptions{quiet: true},
+		port,
+		nextFlags{dryRun: true, limit: 20},
+	)
+
+	require.NoError(t, err)
+	require.Empty(t, stdout.String())
+	require.Empty(t, stderr.String())
+}
+
+func Test_runNextWithPicker_surfaces_truncated_ranking_note_writer_errors(t *testing.T) {
+	command, _, _ := bufferedCommand()
+	command.SetErr(commandFailingWriter{})
+	port := &fakeIssueWorkflow{
+		resolved: client.ResolvedTarget{Team: client.TargetTeam{ID: "team-id"}},
+		nextList: client.IssueList{
+			Issues: []client.IssueSummary{
+				{
+					Identifier: "LIT-12",
+					Title:      "Picked from truncated window",
+					State:      "Todo",
+				},
+			},
+			Page: client.Page{HasNextPage: true},
+		},
+	}
+
+	err := runNextWithPicker(
+		context.Background(),
+		command,
+		&rootOptions{},
+		port,
+		nextFlags{dryRun: true, limit: 20},
+	)
+
+	require.ErrorContains(t, err, "write failed")
 }
 
 func Test_runNextWithPicker_reads_and_starts_through_the_port(t *testing.T) {

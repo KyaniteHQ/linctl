@@ -21,6 +21,7 @@ func Test_ListCommand_covers_pipeline_branches(t *testing.T) {
 	}
 	type list struct {
 		Items []item `json:"items"`
+		client.Page
 	}
 
 	tests := []struct {
@@ -92,7 +93,7 @@ func Test_ListCommand_covers_pipeline_branches(t *testing.T) {
 			},
 			requirement: func(t *testing.T, output string, err error) {
 				require.NoError(t, err)
-				require.JSONEq(t, `{"items":null}`, output)
+				require.JSONEq(t, `{"items":null,"has_next_page":false}`, output)
 			},
 		},
 		{
@@ -107,7 +108,7 @@ func Test_ListCommand_covers_pipeline_branches(t *testing.T) {
 			},
 			requirement: func(t *testing.T, output string, err error) {
 				require.NoError(t, err)
-				require.JSONEq(t, `{"items":[{"id":"item-id"}]}`, output)
+				require.JSONEq(t, `{"items":[{"id":"item-id"}],"has_next_page":false}`, output)
 			},
 		},
 		{

@@ -24,27 +24,32 @@ type ExternalUserSummary struct {
 // ExternalUserList is a page of ExternalUsers.
 type ExternalUserList struct {
 	ExternalUsers []ExternalUserSummary `json:"external_users"`
-	HasNextPage   bool                  `json:"has_next_page"`
-	EndCursor     *string               `json:"end_cursor,omitempty"`
+	Page
+}
+
+//nolint:lll
+type externalUsersNode = gql.XExternalUsersExternalUsersExternalUserConnectionNodesExternalUser
+
+type externalUsersQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
 }
 
 // ListExternalUsers returns ExternalUsers visible to the authenticated user.
 func ListExternalUsers(ctx context.Context, graphqlClient graphql.Client, limit int) (ExternalUserList, error) {
-	result, err := gql.XExternalUsers(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := externalUsersQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list external users", limit, defaultListPageSize,
+		query.page,
+		externalUsersNodeSummary,
+	)
 	if err != nil {
-		return ExternalUserList{}, fmt.Errorf("list external users: %w", err)
+		return ExternalUserList{}, err
 	}
 
-	summaries := mapNodes(result.ExternalUsers.Nodes, func(
-		node gql.XExternalUsersExternalUsersExternalUserConnectionNodesExternalUser,
-	) ExternalUserSummary {
-		return externalUserSummary(node.ExternalUserSummaryFields)
-	})
-
 	return ExternalUserList{
-		ExternalUsers: summaries,
-		HasNextPage:   result.ExternalUsers.PageInfo.HasNextPage,
-		EndCursor:     result.ExternalUsers.PageInfo.EndCursor,
+		ExternalUsers: page.Items,
+		Page:          page.Page,
 	}, nil
 }
 
@@ -56,6 +61,22 @@ func GetExternalUserByID(ctx context.Context, graphqlClient graphql.Client, id s
 	}
 
 	return externalUserSummary(result.ExternalUser.ExternalUserSummaryFields), nil
+}
+
+func (query externalUsersQuery) page(pageSize int, after *string) ([]externalUsersNode, bool, *string, error) {
+	result, err := gql.XExternalUsers(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.ExternalUsers.Nodes,
+		result.ExternalUsers.PageInfo.HasNextPage,
+		result.ExternalUsers.PageInfo.EndCursor,
+		nil
+}
+
+func externalUsersNodeSummary(node externalUsersNode) ExternalUserSummary {
+	return externalUserSummary(node.ExternalUserSummaryFields)
 }
 
 func externalUserSummary(fields gql.ExternalUserSummaryFields) ExternalUserSummary {

@@ -26,10 +26,12 @@ type IssueRelationSummary struct {
 
 // IssueRelationList is a page of issue relations.
 type IssueRelationList struct {
-	Relations   []IssueRelationSummary `json:"relations"`
-	HasNextPage bool                   `json:"has_next_page"`
-	EndCursor   *string                `json:"end_cursor,omitempty"`
+	Relations []IssueRelationSummary `json:"relations"`
+	Page
 }
+
+//nolint:lll
+type issueRelationsNode = gql.XIssueRelationsIssueRelationsIssueRelationConnectionNodesIssueRelation
 
 // ListIssueRelations returns visible relations between issues.
 func ListIssueRelations(
@@ -37,22 +39,26 @@ func ListIssueRelations(
 	graphqlClient graphql.Client,
 	limit int,
 ) (IssueRelationList, error) {
-	result, err := gql.XIssueRelations(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	page, err := listConnection(
+		"list issue relations", limit, defaultListPageSize,
+		func(pageSize int, after *string) ([]issueRelationsNode, bool, *string, error) {
+			result, err := gql.XIssueRelations(ctx, graphqlClient, intPtr(pageSize), after, boolPtr(true))
+			if err != nil {
+				return nil, false, nil, err
+			}
+
+			return result.IssueRelations.Nodes,
+				result.IssueRelations.PageInfo.HasNextPage,
+				result.IssueRelations.PageInfo.EndCursor,
+				nil
+		},
+		issueRelationNodeSummary,
+	)
 	if err != nil {
-		return IssueRelationList{}, fmt.Errorf("list issue relations: %w", err)
+		return IssueRelationList{}, err
 	}
 
-	relations := mapNodes(result.IssueRelations.Nodes, func(
-		relation gql.XIssueRelationsIssueRelationsIssueRelationConnectionNodesIssueRelation,
-	) IssueRelationSummary {
-		return issueRelationSummary(relation.IssueRelationSummaryFields)
-	})
-
-	return IssueRelationList{
-		Relations:   relations,
-		HasNextPage: result.IssueRelations.PageInfo.HasNextPage,
-		EndCursor:   result.IssueRelations.PageInfo.EndCursor,
-	}, nil
+	return IssueRelationList{Relations: page.Items, Page: page.Page}, nil
 }
 
 // GetIssueRelationByID returns one issue relation by Linear id.
@@ -67,6 +73,10 @@ func GetIssueRelationByID(
 	}
 
 	return issueRelationSummary(result.IssueRelation.IssueRelationSummaryFields), nil
+}
+
+func issueRelationNodeSummary(relation issueRelationsNode) IssueRelationSummary {
+	return issueRelationSummary(relation.IssueRelationSummaryFields)
 }
 
 func issueRelationSummary(relation gql.IssueRelationSummaryFields) IssueRelationSummary {

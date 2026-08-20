@@ -33,28 +33,30 @@ type AgentSkillSummary struct {
 // AgentSkillList is a page of AgentSkills.
 type AgentSkillList struct {
 	AgentSkills []AgentSkillSummary `json:"agent_skills"`
-	HasNextPage bool                `json:"has_next_page"`
-	EndCursor   *string             `json:"end_cursor,omitempty"`
+	Page
+}
+
+//nolint:lll
+type agentSkillsNode = gql.XAgentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill
+
+type agentSkillsQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
 }
 
 // ListAgentSkills returns AgentSkills visible to the authenticated user.
 func ListAgentSkills(ctx context.Context, graphqlClient graphql.Client, limit int) (AgentSkillList, error) {
-	result, err := gql.XAgentSkills(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := agentSkillsQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list agent skills", limit, defaultListPageSize,
+		query.page,
+		agentSkillsNodeSummary,
+	)
 	if err != nil {
-		return AgentSkillList{}, fmt.Errorf("list agent skills: %w", err)
+		return AgentSkillList{}, err
 	}
 
-	summaries := mapNodes(result.AgentSkills.Nodes, func(
-		node gql.XAgentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill,
-	) AgentSkillSummary {
-		return agentSkillSummary(node.AgentSkillSummaryFields)
-	})
-
-	return AgentSkillList{
-		AgentSkills: summaries,
-		HasNextPage: result.AgentSkills.PageInfo.HasNextPage,
-		EndCursor:   result.AgentSkills.PageInfo.EndCursor,
-	}, nil
+	return AgentSkillList{AgentSkills: page.Items, Page: page.Page}, nil
 }
 
 // GetAgentSkillByID returns one AgentSkill by id.
@@ -65,6 +67,22 @@ func GetAgentSkillByID(ctx context.Context, graphqlClient graphql.Client, id str
 	}
 
 	return agentSkillSummary(result.AgentSkill.AgentSkillSummaryFields), nil
+}
+
+func (query agentSkillsQuery) page(pageSize int, after *string) ([]agentSkillsNode, bool, *string, error) {
+	result, err := gql.XAgentSkills(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.AgentSkills.Nodes,
+		result.AgentSkills.PageInfo.HasNextPage,
+		result.AgentSkills.PageInfo.EndCursor,
+		nil
+}
+
+func agentSkillsNodeSummary(node agentSkillsNode) AgentSkillSummary {
+	return agentSkillSummary(node.AgentSkillSummaryFields)
 }
 
 func agentSkillSummary(fields gql.AgentSkillSummaryFields) AgentSkillSummary {

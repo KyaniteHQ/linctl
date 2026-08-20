@@ -38,7 +38,7 @@ func Test_ListAgentSessions_returns_compact_sessions(t *testing.T) {
 			`],"pageInfo":{"hasNextPage":true,"endCursor":"cursor-1"}}}`,
 	})
 
-	sessions, err := ListAgentSessions(context.Background(), graphqlClient, 2)
+	sessions, err := ListAgentSessions(context.Background(), graphqlClient, 1)
 
 	require.NoError(t, err)
 	require.True(t, sessions.HasNextPage)

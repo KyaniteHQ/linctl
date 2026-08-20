@@ -26,9 +26,11 @@ func SearchIssuesByTeam(
 	summaries := mapNodes(issues.IssueSearch.Nodes, searchIssueSummary)
 
 	return IssueList{
-		Issues:      summaries,
-		HasNextPage: issues.IssueSearch.PageInfo.HasNextPage,
-		EndCursor:   issues.IssueSearch.PageInfo.EndCursor,
+		Issues: summaries,
+		Page: Page{
+			HasNextPage: issues.IssueSearch.PageInfo.HasNextPage,
+			EndCursor:   issues.IssueSearch.PageInfo.EndCursor,
+		},
 	}, nil
 }
 
@@ -47,9 +49,11 @@ func SearchIssuesByFigmaFileKey(
 	summaries := mapNodes(issues.IssueFigmaFileKeySearch.Nodes, figmaFileKeyIssueSummary)
 
 	return IssueList{
-		Issues:      summaries,
-		HasNextPage: issues.IssueFigmaFileKeySearch.PageInfo.HasNextPage,
-		EndCursor:   issues.IssueFigmaFileKeySearch.PageInfo.EndCursor,
+		Issues: summaries,
+		Page: Page{
+			HasNextPage: issues.IssueFigmaFileKeySearch.PageInfo.HasNextPage,
+			EndCursor:   issues.IssueFigmaFileKeySearch.PageInfo.EndCursor,
+		},
 	}, nil
 }
 

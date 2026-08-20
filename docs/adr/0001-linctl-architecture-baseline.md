@@ -178,10 +178,10 @@ Use these checks when changing the baseline behavior:
 
 ```bash
 go test -count=1 ./internal/client ./internal/cli ./internal/auth ./internal/oauth ./internal/config
-go run github.com/go-task/task/v3/cmd/task@latest ci
-go run github.com/go-task/task/v3/cmd/task@latest coverage
-go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke-check
-go run github.com/go-task/task/v3/cmd/task@latest live-oauth
+go tool task ci
+go tool task coverage
+go tool task browser-login-smoke-check
+go tool task live-oauth
 ```
 
 `browser-login-smoke-check` is deterministic and non-live. `live-oauth` requires fixture env and should be skipped when the fixture is absent. Browser login remains a manual smoke check around `linctl auth login --callback -`.

@@ -43,9 +43,8 @@ type ReleaseSummary struct {
 
 // ReleaseList is a page of Linear releases.
 type ReleaseList struct {
-	Releases    []ReleaseSummary `json:"releases"`
-	HasNextPage bool             `json:"has_next_page"`
-	EndCursor   *string          `json:"end_cursor,omitempty"`
+	Releases []ReleaseSummary `json:"releases"`
+	Page
 }
 
 // ReleaseHistorySummary is the compact release history model used by read-only commands.
@@ -61,9 +60,8 @@ type ReleaseHistorySummary struct {
 
 // ReleaseHistoryList is a page of Linear release history records.
 type ReleaseHistoryList struct {
-	History     []ReleaseHistorySummary `json:"history"`
-	HasNextPage bool                    `json:"has_next_page"`
-	EndCursor   *string                 `json:"end_cursor,omitempty"`
+	History []ReleaseHistorySummary `json:"history"`
+	Page
 }
 
 // EntityExternalLinkSummary is the compact external link model used by read-only commands.
@@ -85,9 +83,8 @@ type EntityExternalLinkSummary struct {
 
 // EntityExternalLinkList is a page of Linear external links.
 type EntityExternalLinkList struct {
-	Links       []EntityExternalLinkSummary `json:"links"`
-	HasNextPage bool                        `json:"has_next_page"`
-	EndCursor   *string                     `json:"end_cursor,omitempty"`
+	Links []EntityExternalLinkSummary `json:"links"`
+	Page
 }
 
 // ReleaseNoteSummary is the compact release note model used by read-only commands.
@@ -114,28 +111,56 @@ type ReleaseNoteSummary struct {
 // ReleaseNoteList is a page of Linear release notes.
 type ReleaseNoteList struct {
 	ReleaseNotes []ReleaseNoteSummary `json:"release_notes"`
-	HasNextPage  bool                 `json:"has_next_page"`
-	EndCursor    *string              `json:"end_cursor,omitempty"`
+	Page
+}
+
+//nolint:lll
+type releasesNode = gql.XReleasesReleasesReleaseConnectionNodesRelease
+
+//nolint:lll
+type releaseHistoryNode = gql.XRelease_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory
+
+//nolint:lll
+type releaseDocumentsNode = gql.XRelease_documentsReleaseDocumentsDocumentConnectionNodesDocument
+
+//nolint:lll
+type releaseIssuesNode = gql.XRelease_issuesReleaseIssuesIssueConnectionNodesIssue
+
+//nolint:lll
+type releaseLinksNode = gql.XRelease_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink
+
+//nolint:lll
+type releaseNotesNode = gql.XReleaseNotesReleaseNotesReleaseNoteConnectionNodesReleaseNote
+
+type releasesQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
+type releaseScopedQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+	id            string
+}
+
+type releaseNotesQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
 }
 
 // ListReleases returns visible Linear releases.
 func ListReleases(ctx context.Context, graphqlClient graphql.Client, limit int) (ReleaseList, error) {
-	result, err := gql.XReleases(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := releasesQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list releases", limit, defaultListPageSize,
+		query.page,
+		releasesNodeSummary,
+	)
 	if err != nil {
-		return ReleaseList{}, fmt.Errorf("list releases: %w", err)
+		return ReleaseList{}, err
 	}
 
-	summaries := mapNodes(result.Releases.Nodes, func(
-		node gql.XReleasesReleasesReleaseConnectionNodesRelease,
-	) ReleaseSummary {
-		return releaseSummary(node.ReleaseSummaryFields)
-	})
-
-	return ReleaseList{
-		Releases:    summaries,
-		HasNextPage: result.Releases.PageInfo.HasNextPage,
-		EndCursor:   result.Releases.PageInfo.EndCursor,
-	}, nil
+	return ReleaseList{Releases: page.Items, Page: page.Page}, nil
 }
 
 // GetReleaseByID returns one Linear release by id.
@@ -155,22 +180,17 @@ func ListReleaseHistory(
 	id string,
 	limit int,
 ) (ReleaseHistoryList, error) {
-	result, err := gql.XRelease_history(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := releaseScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list release history "+id, limit, defaultListPageSize,
+		query.history,
+		releaseHistoryNodeSummary,
+	)
 	if err != nil {
-		return ReleaseHistoryList{}, fmt.Errorf("list release history %s: %w", id, err)
+		return ReleaseHistoryList{}, err
 	}
 
-	history := mapNodes(result.Release.History.Nodes, func(
-		node gql.XRelease_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory,
-	) ReleaseHistorySummary {
-		return releaseHistorySummary(node.ReleaseHistorySummaryFields)
-	})
-
-	return ReleaseHistoryList{
-		History:     history,
-		HasNextPage: result.Release.History.PageInfo.HasNextPage,
-		EndCursor:   result.Release.History.PageInfo.EndCursor,
-	}, nil
+	return ReleaseHistoryList{History: page.Items, Page: page.Page}, nil
 }
 
 // ListReleaseDocuments returns documents associated with one Linear release.
@@ -180,22 +200,17 @@ func ListReleaseDocuments(
 	id string,
 	limit int,
 ) (DocumentList, error) {
-	result, err := gql.XRelease_documents(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := releaseScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list release documents "+id, limit, defaultListPageSize,
+		query.documents,
+		releaseDocumentsNodeSummary,
+	)
 	if err != nil {
-		return DocumentList{}, fmt.Errorf("list release documents %s: %w", id, err)
+		return DocumentList{}, err
 	}
 
-	documents := mapNodes(result.Release.Documents.Nodes, func(
-		node gql.XRelease_documentsReleaseDocumentsDocumentConnectionNodesDocument,
-	) DocumentSummary {
-		return documentSummary(node.DocumentSummaryFields)
-	})
-
-	return DocumentList{
-		Documents:   documents,
-		HasNextPage: result.Release.Documents.PageInfo.HasNextPage,
-		EndCursor:   result.Release.Documents.PageInfo.EndCursor,
-	}, nil
+	return DocumentList{Documents: page.Items, Page: page.Page}, nil
 }
 
 // ListReleaseIssues returns issues associated with one Linear release.
@@ -205,22 +220,17 @@ func ListReleaseIssues(
 	id string,
 	limit int,
 ) (IssueList, error) {
-	result, err := gql.XRelease_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := releaseScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list release issues "+id, limit, defaultListPageSize,
+		query.issues,
+		releaseIssuesNodeSummary,
+	)
 	if err != nil {
-		return IssueList{}, fmt.Errorf("list release issues %s: %w", id, err)
+		return IssueList{}, err
 	}
 
-	issues := mapNodes(result.Release.Issues.Nodes, func(
-		node gql.XRelease_issuesReleaseIssuesIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(node.IssueSummaryFields)
-	})
-
-	return IssueList{
-		Issues:      issues,
-		HasNextPage: result.Release.Issues.PageInfo.HasNextPage,
-		EndCursor:   result.Release.Issues.PageInfo.EndCursor,
-	}, nil
+	return IssueList{Issues: page.Items, Page: page.Page}, nil
 }
 
 // ListReleaseLinks returns external links associated with one Linear release.
@@ -230,22 +240,17 @@ func ListReleaseLinks(
 	id string,
 	limit int,
 ) (EntityExternalLinkList, error) {
-	result, err := gql.XRelease_links(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := releaseScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list release links "+id, limit, defaultListPageSize,
+		query.links,
+		releaseLinksNodeSummary,
+	)
 	if err != nil {
-		return EntityExternalLinkList{}, fmt.Errorf("list release links %s: %w", id, err)
+		return EntityExternalLinkList{}, err
 	}
 
-	links := mapNodes(result.Release.Links.Nodes, func(
-		node gql.XRelease_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink,
-	) EntityExternalLinkSummary {
-		return entityExternalLinkSummary(node.EntityExternalLinkSummaryFields)
-	})
-
-	return EntityExternalLinkList{
-		Links:       links,
-		HasNextPage: result.Release.Links.PageInfo.HasNextPage,
-		EndCursor:   result.Release.Links.PageInfo.EndCursor,
-	}, nil
+	return EntityExternalLinkList{Links: page.Items, Page: page.Page}, nil
 }
 
 // GetEntityExternalLinkByID returns one Linear external link by id.
@@ -278,22 +283,17 @@ func SearchReleases(ctx context.Context, graphqlClient graphql.Client, term stri
 
 // ListReleaseNotes returns visible Linear release notes.
 func ListReleaseNotes(ctx context.Context, graphqlClient graphql.Client, limit int) (ReleaseNoteList, error) {
-	result, err := gql.XReleaseNotes(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := releaseNotesQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list release notes", limit, defaultListPageSize,
+		query.page,
+		releaseNotesNodeSummary,
+	)
 	if err != nil {
-		return ReleaseNoteList{}, fmt.Errorf("list release notes: %w", err)
+		return ReleaseNoteList{}, err
 	}
 
-	summaries := mapNodes(result.ReleaseNotes.Nodes, func(
-		node gql.XReleaseNotesReleaseNotesReleaseNoteConnectionNodesReleaseNote,
-	) ReleaseNoteSummary {
-		return releaseNoteSummary(node.ReleaseNoteSummaryFields)
-	})
-
-	return ReleaseNoteList{
-		ReleaseNotes: summaries,
-		HasNextPage:  result.ReleaseNotes.PageInfo.HasNextPage,
-		EndCursor:    result.ReleaseNotes.PageInfo.EndCursor,
-	}, nil
+	return ReleaseNoteList{ReleaseNotes: page.Items, Page: page.Page}, nil
 }
 
 // GetReleaseNoteByID returns one Linear release note by id.
@@ -304,6 +304,116 @@ func GetReleaseNoteByID(ctx context.Context, graphqlClient graphql.Client, id st
 	}
 
 	return releaseNoteSummary(result.ReleaseNote.ReleaseNoteSummaryFields), nil
+}
+
+func (query releasesQuery) page(pageSize int, after *string) ([]releasesNode, bool, *string, error) {
+	result, err := gql.XReleases(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Releases.Nodes,
+		result.Releases.PageInfo.HasNextPage,
+		result.Releases.PageInfo.EndCursor,
+		nil
+}
+
+func (query releaseScopedQuery) history(
+	pageSize int,
+	after *string,
+) ([]releaseHistoryNode, bool, *string, error) {
+	result, err := gql.XRelease_history(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Release.History.Nodes,
+		result.Release.History.PageInfo.HasNextPage,
+		result.Release.History.PageInfo.EndCursor,
+		nil
+}
+
+func (query releaseScopedQuery) documents(
+	pageSize int,
+	after *string,
+) ([]releaseDocumentsNode, bool, *string, error) {
+	result, err := gql.XRelease_documents(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Release.Documents.Nodes,
+		result.Release.Documents.PageInfo.HasNextPage,
+		result.Release.Documents.PageInfo.EndCursor,
+		nil
+}
+
+func (query releaseScopedQuery) issues(pageSize int, after *string) ([]releaseIssuesNode, bool, *string, error) {
+	result, err := gql.XRelease_issues(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Release.Issues.Nodes,
+		result.Release.Issues.PageInfo.HasNextPage,
+		result.Release.Issues.PageInfo.EndCursor,
+		nil
+}
+
+func (query releaseScopedQuery) links(pageSize int, after *string) ([]releaseLinksNode, bool, *string, error) {
+	result, err := gql.XRelease_links(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Release.Links.Nodes,
+		result.Release.Links.PageInfo.HasNextPage,
+		result.Release.Links.PageInfo.EndCursor,
+		nil
+}
+
+func (query releaseNotesQuery) page(pageSize int, after *string) ([]releaseNotesNode, bool, *string, error) {
+	result, err := gql.XReleaseNotes(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.ReleaseNotes.Nodes,
+		result.ReleaseNotes.PageInfo.HasNextPage,
+		result.ReleaseNotes.PageInfo.EndCursor,
+		nil
+}
+
+func releasesNodeSummary(node releasesNode) ReleaseSummary {
+	return releaseSummary(node.ReleaseSummaryFields)
+}
+
+func releaseHistoryNodeSummary(node releaseHistoryNode) ReleaseHistorySummary {
+	return releaseHistorySummary(node.ReleaseHistorySummaryFields)
+}
+
+func releaseDocumentsNodeSummary(node releaseDocumentsNode) DocumentSummary {
+	return documentSummary(node.DocumentSummaryFields)
+}
+
+func releaseIssuesNodeSummary(node releaseIssuesNode) IssueSummary {
+	return issueSummaryFromFields(node.IssueSummaryFields)
+}
+
+func releaseLinksNodeSummary(node releaseLinksNode) EntityExternalLinkSummary {
+	return entityExternalLinkSummary(node.EntityExternalLinkSummaryFields)
+}
+
+func releaseNotesNodeSummary(node releaseNotesNode) ReleaseNoteSummary {
+	return releaseNoteSummary(node.ReleaseNoteSummaryFields)
 }
 
 func releaseSummary(fields gql.ReleaseSummaryFields) ReleaseSummary {

@@ -3,6 +3,7 @@ package cli
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -127,7 +128,10 @@ func writeExportDocument(dir string, leaf string, document string) (string, erro
 		return "", fmt.Errorf("create %s: %w", dir, err)
 	}
 	path := filepath.Join(dir, leaf+".md")
-	if err := os.WriteFile(path, []byte(document), 0o600); err != nil {
+	if err := writeFileAtomically(path, func(writer io.Writer) error {
+		_, err := writer.Write([]byte(document))
+		return err
+	}); err != nil {
 		return "", fmt.Errorf("write %s: %w", path, err)
 	}
 

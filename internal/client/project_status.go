@@ -25,8 +25,7 @@ type ProjectStatusSummary struct {
 // ProjectStatusList is a page of Linear project statuses.
 type ProjectStatusList struct {
 	ProjectStatuses []ProjectStatusSummary `json:"project_statuses"`
-	HasNextPage     bool                   `json:"has_next_page"`
-	EndCursor       *string                `json:"end_cursor,omitempty"`
+	Page
 }
 
 // ProjectStatusProjectCount summarizes projects using one project status.
@@ -37,24 +36,46 @@ type ProjectStatusProjectCount struct {
 	ArchivedTeamCount float64 `json:"archived_team_count"`
 }
 
+//nolint:lll
+type projectStatusesNode = gql.XProjectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus
+
+type projectStatusesQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
 // ListProjectStatuses returns visible Linear project statuses.
 func ListProjectStatuses(ctx context.Context, graphqlClient graphql.Client, limit int) (ProjectStatusList, error) {
-	result, err := gql.XProjectStatuses(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := projectStatusesQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list project statuses", limit, defaultListPageSize,
+		query.page,
+		projectStatusNodeSummary,
+	)
 	if err != nil {
-		return ProjectStatusList{}, fmt.Errorf("list project statuses: %w", err)
+		return ProjectStatusList{}, err
 	}
 
-	statuses := mapNodes(result.ProjectStatuses.Nodes, func(
-		status gql.XProjectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus,
-	) ProjectStatusSummary {
-		return projectStatusSummary(status.ProjectStatusSummaryFields)
-	})
+	return ProjectStatusList{ProjectStatuses: page.Items, Page: page.Page}, nil
+}
 
-	return ProjectStatusList{
-		ProjectStatuses: statuses,
-		HasNextPage:     result.ProjectStatuses.PageInfo.HasNextPage,
-		EndCursor:       result.ProjectStatuses.PageInfo.EndCursor,
-	}, nil
+func (query projectStatusesQuery) page(
+	pageSize int,
+	after *string,
+) ([]projectStatusesNode, bool, *string, error) {
+	result, err := gql.XProjectStatuses(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.ProjectStatuses.Nodes,
+		result.ProjectStatuses.PageInfo.HasNextPage,
+		result.ProjectStatuses.PageInfo.EndCursor,
+		nil
+}
+
+func projectStatusNodeSummary(status projectStatusesNode) ProjectStatusSummary {
+	return projectStatusSummary(status.ProjectStatusSummaryFields)
 }
 
 // GetProjectStatusByID returns one Linear project status by id.

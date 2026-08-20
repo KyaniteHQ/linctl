@@ -29,9 +29,8 @@ type RoadmapSummary struct {
 
 // RoadmapList is a page of deprecated Linear roadmaps.
 type RoadmapList struct {
-	Roadmaps    []RoadmapSummary `json:"roadmaps"`
-	HasNextPage bool             `json:"has_next_page"`
-	EndCursor   *string          `json:"end_cursor,omitempty"`
+	Roadmaps []RoadmapSummary `json:"roadmaps"`
+	Page
 }
 
 // RoadmapProjectList is a page of Projects associated with one Roadmap.
@@ -39,28 +38,46 @@ type RoadmapProjectList struct {
 	RoadmapID   string           `json:"roadmap_id"`
 	RoadmapName string           `json:"roadmap_name"`
 	Projects    []ProjectSummary `json:"projects"`
-	HasNextPage bool             `json:"has_next_page"`
-	EndCursor   *string          `json:"end_cursor,omitempty"`
+	Page
+}
+
+//nolint:lll
+type roadmapsNode = gql.XRoadmapsRoadmapsRoadmapConnectionNodesRoadmap
+
+//nolint:lll
+type roadmapProjectsNode = gql.XRoadmap_projectsRoadmapProjectsProjectConnectionNodesProject
+
+type roadmapsQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
+type roadmapProjectsQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+	id            string
+}
+
+// roadmapProjectsParent is the connection parent metadata roadmapProjectsQuery reads out of
+// every page. Linear repeats it per page, so the last page wins.
+type roadmapProjectsParent struct {
+	roadmapID   string
+	roadmapName string
 }
 
 // ListRoadmaps returns visible Linear roadmaps.
 func ListRoadmaps(ctx context.Context, graphqlClient graphql.Client, limit int) (RoadmapList, error) {
-	result, err := gql.XRoadmaps(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := roadmapsQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list roadmaps", limit, defaultListPageSize,
+		query.page,
+		roadmapsNodeSummary,
+	)
 	if err != nil {
-		return RoadmapList{}, fmt.Errorf("list roadmaps: %w", err)
+		return RoadmapList{}, err
 	}
 
-	summaries := mapNodes(result.Roadmaps.Nodes, func(
-		node gql.XRoadmapsRoadmapsRoadmapConnectionNodesRoadmap,
-	) RoadmapSummary {
-		return roadmapSummary(node.RoadmapSummaryFields)
-	})
-
-	return RoadmapList{
-		Roadmaps:    summaries,
-		HasNextPage: result.Roadmaps.PageInfo.HasNextPage,
-		EndCursor:   result.Roadmaps.PageInfo.EndCursor,
-	}, nil
+	return RoadmapList{Roadmaps: page.Items, Page: page.Page}, nil
 }
 
 // GetRoadmapByID returns one deprecated Linear roadmap by id.
@@ -80,24 +97,60 @@ func ListRoadmapProjects(
 	id string,
 	limit int,
 ) (RoadmapProjectList, error) {
-	result, err := gql.XRoadmap_projects(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &roadmapProjectsQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, parent, err := listConnectionWithParent(
+		"list roadmap projects "+id, limit, defaultListPageSize,
+		query.projects,
+		roadmapProjectsNodeSummary,
+	)
 	if err != nil {
-		return RoadmapProjectList{}, fmt.Errorf("list roadmap projects %s: %w", id, err)
+		return RoadmapProjectList{}, err
 	}
 
-	projects := mapNodes(result.Roadmap.Projects.Nodes, func(
-		project gql.XRoadmap_projectsRoadmapProjectsProjectConnectionNodesProject,
-	) ProjectSummary {
-		return projectSummaryFromFields(project.ProjectSummaryFields)
-	})
-
 	return RoadmapProjectList{
-		RoadmapID:   result.Roadmap.Id,
-		RoadmapName: result.Roadmap.Name,
-		Projects:    projects,
-		HasNextPage: result.Roadmap.Projects.PageInfo.HasNextPage,
-		EndCursor:   result.Roadmap.Projects.PageInfo.EndCursor,
+		RoadmapID:   parent.roadmapID,
+		RoadmapName: parent.roadmapName,
+		Projects:    page.Items,
+		Page:        page.Page,
 	}, nil
+}
+
+func (query roadmapsQuery) page(pageSize int, after *string) ([]roadmapsNode, bool, *string, error) {
+	result, err := gql.XRoadmaps(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Roadmaps.Nodes,
+		result.Roadmaps.PageInfo.HasNextPage,
+		result.Roadmaps.PageInfo.EndCursor,
+		nil
+}
+
+func (query *roadmapProjectsQuery) projects(
+	pageSize int,
+	after *string,
+) ([]roadmapProjectsNode, roadmapProjectsParent, bool, *string, error) {
+	result, err := gql.XRoadmap_projects(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, roadmapProjectsParent{}, false, nil, err
+	}
+
+	return result.Roadmap.Projects.Nodes,
+		roadmapProjectsParent{roadmapID: result.Roadmap.Id, roadmapName: result.Roadmap.Name},
+		result.Roadmap.Projects.PageInfo.HasNextPage,
+		result.Roadmap.Projects.PageInfo.EndCursor,
+		nil
+}
+
+func roadmapsNodeSummary(node roadmapsNode) RoadmapSummary {
+	return roadmapSummary(node.RoadmapSummaryFields)
+}
+
+func roadmapProjectsNodeSummary(project roadmapProjectsNode) ProjectSummary {
+	return projectSummaryFromFields(project.ProjectSummaryFields)
 }
 
 func roadmapSummary(fields gql.RoadmapSummaryFields) RoadmapSummary {

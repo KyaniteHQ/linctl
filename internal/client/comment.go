@@ -80,46 +80,67 @@ type CommentBotActor struct {
 
 // IssueCommentList is a page of comments for one issue.
 type IssueCommentList struct {
-	IssueID     string                `json:"issue_id"`
-	Identifier  string                `json:"identifier"`
-	Comments    []IssueCommentSummary `json:"comments"`
-	HasNextPage bool                  `json:"has_next_page"`
-	EndCursor   *string               `json:"end_cursor,omitempty"`
+	IssueID    string                `json:"issue_id"`
+	Identifier string                `json:"identifier"`
+	Comments   []IssueCommentSummary `json:"comments"`
+	Page
 }
 
 // CommentList is a page of comments visible to the authenticated user.
 type CommentList struct {
-	Comments    []CommentSummary `json:"comments"`
-	HasNextPage bool             `json:"has_next_page"`
-	EndCursor   *string          `json:"end_cursor,omitempty"`
+	Comments []CommentSummary `json:"comments"`
+	Page
 }
 
 // CommentChildList is a page of body-free child comment metadata.
 type CommentChildList struct {
-	CommentID   string                   `json:"comment_id"`
-	Comments    []CommentMetadataSummary `json:"comments"`
-	HasNextPage bool                     `json:"has_next_page"`
-	EndCursor   *string                  `json:"end_cursor,omitempty"`
+	CommentID string                   `json:"comment_id"`
+	Comments  []CommentMetadataSummary `json:"comments"`
+	Page
+}
+
+//nolint:lll
+type commentsNode = gql.XCommentsCommentsCommentConnectionNodesComment
+
+//nolint:lll
+type commentChildrenNode = gql.XComment_childrenCommentChildrenCommentConnectionNodesComment
+
+//nolint:lll
+type commentCreatedIssuesNode = gql.XComment_createdIssuesCommentCreatedIssuesIssueConnectionNodesIssue
+
+//nolint:lll
+type issueCommentsNode = gql.XIssue_commentsIssueCommentsCommentConnectionNodesComment
+
+type commentsQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
+type commentScopedQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+	id            string
+}
+
+type issueCommentsQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+	id            string
 }
 
 // ListComments returns visible comments across parent entity types.
 func ListComments(ctx context.Context, graphqlClient graphql.Client, limit int) (CommentList, error) {
-	commentsPage, err := gql.XComments(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := commentsQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list comments", limit, defaultListPageSize,
+		query.page,
+		commentsNodeSummary,
+	)
 	if err != nil {
-		return CommentList{}, fmt.Errorf("list comments: %w", err)
+		return CommentList{}, err
 	}
 
-	summaries := mapNodes(commentsPage.Comments.Nodes, func(
-		node gql.XCommentsCommentsCommentConnectionNodesComment,
-	) CommentSummary {
-		return topLevelCommentSummary(node.TopLevelCommentSummaryFields)
-	})
-
-	return CommentList{
-		Comments:    summaries,
-		HasNextPage: commentsPage.Comments.PageInfo.HasNextPage,
-		EndCursor:   commentsPage.Comments.PageInfo.EndCursor,
-	}, nil
+	return CommentList{Comments: page.Items, Page: page.Page}, nil
 }
 
 // GetCommentByID returns one comment by Linear id.
@@ -152,22 +173,20 @@ func ListCommentChildren(
 	id string,
 	limit int,
 ) (CommentChildList, error) {
-	result, err := gql.XComment_children(ctx, graphqlClient, stringPtr(id), nil, intPtr(limit), nil, boolPtr(true))
+	query := &commentScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, parent, err := listConnectionWithParent(
+		"list comment children "+id, limit, defaultListPageSize,
+		query.children,
+		commentChildrenNodeSummary,
+	)
 	if err != nil {
-		return CommentChildList{}, fmt.Errorf("list comment children %s: %w", id, err)
+		return CommentChildList{}, err
 	}
 
-	comments := mapNodes(result.Comment.Children.Nodes, func(
-		comment gql.XComment_childrenCommentChildrenCommentConnectionNodesComment,
-	) CommentMetadataSummary {
-		return commentMetadataSummary(comment.CommentMetadataFields)
-	})
-
 	return CommentChildList{
-		CommentID:   result.Comment.Id,
-		Comments:    comments,
-		HasNextPage: result.Comment.Children.PageInfo.HasNextPage,
-		EndCursor:   result.Comment.Children.PageInfo.EndCursor,
+		CommentID: parent,
+		Comments:  page.Items,
+		Page:      page.Page,
 	}, nil
 }
 
@@ -178,22 +197,17 @@ func ListCommentCreatedIssues(
 	id string,
 	limit int,
 ) (IssueList, error) {
-	result, err := gql.XComment_createdIssues(ctx, graphqlClient, stringPtr(id), nil, intPtr(limit), nil, boolPtr(true))
+	query := commentScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list comment created issues "+id, limit, defaultListPageSize,
+		query.createdIssues,
+		commentCreatedIssuesNodeSummary,
+	)
 	if err != nil {
-		return IssueList{}, fmt.Errorf("list comment created issues %s: %w", id, err)
+		return IssueList{}, err
 	}
 
-	issues := mapNodes(result.Comment.CreatedIssues.Nodes, func(
-		issue gql.XComment_createdIssuesCommentCreatedIssuesIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(issue.IssueSummaryFields)
-	})
-
-	return IssueList{
-		Issues:      issues,
-		HasNextPage: result.Comment.CreatedIssues.PageInfo.HasNextPage,
-		EndCursor:   result.Comment.CreatedIssues.PageInfo.EndCursor,
-	}, nil
+	return IssueList{Issues: page.Items, Page: page.Page}, nil
 }
 
 // ListIssueComments returns comments for one issue by Linear id or identifier.
@@ -203,23 +217,102 @@ func ListIssueComments(
 	id string,
 	limit int,
 ) (IssueCommentList, error) {
-	comments, err := gql.XIssue_comments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &issueCommentsQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, parent, err := listConnectionWithParent(
+		"list issue comments "+id, limit, defaultListPageSize,
+		query.comments,
+		issueCommentSummary,
+	)
 	if err != nil {
-		return IssueCommentList{}, fmt.Errorf("list issue comments %s: %w", id, err)
+		return IssueCommentList{}, err
 	}
 
-	summaries := mapNodes(comments.Issue.Comments.Nodes, issueCommentSummary)
-
 	return IssueCommentList{
-		IssueID:     comments.Issue.Id,
-		Identifier:  comments.Issue.Identifier,
-		Comments:    summaries,
-		HasNextPage: comments.Issue.Comments.PageInfo.HasNextPage,
-		EndCursor:   comments.Issue.Comments.PageInfo.EndCursor,
+		IssueID:    parent.issueID,
+		Identifier: parent.identifier,
+		Comments:   page.Items,
+		Page:       page.Page,
 	}, nil
 }
 
-func issueCommentSummary(comment gql.XIssue_commentsIssueCommentsCommentConnectionNodesComment) IssueCommentSummary {
+func (query commentsQuery) page(pageSize int, after *string) ([]commentsNode, bool, *string, error) {
+	result, err := gql.XComments(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Comments.Nodes,
+		result.Comments.PageInfo.HasNextPage,
+		result.Comments.PageInfo.EndCursor,
+		nil
+}
+
+func (query *commentScopedQuery) children(
+	pageSize int,
+	after *string,
+) ([]commentChildrenNode, string, bool, *string, error) {
+	result, err := gql.XComment_children(
+		query.ctx, query.graphqlClient, stringPtr(query.id), nil, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, "", false, nil, err
+	}
+
+	return result.Comment.Children.Nodes,
+		result.Comment.Id,
+		result.Comment.Children.PageInfo.HasNextPage,
+		result.Comment.Children.PageInfo.EndCursor,
+		nil
+}
+
+func (query commentScopedQuery) createdIssues(
+	pageSize int,
+	after *string,
+) ([]commentCreatedIssuesNode, bool, *string, error) {
+	result, err := gql.XComment_createdIssues(
+		query.ctx, query.graphqlClient, stringPtr(query.id), nil, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Comment.CreatedIssues.Nodes,
+		result.Comment.CreatedIssues.PageInfo.HasNextPage,
+		result.Comment.CreatedIssues.PageInfo.EndCursor,
+		nil
+}
+
+func (query *issueCommentsQuery) comments(
+	pageSize int,
+	after *string,
+) ([]issueCommentsNode, issueParent, bool, *string, error) {
+	result, err := gql.XIssue_comments(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, issueParent{}, false, nil, err
+	}
+
+	return result.Issue.Comments.Nodes,
+		issueParent{issueID: result.Issue.Id, identifier: result.Issue.Identifier},
+		result.Issue.Comments.PageInfo.HasNextPage,
+		result.Issue.Comments.PageInfo.EndCursor,
+		nil
+}
+
+func commentsNodeSummary(node commentsNode) CommentSummary {
+	return topLevelCommentSummary(node.TopLevelCommentSummaryFields)
+}
+
+func commentChildrenNodeSummary(comment commentChildrenNode) CommentMetadataSummary {
+	return commentMetadataSummary(comment.CommentMetadataFields)
+}
+
+func commentCreatedIssuesNodeSummary(issue commentCreatedIssuesNode) IssueSummary {
+	return issueSummaryFromFields(issue.IssueSummaryFields)
+}
+
+func issueCommentSummary(comment issueCommentsNode) IssueCommentSummary {
 	userID := ""
 	userName := ""
 	displayName := ""

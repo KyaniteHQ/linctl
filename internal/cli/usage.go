@@ -23,7 +23,9 @@ var usageTopics = map[string]usagePayload{
 			"Reads are free. Writes fail closed against the pinned target. " +
 			"Core commands: target, doctor, whoami, current, next, done, issue, comment, cycle, sprint, project, " +
 			"project-milestone, organization, rate-limit, document, label, team, user, workflow-state. " +
-			"Use initiative, initiative-to-project, and initiative-update for new strategic planning reads. " +
+			"Use initiative and initiative-to-project for new strategic planning reads. " +
+			"Use initiative-update list and get for InitiativeUpdate reads. " +
+			"Use initiative-update create for a guarded InitiativeUpdate write. " +
 			"The roadmap and roadmap-to-project commands read deprecated Linear Roadmap data for compatibility. " +
 			"Use --json for structured output. Use --profile to select a named auth config. " +
 			"Use --org, --team, and --project to set the target explicitly. Use --timeout to bound one command. " +
@@ -37,7 +39,7 @@ var usageTopics = map[string]usagePayload{
 			"Start in an unfamiliar repo with linctl target --json. " +
 			"That command shows the active auth target, the organization, the team, and the project. " +
 			"Use linctl current when the branch carries an issue key. " +
-			"Use linctl doctor to check the health of the config, the auth, and the target. " +
+			"Use linctl doctor to check config load, token presence, and pinned-target confirmation. " +
 			"Use linctl next --dry-run to see the top-ranked unblocked issue without a branch or a worktree. " +
 			"Read the domain guidance before a write with linctl issue usage or linctl project usage. " +
 			"For a test run, create namespaced throwaway resources. Archive them after the check.",

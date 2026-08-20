@@ -2,6 +2,7 @@
 package config
 
 import (
+	"cmp"
 	"context"
 	"errors"
 	"fmt"
@@ -62,7 +63,7 @@ func Load(ctx context.Context, request LoadRequest) (Resolved, error) {
 	}
 
 	mergedConfig := mergeConfig(globalConfig, repoConfig)
-	profileName := firstNonEmpty(request.ProfileOverride, mergedConfig.Profile)
+	profileName := cmp.Or(request.ProfileOverride, mergedConfig.Profile)
 	profile, err := resolveProfile(mergedConfig, profileName)
 	if err != nil {
 		return Resolved{}, err
@@ -119,7 +120,7 @@ func readConfigFile(path string) (fileConfig, error) {
 
 func mergeConfig(base fileConfig, overlay fileConfig) fileConfig {
 	merged := fileConfig{
-		Profile:  firstNonEmpty(overlay.Profile, base.Profile),
+		Profile:  cmp.Or(overlay.Profile, base.Profile),
 		Target:   mergeTarget(base.Target, overlay.Target),
 		Profiles: map[string]profileConfig{},
 	}
@@ -138,17 +139,9 @@ func mergeConfig(base fileConfig, overlay fileConfig) fileConfig {
 
 func mergeTarget(base Target, overlay Target) Target {
 	return Target{
-		OrgID:     firstNonEmpty(overlay.OrgID, base.OrgID),
-		TeamKey:   firstNonEmpty(overlay.TeamKey, base.TeamKey),
-		TeamID:    firstNonEmpty(overlay.TeamID, base.TeamID),
-		ProjectID: firstNonEmpty(overlay.ProjectID, base.ProjectID),
+		OrgID:     cmp.Or(overlay.OrgID, base.OrgID),
+		TeamKey:   cmp.Or(overlay.TeamKey, base.TeamKey),
+		TeamID:    cmp.Or(overlay.TeamID, base.TeamID),
+		ProjectID: cmp.Or(overlay.ProjectID, base.ProjectID),
 	}
-}
-
-func firstNonEmpty(primary string, fallback string) string {
-	if primary != "" {
-		return primary
-	}
-
-	return fallback
 }

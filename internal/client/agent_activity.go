@@ -37,27 +37,32 @@ type AgentActivitySummary struct {
 // AgentActivityList is a page of AgentActivities.
 type AgentActivityList struct {
 	AgentActivities []AgentActivitySummary `json:"agent_activities"`
-	HasNextPage     bool                   `json:"has_next_page"`
-	EndCursor       *string                `json:"end_cursor,omitempty"`
+	Page
+}
+
+//nolint:lll
+type agentActivitiesNode = gql.XAgentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity
+
+type agentActivitiesQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
 }
 
 // ListAgentActivities returns AgentActivities visible to the authenticated user.
 func ListAgentActivities(ctx context.Context, graphqlClient graphql.Client, limit int) (AgentActivityList, error) {
-	result, err := gql.XAgentActivities(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := agentActivitiesQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list agent activities", limit, defaultListPageSize,
+		query.page,
+		agentActivitiesNodeSummary,
+	)
 	if err != nil {
-		return AgentActivityList{}, fmt.Errorf("list agent activities: %w", err)
+		return AgentActivityList{}, err
 	}
 
-	summaries := mapNodes(result.AgentActivities.Nodes, func(
-		node gql.XAgentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity,
-	) AgentActivitySummary {
-		return agentActivitySummary(node.AgentActivitySummaryFields)
-	})
-
 	return AgentActivityList{
-		AgentActivities: summaries,
-		HasNextPage:     result.AgentActivities.PageInfo.HasNextPage,
-		EndCursor:       result.AgentActivities.PageInfo.EndCursor,
+		AgentActivities: page.Items,
+		Page:            page.Page,
 	}, nil
 }
 
@@ -69,6 +74,22 @@ func GetAgentActivityByID(ctx context.Context, graphqlClient graphql.Client, id 
 	}
 
 	return agentActivitySummary(result.AgentActivity.AgentActivitySummaryFields), nil
+}
+
+func (query agentActivitiesQuery) page(pageSize int, after *string) ([]agentActivitiesNode, bool, *string, error) {
+	result, err := gql.XAgentActivities(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.AgentActivities.Nodes,
+		result.AgentActivities.PageInfo.HasNextPage,
+		result.AgentActivities.PageInfo.EndCursor,
+		nil
+}
+
+func agentActivitiesNodeSummary(node agentActivitiesNode) AgentActivitySummary {
+	return agentActivitySummary(node.AgentActivitySummaryFields)
 }
 
 func agentActivitySummary(fields gql.AgentActivitySummaryFields) AgentActivitySummary {

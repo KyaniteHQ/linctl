@@ -29,25 +29,22 @@ type CycleSummary struct {
 
 // CycleList is a page of Cycles scoped to a team.
 type CycleList struct {
-	Cycles      []CycleSummary `json:"cycles"`
-	HasNextPage bool           `json:"has_next_page"`
-	EndCursor   *string        `json:"end_cursor,omitempty"`
+	Cycles []CycleSummary `json:"cycles"`
+	Page
 }
 
 // SprintReport is a read-only Cycle report with its assigned issues.
 type SprintReport struct {
-	Cycle       CycleSummary   `json:"cycle"`
-	Issues      []IssueSummary `json:"issues"`
-	HasNextPage bool           `json:"has_next_page"`
-	EndCursor   *string        `json:"end_cursor,omitempty"`
+	Cycle  CycleSummary   `json:"cycle"`
+	Issues []IssueSummary `json:"issues"`
+	Page
 }
 
 // CycleIssueList is a page of Issues associated with one Cycle.
 type CycleIssueList struct {
-	Cycle       CycleSummary   `json:"cycle"`
-	Issues      []IssueSummary `json:"issues"`
-	HasNextPage bool           `json:"has_next_page"`
-	EndCursor   *string        `json:"end_cursor,omitempty"`
+	Cycle  CycleSummary   `json:"cycle"`
+	Issues []IssueSummary `json:"issues"`
+	Page
 }
 
 // CycleCreateRequest describes a guarded Cycle create in the pinned team.
@@ -69,6 +66,33 @@ type CycleUpdateRequest struct {
 	CompletedAt string
 }
 
+//nolint:lll
+type cyclesNode = gql.XCyclesCyclesCycleConnectionNodesCycle
+
+//nolint:lll
+type cycleIssuesNode = gql.XCycle_issuesCycleIssuesIssueConnectionNodesIssue
+
+//nolint:lll
+type cycleUncompletedIssuesNode = gql.XCycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue
+
+type cyclesByTeamQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+	teamID        string
+}
+
+type cycleScopedQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+	id            string
+}
+
+// cycleScopedParent is the connection parent metadata cycleScopedQuery reads out of
+// every page. Linear repeats it per page, so the last page wins.
+type cycleScopedParent struct {
+	cycle CycleSummary
+}
+
 // ListCyclesByTeam returns Cycles scoped to a resolved team.
 func ListCyclesByTeam(
 	ctx context.Context,
@@ -76,20 +100,17 @@ func ListCyclesByTeam(
 	teamID string,
 	limit int,
 ) (CycleList, error) {
-	cyclePage, err := gql.XCycles(ctx, graphqlClient, teamID, intPtr(limit), nil, boolPtr(true))
+	query := cyclesByTeamQuery{ctx: ctx, graphqlClient: graphqlClient, teamID: teamID}
+	page, err := listConnection(
+		"list cycles", limit, defaultListPageSize,
+		query.page,
+		cyclesNodeSummary,
+	)
 	if err != nil {
-		return CycleList{}, fmt.Errorf("list cycles: %w", err)
+		return CycleList{}, err
 	}
 
-	summaries := mapNodes(cyclePage.Cycles.Nodes, func(cycle gql.XCyclesCyclesCycleConnectionNodesCycle) CycleSummary {
-		return cycleSummary(cycle.CycleSummaryFields)
-	})
-
-	return CycleList{
-		Cycles:      summaries,
-		HasNextPage: cyclePage.Cycles.PageInfo.HasNextPage,
-		EndCursor:   cyclePage.Cycles.PageInfo.EndCursor,
-	}, nil
+	return CycleList{Cycles: page.Items, Page: page.Page}, nil
 }
 
 // GetCycleByID returns a Cycle by Linear id or slug.
@@ -143,31 +164,31 @@ func GetSprintReport(ctx context.Context, graphqlClient graphql.Client, id strin
 	})
 
 	return SprintReport{
-		Cycle:       cycleSummary(report.Cycle.CycleSummaryFields),
-		Issues:      issues,
-		HasNextPage: report.Cycle.Issues.PageInfo.HasNextPage,
-		EndCursor:   report.Cycle.Issues.PageInfo.EndCursor,
+		Cycle:  cycleSummary(report.Cycle.CycleSummaryFields),
+		Issues: issues,
+		Page: Page{
+			HasNextPage: report.Cycle.Issues.PageInfo.HasNextPage,
+			EndCursor:   report.Cycle.Issues.PageInfo.EndCursor,
+		},
 	}, nil
 }
 
 // ListCycleIssues returns Issues assigned to one Cycle.
 func ListCycleIssues(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (CycleIssueList, error) {
-	issuePage, err := gql.XCycle_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &cycleScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, parent, err := listConnectionWithParent(
+		"list cycle issues "+id, limit, defaultListPageSize,
+		query.issues,
+		cycleIssuesNodeSummary,
+	)
 	if err != nil {
-		return CycleIssueList{}, fmt.Errorf("list cycle issues %s: %w", id, err)
+		return CycleIssueList{}, err
 	}
 
-	issues := mapNodes(issuePage.Cycle.Issues.Nodes, func(
-		issue gql.XCycle_issuesCycleIssuesIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(issue.IssueSummaryFields)
-	})
-
 	return CycleIssueList{
-		Cycle:       cycleSummary(issuePage.Cycle.CycleSummaryFields),
-		Issues:      issues,
-		HasNextPage: issuePage.Cycle.Issues.PageInfo.HasNextPage,
-		EndCursor:   issuePage.Cycle.Issues.PageInfo.EndCursor,
+		Cycle:  parent.cycle,
+		Issues: page.Items,
+		Page:   page.Page,
 	}, nil
 }
 
@@ -178,22 +199,20 @@ func ListCycleUncompletedIssuesUponClose(
 	id string,
 	limit int,
 ) (CycleIssueList, error) {
-	issuePage, err := gql.XCycle_uncompletedIssuesUponClose(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &cycleScopedQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, parent, err := listConnectionWithParent(
+		"list cycle uncompleted issues "+id, limit, defaultListPageSize,
+		query.uncompletedIssues,
+		cycleUncompletedIssuesNodeSummary,
+	)
 	if err != nil {
-		return CycleIssueList{}, fmt.Errorf("list cycle uncompleted issues %s: %w", id, err)
+		return CycleIssueList{}, err
 	}
 
-	issues := mapNodes(issuePage.Cycle.UncompletedIssuesUponClose.Nodes, func(
-		issue gql.XCycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(issue.IssueSummaryFields)
-	})
-
 	return CycleIssueList{
-		Cycle:       cycleSummary(issuePage.Cycle.CycleSummaryFields),
-		Issues:      issues,
-		HasNextPage: issuePage.Cycle.UncompletedIssuesUponClose.PageInfo.HasNextPage,
-		EndCursor:   issuePage.Cycle.UncompletedIssuesUponClose.PageInfo.EndCursor,
+		Cycle:  parent.cycle,
+		Issues: page.Items,
+		Page:   page.Page,
 	}, nil
 }
 
@@ -326,6 +345,68 @@ func validateCycleUpdateRequest(request CycleUpdateRequest) error {
 	}
 
 	return nil
+}
+
+func (query cyclesByTeamQuery) page(pageSize int, after *string) ([]cyclesNode, bool, *string, error) {
+	result, err := gql.XCycles(
+		query.ctx, query.graphqlClient, query.teamID, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Cycles.Nodes,
+		result.Cycles.PageInfo.HasNextPage,
+		result.Cycles.PageInfo.EndCursor,
+		nil
+}
+
+func (query *cycleScopedQuery) issues(
+	pageSize int,
+	after *string,
+) ([]cycleIssuesNode, cycleScopedParent, bool, *string, error) {
+	result, err := gql.XCycle_issues(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, cycleScopedParent{}, false, nil, err
+	}
+
+	return result.Cycle.Issues.Nodes,
+		cycleScopedParent{cycle: cycleSummary(result.Cycle.CycleSummaryFields)},
+		result.Cycle.Issues.PageInfo.HasNextPage,
+		result.Cycle.Issues.PageInfo.EndCursor,
+		nil
+}
+
+func (query *cycleScopedQuery) uncompletedIssues(
+	pageSize int,
+	after *string,
+) ([]cycleUncompletedIssuesNode, cycleScopedParent, bool, *string, error) {
+	result, err := gql.XCycle_uncompletedIssuesUponClose(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, cycleScopedParent{}, false, nil, err
+	}
+
+	return result.Cycle.UncompletedIssuesUponClose.Nodes,
+		cycleScopedParent{cycle: cycleSummary(result.Cycle.CycleSummaryFields)},
+		result.Cycle.UncompletedIssuesUponClose.PageInfo.HasNextPage,
+		result.Cycle.UncompletedIssuesUponClose.PageInfo.EndCursor,
+		nil
+}
+
+func cyclesNodeSummary(cycle cyclesNode) CycleSummary {
+	return cycleSummary(cycle.CycleSummaryFields)
+}
+
+func cycleIssuesNodeSummary(issue cycleIssuesNode) IssueSummary {
+	return issueSummaryFromFields(issue.IssueSummaryFields)
+}
+
+func cycleUncompletedIssuesNodeSummary(issue cycleUncompletedIssuesNode) IssueSummary {
+	return issueSummaryFromFields(issue.IssueSummaryFields)
 }
 
 func cycleSummary(cycle gql.CycleSummaryFields) CycleSummary {

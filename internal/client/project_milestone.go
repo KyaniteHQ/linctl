@@ -26,8 +26,7 @@ type ProjectMilestoneList struct {
 	ProjectID   string                    `json:"project_id"`
 	ProjectName string                    `json:"project_name"`
 	Milestones  []ProjectMilestoneSummary `json:"milestones"`
-	HasNextPage bool                      `json:"has_next_page"`
-	EndCursor   *string                   `json:"end_cursor,omitempty"`
+	Page
 }
 
 // ProjectMilestoneDetail is a ProjectMilestone with its parent project.
@@ -41,8 +40,7 @@ type ProjectMilestoneIssueList struct {
 	ProjectMilestoneID   string         `json:"project_milestone_id"`
 	ProjectMilestoneName string         `json:"project_milestone_name"`
 	Issues               []IssueSummary `json:"issues"`
-	HasNextPage          bool           `json:"has_next_page"`
-	EndCursor            *string        `json:"end_cursor,omitempty"`
+	Page
 }
 
 // ProjectMilestoneCreateRequest describes a guarded ProjectMilestone create.
@@ -73,6 +71,39 @@ func projectMilestoneSummary(milestone gql.ProjectMilestoneSummaryFields) Projec
 	}
 }
 
+//nolint:lll
+type projectMilestonesNode = gql.XProjectMilestonesProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone
+
+//nolint:lll
+type projectScopedMilestonesNode = gql.XProject_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone
+
+//nolint:lll
+type projectMilestoneIssuesNode = gql.XProjectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue
+
+type projectMilestonesQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
+type projectScopedMilestonesQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+	id            string
+}
+
+type projectMilestoneIssuesQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+	id            string
+}
+
+// projectMilestoneIssuesParent is the connection parent metadata projectMilestoneIssuesQuery reads out of
+// every page. Linear repeats it per page, so the last page wins.
+type projectMilestoneIssuesParent struct {
+	milestoneID   string
+	milestoneName string
+}
+
 // ListProjectMilestones returns milestones for one project.
 func ListProjectMilestones(
 	ctx context.Context,
@@ -80,23 +111,21 @@ func ListProjectMilestones(
 	id string,
 	limit int,
 ) (ProjectMilestoneList, error) {
-	project, err := gql.XProject_projectMilestones(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &projectScopedMilestonesQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, parent, err := listConnectionWithParent(
+		"list project milestones "+id, limit, defaultListPageSize,
+		query.page,
+		projectScopedMilestoneNodeSummary,
+	)
 	if err != nil {
-		return ProjectMilestoneList{}, fmt.Errorf("list project milestones %s: %w", id, err)
+		return ProjectMilestoneList{}, err
 	}
 
-	milestones := mapNodes(project.Project.ProjectMilestones.Nodes, func(
-		milestone gql.XProject_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone,
-	) ProjectMilestoneSummary {
-		return projectMilestoneSummary(milestone.ProjectMilestoneSummaryFields)
-	})
-
 	return ProjectMilestoneList{
-		ProjectID:   project.Project.Id,
-		ProjectName: project.Project.Name,
-		Milestones:  milestones,
-		HasNextPage: project.Project.ProjectMilestones.PageInfo.HasNextPage,
-		EndCursor:   project.Project.ProjectMilestones.PageInfo.EndCursor,
+		ProjectID:   parent.projectID,
+		ProjectName: parent.projectName,
+		Milestones:  page.Items,
+		Page:        page.Page,
 	}, nil
 }
 
@@ -106,22 +135,17 @@ func ListAllProjectMilestones(
 	graphqlClient graphql.Client,
 	limit int,
 ) (ProjectMilestoneList, error) {
-	result, err := gql.XProjectMilestones(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := projectMilestonesQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list project milestones", limit, defaultListPageSize,
+		query.page,
+		projectMilestoneNodeSummary,
+	)
 	if err != nil {
-		return ProjectMilestoneList{}, fmt.Errorf("list project milestones: %w", err)
+		return ProjectMilestoneList{}, err
 	}
 
-	milestones := mapNodes(result.ProjectMilestones.Nodes, func(
-		milestone gql.XProjectMilestonesProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone,
-	) ProjectMilestoneSummary {
-		return projectMilestoneSummary(milestone.ProjectMilestoneSummaryFields)
-	})
-
-	return ProjectMilestoneList{
-		Milestones:  milestones,
-		HasNextPage: result.ProjectMilestones.PageInfo.HasNextPage,
-		EndCursor:   result.ProjectMilestones.PageInfo.EndCursor,
-	}, nil
+	return ProjectMilestoneList{Milestones: page.Items, Page: page.Page}, nil
 }
 
 // ListProjectMilestoneIssues returns issues associated with one ProjectMilestone.
@@ -131,24 +155,88 @@ func ListProjectMilestoneIssues(
 	id string,
 	limit int,
 ) (ProjectMilestoneIssueList, error) {
-	result, err := gql.XProjectMilestone_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := &projectMilestoneIssuesQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, parent, err := listConnectionWithParent(
+		"list project milestone issues "+id, limit, defaultListPageSize,
+		query.page,
+		projectMilestoneIssueNodeSummary,
+	)
 	if err != nil {
-		return ProjectMilestoneIssueList{}, fmt.Errorf("list project milestone issues %s: %w", id, err)
+		return ProjectMilestoneIssueList{}, err
 	}
 
-	issues := mapNodes(result.ProjectMilestone.Issues.Nodes, func(
-		node gql.XProjectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(node.IssueSummaryFields)
-	})
-
 	return ProjectMilestoneIssueList{
-		ProjectMilestoneID:   result.ProjectMilestone.Id,
-		ProjectMilestoneName: result.ProjectMilestone.Name,
-		Issues:               issues,
-		HasNextPage:          result.ProjectMilestone.Issues.PageInfo.HasNextPage,
-		EndCursor:            result.ProjectMilestone.Issues.PageInfo.EndCursor,
+		ProjectMilestoneID:   parent.milestoneID,
+		ProjectMilestoneName: parent.milestoneName,
+		Issues:               page.Items,
+		Page:                 page.Page,
 	}, nil
+}
+
+func (query *projectScopedMilestonesQuery) page(
+	pageSize int,
+	after *string,
+) ([]projectScopedMilestonesNode, projectParent, bool, *string, error) {
+	result, err := gql.XProject_projectMilestones(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, projectParent{}, false, nil, err
+	}
+
+	return result.Project.ProjectMilestones.Nodes,
+		projectParent{projectID: result.Project.Id, projectName: result.Project.Name},
+		result.Project.ProjectMilestones.PageInfo.HasNextPage,
+		result.Project.ProjectMilestones.PageInfo.EndCursor,
+		nil
+}
+
+func (query projectMilestonesQuery) page(
+	pageSize int,
+	after *string,
+) ([]projectMilestonesNode, bool, *string, error) {
+	result, err := gql.XProjectMilestones(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.ProjectMilestones.Nodes,
+		result.ProjectMilestones.PageInfo.HasNextPage,
+		result.ProjectMilestones.PageInfo.EndCursor,
+		nil
+}
+
+func (query *projectMilestoneIssuesQuery) page(
+	pageSize int,
+	after *string,
+) ([]projectMilestoneIssuesNode, projectMilestoneIssuesParent, bool, *string, error) {
+	result, err := gql.XProjectMilestone_issues(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, projectMilestoneIssuesParent{}, false, nil, err
+	}
+
+	return result.ProjectMilestone.Issues.Nodes,
+		projectMilestoneIssuesParent{
+			milestoneID:   result.ProjectMilestone.Id,
+			milestoneName: result.ProjectMilestone.Name,
+		},
+		result.ProjectMilestone.Issues.PageInfo.HasNextPage,
+		result.ProjectMilestone.Issues.PageInfo.EndCursor,
+		nil
+}
+
+func projectScopedMilestoneNodeSummary(milestone projectScopedMilestonesNode) ProjectMilestoneSummary {
+	return projectMilestoneSummary(milestone.ProjectMilestoneSummaryFields)
+}
+
+func projectMilestoneNodeSummary(milestone projectMilestonesNode) ProjectMilestoneSummary {
+	return projectMilestoneSummary(milestone.ProjectMilestoneSummaryFields)
+}
+
+func projectMilestoneIssueNodeSummary(node projectMilestoneIssuesNode) IssueSummary {
+	return issueSummaryFromFields(node.IssueSummaryFields)
 }
 
 // GetProjectMilestoneByID returns one ProjectMilestone by Linear id.

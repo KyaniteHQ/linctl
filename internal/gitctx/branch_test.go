@@ -40,7 +40,7 @@ func Test_CurrentIssueIdentifier_reads_git_branch_when_issue_named(t *testing.T)
 	runGit(t, repo, "checkout", "-b", "feature/LIT-789-current")
 
 	// When
-	identifier, err := CurrentIssueIdentifier(context.Background(), repo)
+	identifier, err := CurrentIssueIdentifierForTeam(context.Background(), repo, "")
 
 	// Then
 	require.NoError(t, err)
@@ -126,7 +126,7 @@ func Test_CurrentIssueIdentifier_returns_error_when_no_issue_reference_exists(t 
 	runGit(t, repo, "checkout", "-b", "feature/no-issue")
 
 	// When
-	_, err := CurrentIssueIdentifier(context.Background(), repo)
+	_, err := CurrentIssueIdentifierForTeam(context.Background(), repo, "")
 
 	// Then
 	require.ErrorIs(t, err, ErrIssueReferenceMissing)

@@ -111,12 +111,8 @@ func Test_CliOutputHelpers_cover_json_projection_and_sort_edges(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, []mixed{{Value: "abc"}, {Value: 10.0}, {Value: 2.0}}, sortedMixed)
 
-	_, err = jsonFieldValue(map[string]any{"bad": func() {}}, "bad")
+	_, err = sortByJSONField([]map[string]any{{"bad": func() {}}}, "bad", "asc")
 	require.ErrorContains(t, err, "marshal output")
-
-	stringValue, err := jsonFieldValue(map[string]any{"identifier": "LIT-1"}, "identifier")
-	require.NoError(t, err)
-	require.Equal(t, "LIT-1", stringValue)
 
 	destination := map[string]any{}
 	require.NoError(t, copyJSONPath(map[string]any{"id": "issue-id"}, destination, nil))

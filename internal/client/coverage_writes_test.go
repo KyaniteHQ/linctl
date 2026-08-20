@@ -79,6 +79,9 @@ func Test_ClientWriteScenarios_guard_writes_and_report_results(t *testing.T) {
 
 		_, err = ArchiveCycle(context.Background(), graphqlClient, matchingTarget(), "")
 		require.ErrorIs(t, err, ErrWriteInvalid)
+
+		_, err = ArchiveProject(context.Background(), graphqlClient, matchingTarget(), "")
+		require.ErrorIs(t, err, ErrWriteInvalid)
 	})
 
 	t.Run("issue comment succeeds", func(t *testing.T) {

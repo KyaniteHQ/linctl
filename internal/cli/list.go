@@ -13,7 +13,14 @@ import (
 // readListLoader produces one page of a list command. The items are read back
 // out of the page by pageItems, so a loader never restates which field holds
 // them.
-type readListLoader[Page any] func(
+// listPage is the contract the shared list pipeline needs from a page: whether
+// Linear holds more items beyond the ones returned. Every client list type
+// embeds client.Page, which supplies it.
+type listPage interface {
+	HasMore() bool
+}
+
+type readListLoader[Page listPage] func(
 	context.Context,
 	commandRuntime,
 	[]string,
@@ -24,7 +31,7 @@ type readListItemWriter[Item any] func(*cobra.Command, *rootOptions, Item) error
 
 type readGetLoader[Item any] func(context.Context, commandRuntime, string) (Item, error)
 
-type childListFetcher[Page any] func(
+type childListFetcher[Page listPage] func(
 	context.Context,
 	graphql.Client,
 	string,
@@ -33,7 +40,7 @@ type childListFetcher[Page any] func(
 
 // clientList lifts a plain client list call into a readListLoader. Use it when
 // the command reads nothing from the runtime but the GraphQL client.
-func clientList[Page any](
+func clientList[Page listPage](
 	list func(context.Context, graphql.Client, int) (Page, error),
 ) readListLoader[Page] {
 	return func(ctx context.Context, runtime commandRuntime, _ []string, limit int) (Page, error) {
@@ -53,7 +60,7 @@ func clientGet[Item any](
 // addChildListCommand registers a one-argument child listing command: fetch a
 // page for the parent entity id and write its items through the shared list
 // pipeline.
-func addChildListCommand[Page any, Item any](
+func addChildListCommand[Page listPage, Item any](
 	ctx context.Context,
 	root *cobra.Command,
 	options *rootOptions,
@@ -75,7 +82,7 @@ func addChildListCommand[Page any, Item any](
 	})
 }
 
-type readListGetSpec[Page any, Item any] struct {
+type readListGetSpec[Page listPage, Item any] struct {
 	Use       string
 	Short     string
 	ListShort string
@@ -87,7 +94,7 @@ type readListGetSpec[Page any, Item any] struct {
 	WriteItem readListItemWriter[Item]
 }
 
-func addReadListGetCommand[Page any, Item any](
+func addReadListGetCommand[Page listPage, Item any](
 	ctx context.Context,
 	root *cobra.Command,
 	options *rootOptions,
@@ -173,7 +180,7 @@ func addReadGetCommand[T any](
 	return command
 }
 
-func runReadListCommand[Page any, Item any](
+func runReadListCommand[Page listPage, Item any](
 	ctx context.Context,
 	command *cobra.Command,
 	args []string,
@@ -198,6 +205,9 @@ func runReadListCommand[Page any, Item any](
 	if err != nil {
 		return err
 	}
+	if err := noteListTruncation(command, options, page, limit); err != nil {
+		return err
+	}
 	if options.json {
 		return writePageJSON(command, options, page, items)
 	}
@@ -208,6 +218,22 @@ func runReadListCommand[Page any, Item any](
 	}
 
 	return nil
+}
+
+// noteListTruncation writes a stderr note when more pages exist. JSON already
+// carries has_next_page on stdout. --id-only and pipes stay on stdout, so the
+// note goes to stderr. --quiet suppresses it.
+func noteListTruncation[Page listPage](
+	command *cobra.Command,
+	options *rootOptions,
+	page Page,
+	limit int,
+) error {
+	if options.quiet || !page.HasMore() {
+		return nil
+	}
+
+	return writeNote(command, "listing capped at %d items; more pages exist", limit)
 }
 
 func writePageJSON[Page any, Item any](
@@ -287,7 +313,7 @@ func pageItems[Page any, Item any](page Page) []Item {
 // listCommandSpec describes one read-only list command in the single list
 // pipeline: a loader produces the page and its items, and WriteItem renders one
 // human line. The pipeline puts sorted items back into the page for JSON output.
-type listCommandSpec[Page any, Item any] struct {
+type listCommandSpec[Page listPage, Item any] struct {
 	Use       string
 	Short     string
 	Long      string
@@ -304,7 +330,7 @@ const defaultListLimit = 50
 // addListCommand registers a list command from its spec. The collection-key
 // and read-safety annotations are applied at registration time so the static
 // command inventory sees them without executing the command.
-func addListCommand[Page any, Item any](
+func addListCommand[Page listPage, Item any](
 	ctx context.Context,
 	root *cobra.Command,
 	options *rootOptions,

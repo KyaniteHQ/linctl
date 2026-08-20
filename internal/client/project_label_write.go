@@ -43,6 +43,9 @@ func CreateProjectLabel(
 	if request.Name == "" {
 		return ProjectLabelSummary{}, requiredFieldError("name")
 	}
+	if err := validateLabelColor(request.Color); err != nil {
+		return ProjectLabelSummary{}, err
+	}
 	if err := requireProjectLabelOrgWide(request.OrgWide); err != nil {
 		return ProjectLabelSummary{}, err
 	}
@@ -206,6 +209,9 @@ func validateProjectLabelUpdateRequest(request ProjectLabelUpdateRequest) error 
 	}
 	if request.Name == "" && request.Description == "" && request.Color == "" {
 		return requiredFieldError("name, description, or color")
+	}
+	if err := validateLabelColor(request.Color); err != nil {
+		return err
 	}
 
 	return requireProjectLabelOrgWide(request.OrgWide)

@@ -40,9 +40,8 @@ type IssueDetail struct {
 
 // IssueList is a page of read-only issues.
 type IssueList struct {
-	Issues      []IssueSummary `json:"issues"`
-	HasNextPage bool           `json:"has_next_page"`
-	EndCursor   *string        `json:"end_cursor,omitempty"`
+	Issues []IssueSummary `json:"issues"`
+	Page
 }
 
 // IssuePriorityValue is a Linear issue priority number and label.
@@ -76,9 +75,8 @@ type IssueHistorySummary struct {
 
 // IssueHistoryList is a page of issue history metadata.
 type IssueHistoryList struct {
-	History     []IssueHistorySummary `json:"history"`
-	HasNextPage bool                  `json:"has_next_page"`
-	EndCursor   *string               `json:"end_cursor,omitempty"`
+	History []IssueHistorySummary `json:"history"`
+	Page
 }
 
 // IssueBotActor is the optional bot actor attached to an issue.
@@ -99,10 +97,9 @@ type IssueStateSpanSummary struct {
 
 // IssueStateHistoryList is a page of workflow-state spans for one issue.
 type IssueStateHistoryList struct {
-	IssueID     string                  `json:"issue_id"`
-	Spans       []IssueStateSpanSummary `json:"spans"`
-	HasNextPage bool                    `json:"has_next_page"`
-	EndCursor   *string                 `json:"end_cursor,omitempty"`
+	IssueID string                  `json:"issue_id"`
+	Spans   []IssueStateSpanSummary `json:"spans"`
+	Page
 }
 
 // IssueDependencyGraph is the compact dependency graph for one issue.
@@ -163,11 +160,11 @@ func ListIssues(ctx context.Context, graphqlClient graphql.Client, limit int) (I
 }
 
 func issueSummaryNodePage(items []IssueSummary, hasNextPage bool, endCursor *string) nodePage[IssueSummary] {
-	return nodePage[IssueSummary]{Items: items, HasNextPage: hasNextPage, EndCursor: endCursor}
+	return nodePage[IssueSummary]{Items: items, Page: Page{HasNextPage: hasNextPage, EndCursor: endCursor}}
 }
 
 func issueListFromNodePage(page nodePage[IssueSummary]) IssueList {
-	return IssueList{Issues: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}
+	return IssueList{Issues: page.Items, Page: page.Page}
 }
 
 // ListIssuesByTeam returns issues scoped to a resolved team, composing every
@@ -276,13 +273,16 @@ func listIssuesBlockedByIssue(
 	}
 
 	return IssueList{
-		Issues:      summaries,
-		HasNextPage: issue.Issue.Relations.PageInfo.HasNextPage,
-		EndCursor:   issue.Issue.Relations.PageInfo.EndCursor,
+		Issues: summaries,
+		Page: Page{
+			HasNextPage: issue.Issue.Relations.PageInfo.HasNextPage,
+			EndCursor:   issue.Issue.Relations.PageInfo.EndCursor,
+		},
 	}, nil
 }
 
 // ListIssuePriorityValues returns Linear issue priority labels.
+// It cannot paginate: it is a flat enum list and takes no limit.
 func ListIssuePriorityValues(ctx context.Context, graphqlClient graphql.Client) ([]IssuePriorityValue, error) {
 	result, err := gql.XIssuePriorityValues(ctx, graphqlClient)
 	if err != nil {

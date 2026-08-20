@@ -9,6 +9,45 @@ import (
 	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
+//nolint:lll
+type issueVCSBranchAttachmentsNode = gql.IssueAttachmentsProjectionAttachmentsAttachmentConnectionNodesAttachment
+
+//nolint:lll
+type issueVCSBranchChildrenNode = gql.IssueChildrenProjectionChildrenIssueConnectionNodesIssue
+
+//nolint:lll
+type issueVCSBranchDocumentsNode = gql.IssueDocumentsProjectionDocumentsDocumentConnectionNodesDocument
+
+//nolint:lll
+type issueVCSBranchFormerAttachmentsNode = gql.IssueFormerAttachmentsProjectionFormerAttachmentsAttachmentConnectionNodesAttachment
+
+//nolint:lll
+type issueVCSBranchHistoryNode = gql.IssueHistoryProjectionHistoryIssueHistoryConnectionNodesIssueHistory
+
+//nolint:lll
+type issueVCSBranchInverseRelationsNode = gql.IssueInverseRelationsProjectionInverseRelationsIssueRelationConnectionNodesIssueRelation
+
+//nolint:lll
+type issueVCSBranchLabelsNode = gql.IssueLabelsProjectionLabelsIssueLabelConnectionNodesIssueLabel
+
+//nolint:lll
+type issueVCSBranchRelationsNode = gql.IssueRelationsProjectionRelationsIssueRelationConnectionNodesIssueRelation
+
+//nolint:lll
+type issueVCSBranchReleasesNode = gql.IssueReleasesProjectionReleasesReleaseConnectionNodesRelease
+
+//nolint:lll
+type issueVCSBranchStateHistoryNode = gql.IssueStateHistoryProjectionStateHistoryIssueStateSpanConnectionNodesIssueStateSpan
+
+//nolint:lll
+type issueVCSBranchSubscribersNode = gql.IssueSubscribersProjectionSubscribersUserConnectionNodesUser
+
+type issueVCSBranchQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+	branchName    string
+}
+
 // GetIssueByVCSBranch returns an issue by VCS branch name.
 func GetIssueByVCSBranch(ctx context.Context, graphqlClient graphql.Client, branchName string) (IssueSummary, error) {
 	result, err := gql.XIssueVcsBranchSearch(ctx, graphqlClient, branchName)
@@ -29,27 +68,17 @@ func ListIssueVCSBranchAttachments(
 	branchName string,
 	limit int,
 ) (AttachmentList, error) {
-	result, err := gql.XIssueVcsBranchSearch_attachments(
-		ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true),
+	query := &issueVCSBranchQuery{ctx: ctx, graphqlClient: graphqlClient, branchName: branchName}
+	page, err := listConnection(
+		"list issue vcs branch attachments "+branchName, limit, defaultListPageSize,
+		query.attachments,
+		issueVCSBranchAttachmentNodeSummary,
 	)
 	if err != nil {
-		return AttachmentList{}, fmt.Errorf("list issue vcs branch attachments %s: %w", branchName, err)
-	}
-	if result.IssueVcsBranchSearch == nil {
-		return AttachmentList{}, notFoundError("list issue vcs branch attachments %s", branchName)
+		return AttachmentList{}, err
 	}
 
-	attachments := mapNodes(result.IssueVcsBranchSearch.Attachments.Nodes, func(
-		node gql.IssueAttachmentsProjectionAttachmentsAttachmentConnectionNodesAttachment,
-	) AttachmentSummary {
-		return attachmentSummary(node.AttachmentSummaryFields)
-	})
-
-	return AttachmentList{
-		Attachments: attachments,
-		HasNextPage: result.IssueVcsBranchSearch.Attachments.PageInfo.HasNextPage,
-		EndCursor:   result.IssueVcsBranchSearch.Attachments.PageInfo.EndCursor,
-	}, nil
+	return AttachmentList{Attachments: page.Items, Page: page.Page}, nil
 }
 
 // GetIssueVCSBranchBotActor returns bot actor metadata for the issue matched by a VCS branch.
@@ -79,25 +108,17 @@ func ListIssueVCSBranchChildren(
 	branchName string,
 	limit int,
 ) (IssueList, error) {
-	result, err := gql.XIssueVcsBranchSearch_children(ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true))
+	query := &issueVCSBranchQuery{ctx: ctx, graphqlClient: graphqlClient, branchName: branchName}
+	page, err := listConnection(
+		"list issue vcs branch children "+branchName, limit, defaultListPageSize,
+		query.children,
+		issueVCSBranchChildNodeSummary,
+	)
 	if err != nil {
-		return IssueList{}, fmt.Errorf("list issue vcs branch children %s: %w", branchName, err)
-	}
-	if result.IssueVcsBranchSearch == nil {
-		return IssueList{}, notFoundError("list issue vcs branch children %s", branchName)
+		return IssueList{}, err
 	}
 
-	issues := mapNodes(result.IssueVcsBranchSearch.Children.Nodes, func(
-		issue gql.IssueChildrenProjectionChildrenIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(issue.IssueSummaryFields)
-	})
-
-	return IssueList{
-		Issues:      issues,
-		HasNextPage: result.IssueVcsBranchSearch.Children.PageInfo.HasNextPage,
-		EndCursor:   result.IssueVcsBranchSearch.Children.PageInfo.EndCursor,
-	}, nil
+	return IssueList{Issues: page.Items, Page: page.Page}, nil
 }
 
 // ListIssueVCSBranchDocuments returns documents for the issue matched by a VCS branch.
@@ -107,27 +128,17 @@ func ListIssueVCSBranchDocuments(
 	branchName string,
 	limit int,
 ) (DocumentList, error) {
-	result, err := gql.XIssueVcsBranchSearch_documents(
-		ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true),
+	query := &issueVCSBranchQuery{ctx: ctx, graphqlClient: graphqlClient, branchName: branchName}
+	page, err := listConnection(
+		"list issue vcs branch documents "+branchName, limit, defaultListPageSize,
+		query.documents,
+		issueVCSBranchDocumentNodeSummary,
 	)
 	if err != nil {
-		return DocumentList{}, fmt.Errorf("list issue vcs branch documents %s: %w", branchName, err)
-	}
-	if result.IssueVcsBranchSearch == nil {
-		return DocumentList{}, notFoundError("list issue vcs branch documents %s", branchName)
+		return DocumentList{}, err
 	}
 
-	documents := mapNodes(result.IssueVcsBranchSearch.Documents.Nodes, func(
-		document gql.IssueDocumentsProjectionDocumentsDocumentConnectionNodesDocument,
-	) DocumentSummary {
-		return documentSummary(document.DocumentSummaryFields)
-	})
-
-	return DocumentList{
-		Documents:   documents,
-		HasNextPage: result.IssueVcsBranchSearch.Documents.PageInfo.HasNextPage,
-		EndCursor:   result.IssueVcsBranchSearch.Documents.PageInfo.EndCursor,
-	}, nil
+	return DocumentList{Documents: page.Items, Page: page.Page}, nil
 }
 
 // ListIssueVCSBranchFormerAttachments returns former attachments for the issue matched by a VCS branch.
@@ -137,32 +148,17 @@ func ListIssueVCSBranchFormerAttachments(
 	branchName string,
 	limit int,
 ) (AttachmentList, error) {
-	result, err := gql.XIssueVcsBranchSearch_formerAttachments(
-		ctx,
-		graphqlClient,
-		branchName,
-		intPtr(limit),
-		nil,
-		boolPtr(true),
+	query := &issueVCSBranchQuery{ctx: ctx, graphqlClient: graphqlClient, branchName: branchName}
+	page, err := listConnection(
+		"list issue vcs branch former attachments "+branchName, limit, defaultListPageSize,
+		query.formerAttachments,
+		issueVCSBranchFormerAttachmentNodeSummary,
 	)
 	if err != nil {
-		return AttachmentList{}, fmt.Errorf("list issue vcs branch former attachments %s: %w", branchName, err)
-	}
-	if result.IssueVcsBranchSearch == nil {
-		return AttachmentList{}, notFoundError("list issue vcs branch former attachments %s", branchName)
+		return AttachmentList{}, err
 	}
 
-	attachments := mapNodes(result.IssueVcsBranchSearch.FormerAttachments.Nodes, func(
-		attachment gql.IssueFormerAttachmentsProjectionFormerAttachmentsAttachmentConnectionNodesAttachment,
-	) AttachmentSummary {
-		return attachmentSummary(attachment.AttachmentSummaryFields)
-	})
-
-	return AttachmentList{
-		Attachments: attachments,
-		HasNextPage: result.IssueVcsBranchSearch.FormerAttachments.PageInfo.HasNextPage,
-		EndCursor:   result.IssueVcsBranchSearch.FormerAttachments.PageInfo.EndCursor,
-	}, nil
+	return AttachmentList{Attachments: page.Items, Page: page.Page}, nil
 }
 
 // ListIssueVCSBranchHistory returns history metadata for the issue matched by a VCS branch.
@@ -172,21 +168,17 @@ func ListIssueVCSBranchHistory(
 	branchName string,
 	limit int,
 ) (IssueHistoryList, error) {
-	result, err := gql.XIssueVcsBranchSearch_history(ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true))
+	query := &issueVCSBranchQuery{ctx: ctx, graphqlClient: graphqlClient, branchName: branchName}
+	page, err := listConnection(
+		"list issue vcs branch history "+branchName, limit, defaultListPageSize,
+		query.history,
+		issueHistorySummary,
+	)
 	if err != nil {
-		return IssueHistoryList{}, fmt.Errorf("list issue vcs branch history %s: %w", branchName, err)
-	}
-	if result.IssueVcsBranchSearch == nil {
-		return IssueHistoryList{}, notFoundError("list issue vcs branch history %s", branchName)
+		return IssueHistoryList{}, err
 	}
 
-	history := mapNodes(result.IssueVcsBranchSearch.History.Nodes, issueHistorySummary)
-
-	return IssueHistoryList{
-		History:     history,
-		HasNextPage: result.IssueVcsBranchSearch.History.PageInfo.HasNextPage,
-		EndCursor:   result.IssueVcsBranchSearch.History.PageInfo.EndCursor,
-	}, nil
+	return IssueHistoryList{History: page.Items, Page: page.Page}, nil
 }
 
 // ListIssueVCSBranchInverseRelations returns inverse relations for the issue matched by a VCS branch.
@@ -196,32 +188,17 @@ func ListIssueVCSBranchInverseRelations(
 	branchName string,
 	limit int,
 ) (IssueRelationList, error) {
-	result, err := gql.XIssueVcsBranchSearch_inverseRelations(
-		ctx,
-		graphqlClient,
-		branchName,
-		intPtr(limit),
-		nil,
-		boolPtr(true),
+	query := &issueVCSBranchQuery{ctx: ctx, graphqlClient: graphqlClient, branchName: branchName}
+	page, err := listConnection(
+		"list issue vcs branch inverse relations "+branchName, limit, defaultListPageSize,
+		query.inverseRelations,
+		issueVCSBranchInverseRelationNodeSummary,
 	)
 	if err != nil {
-		return IssueRelationList{}, fmt.Errorf("list issue vcs branch inverse relations %s: %w", branchName, err)
-	}
-	if result.IssueVcsBranchSearch == nil {
-		return IssueRelationList{}, notFoundError("list issue vcs branch inverse relations %s", branchName)
+		return IssueRelationList{}, err
 	}
 
-	relations := mapNodes(result.IssueVcsBranchSearch.InverseRelations.Nodes, func(
-		relation gql.IssueInverseRelationsProjectionInverseRelationsIssueRelationConnectionNodesIssueRelation,
-	) IssueRelationSummary {
-		return issueRelationSummary(relation.IssueRelationSummaryFields)
-	})
-
-	return IssueRelationList{
-		Relations:   relations,
-		HasNextPage: result.IssueVcsBranchSearch.InverseRelations.PageInfo.HasNextPage,
-		EndCursor:   result.IssueVcsBranchSearch.InverseRelations.PageInfo.EndCursor,
-	}, nil
+	return IssueRelationList{Relations: page.Items, Page: page.Page}, nil
 }
 
 // ListIssueVCSBranchLabels returns labels for the issue matched by a VCS branch.
@@ -231,25 +208,17 @@ func ListIssueVCSBranchLabels(
 	branchName string,
 	limit int,
 ) (LabelList, error) {
-	result, err := gql.XIssueVcsBranchSearch_labels(ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true))
+	query := &issueVCSBranchQuery{ctx: ctx, graphqlClient: graphqlClient, branchName: branchName}
+	page, err := listConnection(
+		"list issue vcs branch labels "+branchName, limit, defaultListPageSize,
+		query.labels,
+		issueVCSBranchLabelNodeSummary,
+	)
 	if err != nil {
-		return LabelList{}, fmt.Errorf("list issue vcs branch labels %s: %w", branchName, err)
-	}
-	if result.IssueVcsBranchSearch == nil {
-		return LabelList{}, notFoundError("list issue vcs branch labels %s", branchName)
+		return LabelList{}, err
 	}
 
-	labels := mapNodes(result.IssueVcsBranchSearch.Labels.Nodes, func(
-		label gql.IssueLabelsProjectionLabelsIssueLabelConnectionNodesIssueLabel,
-	) LabelSummary {
-		return labelSummary(label.IssueLabelSummaryFields)
-	})
-
-	return LabelList{
-		Labels:      labels,
-		HasNextPage: result.IssueVcsBranchSearch.Labels.PageInfo.HasNextPage,
-		EndCursor:   result.IssueVcsBranchSearch.Labels.PageInfo.EndCursor,
-	}, nil
+	return LabelList{Labels: page.Items, Page: page.Page}, nil
 }
 
 // ListIssueVCSBranchRelations returns relations for the issue matched by a VCS branch.
@@ -259,27 +228,17 @@ func ListIssueVCSBranchRelations(
 	branchName string,
 	limit int,
 ) (IssueRelationList, error) {
-	result, err := gql.XIssueVcsBranchSearch_relations(
-		ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true),
+	query := &issueVCSBranchQuery{ctx: ctx, graphqlClient: graphqlClient, branchName: branchName}
+	page, err := listConnection(
+		"list issue vcs branch relations "+branchName, limit, defaultListPageSize,
+		query.relations,
+		issueVCSBranchRelationNodeSummary,
 	)
 	if err != nil {
-		return IssueRelationList{}, fmt.Errorf("list issue vcs branch relations %s: %w", branchName, err)
-	}
-	if result.IssueVcsBranchSearch == nil {
-		return IssueRelationList{}, notFoundError("list issue vcs branch relations %s", branchName)
+		return IssueRelationList{}, err
 	}
 
-	relations := mapNodes(result.IssueVcsBranchSearch.Relations.Nodes, func(
-		node gql.IssueRelationsProjectionRelationsIssueRelationConnectionNodesIssueRelation,
-	) IssueRelationSummary {
-		return issueRelationSummary(node.IssueRelationSummaryFields)
-	})
-
-	return IssueRelationList{
-		Relations:   relations,
-		HasNextPage: result.IssueVcsBranchSearch.Relations.PageInfo.HasNextPage,
-		EndCursor:   result.IssueVcsBranchSearch.Relations.PageInfo.EndCursor,
-	}, nil
+	return IssueRelationList{Relations: page.Items, Page: page.Page}, nil
 }
 
 // ListIssueVCSBranchReleases returns releases for the issue matched by a VCS branch.
@@ -289,25 +248,17 @@ func ListIssueVCSBranchReleases(
 	branchName string,
 	limit int,
 ) (ReleaseList, error) {
-	result, err := gql.XIssueVcsBranchSearch_releases(ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true))
+	query := &issueVCSBranchQuery{ctx: ctx, graphqlClient: graphqlClient, branchName: branchName}
+	page, err := listConnection(
+		"list issue vcs branch releases "+branchName, limit, defaultListPageSize,
+		query.releases,
+		issueVCSBranchReleaseNodeSummary,
+	)
 	if err != nil {
-		return ReleaseList{}, fmt.Errorf("list issue vcs branch releases %s: %w", branchName, err)
-	}
-	if result.IssueVcsBranchSearch == nil {
-		return ReleaseList{}, notFoundError("list issue vcs branch releases %s", branchName)
+		return ReleaseList{}, err
 	}
 
-	releases := mapNodes(result.IssueVcsBranchSearch.Releases.Nodes, func(
-		release gql.IssueReleasesProjectionReleasesReleaseConnectionNodesRelease,
-	) ReleaseSummary {
-		return releaseSummary(release.ReleaseSummaryFields)
-	})
-
-	return ReleaseList{
-		Releases:    releases,
-		HasNextPage: result.IssueVcsBranchSearch.Releases.PageInfo.HasNextPage,
-		EndCursor:   result.IssueVcsBranchSearch.Releases.PageInfo.EndCursor,
-	}, nil
+	return ReleaseList{Releases: page.Items, Page: page.Page}, nil
 }
 
 // ListIssueVCSBranchStateHistory returns workflow-state spans for the issue matched by a VCS branch.
@@ -317,21 +268,20 @@ func ListIssueVCSBranchStateHistory(
 	branchName string,
 	limit int,
 ) (IssueStateHistoryList, error) {
-	result, err := gql.XIssueVcsBranchSearch_stateHistory(ctx, graphqlClient, branchName, intPtr(limit), nil)
+	query := &issueVCSBranchQuery{ctx: ctx, graphqlClient: graphqlClient, branchName: branchName}
+	page, parent, err := listConnectionWithParent(
+		"list issue vcs branch state history "+branchName, limit, defaultListPageSize,
+		query.stateHistory,
+		issueStateSpanSummary,
+	)
 	if err != nil {
-		return IssueStateHistoryList{}, fmt.Errorf("list issue vcs branch state history %s: %w", branchName, err)
+		return IssueStateHistoryList{}, err
 	}
-	if result.IssueVcsBranchSearch == nil {
-		return IssueStateHistoryList{}, notFoundError("list issue vcs branch state history %s", branchName)
-	}
-
-	spans := mapNodes(result.IssueVcsBranchSearch.StateHistory.Nodes, issueStateSpanSummary)
 
 	return IssueStateHistoryList{
-		IssueID:     result.IssueVcsBranchSearch.Id,
-		Spans:       spans,
-		HasNextPage: result.IssueVcsBranchSearch.StateHistory.PageInfo.HasNextPage,
-		EndCursor:   result.IssueVcsBranchSearch.StateHistory.PageInfo.EndCursor,
+		IssueID: parent.issueID,
+		Spans:   page.Items,
+		Page:    page.Page,
 	}, nil
 }
 
@@ -342,25 +292,272 @@ func ListIssueVCSBranchSubscribers(
 	branchName string,
 	limit int,
 ) (UserList, error) {
-	result, err := gql.XIssueVcsBranchSearch_subscribers(
-		ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true),
+	query := &issueVCSBranchQuery{ctx: ctx, graphqlClient: graphqlClient, branchName: branchName}
+	page, err := listConnection(
+		"list issue vcs branch subscribers "+branchName, limit, defaultListPageSize,
+		query.subscribers,
+		issueVCSBranchSubscriberNodeSummary,
 	)
 	if err != nil {
-		return UserList{}, fmt.Errorf("list issue vcs branch subscribers %s: %w", branchName, err)
+		return UserList{}, err
+	}
+
+	return UserList{Users: page.Items, Page: page.Page}, nil
+}
+
+func (query *issueVCSBranchQuery) attachments(
+	pageSize int,
+	after *string,
+) ([]issueVCSBranchAttachmentsNode, bool, *string, error) {
+	result, err := gql.XIssueVcsBranchSearch_attachments(
+		query.ctx, query.graphqlClient, query.branchName, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
 	}
 	if result.IssueVcsBranchSearch == nil {
-		return UserList{}, notFoundError("list issue vcs branch subscribers %s", branchName)
+		return nil, false, nil, ErrNotFound
 	}
 
-	users := mapNodes(result.IssueVcsBranchSearch.Subscribers.Nodes, func(
-		node gql.IssueSubscribersProjectionSubscribersUserConnectionNodesUser,
-	) UserSummary {
-		return userSummary(node.UserSummaryFields)
-	})
+	return result.IssueVcsBranchSearch.Attachments.Nodes,
+		result.IssueVcsBranchSearch.Attachments.PageInfo.HasNextPage,
+		result.IssueVcsBranchSearch.Attachments.PageInfo.EndCursor,
+		nil
+}
 
-	return UserList{
-		Users:       users,
-		HasNextPage: result.IssueVcsBranchSearch.Subscribers.PageInfo.HasNextPage,
-		EndCursor:   result.IssueVcsBranchSearch.Subscribers.PageInfo.EndCursor,
-	}, nil
+func (query *issueVCSBranchQuery) children(
+	pageSize int,
+	after *string,
+) ([]issueVCSBranchChildrenNode, bool, *string, error) {
+	result, err := gql.XIssueVcsBranchSearch_children(
+		query.ctx, query.graphqlClient, query.branchName, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+	if result.IssueVcsBranchSearch == nil {
+		return nil, false, nil, ErrNotFound
+	}
+
+	return result.IssueVcsBranchSearch.Children.Nodes,
+		result.IssueVcsBranchSearch.Children.PageInfo.HasNextPage,
+		result.IssueVcsBranchSearch.Children.PageInfo.EndCursor,
+		nil
+}
+
+func (query *issueVCSBranchQuery) documents(
+	pageSize int,
+	after *string,
+) ([]issueVCSBranchDocumentsNode, bool, *string, error) {
+	result, err := gql.XIssueVcsBranchSearch_documents(
+		query.ctx, query.graphqlClient, query.branchName, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+	if result.IssueVcsBranchSearch == nil {
+		return nil, false, nil, ErrNotFound
+	}
+
+	return result.IssueVcsBranchSearch.Documents.Nodes,
+		result.IssueVcsBranchSearch.Documents.PageInfo.HasNextPage,
+		result.IssueVcsBranchSearch.Documents.PageInfo.EndCursor,
+		nil
+}
+
+func (query *issueVCSBranchQuery) formerAttachments(
+	pageSize int,
+	after *string,
+) ([]issueVCSBranchFormerAttachmentsNode, bool, *string, error) {
+	result, err := gql.XIssueVcsBranchSearch_formerAttachments(
+		query.ctx, query.graphqlClient, query.branchName, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+	if result.IssueVcsBranchSearch == nil {
+		return nil, false, nil, ErrNotFound
+	}
+
+	return result.IssueVcsBranchSearch.FormerAttachments.Nodes,
+		result.IssueVcsBranchSearch.FormerAttachments.PageInfo.HasNextPage,
+		result.IssueVcsBranchSearch.FormerAttachments.PageInfo.EndCursor,
+		nil
+}
+
+func (query *issueVCSBranchQuery) history(
+	pageSize int,
+	after *string,
+) ([]issueVCSBranchHistoryNode, bool, *string, error) {
+	result, err := gql.XIssueVcsBranchSearch_history(
+		query.ctx, query.graphqlClient, query.branchName, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+	if result.IssueVcsBranchSearch == nil {
+		return nil, false, nil, ErrNotFound
+	}
+
+	return result.IssueVcsBranchSearch.History.Nodes,
+		result.IssueVcsBranchSearch.History.PageInfo.HasNextPage,
+		result.IssueVcsBranchSearch.History.PageInfo.EndCursor,
+		nil
+}
+
+func (query *issueVCSBranchQuery) inverseRelations(
+	pageSize int,
+	after *string,
+) ([]issueVCSBranchInverseRelationsNode, bool, *string, error) {
+	result, err := gql.XIssueVcsBranchSearch_inverseRelations(
+		query.ctx, query.graphqlClient, query.branchName, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+	if result.IssueVcsBranchSearch == nil {
+		return nil, false, nil, ErrNotFound
+	}
+
+	return result.IssueVcsBranchSearch.InverseRelations.Nodes,
+		result.IssueVcsBranchSearch.InverseRelations.PageInfo.HasNextPage,
+		result.IssueVcsBranchSearch.InverseRelations.PageInfo.EndCursor,
+		nil
+}
+
+func (query *issueVCSBranchQuery) labels(
+	pageSize int,
+	after *string,
+) ([]issueVCSBranchLabelsNode, bool, *string, error) {
+	result, err := gql.XIssueVcsBranchSearch_labels(
+		query.ctx, query.graphqlClient, query.branchName, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+	if result.IssueVcsBranchSearch == nil {
+		return nil, false, nil, ErrNotFound
+	}
+
+	return result.IssueVcsBranchSearch.Labels.Nodes,
+		result.IssueVcsBranchSearch.Labels.PageInfo.HasNextPage,
+		result.IssueVcsBranchSearch.Labels.PageInfo.EndCursor,
+		nil
+}
+
+func (query *issueVCSBranchQuery) relations(
+	pageSize int,
+	after *string,
+) ([]issueVCSBranchRelationsNode, bool, *string, error) {
+	result, err := gql.XIssueVcsBranchSearch_relations(
+		query.ctx, query.graphqlClient, query.branchName, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+	if result.IssueVcsBranchSearch == nil {
+		return nil, false, nil, ErrNotFound
+	}
+
+	return result.IssueVcsBranchSearch.Relations.Nodes,
+		result.IssueVcsBranchSearch.Relations.PageInfo.HasNextPage,
+		result.IssueVcsBranchSearch.Relations.PageInfo.EndCursor,
+		nil
+}
+
+func (query *issueVCSBranchQuery) releases(
+	pageSize int,
+	after *string,
+) ([]issueVCSBranchReleasesNode, bool, *string, error) {
+	result, err := gql.XIssueVcsBranchSearch_releases(
+		query.ctx, query.graphqlClient, query.branchName, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+	if result.IssueVcsBranchSearch == nil {
+		return nil, false, nil, ErrNotFound
+	}
+
+	return result.IssueVcsBranchSearch.Releases.Nodes,
+		result.IssueVcsBranchSearch.Releases.PageInfo.HasNextPage,
+		result.IssueVcsBranchSearch.Releases.PageInfo.EndCursor,
+		nil
+}
+
+func (query *issueVCSBranchQuery) stateHistory(
+	pageSize int,
+	after *string,
+) ([]issueVCSBranchStateHistoryNode, issueParent, bool, *string, error) {
+	result, err := gql.XIssueVcsBranchSearch_stateHistory(
+		query.ctx, query.graphqlClient, query.branchName, intPtr(pageSize), after,
+	)
+	if err != nil {
+		return nil, issueParent{}, false, nil, err
+	}
+	if result.IssueVcsBranchSearch == nil {
+		return nil, issueParent{}, false, nil, ErrNotFound
+	}
+
+	return result.IssueVcsBranchSearch.StateHistory.Nodes,
+		issueParent{issueID: result.IssueVcsBranchSearch.Id},
+		result.IssueVcsBranchSearch.StateHistory.PageInfo.HasNextPage,
+		result.IssueVcsBranchSearch.StateHistory.PageInfo.EndCursor,
+		nil
+}
+
+func (query *issueVCSBranchQuery) subscribers(
+	pageSize int,
+	after *string,
+) ([]issueVCSBranchSubscribersNode, bool, *string, error) {
+	result, err := gql.XIssueVcsBranchSearch_subscribers(
+		query.ctx, query.graphqlClient, query.branchName, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+	if result.IssueVcsBranchSearch == nil {
+		return nil, false, nil, ErrNotFound
+	}
+
+	return result.IssueVcsBranchSearch.Subscribers.Nodes,
+		result.IssueVcsBranchSearch.Subscribers.PageInfo.HasNextPage,
+		result.IssueVcsBranchSearch.Subscribers.PageInfo.EndCursor,
+		nil
+}
+
+func issueVCSBranchAttachmentNodeSummary(node issueVCSBranchAttachmentsNode) AttachmentSummary {
+	return attachmentSummary(node.AttachmentSummaryFields)
+}
+
+func issueVCSBranchChildNodeSummary(issue issueVCSBranchChildrenNode) IssueSummary {
+	return issueSummaryFromFields(issue.IssueSummaryFields)
+}
+
+func issueVCSBranchDocumentNodeSummary(document issueVCSBranchDocumentsNode) DocumentSummary {
+	return documentSummary(document.DocumentSummaryFields)
+}
+
+func issueVCSBranchFormerAttachmentNodeSummary(attachment issueVCSBranchFormerAttachmentsNode) AttachmentSummary {
+	return attachmentSummary(attachment.AttachmentSummaryFields)
+}
+
+func issueVCSBranchInverseRelationNodeSummary(relation issueVCSBranchInverseRelationsNode) IssueRelationSummary {
+	return issueRelationSummary(relation.IssueRelationSummaryFields)
+}
+
+func issueVCSBranchLabelNodeSummary(label issueVCSBranchLabelsNode) LabelSummary {
+	return labelSummary(label.IssueLabelSummaryFields)
+}
+
+func issueVCSBranchRelationNodeSummary(node issueVCSBranchRelationsNode) IssueRelationSummary {
+	return issueRelationSummary(node.IssueRelationSummaryFields)
+}
+
+func issueVCSBranchReleaseNodeSummary(release issueVCSBranchReleasesNode) ReleaseSummary {
+	return releaseSummary(release.ReleaseSummaryFields)
+}
+
+func issueVCSBranchSubscriberNodeSummary(node issueVCSBranchSubscribersNode) UserSummary {
+	return userSummary(node.UserSummaryFields)
 }

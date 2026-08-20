@@ -228,17 +228,30 @@ func commandFlowIssueReadPayload(operation string, fake commandFlowFakeClient) (
 	case "IssueDependencies":
 		return commandFlowIssueDependenciesPayload(), true
 	case "issue_comments":
-		if fake.emptyIssueComments {
-			return `{"issue":{"id":"issue-id","identifier":"LIT-1","comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
-		}
-		hasNextPage := "false"
-		if fake.truncatedExport {
-			hasNextPage = "true"
-		}
-		return `{"issue":{"id":"issue-id","identifier":"LIT-1","comments":{"nodes":[{"id":"comment-id","body":"First comment","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","parentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":` + hasNextPage + `,"endCursor":null}}}}`, true
+		return commandFlowIssueCommentsPayload(fake), true
 	default:
 		return "", false
 	}
+}
+
+func commandFlowIssueCommentsPayload(fake commandFlowFakeClient) string {
+	if fake.emptyIssueComments {
+		return `{"issue":{"id":"issue-id","identifier":"LIT-1","comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`
+	}
+	comment := `{"id":"comment-id","body":"First comment","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","parentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}}`
+	nodes := []string{comment}
+	hasNextPage := "false"
+	if fake.truncatedExport {
+		hasNextPage = "true"
+		nodes = make([]string, exportPageLimit)
+		for i := range nodes {
+			nodes[i] = comment
+		}
+	}
+
+	return `{"issue":{"id":"issue-id","identifier":"LIT-1","comments":{"nodes":[` +
+		strings.Join(nodes, ",") +
+		`],"pageInfo":{"hasNextPage":` + hasNextPage + `,"endCursor":null}}}}`
 }
 
 func commandFlowIssueUtilityPayload(operation string, fake commandFlowFakeClient) (string, bool) {

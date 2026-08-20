@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"cmp"
 	"context"
 
 	"github.com/spf13/cobra"
@@ -300,7 +301,7 @@ func applyIssueWriteNormalization(
 	status string,
 	priority string,
 ) (stateType string, normalizedPriority string, err error) {
-	stateType, err = normalizeAndNote(command, "state", firstNonEmpty(state, status), normalizedStateType)
+	stateType, err = normalizeAndNote(command, "state", cmp.Or(state, status), normalizedStateType)
 	if err != nil {
 		return "", "", err
 	}

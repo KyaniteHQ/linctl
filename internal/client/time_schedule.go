@@ -34,27 +34,32 @@ type TimeScheduleSummary struct {
 // TimeScheduleList is a page of Linear time schedules.
 type TimeScheduleList struct {
 	TimeSchedules []TimeScheduleSummary `json:"time_schedules"`
-	HasNextPage   bool                  `json:"has_next_page"`
-	EndCursor     *string               `json:"end_cursor,omitempty"`
+	Page
+}
+
+//nolint:lll
+type timeSchedulesNode = gql.XTimeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule
+
+type timeSchedulesQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
 }
 
 // ListTimeSchedules returns visible Linear time schedules.
 func ListTimeSchedules(ctx context.Context, graphqlClient graphql.Client, limit int) (TimeScheduleList, error) {
-	result, err := gql.XTimeSchedules(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := timeSchedulesQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list time schedules", limit, defaultListPageSize,
+		query.page,
+		timeSchedulesNodeSummary,
+	)
 	if err != nil {
-		return TimeScheduleList{}, fmt.Errorf("list time schedules: %w", err)
+		return TimeScheduleList{}, err
 	}
 
-	summaries := mapNodes(result.TimeSchedules.Nodes, func(
-		node gql.XTimeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule,
-	) TimeScheduleSummary {
-		return timeScheduleSummary(node.TimeScheduleSummaryFields)
-	})
-
 	return TimeScheduleList{
-		TimeSchedules: summaries,
-		HasNextPage:   result.TimeSchedules.PageInfo.HasNextPage,
-		EndCursor:     result.TimeSchedules.PageInfo.EndCursor,
+		TimeSchedules: page.Items,
+		Page:          page.Page,
 	}, nil
 }
 
@@ -66,6 +71,22 @@ func GetTimeScheduleByID(ctx context.Context, graphqlClient graphql.Client, id s
 	}
 
 	return timeScheduleSummary(result.TimeSchedule.TimeScheduleSummaryFields), nil
+}
+
+func (query timeSchedulesQuery) page(pageSize int, after *string) ([]timeSchedulesNode, bool, *string, error) {
+	result, err := gql.XTimeSchedules(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.TimeSchedules.Nodes,
+		result.TimeSchedules.PageInfo.HasNextPage,
+		result.TimeSchedules.PageInfo.EndCursor,
+		nil
+}
+
+func timeSchedulesNodeSummary(node timeSchedulesNode) TimeScheduleSummary {
+	return timeScheduleSummary(node.TimeScheduleSummaryFields)
 }
 
 func timeScheduleSummary(fields gql.TimeScheduleSummaryFields) TimeScheduleSummary {

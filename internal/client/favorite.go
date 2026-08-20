@@ -19,29 +19,40 @@ type FavoriteSummary struct {
 
 // FavoriteList is a page of favorites.
 type FavoriteList struct {
-	Favorites   []FavoriteSummary `json:"favorites"`
-	HasNextPage bool              `json:"has_next_page"`
-	EndCursor   *string           `json:"end_cursor,omitempty"`
+	Favorites []FavoriteSummary `json:"favorites"`
+	Page
+}
+
+//nolint:lll
+type favoritesNode = gql.XFavoritesFavoritesFavoriteConnectionNodesFavorite
+
+//nolint:lll
+type favoriteChildrenNode = gql.XFavorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite
+
+type favoritesQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
+type favoriteChildrenQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+	id            string
 }
 
 // ListFavorites returns the authenticated user's favorites.
 func ListFavorites(ctx context.Context, graphqlClient graphql.Client, limit int) (FavoriteList, error) {
-	result, err := gql.XFavorites(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := favoritesQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list favorites", limit, defaultListPageSize,
+		query.page,
+		favoritesNodeSummary,
+	)
 	if err != nil {
-		return FavoriteList{}, fmt.Errorf("list favorites: %w", err)
+		return FavoriteList{}, err
 	}
 
-	summaries := mapNodes(result.Favorites.Nodes, func(
-		node gql.XFavoritesFavoritesFavoriteConnectionNodesFavorite,
-	) FavoriteSummary {
-		return favoriteSummary(node.FavoriteSummaryFields)
-	})
-
-	return FavoriteList{
-		Favorites:   summaries,
-		HasNextPage: result.Favorites.PageInfo.HasNextPage,
-		EndCursor:   result.Favorites.PageInfo.EndCursor,
-	}, nil
+	return FavoriteList{Favorites: page.Items, Page: page.Page}, nil
 }
 
 // ListFavoriteChildren returns child favorites under a folder favorite.
@@ -51,22 +62,17 @@ func ListFavoriteChildren(
 	id string,
 	limit int,
 ) (FavoriteList, error) {
-	result, err := gql.XFavorite_children(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	query := favoriteChildrenQuery{ctx: ctx, graphqlClient: graphqlClient, id: id}
+	page, err := listConnection(
+		"list favorite children "+id, limit, defaultListPageSize,
+		query.children,
+		favoriteChildrenNodeSummary,
+	)
 	if err != nil {
-		return FavoriteList{}, fmt.Errorf("list favorite children %s: %w", id, err)
+		return FavoriteList{}, err
 	}
 
-	summaries := mapNodes(result.Favorite.Children.Nodes, func(
-		node gql.XFavorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite,
-	) FavoriteSummary {
-		return favoriteSummary(node.FavoriteSummaryFields)
-	})
-
-	return FavoriteList{
-		Favorites:   summaries,
-		HasNextPage: result.Favorite.Children.PageInfo.HasNextPage,
-		EndCursor:   result.Favorite.Children.PageInfo.EndCursor,
-	}, nil
+	return FavoriteList{Favorites: page.Items, Page: page.Page}, nil
 }
 
 // GetFavoriteByID returns one favorite by Linear id.
@@ -81,6 +87,43 @@ func GetFavoriteByID(
 	}
 
 	return favoriteSummary(result.Favorite.FavoriteSummaryFields), nil
+}
+
+func (query favoritesQuery) page(pageSize int, after *string) ([]favoritesNode, bool, *string, error) {
+	result, err := gql.XFavorites(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Favorites.Nodes,
+		result.Favorites.PageInfo.HasNextPage,
+		result.Favorites.PageInfo.EndCursor,
+		nil
+}
+
+func (query favoriteChildrenQuery) children(
+	pageSize int,
+	after *string,
+) ([]favoriteChildrenNode, bool, *string, error) {
+	result, err := gql.XFavorite_children(
+		query.ctx, query.graphqlClient, query.id, intPtr(pageSize), after, boolPtr(true),
+	)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.Favorite.Children.Nodes,
+		result.Favorite.Children.PageInfo.HasNextPage,
+		result.Favorite.Children.PageInfo.EndCursor,
+		nil
+}
+
+func favoritesNodeSummary(node favoritesNode) FavoriteSummary {
+	return favoriteSummary(node.FavoriteSummaryFields)
+}
+
+func favoriteChildrenNodeSummary(node favoriteChildrenNode) FavoriteSummary {
+	return favoriteSummary(node.FavoriteSummaryFields)
 }
 
 func favoriteSummary(fields gql.FavoriteSummaryFields) FavoriteSummary {

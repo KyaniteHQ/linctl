@@ -29,8 +29,7 @@ type TriageResponsibilitySummary struct {
 // TriageResponsibilityList is a page of triage responsibilities.
 type TriageResponsibilityList struct {
 	TriageResponsibilities []TriageResponsibilitySummary `json:"triage_responsibilities"`
-	HasNextPage            bool                          `json:"has_next_page"`
-	EndCursor              *string                       `json:"end_cursor,omitempty"`
+	Page
 }
 
 // TriageResponsibilityManualSelection is the manual user selection for one triage responsibility.
@@ -39,27 +38,33 @@ type TriageResponsibilityManualSelection struct {
 	UserIDs []string `json:"user_ids"`
 }
 
+//nolint:lll
+type triageResponsibilitiesNode = gql.XTriageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility
+
+type triageResponsibilitiesQuery struct {
+	ctx           context.Context
+	graphqlClient graphql.Client
+}
+
 // ListTriageResponsibilities returns visible triage responsibility configs.
 func ListTriageResponsibilities(
 	ctx context.Context,
 	graphqlClient graphql.Client,
 	limit int,
 ) (TriageResponsibilityList, error) {
-	result, err := gql.XTriageResponsibilities(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	query := triageResponsibilitiesQuery{ctx: ctx, graphqlClient: graphqlClient}
+	page, err := listConnection(
+		"list triage responsibilities", limit, defaultListPageSize,
+		query.page,
+		triageResponsibilitiesNodeSummary,
+	)
 	if err != nil {
-		return TriageResponsibilityList{}, fmt.Errorf("list triage responsibilities: %w", err)
+		return TriageResponsibilityList{}, err
 	}
 
-	summaries := mapNodes(result.TriageResponsibilities.Nodes, func(
-		node gql.XTriageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility,
-	) TriageResponsibilitySummary {
-		return triageResponsibilitySummary(node.TriageResponsibilitySummaryFields)
-	})
-
 	return TriageResponsibilityList{
-		TriageResponsibilities: summaries,
-		HasNextPage:            result.TriageResponsibilities.PageInfo.HasNextPage,
-		EndCursor:              result.TriageResponsibilities.PageInfo.EndCursor,
+		TriageResponsibilities: page.Items,
+		Page:                   page.Page,
 	}, nil
 }
 
@@ -97,6 +102,25 @@ func GetTriageResponsibilityManualSelection(
 		selection.UserIDs = result.TriageResponsibility.ManualSelection.UserIds
 	}
 	return selection, nil
+}
+
+func (query triageResponsibilitiesQuery) page(
+	pageSize int,
+	after *string,
+) ([]triageResponsibilitiesNode, bool, *string, error) {
+	result, err := gql.XTriageResponsibilities(query.ctx, query.graphqlClient, intPtr(pageSize), after, boolPtr(true))
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	return result.TriageResponsibilities.Nodes,
+		result.TriageResponsibilities.PageInfo.HasNextPage,
+		result.TriageResponsibilities.PageInfo.EndCursor,
+		nil
+}
+
+func triageResponsibilitiesNodeSummary(node triageResponsibilitiesNode) TriageResponsibilitySummary {
+	return triageResponsibilitySummary(node.TriageResponsibilitySummaryFields)
 }
 
 func triageResponsibilitySummary(fields gql.TriageResponsibilitySummaryFields) TriageResponsibilitySummary {

@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"cmp"
 	"context"
 	"slices"
 	"strings"
@@ -83,7 +84,7 @@ func newAuthStatusReport(
 			ExpiresAt: token.ExpiresAt,
 			Scopes:    slices.Clone(token.Scopes),
 		},
-		Actor:     firstNonEmptyString(readiness.Actor, token.Actor),
+		Actor:     cmp.Or(readiness.Actor, token.Actor),
 		Scopes:    slices.Clone(token.Scopes),
 		ExpiresAt: token.ExpiresAt,
 		TokenType: token.TokenType,

@@ -9,11 +9,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Command metadata rides on cobra annotations. The rule is that a command is
-// stamped where it is registered: addCommandWithSafety, addWriteCommand, or
-// annotateReadCollectionCommand. newGroupCommand is the one exception, because
-// a group command is read by construction and has no registration helper of its
-// own.
+// Command metadata rides on cobra annotations. Most commands are stamped where
+// they are registered: addCommandWithSafety, addWriteCommand, or
+// annotateReadCollectionCommand. newGroupCommand defaults a group to read.
+// The auth family calls annotateCommand directly, and auth.go overrides that
+// group's default from read to Local.
 const (
 	commandCollectionKeyAnnotation = "linctl.collection_key"
 	commandSafetyAnnotation        = "linctl.safety"
