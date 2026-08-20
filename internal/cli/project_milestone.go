@@ -51,7 +51,7 @@ func addProjectMilestoneListCommand(ctx context.Context, root *cobra.Command, op
 		root,
 		options,
 		"list PROJECT_ID",
-		"List milestones for one project",
+		"List ProjectMilestones for one project",
 		"project milestones",
 		client.ListProjectMilestones,
 		writeProjectMilestone,

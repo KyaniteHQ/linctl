@@ -981,7 +981,7 @@ linctl cycle usage
 
 ### linctl doctor
 
-Check linctl config, token, and target health
+Check config load, token presence, and pinned-target confirmation
 
 ```
 linctl doctor
@@ -3294,7 +3294,7 @@ Flags:
 
 ### linctl project-milestone list
 
-List milestones for one project
+List ProjectMilestones for one project
 
 ```
 linctl project-milestone list PROJECT_ID [flags]

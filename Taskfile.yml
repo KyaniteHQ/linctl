@@ -94,6 +94,7 @@ tasks:
           skills/linctl/references/commands.md \
           skills/linctl/references/guarded-writes.md
       - go run scripts/linear_api_coverage*.go -h >/dev/null
+      - go run scripts/linear_schema_drift_check.go -h >/dev/null
       - task: upstream-schema-checks
 
   linear-sdk-upstream-checkout:

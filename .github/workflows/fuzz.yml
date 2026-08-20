@@ -17,22 +17,57 @@ defaults:
     shell: bash
 
 jobs:
+  discover:
+    name: discover fuzz targets
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      matrix: ${{ steps.discover.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Discover func Fuzz targets
+        id: discover
+        run: |
+          set -euo pipefail
+          matrix="$(python3 - <<'PY'
+          import json
+          import pathlib
+          import re
+          import subprocess
+          import sys
+
+          output = subprocess.check_output(
+              ["git", "grep", "-n", "^func Fuzz", "--", "*_test.go"],
+              text=True,
+          )
+          include = []
+          for line in output.splitlines():
+              path, _lineno, rest = line.split(":", 2)
+              match = re.search(r"func (Fuzz\w+)", rest)
+              if match is None:
+                  print(f"unparseable fuzz declaration: {line}", file=sys.stderr)
+                  sys.exit(1)
+              package = "./" + str(pathlib.Path(path).parent)
+              include.append({"target": match.group(1), "package": package})
+          include.sort(key=lambda item: (item["package"], item["target"]))
+          if not include:
+              print("no func Fuzz targets found", file=sys.stderr)
+              sys.exit(1)
+          print(json.dumps({"include": include}, separators=(",", ":")))
+          PY
+          )"
+          printf 'matrix=%s\n' "$matrix" >> "$GITHUB_OUTPUT"
+
   fuzz:
     name: fuzz / ${{ matrix.target }}
+    needs: discover
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - target: FuzzRequireTargetMatch
-            package: ./internal/client
-          - target: FuzzProjectJSONFields
-            package: ./internal/cli
-          - target: FuzzSortByJSONField
-            package: ./internal/cli
-          - target: FuzzParseIssueIdentifier
-            package: ./internal/gitctx
+      matrix: ${{ fromJSON(needs.discover.outputs.matrix) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
