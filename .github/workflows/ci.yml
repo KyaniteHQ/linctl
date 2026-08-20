@@ -71,6 +71,18 @@ jobs:
           "$bin" usage
           "$bin" issue usage
 
+  test-windows:
+    name: test-windows
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/go-setup
+      - name: Test Windows auth lock
+        run: go test -shuffle=on -count=1 -timeout 180s ./internal/auth
+
   coverage:
     name: coverage
     runs-on: ubuntu-latest
