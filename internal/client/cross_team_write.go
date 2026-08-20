@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
@@ -40,10 +39,11 @@ type IssueMoveProjectRequest struct {
 
 // AddProjectTeam attaches a team to a project after comparing the project against
 // the pinned target. Linear's projectUpdate teamIds field replaces the full set,
-// so the write merges the destination onto the complete current membership and
-// refuses when that membership cannot be fully enumerated. The destination team
-// must belong to the same organization as the pin. Adding a team already present
-// is a no-op that returns the current project.
+// so the write re-reads membership immediately before the mutation, merges the
+// destination onto that snapshot, and refuses with Target Mismatch if a pre-write
+// team is missing afterwards. The destination team must belong to the same
+// organization as the pin. Adding a team already present is a no-op that returns
+// the current project.
 func AddProjectTeam(
 	ctx context.Context,
 	graphqlClient graphql.Client,
@@ -88,14 +88,16 @@ func (guard *guardedClient) addProjectTeam(
 		return project, nil
 	}
 
-	teamIDs, err := guard.listAllProjectTeamIDs(ctx, request.ProjectID, project)
+	preWriteTeamIDs, err := guard.snapshotProjectTeamIDs(ctx, request.ProjectID)
 	if err != nil {
 		return ProjectSummary{}, err
 	}
-	teamIDs = append(teamIDs, destination.ID)
+	mergedIDs := make([]string, len(preWriteTeamIDs), len(preWriteTeamIDs)+1)
+	copy(mergedIDs, preWriteTeamIDs)
+	mergedIDs = append(mergedIDs, destination.ID)
 
 	updated, err := gql.ProjectUpdate(ctx, guard.graphqlClient, request.ProjectID, LinearProjectUpdateInput{
-		TeamIDs: teamIDs,
+		TeamIDs: mergedIDs,
 	})
 	if err != nil {
 		return ProjectSummary{}, fmt.Errorf("add team to project %s: %w", request.ProjectID, err)
@@ -104,7 +106,35 @@ func (guard *guardedClient) addProjectTeam(
 		return ProjectSummary{}, fmt.Errorf("%w: projectUpdate returned no project", ErrMutationFailed)
 	}
 
-	summary := projectSummaryFromFields(updated.ProjectUpdate.Project.ProjectSummaryFields)
+	return confirmAddedProjectTeam(
+		projectSummaryFromFields(updated.ProjectUpdate.Project.ProjectSummaryFields),
+		destination,
+		preWriteTeamIDs,
+		guard,
+	)
+}
+
+// snapshotProjectTeamIDs re-reads project team membership immediately before
+// the full-replace ProjectUpdate so the merge payload is not the stale first
+// snapshot taken before destination resolution.
+func (guard *guardedClient) snapshotProjectTeamIDs(ctx context.Context, projectID string) ([]string, error) {
+	project, err := GetProjectByID(ctx, guard.graphqlClient, projectID)
+	if err != nil {
+		return nil, err
+	}
+	if err := guard.requireProjectTeam(project); err != nil {
+		return nil, err
+	}
+
+	return guard.listAllProjectTeamIDs(ctx, projectID, project)
+}
+
+func confirmAddedProjectTeam(
+	summary ProjectSummary,
+	destination TeamSummary,
+	preWriteTeamIDs []string,
+	guard *guardedClient,
+) (ProjectSummary, error) {
 	if !projectHasTeam(summary, destination.ID, destination.Key) {
 		return ProjectSummary{}, fmt.Errorf(
 			"%w: project %s is missing destination team_id=%s team_key=%s after update",
@@ -117,8 +147,34 @@ func (guard *guardedClient) addProjectTeam(
 	if err := guard.requireProjectTeam(summary); err != nil {
 		return ProjectSummary{}, err
 	}
+	if err := requireProjectKeepsTeamIDs(summary, preWriteTeamIDs); err != nil {
+		return ProjectSummary{}, err
+	}
 
 	return summary, nil
+}
+
+// requireProjectKeepsTeamIDs fails closed when a full-replace ProjectUpdate
+// dropped a team that was present in the pre-write snapshot.
+func requireProjectKeepsTeamIDs(project ProjectSummary, teamIDs []string) error {
+	present := make(map[string]struct{}, len(project.Teams))
+	for _, team := range project.Teams {
+		present[team.ID] = struct{}{}
+	}
+	for _, teamID := range teamIDs {
+		if _, ok := present[teamID]; ok {
+			continue
+		}
+
+		return fmt.Errorf(
+			"%w: project %s is missing team_id=%s after update",
+			ErrTargetMismatch,
+			project.ID,
+			teamID,
+		)
+	}
+
+	return nil
 }
 
 // MoveIssueTeam moves an issue to another team in the same organization. The
@@ -328,7 +384,7 @@ func (guard *guardedClient) findTeamByKey(ctx context.Context, teamKey string) (
 			return TeamSummary{}, fmt.Errorf("%w: no visible team with key %s", ErrWriteInvalid, teamKey)
 		}
 		if teams.Teams.PageInfo.EndCursor == nil {
-			return TeamSummary{}, errors.New("list teams: next page has no end cursor")
+			return TeamSummary{}, fmt.Errorf("list teams: next page has no end cursor: %w", ErrGraphQL)
 		}
 		after = teams.Teams.PageInfo.EndCursor
 	}

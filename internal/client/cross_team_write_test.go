@@ -2,8 +2,11 @@ package client
 
 import (
 	"context"
+	"errors"
+	"strings"
 	"testing"
 
+	"github.com/Khan/genqlient/graphql"
 	"github.com/stretchr/testify/require"
 
 	"github.com/KyaniteHQ/linctl/internal/config"
@@ -40,6 +43,31 @@ func teamsListWithDestinationJSON() string {
 }
 
 func projectJSONWithTwoTeams(project projectFixture) string {
+	return projectJSONWithTeamNodes(
+		project,
+		`{"id":"team-id","key":"LIT","name":"linctl-it"}`,
+		`{"id":"ops-team-id","key":"OPS","name":"OPS"}`,
+	)
+}
+
+func projectJSONWithPinnedAndExtra(project projectFixture) string {
+	return projectJSONWithTeamNodes(
+		project,
+		`{"id":"team-id","key":"LIT","name":"linctl-it"}`,
+		`{"id":"extra-team-id","key":"EXT","name":"Extra"}`,
+	)
+}
+
+func projectJSONWithPinnedExtraAndOps(project projectFixture) string {
+	return projectJSONWithTeamNodes(
+		project,
+		`{"id":"team-id","key":"LIT","name":"linctl-it"}`,
+		`{"id":"extra-team-id","key":"EXT","name":"Extra"}`,
+		`{"id":"ops-team-id","key":"OPS","name":"OPS"}`,
+	)
+}
+
+func projectJSONWithTeamNodes(project projectFixture, nodes ...string) string {
 	return `{
 		"id":"` + project.ID + `",
 		"name":"` + project.Name + `",
@@ -51,13 +79,44 @@ func projectJSONWithTwoTeams(project projectFixture) string {
 		"status":{"id":"status-id","name":"` + project.Status + `","type":"backlog"},
 		"lead":null,
 		"teams":{
-			"nodes":[
-				{"id":"team-id","key":"LIT","name":"linctl-it"},
-				{"id":"ops-team-id","key":"OPS","name":"OPS"}
-			],
+			"nodes":[` + strings.Join(nodes, ",") + `],
 			"pageInfo":{"hasNextPage":false}
 		}
 	}`
+}
+
+type sequentialOpClient struct {
+	inner    graphql.Client
+	payloads map[string][]string
+	failAt   map[string]int
+	calls    map[string]int
+}
+
+func newSequentialOpClient(inner graphql.Client) *sequentialOpClient {
+	return &sequentialOpClient{
+		inner:    inner,
+		payloads: map[string][]string{},
+		failAt:   map[string]int{},
+		calls:    map[string]int{},
+	}
+}
+
+func (client *sequentialOpClient) MakeRequest(
+	ctx context.Context,
+	request *graphql.Request,
+	response *graphql.Response,
+) error {
+	op := request.OpName
+	client.calls[op]++
+	n := client.calls[op]
+	if failAt, ok := client.failAt[op]; ok && n == failAt {
+		return errors.New("injected " + op + " failure")
+	}
+	if pages, ok := client.payloads[op]; ok && n <= len(pages) {
+		return fakeGraphQLClient(map[string]string{op: pages[n-1]}).MakeRequest(ctx, request, response)
+	}
+
+	return client.inner.MakeRequest(ctx, request, response)
 }
 
 func issueJSONWithTeam(issue issueFixture, teamID string, teamKey string) string {
@@ -210,7 +269,7 @@ func Test_AddProjectTeam_paginates_when_teams_page_is_truncated(t *testing.T) {
 				}
 			}
 		}`,
-		"ProjectUpdate": `{"projectUpdate":{"success":true,"project":` + projectJSONWithTwoTeams(
+		"ProjectUpdate": `{"projectUpdate":{"success":true,"project":` + projectJSONWithPinnedExtraAndOps(
 			projectFixture{ID: "project-id", Name: "Harness", Status: "Backlog"},
 		) + `}}`,
 	})}
@@ -697,7 +756,7 @@ func Test_AddProjectTeam_fails_when_team_list_page_has_no_end_cursor(t *testing.
 		}`,
 	}), matchingTarget(), ProjectAddTeamRequest{ProjectID: "project-id", TeamKey: "OPS"})
 
-	require.Error(t, err)
+	require.ErrorIs(t, err, ErrGraphQL)
 	require.Contains(t, err.Error(), "end cursor")
 }
 
@@ -773,6 +832,98 @@ func Test_AddProjectTeam_fails_when_project_teams_page_has_no_end_cursor(t *test
 	require.ErrorIs(t, err, ErrTargetMismatch)
 }
 
+func Test_AddProjectTeam_uses_the_fresh_team_snapshot_for_the_write(t *testing.T) {
+	// Destination resolution sits between the first project read and the write.
+	// The merge payload must come from a re-read after that window, not the
+	// stale first snapshot.
+	fixture := projectFixture{ID: "project-id", Name: "Harness", Status: "Backlog"}
+	seq := newSequentialOpClient(projectWriteFakeClient(map[string]string{
+		"team": `{"team":` + destinationTeamJSON("ops-team-id", "OPS", "org-id") + `}`,
+		"ProjectUpdate": `{"projectUpdate":{"success":true,"project":` +
+			projectJSONWithPinnedExtraAndOps(fixture) + `}}`,
+	}))
+	seq.payloads["project"] = []string{
+		`{"project":` + projectJSON(fixture) + `}`,
+		`{"project":` + projectJSONWithPinnedAndExtra(fixture) + `}`,
+	}
+	recorder := &recordingGraphQLClient{inner: seq}
+
+	_, err := AddProjectTeam(context.Background(), recorder, matchingTarget(), ProjectAddTeamRequest{
+		ProjectID: "project-id",
+		TeamID:    "ops-team-id",
+	})
+
+	require.NoError(t, err)
+	require.Equal(t, 2, recorder.countOf("project"))
+	require.JSONEq(t, `{
+		"id": "project-id",
+		"input": {"teamIds": ["team-id", "extra-team-id", "ops-team-id"]}
+	}`, string(recorder.variablesFor(t, "ProjectUpdate")))
+}
+
+func Test_AddProjectTeam_refuses_when_a_pre_write_team_disappears(t *testing.T) {
+	// The mutation result keeps the pinned team and the destination, which is
+	// what the old post-write checks required. Extra was on the pre-write
+	// snapshot and is missing after the replace: that is a silent overwrite
+	// and must refuse.
+	fixture := projectFixture{ID: "project-id", Name: "Harness", Status: "Backlog"}
+	recorder := &mutationRecordingClient{inner: projectWriteFakeClient(map[string]string{
+		"project": `{"project":` + projectJSONWithPinnedAndExtra(fixture) + `}`,
+		"team":    `{"team":` + destinationTeamJSON("ops-team-id", "OPS", "org-id") + `}`,
+		"ProjectUpdate": `{"projectUpdate":{"success":true,"project":` +
+			projectJSONWithTwoTeams(fixture) + `}}`,
+	})}
+
+	_, err := AddProjectTeam(context.Background(), recorder, matchingTarget(), ProjectAddTeamRequest{
+		ProjectID: "project-id",
+		TeamID:    "ops-team-id",
+	})
+
+	require.ErrorIs(t, err, ErrTargetMismatch)
+	require.Contains(t, err.Error(), "extra-team-id")
+	require.True(t, recorder.sentOperation("ProjectUpdate"))
+}
+
+func Test_AddProjectTeam_wraps_the_pre_write_project_reread_error(t *testing.T) {
+	seq := newSequentialOpClient(projectWriteFakeClient(map[string]string{
+		"project": `{"project":` + projectJSON(projectFixture{
+			ID: "project-id", Name: "Harness", Status: "Backlog",
+		}) + `}`,
+		"team": `{"team":` + destinationTeamJSON("ops-team-id", "OPS", "org-id") + `}`,
+	}))
+	seq.failAt["project"] = 2
+	recorder := &mutationRecordingClient{inner: seq}
+
+	_, err := AddProjectTeam(context.Background(), recorder, matchingTarget(), ProjectAddTeamRequest{
+		ProjectID: "project-id",
+		TeamID:    "ops-team-id",
+	})
+
+	require.ErrorContains(t, err, "injected project failure")
+	require.NotErrorIs(t, err, ErrTargetMismatch)
+	require.False(t, recorder.sentOperation("ProjectUpdate"))
+}
+
+func Test_AddProjectTeam_refuses_when_the_pre_write_reread_drops_the_pinned_team(t *testing.T) {
+	fixture := projectFixture{ID: "project-id", Name: "Harness", Status: "Backlog"}
+	seq := newSequentialOpClient(projectWriteFakeClient(map[string]string{
+		"team": `{"team":` + destinationTeamJSON("ops-team-id", "OPS", "org-id") + `}`,
+	}))
+	seq.payloads["project"] = []string{
+		`{"project":` + projectJSON(fixture) + `}`,
+		`{"project":` + projectJSONWithTeam(fixture, "other-team", "OTHER") + `}`,
+	}
+	recorder := &mutationRecordingClient{inner: seq}
+
+	_, err := AddProjectTeam(context.Background(), recorder, matchingTarget(), ProjectAddTeamRequest{
+		ProjectID: "project-id",
+		TeamID:    "ops-team-id",
+	})
+
+	require.ErrorIs(t, err, ErrTargetMismatch)
+	require.False(t, recorder.sentOperation("ProjectUpdate"))
+}
+
 func Test_AddProjectTeam_continues_project_teams_pagination(t *testing.T) {
 	client := projectWriteFakeClient(map[string]string{
 		"project": `{"project":` + projectJSONWithTeamPage(projectFixture{
@@ -803,7 +954,7 @@ func Test_AddProjectTeam_continues_project_teams_pagination(t *testing.T) {
 				}
 			}
 		}`,
-		"ProjectUpdate": `{"projectUpdate":{"success":true,"project":` + projectJSONWithTwoTeams(
+		"ProjectUpdate": `{"projectUpdate":{"success":true,"project":` + projectJSONWithPinnedExtraAndOps(
 			projectFixture{ID: "project-id", Name: "Harness", Status: "Backlog"},
 		) + `}}`,
 	})

@@ -48,7 +48,7 @@ func collectNodePages[Item any](
 			return page, nil
 		}
 		if page.EndCursor == nil {
-			return nodePage[Item]{}, fmt.Errorf("%s: next page has no end cursor", operation)
+			return nodePage[Item]{}, fmt.Errorf("%s: next page has no end cursor: %w", operation, ErrGraphQL)
 		}
 		after = page.EndCursor
 	}
