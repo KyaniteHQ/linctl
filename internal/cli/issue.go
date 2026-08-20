@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"cmp"
 	"context"
 	"errors"
 
@@ -55,7 +56,7 @@ func addIssueListCommand(ctx context.Context, root *cobra.Command, options *root
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
 			normalizedState, err := normalizeAndNote(
-				command, "state", firstNonEmpty(flags.stateType, status), normalizedStateType,
+				command, "state", cmp.Or(flags.stateType, status), normalizedStateType,
 			)
 			if err != nil {
 				return err
@@ -225,7 +226,7 @@ func issueList(
 			AssigneeID:    issueListAssigneeID(target, flags.assigneeID, flags.mine),
 			LabelID:       flags.labelID,
 			CycleID:       flags.cycleID,
-			CreatedAfter:  firstNonEmpty(flags.createdAfter, flags.createdSince),
+			CreatedAfter:  cmp.Or(flags.createdAfter, flags.createdSince),
 			CreatedBefore: flags.createdBefore,
 			UpdatedAfter:  flags.updatedAfter,
 			UpdatedBefore: flags.updatedBefore,

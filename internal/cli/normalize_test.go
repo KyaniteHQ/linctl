@@ -92,24 +92,6 @@ func Test_normalizedStateType_returns_error_for_unknown(t *testing.T) {
 	require.ErrorContains(t, err, "unknown state type")
 }
 
-func Test_firstNonEmpty_returns_primary_when_non_empty(t *testing.T) {
-	result := firstNonEmpty("started", "todo")
-
-	require.Equal(t, "started", result)
-}
-
-func Test_firstNonEmpty_returns_fallback_when_primary_empty(t *testing.T) {
-	result := firstNonEmpty("", "todo")
-
-	require.Equal(t, "todo", result)
-}
-
-func Test_firstNonEmpty_returns_empty_when_both_empty(t *testing.T) {
-	result := firstNonEmpty("", "")
-
-	require.Empty(t, result)
-}
-
 func Test_writeNote_writes_to_stderr(t *testing.T) {
 	var buf bytes.Buffer
 	command := &cobra.Command{}

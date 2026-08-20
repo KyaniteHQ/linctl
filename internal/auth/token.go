@@ -36,11 +36,3 @@ func SplitScopes(value string) []string {
 		return r == ',' || unicode.IsSpace(r)
 	})
 }
-
-// AppConfigEmpty reports whether OAuth app configuration is unset.
-func AppConfigEmpty(app AppConfig) bool {
-	return app.ClientID == "" &&
-		app.ClientSecret == "" &&
-		app.RedirectURI == "" &&
-		len(app.Scopes) == 0
-}

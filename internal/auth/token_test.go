@@ -36,11 +36,3 @@ func Test_SplitScopes_accepts_commas_and_whitespace(t *testing.T) {
 		SplitScopes("read, write\nissues:create\tcomments:create"),
 	)
 }
-
-func Test_AppConfigEmpty_reports_unset_app_material(t *testing.T) {
-	t.Parallel()
-
-	require.True(t, AppConfigEmpty(AppConfig{}))
-	require.False(t, AppConfigEmpty(AppConfig{ClientID: "client-id"}))
-	require.False(t, AppConfigEmpty(AppConfig{Scopes: []string{"read"}}))
-}

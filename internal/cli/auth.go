@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"cmp"
 	"context"
 	"fmt"
 	"io"
@@ -220,7 +221,7 @@ func addAuthStatusCommand(ctx context.Context, root *cobra.Command, options *roo
 
 				return writeAuthStatus(command, options, newAuthStatusReport(app, refreshed, readiness))
 			}
-			expectedActor := firstNonEmptyString(token.Actor, appActor)
+			expectedActor := cmp.Or(token.Actor, appActor)
 			requiredTokenScopes := requiredScopes(app)
 			if authContext.credentialKind == auth.CredentialKindInjectedAccessToken {
 				expectedActor = ""
@@ -406,14 +407,6 @@ func (authContext authCommandContext) log() *slog.Logger {
 
 func authDiagnosticLogger(command *cobra.Command, options *rootOptions) *slog.Logger {
 	return newDiagnosticLogger(options.debug, os.Getenv("LINCTL_DEBUG_JSON") == "1", command.ErrOrStderr())
-}
-
-func firstNonEmptyString(primary string, fallback string) string {
-	if primary != "" {
-		return primary
-	}
-
-	return fallback
 }
 
 func readAuthClientSecret(command *cobra.Command, value string) (string, error) {

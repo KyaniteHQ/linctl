@@ -3,6 +3,7 @@ package client
 
 import (
 	"bytes"
+	"cmp"
 	"context"
 	"encoding/json"
 	"errors"
@@ -89,7 +90,7 @@ func NewTransport(config TransportConfig) *Transport {
 	return &Transport{
 		httpClient:       httpClient,
 		diagnosticWriter: config.DiagnosticWriter,
-		endpoint:         firstNonEmpty(config.Endpoint, "https://api.linear.app/graphql"),
+		endpoint:         cmp.Or(config.Endpoint, "https://api.linear.app/graphql"),
 		token:            config.Token,
 		timeout:          timeout,
 		maxRetries:       defaultRetries(config.MaxRetries),
@@ -367,14 +368,6 @@ func graphQLErrorsSignalMissingEntity(graphqlErrors gqlerror.List) bool {
 	}
 
 	return true
-}
-
-func firstNonEmpty(primary string, fallback string) string {
-	if primary != "" {
-		return primary
-	}
-
-	return fallback
 }
 
 func defaultDuration(value time.Duration, fallback time.Duration) time.Duration {

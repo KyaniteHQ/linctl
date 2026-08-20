@@ -60,12 +60,6 @@ func ParseIssueIdentifierForTeam(text string, teamKey string) (string, bool) {
 	return "", false
 }
 
-// CurrentIssueIdentifier derives the active Linear issue from git or jj
-// checkout context, without restricting to a specific team key.
-func CurrentIssueIdentifier(ctx context.Context, dir string) (string, error) {
-	return CurrentIssueIdentifierForTeam(ctx, dir, "")
-}
-
 // CurrentIssueIdentifierForTeam derives the active Linear issue from git or jj
 // checkout context, restricted to the given team key. An empty team key keeps
 // the unfiltered behavior, so callers without a Pinned Target are unaffected.

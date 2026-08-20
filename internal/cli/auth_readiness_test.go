@@ -245,6 +245,4 @@ func Test_AuthReadiness_and_status_helpers(t *testing.T) {
 		require.NoError(t, err)
 		require.Empty(t, stdout.String())
 	})
-
-	require.Equal(t, "fallback", firstNonEmptyString("", "fallback"))
 }

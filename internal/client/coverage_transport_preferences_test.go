@@ -13,8 +13,6 @@ import (
 )
 
 func Test_TransportScenarios_return_actionable_errors(t *testing.T) {
-	require.Equal(t, "fallback", firstNonEmpty("", "fallback"))
-	require.Equal(t, "primary", firstNonEmpty("primary", "fallback"))
 	require.Equal(t, 3*time.Second, defaultDuration(3*time.Second, time.Second))
 	require.Equal(t, time.Second, defaultDuration(0, time.Second))
 	require.Equal(t, 200*time.Millisecond, retryDelay(http.Header{}, 1))

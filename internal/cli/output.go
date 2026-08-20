@@ -228,19 +228,6 @@ func sortByJSONField[T any](items []T, field string, order string) ([]T, error) 
 	return sortedItems, nil
 }
 
-func jsonFieldValue(value any, field string) (string, error) {
-	return jsonFieldValueByPath(value, field, strings.Split(field, "."))
-}
-
-func jsonFieldValueByPath(value any, field string, parts []string) (string, error) {
-	raw, err := jsonFieldRawValueByPath(value, field, parts)
-	if err != nil {
-		return "", err
-	}
-
-	return fmt.Sprint(raw), nil
-}
-
 func jsonFieldRawValueByPath(value any, field string, parts []string) (any, error) {
 	raw, err := jsonRoundTrip(value)
 	if err != nil {
