@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -133,4 +134,39 @@ func Test_firstArgCompletion_skips_after_first_argument(t *testing.T) {
 
 	require.Nil(t, values)
 	require.Equal(t, cobra.ShellCompDirectiveNoFileComp, directive)
+}
+
+func Test_Init_completes_local_project_and_team_flags(t *testing.T) {
+	restore := useCommandRuntime(t, commandFlowFakeClient{})
+	defer restore()
+
+	projectOutput := completeCommand(t, []string{"init", "--project", ""})
+	require.Contains(t, projectOutput, "project-id")
+	require.Contains(t, projectOutput, ":4")
+
+	teamOutput := completeCommand(t, []string{"init", "--team", ""})
+	require.Contains(t, teamOutput, "LIT")
+	require.Contains(t, teamOutput, ":4")
+}
+
+func Test_IssueList_completes_local_project_flag(t *testing.T) {
+	restore := useCommandRuntime(t, commandFlowFakeClient{})
+	defer restore()
+
+	output := completeCommand(t, []string{"issue", "list", "--project", ""})
+
+	require.Contains(t, output, "project-id")
+	require.Contains(t, output, ":4")
+}
+
+func completeCommand(t *testing.T, args []string) string {
+	t.Helper()
+	stdout := bytes.Buffer{}
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&stdout)
+	command.SetErr(&bytes.Buffer{})
+	command.SetArgs(append([]string{cobra.ShellCompRequestCmd}, args...))
+	require.NoError(t, command.ExecuteContext(context.Background()))
+
+	return stdout.String()
 }

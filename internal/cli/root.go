@@ -87,6 +87,14 @@ func NewRootCommand(ctx context.Context, build BuildInfo) *cobra.Command {
 }
 
 func validateCommandFlags(command *cobra.Command) error {
+	if err := validateLimitFlag(command); err != nil {
+		return err
+	}
+
+	return validateOrderFlag(command)
+}
+
+func validateLimitFlag(command *cobra.Command) error {
 	if command.Flags().Lookup("limit") == nil {
 		return nil
 	}
@@ -96,6 +104,24 @@ func validateCommandFlags(command *cobra.Command) error {
 	}
 	if limit <= 0 {
 		return fmt.Errorf("invalid --limit %d: must be greater than 0", limit)
+	}
+
+	return nil
+}
+
+func validateOrderFlag(command *cobra.Command) error {
+	if command.Flags().Lookup("order") == nil {
+		return nil
+	}
+	order, err := command.Flags().GetString("order")
+	if err != nil {
+		return fmt.Errorf("read --order: %w", err)
+	}
+	if order != "asc" && order != "desc" {
+		return fmt.Errorf("invalid sort order %q: use asc or desc", order)
+	}
+	if command.Flags().Changed("order") && !command.Flags().Changed("sort") {
+		return fmt.Errorf("invalid --order %q: --sort is required", order)
 	}
 
 	return nil

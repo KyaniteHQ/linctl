@@ -133,6 +133,49 @@ func Test_CycleCommandFlows_get_current_sprint(t *testing.T) {
 	require.Contains(t, output.String(), "cycle-id Cycle 12 [active]")
 }
 
+func Test_CycleCommandFlows_get_current_sprint_id_only(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"--id-only", "sprint", "current"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Equal(t, "cycle-id\n", output.String())
+}
+
+func Test_CycleCommandFlows_get_current_sprint_quiet(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"--quiet", "sprint", "current"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Empty(t, output.String())
+}
+
+func Test_CycleCommandFlows_get_current_sprint_full_format(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"--format", "full", "sprint", "current"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Contains(t, output.String(), "starts_at=")
+	require.Contains(t, output.String(), "progress=")
+}
+
 func Test_CycleCommandFlows_get_current_sprint_json(t *testing.T) {
 	output := bytes.Buffer{}
 	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{})
@@ -226,6 +269,49 @@ func Test_CycleCommandFlows_report_sprint(t *testing.T) {
 	require.NoError(t, err)
 	require.Contains(t, output.String(), "cycle-id Current sprint [active]")
 	require.Contains(t, output.String(), "LIT-1 Ship report [Started]")
+}
+
+func Test_CycleCommandFlows_report_sprint_id_only(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"--id-only", "sprint", "report", "cycle-id", "--limit", "1"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Equal(t, "cycle-id\nissue-id\n", output.String())
+}
+
+func Test_CycleCommandFlows_report_sprint_quiet(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"--quiet", "sprint", "report", "cycle-id", "--limit", "1"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Empty(t, output.String())
+}
+
+func Test_CycleCommandFlows_report_sprint_full_format(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"--format", "full", "sprint", "report", "cycle-id", "--limit", "1"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Contains(t, output.String(), "starts_at=")
+	require.Contains(t, output.String(), "url=")
 }
 
 func Test_CycleCommandFlows_report_sprint_json(t *testing.T) {

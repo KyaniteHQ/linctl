@@ -282,12 +282,17 @@ func writeUserSettingsValue(command *cobra.Command, options *rootOptions, value 
 	return render.WriteLine(command.OutOrStdout(), "%s", human)
 }
 
-func writeUserSettingsNullableValue(command *cobra.Command, options *rootOptions, value any, human string) error {
+func writeUserSettingsNullableValue[T any](
+	command *cobra.Command,
+	options *rootOptions,
+	value *T,
+	human string,
+) error {
 	if options.quiet {
 		return nil
 	}
 	if options.json {
-		return render.WriteJSON(command.OutOrStdout(), value, options.compact)
+		return writeJSONValue(command, options, value)
 	}
 	if value == nil {
 		return render.WriteLine(command.OutOrStdout(), "%s none", human)
