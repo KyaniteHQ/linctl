@@ -38,12 +38,12 @@ func templateContentResponse(name string, data string) string {
 	return `{"template":` + matchingIssueTemplateJSON(name, data) + `}`
 }
 
-func templateCreateResponse(name string, data string) string {
-	return `{"templateCreate":{"success":true,"template":` + matchingIssueTemplateJSON(name, data) + `}}`
+func templateCreateResponse() string {
+	return `{"templateCreate":{"success":true}}`
 }
 
-func templateUpdateResponse(name string) string {
-	return `{"templateUpdate":{"success":true,"template":` + matchingIssueTemplateJSON(name, `{"title":"Bug"}`) + `}}`
+func templateUpdateResponse() string {
+	return `{"templateUpdate":{"success":true}}`
 }
 
 func Test_GetTemplateDetail_returns_canonical_data_and_scope(t *testing.T) {
@@ -110,7 +110,7 @@ func Test_GetTemplateDetail_rejects_non_object_data(t *testing.T) {
 
 func Test_CreateTemplate_sends_caller_id_issue_type_and_team(t *testing.T) {
 	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
-		"TemplateCreate":  templateCreateResponse("Bug report", `{"title":"Bug"}`),
+		"TemplateCreate":  templateCreateResponse(),
 		"templateContent": templateContentResponse("Bug report", `{ "title": "Bug" }`),
 	})}
 
@@ -160,8 +160,7 @@ func Test_CreateTemplate_requires_name(t *testing.T) {
 
 func Test_CreateTemplate_reconciles_success_false_without_replay(t *testing.T) {
 	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
-		"TemplateCreate": `{"templateCreate":{"success":false,"template":` +
-			matchingIssueTemplateJSON("Bug report", `{"title":"Bug"}`) + `}}`,
+		"TemplateCreate":  `{"templateCreate":{"success":false}}`,
 		"templateContent": templateContentResponse("Bug report", `{"title":"Bug"}`),
 	})}
 
@@ -310,7 +309,7 @@ func Test_CreateTemplate_returns_original_error_when_id_is_absent(t *testing.T) 
 func Test_UpdateTemplate_omits_team_and_type(t *testing.T) {
 	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"templateContent": templateContentResponse("Updated", `{"title":"Bug"}`),
-		"TemplateUpdate":  templateUpdateResponse("Updated"),
+		"TemplateUpdate":  templateUpdateResponse(),
 	})}
 	name := "Updated"
 
@@ -332,7 +331,7 @@ func Test_UpdateTemplate_omits_team_and_type(t *testing.T) {
 func Test_UpdateTemplate_sends_canonical_data(t *testing.T) {
 	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"templateContent": templateContentResponse("Bug report", `{"title":"Bug"}`),
-		"TemplateUpdate":  templateUpdateResponse("Bug report"),
+		"TemplateUpdate":  templateUpdateResponse(),
 	})}
 
 	_, err := UpdateTemplate(context.Background(), recorder, matchingTarget(), TemplateUpdateRequest{
@@ -455,7 +454,7 @@ func Test_UpdateTemplate_returns_conflict_when_readback_id_differs(t *testing.T)
 		`"templateData":{"title":"Bug"},"team":{"id":"team-id","key":"LIT","name":"linctl"},"pipeline":null}}`
 	recorder := &recordingGraphQLClient{inner: &sequentialPayloadClient{
 		inner: issueWriteFakeClient(map[string]string{
-			"TemplateUpdate": templateUpdateResponse("Updated"),
+			"TemplateUpdate": templateUpdateResponse(),
 		}),
 		payloads: map[string][]string{
 			"templateContent": {
@@ -514,7 +513,7 @@ func Test_UpdateTemplate_returns_conflict_when_data_or_type_differs(t *testing.T
 	name := "Bug report"
 	typeClient := &sequentialPayloadClient{
 		inner: issueWriteFakeClient(map[string]string{
-			"TemplateUpdate": templateUpdateResponse("Bug report"),
+			"TemplateUpdate": templateUpdateResponse(),
 		}),
 		payloads: map[string][]string{
 			"templateContent": {
@@ -543,8 +542,7 @@ func Test_UpdateTemplate_wraps_missing_template_read(t *testing.T) {
 func Test_UpdateTemplate_reconciles_success_false_without_replay(t *testing.T) {
 	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"templateContent": templateContentResponse("Updated", `{"title":"Bug"}`),
-		"TemplateUpdate": `{"templateUpdate":{"success":false,"template":` +
-			matchingIssueTemplateJSON("Updated", `{"title":"Bug"}`) + `}}`,
+		"TemplateUpdate":  `{"templateUpdate":{"success":false}}`,
 	})}
 	name := "Updated"
 
@@ -575,7 +573,7 @@ func Test_UpdateTemplate_requires_a_changed_field(t *testing.T) {
 
 func Test_CreateTemplate_preserves_number_lexemes_in_readback(t *testing.T) {
 	graphqlClient := issueWriteFakeClient(map[string]string{
-		"TemplateCreate":  templateCreateResponse("Bug report", `{"n":1.0}`),
+		"TemplateCreate":  templateCreateResponse(),
 		"templateContent": templateContentResponse("Bug report", `{"n":1.0}`),
 	})
 

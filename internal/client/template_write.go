@@ -79,41 +79,18 @@ func (guard *guardedClient) createTemplate(
 		TemplateData: request.Data,
 	})
 
-	return guard.finishTemplateCreate(ctx, request, templateCreateWriteError(err, created))
+	return guard.finishTemplateWrite(ctx, request.ID, templateCreateWriteError(err, created),
+		func(observed TemplateDetail) bool {
+			return templateMatchesCreate(observed, request)
+		})
 }
 
 func templateCreateWriteError(err error, created *gql.TemplateCreateResponse) error {
 	if err != nil {
 		return fmt.Errorf("create template: %w", err)
 	}
-	if created != nil && created.TemplateCreate.Success {
-		return nil
-	}
 
-	return fmt.Errorf("%w: templateCreate reported no success", ErrMutationFailed)
-}
-
-func (guard *guardedClient) finishTemplateCreate(
-	ctx context.Context,
-	request TemplateCreateRequest,
-	writeErr error,
-) (TemplateDetail, error) {
-	observed, readErr := GetTemplateDetail(ctx, guard.graphqlClient, request.ID)
-	scopeErr := error(nil)
-	if readErr == nil {
-		scopeErr = guard.templateScopeError(observed)
-	}
-	matches := templateMatchesCreate(observed, request)
-
-	return finishReconciledWrite(
-		TemplateWriteRetryClass(),
-		observed,
-		readErr,
-		writeErr,
-		scopeErr,
-		matches,
-		writeConflictError("template", request.ID),
-	)
+	return mutationSuccess(created != nil && created.TemplateCreate.Success, "templateCreate")
 }
 
 func templateMatchesCreate(observed TemplateDetail, request TemplateCreateRequest) bool {
@@ -176,31 +153,31 @@ func (guard *guardedClient) updateTemplate(
 		TemplateData: request.Data,
 	})
 
-	return guard.finishTemplateUpdate(ctx, request, templateUpdateWriteError(request.ID, err, updated))
+	return guard.finishTemplateWrite(ctx, request.ID, templateUpdateWriteError(request.ID, err, updated),
+		func(observed TemplateDetail) bool {
+			return templateMatchesUpdate(observed, request)
+		})
 }
 
 func templateUpdateWriteError(id string, err error, updated *gql.TemplateUpdateResponse) error {
 	if err != nil {
 		return fmt.Errorf("update template %s: %w", id, err)
 	}
-	if updated != nil && updated.TemplateUpdate.Success {
-		return nil
-	}
 
-	return fmt.Errorf("%w: templateUpdate reported no success", ErrMutationFailed)
+	return mutationSuccess(updated != nil && updated.TemplateUpdate.Success, "templateUpdate")
 }
 
-func (guard *guardedClient) finishTemplateUpdate(
+func (guard *guardedClient) finishTemplateWrite(
 	ctx context.Context,
-	request TemplateUpdateRequest,
+	id string,
 	writeErr error,
+	matches func(TemplateDetail) bool,
 ) (TemplateDetail, error) {
-	observed, readErr := GetTemplateDetail(ctx, guard.graphqlClient, request.ID)
+	observed, readErr := GetTemplateDetail(ctx, guard.graphqlClient, id)
 	scopeErr := error(nil)
 	if readErr == nil {
 		scopeErr = guard.templateScopeError(observed)
 	}
-	matches := templateMatchesUpdate(observed, request)
 
 	return finishReconciledWrite(
 		TemplateWriteRetryClass(),
@@ -208,8 +185,8 @@ func (guard *guardedClient) finishTemplateUpdate(
 		readErr,
 		writeErr,
 		scopeErr,
-		matches,
-		writeConflictError("template", request.ID),
+		matches(observed),
+		writeConflictError("template", id),
 	)
 }
 

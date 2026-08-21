@@ -37,14 +37,12 @@ func matchingWorkflowStateJSON(name string, stateType string, description string
 	return workflowStateEntityJSON(name, stateType, "team-id", "LIT", description, position)
 }
 
-func workflowStateCreateResponse(stateType string, description string, position float64) string {
-	return `{"workflowStateCreate":{"success":true,"workflowState":` +
-		matchingWorkflowStateJSON("Ready", stateType, description, position) + `}}`
+func workflowStateCreateResponse() string {
+	return `{"workflowStateCreate":{"success":true}}`
 }
 
-func workflowStateUpdateResponse(name string, stateType string, description string, position float64) string {
-	return `{"workflowStateUpdate":{"success":true,"workflowState":` +
-		matchingWorkflowStateJSON(name, stateType, description, position) + `}}`
+func workflowStateUpdateResponse() string {
+	return `{"workflowStateUpdate":{"success":true}}`
 }
 
 func workflowStateGetResponse(name string, stateType string, description string, position float64) string {
@@ -53,7 +51,7 @@ func workflowStateGetResponse(name string, stateType string, description string,
 
 func Test_CreateWorkflowState_sends_caller_id_and_resolved_team(t *testing.T) {
 	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
-		"WorkflowStateCreate": workflowStateCreateResponse("unstarted", "ready items", 3),
+		"WorkflowStateCreate": workflowStateCreateResponse(),
 		"workflowState":       workflowStateGetResponse("Ready", "unstarted", "ready items", 3),
 	})}
 	description := "ready items"
@@ -94,7 +92,7 @@ func Test_CreateWorkflowState_sends_caller_id_and_resolved_team(t *testing.T) {
 
 func Test_CreateWorkflowState_omits_optional_fields_and_keeps_observed_defaults(t *testing.T) {
 	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
-		"WorkflowStateCreate": workflowStateCreateResponse("unstarted", "default desc", 8),
+		"WorkflowStateCreate": workflowStateCreateResponse(),
 		"workflowState":       workflowStateGetResponse("Ready", "unstarted", "default desc", 8),
 	})}
 
@@ -123,7 +121,7 @@ func Test_CreateWorkflowState_accepts_supported_types(t *testing.T) {
 	for _, stateType := range []string{"backlog", "unstarted", "started", "completed", "canceled"} {
 		t.Run(stateType, func(t *testing.T) {
 			graphqlClient := issueWriteFakeClient(map[string]string{
-				"WorkflowStateCreate": workflowStateCreateResponse(stateType, "", 1),
+				"WorkflowStateCreate": workflowStateCreateResponse(),
 				"workflowState":       workflowStateGetResponse("Ready", stateType, "", 1),
 			})
 
@@ -201,7 +199,7 @@ func Test_CreateWorkflowState_refuses_when_pinned_project_is_missing(t *testing.
 
 func Test_CreateWorkflowState_allows_team_owned_write_with_valid_project_pin(t *testing.T) {
 	graphqlClient := issueWriteFakeClient(map[string]string{
-		"WorkflowStateCreate": workflowStateCreateResponse("unstarted", "", 1),
+		"WorkflowStateCreate": workflowStateCreateResponse(),
 		"workflowState":       workflowStateGetResponse("Ready", "unstarted", "", 1),
 	})
 
@@ -214,7 +212,7 @@ func Test_CreateWorkflowState_allows_team_owned_write_with_valid_project_pin(t *
 
 func Test_CreateWorkflowState_allows_team_only_pin(t *testing.T) {
 	graphqlClient := issueWriteFakeClient(map[string]string{
-		"WorkflowStateCreate": workflowStateCreateResponse("unstarted", "", 1),
+		"WorkflowStateCreate": workflowStateCreateResponse(),
 		"workflowState":       workflowStateGetResponse("Ready", "unstarted", "", 1),
 	})
 
@@ -317,7 +315,7 @@ func Test_CreateWorkflowState_returns_readback_error_when_reconciliation_fails(t
 
 func Test_CreateWorkflowState_returns_conflict_when_successful_mutation_readback_differs(t *testing.T) {
 	graphqlClient := issueWriteFakeClient(map[string]string{
-		"WorkflowStateCreate": workflowStateCreateResponse("unstarted", "", 1),
+		"WorkflowStateCreate": workflowStateCreateResponse(),
 		"workflowState":       workflowStateGetResponse("Other", "unstarted", "", 1),
 	})
 
@@ -332,7 +330,7 @@ func Test_CreateWorkflowState_returns_readback_error_after_successful_mutation(t
 	readErr := errors.New("read failed")
 	graphqlClient := &perOpErrorClient{
 		inner: issueWriteFakeClient(map[string]string{
-			"WorkflowStateCreate": workflowStateCreateResponse("unstarted", "", 1),
+			"WorkflowStateCreate": workflowStateCreateResponse(),
 		}),
 		errs: map[string]error{
 			"workflowState": readErr,
@@ -348,9 +346,8 @@ func Test_CreateWorkflowState_returns_readback_error_after_successful_mutation(t
 
 func Test_CreateWorkflowState_reconciles_success_false_without_replay(t *testing.T) {
 	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
-		"WorkflowStateCreate": `{"workflowStateCreate":{"success":false,"workflowState":` +
-			matchingWorkflowStateJSON("Ready", "unstarted", "", 1) + `}}`,
-		"workflowState": workflowStateGetResponse("Ready", "unstarted", "", 1),
+		"WorkflowStateCreate": `{"workflowStateCreate":{"success":false}}`,
+		"workflowState":       workflowStateGetResponse("Ready", "unstarted", "", 1),
 	})}
 
 	state, err := CreateWorkflowState(context.Background(), recorder, matchingTarget(), WorkflowStateCreateRequest{
@@ -365,7 +362,7 @@ func Test_CreateWorkflowState_reconciles_success_false_without_replay(t *testing
 func Test_UpdateWorkflowState_updates_changed_fields_with_presence(t *testing.T) {
 	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"workflowState":       workflowStateGetResponse("Next", "unstarted", "", 0),
-		"WorkflowStateUpdate": workflowStateUpdateResponse("Next", "unstarted", "", 0),
+		"WorkflowStateUpdate": workflowStateUpdateResponse(),
 	})}
 	name := "Next"
 	color := "#f2c94c"
@@ -399,7 +396,7 @@ func Test_UpdateWorkflowState_updates_changed_fields_with_presence(t *testing.T)
 func Test_UpdateWorkflowState_omits_unchanged_fields(t *testing.T) {
 	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"workflowState":       workflowStateGetResponse("Next", "unstarted", "old", 3),
-		"WorkflowStateUpdate": workflowStateUpdateResponse("Next", "unstarted", "old", 3),
+		"WorkflowStateUpdate": workflowStateUpdateResponse(),
 	})}
 	name := "Next"
 
@@ -492,9 +489,8 @@ func Test_UpdateWorkflowState_wraps_missing_state_read(t *testing.T) {
 
 func Test_UpdateWorkflowState_reconciles_success_false_without_replay(t *testing.T) {
 	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
-		"workflowState": workflowStateGetResponse("Next", "unstarted", "", 1),
-		"WorkflowStateUpdate": `{"workflowStateUpdate":{"success":false,"workflowState":` +
-			matchingWorkflowStateJSON("Next", "unstarted", "", 1) + `}}`,
+		"workflowState":       workflowStateGetResponse("Next", "unstarted", "", 1),
+		"WorkflowStateUpdate": `{"workflowStateUpdate":{"success":false}}`,
 	})}
 	name := "Next"
 
@@ -539,7 +535,7 @@ func Test_CreateWorkflowState_returns_conflict_when_optional_fields_differ(t *te
 	description := "wanted"
 	position := 4.0
 	graphqlClient := issueWriteFakeClient(map[string]string{
-		"WorkflowStateCreate": workflowStateCreateResponse("unstarted", "other", 1),
+		"WorkflowStateCreate": workflowStateCreateResponse(),
 		"workflowState":       workflowStateGetResponse("Ready", "unstarted", "other", 1),
 	})
 
@@ -566,7 +562,7 @@ func Test_UpdateWorkflowState_returns_conflict_when_type_changes(t *testing.T) {
 	name := "Ready"
 	graphqlClient := &sequentialPayloadClient{
 		inner: issueWriteFakeClient(map[string]string{
-			"WorkflowStateUpdate": workflowStateUpdateResponse("Ready", "started", "", 1),
+			"WorkflowStateUpdate": workflowStateUpdateResponse(),
 		}),
 		payloads: map[string][]string{
 			"workflowState": {

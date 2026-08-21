@@ -42,8 +42,8 @@ func workflowStateWriteFake() graphqlPayloadOverride {
 	return graphqlPayloadOverride{
 		inner: commandFlowFakeClient{},
 		payloads: map[string]string{
-			"WorkflowStateCreate": `{"workflowStateCreate":{"success":true,"workflowState":` + entity + `}}`,
-			"WorkflowStateUpdate": `{"workflowStateUpdate":{"success":true,"workflowState":` + entity + `}}`,
+			"WorkflowStateCreate": `{"workflowStateCreate":{"success":true}}`,
+			"WorkflowStateUpdate": `{"workflowStateUpdate":{"success":true}}`,
 			"workflowState":       `{"workflowState":` + entity + `}`,
 		},
 	}

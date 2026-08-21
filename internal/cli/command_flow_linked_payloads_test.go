@@ -7,9 +7,9 @@ func commandFlowStateAndCommentPayload(operation string, fake commandFlowFakeCli
 	case "workflowState":
 		return `{"workflowState":` + commandWorkflowStateJSON() + `}`, true
 	case "WorkflowStateCreate":
-		return `{"workflowStateCreate":{"success":true,"workflowState":` + commandWorkflowStateJSON() + `}}`, true
+		return `{"workflowStateCreate":{"success":true}}`, true
 	case "WorkflowStateUpdate":
-		return `{"workflowStateUpdate":{"success":true,"workflowState":` + commandWorkflowStateJSON() + `}}`, true
+		return `{"workflowStateUpdate":{"success":true}}`, true
 	case "workflowState_issues":
 		return `{"workflowState":{"id":"workflow-state-id","name":"Started","issues":{"nodes":[` +
 			commandIssueJSON("LIT-1", "Detail issue", "state-id", "Todo", "backlog") +
@@ -252,13 +252,9 @@ func commandFlowExtraReadPayload(operation string, fake commandFlowFakeClient) (
 			`{"title":"Template title","description":"## Steps\n\nReproduce here"},` +
 			`"team":{"id":"team-id","key":"LIT","name":"linctl"},"pipeline":null}}`, true
 	case "TemplateCreate":
-		return `{"templateCreate":{"success":true,"template":{"id":"template-id","name":"Bug report","type":"issue",` +
-			`"templateData":{"title":"Template title"},"team":{"id":"team-id","key":"LIT","name":"linctl"},` +
-			`"pipeline":null}}}`, true
+		return `{"templateCreate":{"success":true}}`, true
 	case "TemplateUpdate":
-		return `{"templateUpdate":{"success":true,"template":{"id":"template-id","name":"Updated template","type":"issue",` +
-			`"templateData":{"title":"Template title"},"team":{"id":"team-id","key":"LIT","name":"linctl"},` +
-			`"pipeline":null}}}`, true
+		return `{"templateUpdate":{"success":true}}`, true
 	case "roadmaps":
 		return `{"roadmaps":{"nodes":[` + commandRoadmapJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "roadmap":

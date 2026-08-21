@@ -59,56 +59,28 @@ func (guard *guardedClient) createWorkflowState(
 	ctx context.Context,
 	request WorkflowStateCreateRequest,
 ) (WorkflowStateSummary, error) {
-	input := workflowStateCreateInput(guard.target.Team.ID, request)
-	created, err := gql.WorkflowStateCreate(ctx, guard.graphqlClient, input)
-
-	return guard.finishWorkflowStateCreate(ctx, request, workflowStateCreateWriteError(err, created))
-}
-
-func workflowStateCreateInput(teamID string, request WorkflowStateCreateRequest) LinearWorkflowStateCreateInput {
-	return LinearWorkflowStateCreateInput{
+	created, err := gql.WorkflowStateCreate(ctx, guard.graphqlClient, LinearWorkflowStateCreateInput{
 		ID:          stringPtr(request.ID),
 		Name:        request.Name,
 		Color:       request.Color,
 		Type:        request.Type,
-		TeamID:      teamID,
+		TeamID:      guard.target.Team.ID,
 		Description: request.Description,
 		Position:    request.Position,
-	}
+	})
+
+	return guard.finishWorkflowStateWrite(ctx, request.ID, workflowStateCreateWriteError(err, created),
+		func(observed WorkflowStateSummary) bool {
+			return workflowStateMatchesCreate(observed, request)
+		})
 }
 
 func workflowStateCreateWriteError(err error, created *gql.WorkflowStateCreateResponse) error {
 	if err != nil {
 		return fmt.Errorf("create workflow state: %w", err)
 	}
-	if created != nil && created.WorkflowStateCreate.Success {
-		return nil
-	}
 
-	return fmt.Errorf("%w: workflowStateCreate reported no success", ErrMutationFailed)
-}
-
-func (guard *guardedClient) finishWorkflowStateCreate(
-	ctx context.Context,
-	request WorkflowStateCreateRequest,
-	writeErr error,
-) (WorkflowStateSummary, error) {
-	observed, readErr := guard.readWorkflowState(ctx, request.ID)
-	teamErr := error(nil)
-	if readErr == nil {
-		teamErr = guard.workflowStateTeamError(observed)
-	}
-	matches := workflowStateMatchesCreate(observed, request)
-
-	return finishReconciledWrite(
-		WorkflowStateWriteRetryClass(),
-		observed,
-		readErr,
-		writeErr,
-		teamErr,
-		matches,
-		writeConflictError("workflow state", request.ID),
-	)
+	return mutationSuccess(created != nil && created.WorkflowStateCreate.Success, "workflowStateCreate")
 }
 
 func workflowStateMatchesCreate(observed WorkflowStateSummary, request WorkflowStateCreateRequest) bool {
@@ -154,47 +126,40 @@ func (guard *guardedClient) updateWorkflowState(
 	if err != nil {
 		return WorkflowStateSummary{}, err
 	}
-	updated, err := gql.WorkflowStateUpdate(
-		ctx, guard.graphqlClient, request.ID, workflowStateUpdateInput(request),
-	)
-
-	return guard.finishWorkflowStateUpdate(
-		ctx, request, existing.Type, workflowStateUpdateWriteError(request.ID, err, updated),
-	)
-}
-
-func workflowStateUpdateInput(request WorkflowStateUpdateRequest) LinearWorkflowStateUpdateInput {
-	return LinearWorkflowStateUpdateInput{
+	updated, err := gql.WorkflowStateUpdate(ctx, guard.graphqlClient, request.ID, LinearWorkflowStateUpdateInput{
 		Name:        request.Name,
 		Color:       request.Color,
 		Description: request.Description,
 		Position:    request.Position,
-	}
+	})
+
+	return guard.finishWorkflowStateWrite(
+		ctx, request.ID, workflowStateUpdateWriteError(request.ID, err, updated),
+		func(observed WorkflowStateSummary) bool {
+			return workflowStateMatchesUpdate(observed, request, existing.Type)
+		},
+	)
 }
 
 func workflowStateUpdateWriteError(id string, err error, updated *gql.WorkflowStateUpdateResponse) error {
 	if err != nil {
 		return fmt.Errorf("update workflow state %s: %w", id, err)
 	}
-	if updated != nil && updated.WorkflowStateUpdate.Success {
-		return nil
-	}
 
-	return fmt.Errorf("%w: workflowStateUpdate reported no success", ErrMutationFailed)
+	return mutationSuccess(updated != nil && updated.WorkflowStateUpdate.Success, "workflowStateUpdate")
 }
 
-func (guard *guardedClient) finishWorkflowStateUpdate(
+func (guard *guardedClient) finishWorkflowStateWrite(
 	ctx context.Context,
-	request WorkflowStateUpdateRequest,
-	stateType string,
+	id string,
 	writeErr error,
+	matches func(WorkflowStateSummary) bool,
 ) (WorkflowStateSummary, error) {
-	observed, readErr := guard.readWorkflowState(ctx, request.ID)
+	observed, readErr := guard.readWorkflowState(ctx, id)
 	teamErr := error(nil)
 	if readErr == nil {
 		teamErr = guard.workflowStateTeamError(observed)
 	}
-	matches := workflowStateMatchesUpdate(observed, request, stateType)
 
 	return finishReconciledWrite(
 		WorkflowStateWriteRetryClass(),
@@ -202,8 +167,8 @@ func (guard *guardedClient) finishWorkflowStateUpdate(
 		readErr,
 		writeErr,
 		teamErr,
-		matches,
-		writeConflictError("workflow state", request.ID),
+		matches(observed),
+		writeConflictError("workflow state", id),
 	)
 }
 

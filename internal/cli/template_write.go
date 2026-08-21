@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addTemplateContentCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -113,20 +112,9 @@ func templateUpdateRequest(
 }
 
 func writeTemplateDetail(command *cobra.Command, options *rootOptions, template client.TemplateDetail) error {
-	return writeItem(command, options, template, template.ID,
-		func(command *cobra.Command, _ *rootOptions, template client.TemplateDetail) error {
-			scope := "organization"
-			if template.TeamKey != "" {
-				scope = "team " + template.TeamKey
-			}
-
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s %s [%s] %s",
-				template.ID,
-				template.Name,
-				template.Type,
-				scope,
-			)
-		})
+	return writeItemLine(
+		command, options, template, template.ID,
+		"%s %s [%s] %s",
+		template.ID, template.Name, template.Type, templateScopeLabel(template.TeamKey),
+	)
 }

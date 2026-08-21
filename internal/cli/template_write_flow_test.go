@@ -34,8 +34,8 @@ func templateWriteFake() graphqlPayloadOverride {
 	return graphqlPayloadOverride{
 		inner: commandFlowFakeClient{},
 		payloads: map[string]string{
-			"TemplateCreate":  `{"templateCreate":{"success":true,"template":` + entity + `}}`,
-			"TemplateUpdate":  `{"templateUpdate":{"success":true,"template":` + entity + `}}`,
+			"TemplateCreate":  `{"templateCreate":{"success":true}}`,
+			"TemplateUpdate":  `{"templateUpdate":{"success":true}}`,
 			"templateContent": `{"template":` + entity + `}`,
 		},
 	}
