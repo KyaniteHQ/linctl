@@ -1185,6 +1185,58 @@ Success is pass/fail:
      `Test_CreateIssueRelation_reconciles_ambiguous_create_without_replay`,
      `Test_CreateIssueRelation_reconciles_existing_relation_without_create`.
 
+222. WorkflowState create
+   - Success: `linctl workflow-state create` sends the caller-supplied UUID v4 and the resolved team id. It accepts only `backlog`, `unstarted`, `started`, `completed`, or `canceled`. Optional description and position are omitted unless the flags change. Exact readback includes description and team.
+   - Evidence: `go test ./internal/client`, `Test_CreateWorkflowState_sends_caller_id_and_resolved_team`,
+     `Test_CreateWorkflowState_omits_optional_fields_and_keeps_observed_defaults`,
+     `Test_CreateWorkflowState_accepts_supported_types`,
+     `Test_CreateWorkflowState_rejects_disallowed_types`;
+     `go test ./internal/cli`, `Test_WorkflowStateWriteCommandFlows_cover_output_modes`.
+
+223. WorkflowState update
+   - Success: `linctl workflow-state update` resolves the state first. It compares team id and key. It preserves explicit empty descriptions and zero positions. It rejects empty names and colors. It does not expose type.
+   - Evidence: `go test ./internal/client`, `Test_UpdateWorkflowState_updates_changed_fields_with_presence`,
+     `Test_UpdateWorkflowState_omits_unchanged_fields`,
+     `Test_UpdateWorkflowState_refuses_wrong_team_before_mutation`;
+     `go test ./internal/cli`, `Test_WorkflowStateWriteCommands_have_no_bypass_or_team_flags`.
+
+224. Issue template create
+   - Success: `linctl template create` sends the caller-supplied UUID v4, type `issue`, and the resolved team id. It reads object-shaped JSON from a local `--data-file`. It rejects stdin, arrays, scalars, and `null` with zero mutation calls.
+   - Evidence: `go test ./internal/client`, `Test_CreateTemplate_sends_caller_id_issue_type_and_team`,
+     `Test_CreateTemplate_rejects_non_issue_types`;
+     `go test ./internal/cli`, `Test_TemplateCreate_rejects_data_file_failures_before_mutation`.
+
+225. Issue template update
+   - Success: `linctl template update` resolves the template first. It requires type `issue`, a non-null team, and an empty pipeline. It never sends `teamId` or type. Organization, pipeline, and wrong-team templates fail before mutation.
+   - Evidence: `go test ./internal/client`, `Test_UpdateTemplate_omits_team_and_type`,
+     `Test_UpdateTemplate_refuses_organization_template_before_mutation`,
+     `Test_UpdateTemplate_refuses_pipeline_template_before_mutation`,
+     `Test_UpdateTemplate_refuses_wrong_team_before_mutation`.
+
+226. Exact template content read
+   - Success: `linctl template content` returns canonical template data, type, team, and pipeline. Ordinary `template list` and `template get` stay data-free.
+   - Evidence: `go test ./internal/client`, `Test_GetTemplateDetail_returns_canonical_data_and_scope`,
+     `Test_CanonicalTemplateData_ignores_whitespace_and_key_order`,
+     `Test_CanonicalTemplateData_preserves_number_lexemes`;
+     `go test ./internal/cli`, `Test_TemplateGet_stays_data_free`,
+     `Test_TemplateWriteCommandFlows_cover_output_modes`.
+
+227. Template and WorkflowState recovery
+   - Success: GraphQL errors, `success: false`, timeouts, and decode failures record one mutation and one exact-id read. Matching readback succeeds. Different fields return `CONFLICT`. A missing id returns the original mutation error. Wrong-team readback returns `TARGET_MISMATCH`. The writer does not replay.
+   - Evidence: `go test ./internal/client`, `Test_CreateWorkflowState_reconciles_ambiguous_create_without_replay`,
+     `Test_CreateWorkflowState_returns_conflict_when_reconciled_fields_differ`,
+     `Test_CreateWorkflowState_returns_target_mismatch_when_reconciled_team_differs`,
+     `Test_CreateWorkflowState_returns_original_error_when_id_is_absent`,
+     `Test_CreateTemplate_reconciles_ambiguous_create_without_replay`,
+     `Test_UpdateTemplate_reconciles_ambiguous_update_without_replay`;
+     `go test ./internal/cli`, `Test_WorkflowStateCreate_emits_conflict_without_replaying`.
+
+228. Project pin on team administration writes
+   - Success: a missing or mismatched pinned project stops target resolution before mutation. A valid pinned project still allows the team-owned WorkflowState or issue template write.
+   - Evidence: `go test ./internal/client`, `Test_CreateWorkflowState_refuses_when_pinned_project_is_missing`,
+     `Test_CreateWorkflowState_allows_team_owned_write_with_valid_project_pin`,
+     `Test_CreateWorkflowState_allows_team_only_pin`.
+
 ## Current Outcome
 
 All local scenarios pass under the method above. The complete product suite also passes with

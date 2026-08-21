@@ -28,7 +28,28 @@ query templateContent($id: String!) {
   template(id: $id) {
     id
     name
+    type
     templateData
+    team {
+      id
+      key
+      name
+    }
+    pipeline {
+      id
+    }
+  }
+}
+
+mutation TemplateCreate($input: TemplateCreateInput!) {
+  templateCreate(input: $input) {
+    success
+  }
+}
+
+mutation TemplateUpdate($id: String!, $input: TemplateUpdateInput!) {
+  templateUpdate(id: $id, input: $input) {
+    success
   }
 }
 

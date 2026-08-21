@@ -16,7 +16,7 @@ func addWorkflowStateCommand(ctx context.Context, root *cobra.Command, options *
 		options,
 		readListGetSpec[client.WorkflowStateList, client.WorkflowStateSummary]{
 			Use:       "workflow-state",
-			Short:     "Read Linear workflow states",
+			Short:     "Read and write Linear workflow states",
 			ListShort: "List visible workflow states",
 			LimitHelp: "maximum workflow states to return",
 			GetUse:    "get WORKFLOW_STATE_ID",
@@ -27,6 +27,8 @@ func addWorkflowStateCommand(ctx context.Context, root *cobra.Command, options *
 		},
 	)
 	addWorkflowStateIssuesCommand(ctx, workflowStateCommand, options)
+	addWorkflowStateCreateCommand(ctx, workflowStateCommand, options)
+	addWorkflowStateUpdateCommand(ctx, workflowStateCommand, options)
 }
 
 func addWorkflowStateIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {

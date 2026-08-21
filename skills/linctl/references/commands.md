@@ -4131,10 +4131,35 @@ Flags:
 
 ### linctl template
 
-Read Linear templates
+Read and write Linear templates
 
 ```
 linctl template
+```
+
+### linctl template content
+
+Get exact template data and scope
+
+```
+linctl template content TEMPLATE_ID
+```
+
+### linctl template create
+
+Create an issue template in the pinned team
+
+```
+linctl template create [flags]
+```
+
+Flags:
+
+```
+      --data-file string   local JSON object file for template data
+      --id string          caller-supplied template UUID v4
+      --name string        template name
+      --type string        template type; only issue is accepted
 ```
 
 ### linctl template get
@@ -4157,6 +4182,21 @@ Flags:
 
 ```
       --limit int   maximum templates to print (default 50)
+```
+
+### linctl template update
+
+Update an issue template after pinned-target comparison
+
+```
+linctl template update TEMPLATE_ID [flags]
+```
+
+Flags:
+
+```
+      --data-file string   local JSON object file for template data
+      --name string        new template name
 ```
 
 ### linctl time-schedule
@@ -4554,10 +4594,29 @@ linctl whoami
 
 ### linctl workflow-state
 
-Read Linear workflow states
+Read and write Linear workflow states
 
 ```
 linctl workflow-state
+```
+
+### linctl workflow-state create
+
+Create a WorkflowState in the pinned team
+
+```
+linctl workflow-state create [flags]
+```
+
+Flags:
+
+```
+      --color string         WorkflowState color
+      --description string   WorkflowState description
+      --id string            caller-supplied WorkflowState UUID v4
+      --name string          WorkflowState name
+      --position float       WorkflowState position
+      --type string          WorkflowState type
 ```
 
 ### linctl workflow-state get
@@ -4594,4 +4653,21 @@ Flags:
 
 ```
       --limit int   maximum workflow states to return (default 50)
+```
+
+### linctl workflow-state update
+
+Update a WorkflowState after pinned-target comparison
+
+```
+linctl workflow-state update WORKFLOW_STATE_ID [flags]
+```
+
+Flags:
+
+```
+      --color string         new WorkflowState color
+      --description string   new WorkflowState description
+      --name string          new WorkflowState name
+      --position float       new WorkflowState position
 ```

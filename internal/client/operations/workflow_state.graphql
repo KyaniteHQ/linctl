@@ -32,11 +32,24 @@ query workflowState_issues($id: String!, $first: Int, $after: String, $includeAr
   }
 }
 
+mutation WorkflowStateCreate($input: WorkflowStateCreateInput!) {
+  workflowStateCreate(input: $input) {
+    success
+  }
+}
+
+mutation WorkflowStateUpdate($id: String!, $input: WorkflowStateUpdateInput!) {
+  workflowStateUpdate(id: $id, input: $input) {
+    success
+  }
+}
+
 fragment WorkflowStateSummaryFields on WorkflowState {
   id
   name
   type
   color
+  description
   position
   team {
     id

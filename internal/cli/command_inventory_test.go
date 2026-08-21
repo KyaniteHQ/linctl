@@ -75,6 +75,14 @@ func Test_CommandInventory_exposes_stable_public_command_surface(t *testing.T) {
 	documentCreate := commandsByPath["document create"]
 	require.Equal(t, CommandSafetyWrite, documentCreate.Safety)
 	require.Equal(t, "document", documentCreate.Entity)
+
+	workflowStateCreate := commandsByPath["workflow-state create"]
+	require.Equal(t, CommandSafetyWrite, workflowStateCreate.Safety)
+	require.Equal(t, WriteEffectGuarded, workflowStateCreate.WriteEffect)
+	require.Equal(t, CommandSafetyWrite, commandsByPath["workflow-state update"].Safety)
+	require.Equal(t, WriteEffectGuarded, commandsByPath["template create"].WriteEffect)
+	require.Equal(t, WriteEffectGuarded, commandsByPath["template update"].WriteEffect)
+	require.Equal(t, CommandSafetyRead, commandsByPath["template content"].Safety)
 }
 
 // Every registered public command must classify as read, write, or local so

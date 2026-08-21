@@ -43,24 +43,26 @@ func GetIssueTemplateContent(
 }
 
 // decodeTemplateData parses templateData, which Linear returns either as a JSON
-// object or as a JSON-encoded string wrapping that object.
+// object or as a JSON-encoded string wrapping that object. Absent data and an
+// encoded empty string are empty field maps.
 func decodeTemplateData(raw json.RawMessage) (map[string]json.RawMessage, error) {
 	if len(raw) == 0 {
 		return map[string]json.RawMessage{}, nil
 	}
-	fields := map[string]json.RawMessage{}
-	if err := json.Unmarshal(raw, &fields); err == nil {
-		return fields, nil
-	}
-
-	var encoded string
-	if err := json.Unmarshal(raw, &encoded); err != nil {
+	value, err := decodeTemplateEnvelope(raw)
+	if err != nil {
 		return nil, err
 	}
-	if encoded == "" {
+	if encoded, ok := value.(string); ok && encoded == "" {
 		return map[string]json.RawMessage{}, nil
 	}
-	if err := json.Unmarshal([]byte(encoded), &fields); err != nil {
+
+	return templateDataFieldMap(value)
+}
+
+func templateDataFieldMap(value any) (map[string]json.RawMessage, error) {
+	fields := map[string]json.RawMessage{}
+	if err := json.Unmarshal(mustJSON(value), &fields); err != nil {
 		return nil, err
 	}
 

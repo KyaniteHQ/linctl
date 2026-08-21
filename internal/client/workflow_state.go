@@ -11,14 +11,15 @@ import (
 
 // WorkflowStateSummary is the compact workflow state model used by read-only commands.
 type WorkflowStateSummary struct {
-	ID       string  `json:"id"`
-	Name     string  `json:"name"`
-	Type     string  `json:"type"`
-	Color    string  `json:"color"`
-	Position float64 `json:"position"`
-	TeamID   string  `json:"team_id"`
-	TeamKey  string  `json:"team_key"`
-	TeamName string  `json:"team_name"`
+	ID          string  `json:"id"`
+	Name        string  `json:"name"`
+	Type        string  `json:"type"`
+	Color       string  `json:"color"`
+	Description string  `json:"description,omitempty"`
+	Position    float64 `json:"position"`
+	TeamID      string  `json:"team_id"`
+	TeamKey     string  `json:"team_key"`
+	TeamName    string  `json:"team_name"`
 }
 
 // WorkflowStateList is a page of workflow states.
@@ -159,13 +160,14 @@ func workflowStateIssuesNodeSummary(issue workflowStateIssuesNode) IssueSummary 
 
 func workflowStateSummary(state gql.WorkflowStateSummaryFields) WorkflowStateSummary {
 	return WorkflowStateSummary{
-		ID:       state.Id,
-		Name:     state.Name,
-		Type:     state.Type,
-		Color:    state.Color,
-		Position: state.Position,
-		TeamID:   state.Team.Id,
-		TeamKey:  state.Team.Key,
-		TeamName: state.Team.Name,
+		ID:          state.Id,
+		Name:        state.Name,
+		Type:        state.Type,
+		Color:       state.Color,
+		Description: stringValue(state.Description),
+		Position:    state.Position,
+		TeamID:      state.Team.Id,
+		TeamKey:     state.Team.Key,
+		TeamName:    state.Team.Name,
 	}
 }
