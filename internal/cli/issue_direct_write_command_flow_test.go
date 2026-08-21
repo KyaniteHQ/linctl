@@ -17,8 +17,7 @@ type expectedIssueWriteNumber struct {
 
 type issueWriteCaptureClient struct {
 	directWriteCaptureClient
-	numbers   []expectedIssueWriteNumber
-	stateType string
+	numbers []expectedIssueWriteNumber
 }
 
 func (client *issueWriteCaptureClient) MakeRequest(
@@ -26,11 +25,6 @@ func (client *issueWriteCaptureClient) MakeRequest(
 	request *graphql.Request,
 	response *graphql.Response,
 ) error {
-	if request.OpName == "WorkflowStatesByType" && client.stateType != "" {
-		if err := requireRequestVariable(request, []string{"stateType"}, client.stateType, "state type"); err != nil {
-			return err
-		}
-	}
 	if request.OpName == client.operation {
 		for _, number := range client.numbers {
 			actual, err := requestVariable[float64](request, number.path...)
@@ -53,7 +47,6 @@ func Test_IssueDirectWriteCommandFlows_forward_mutation_variables(t *testing.T) 
 		operation string
 		variables []expectedWriteVariable
 		numbers   []expectedIssueWriteNumber
-		stateType string
 	}{
 		{
 			name:      "create",
@@ -74,13 +67,12 @@ func Test_IssueDirectWriteCommandFlows_forward_mutation_variables(t *testing.T) 
 			variables: []expectedWriteVariable{
 				{path: []string{"id"}, value: "LIT-1"},
 				{path: []string{"input", "title"}, value: "Direct update"},
-				{path: []string{"input", "stateId"}, value: "type-state-id"},
+				{path: []string{"input", "stateId"}, value: "done-state"},
 			},
 			numbers: []expectedIssueWriteNumber{
 				{path: []string{"input", "priority"}, value: 1},
 				{path: []string{"input", "estimate"}, value: 8},
 			},
-			stateType: "completed",
 		},
 		{
 			name:      "start",
@@ -91,7 +83,6 @@ func Test_IssueDirectWriteCommandFlows_forward_mutation_variables(t *testing.T) 
 				{path: []string{"input", "assigneeId"}, value: "user-id"},
 				{path: []string{"input", "stateId"}, value: "type-state-id"},
 			},
-			stateType: "started",
 		},
 		{
 			name:      "comment",
@@ -117,9 +108,8 @@ func Test_IssueDirectWriteCommandFlows_forward_mutation_variables(t *testing.T) 
 			operation: "IssueClose",
 			variables: []expectedWriteVariable{
 				{path: []string{"id"}, value: "LIT-1"},
-				{path: []string{"input", "stateId"}, value: "type-state-id"},
+				{path: []string{"input", "stateId"}, value: "done-state"},
 			},
-			stateType: "completed",
 		},
 		{
 			name: "link",
@@ -179,8 +169,7 @@ func Test_IssueDirectWriteCommandFlows_forward_mutation_variables(t *testing.T) 
 					variables: test.variables,
 					delegate:  commandFlowFakeClient{},
 				},
-				numbers:   test.numbers,
-				stateType: test.stateType,
+				numbers: test.numbers,
 			}
 			restore := useCommandRuntime(t, fake)
 			defer restore()

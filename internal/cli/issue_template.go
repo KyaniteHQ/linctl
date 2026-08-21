@@ -15,7 +15,7 @@ import (
 type issueDraft struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
-	StateType   string `json:"state_type,omitempty"`
+	State       string `json:"state,omitempty"`
 	Priority    string `json:"priority,omitempty"`
 }
 
@@ -130,7 +130,7 @@ func writeIssueDraft(command *cobra.Command, options *rootOptions, request clien
 		return writeJSONValue(command, options, issueDraft{
 			Title:       request.Title,
 			Description: request.Description,
-			StateType:   request.StateType,
+			State:       request.StateSelector,
 			Priority:    request.Priority,
 		})
 	}

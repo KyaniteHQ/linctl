@@ -1669,7 +1669,7 @@ Flags:
       --parent string             create the issue as a sub-issue of this parent issue id
       --priority string           set the priority to urgent, high, medium, low, none, or a number from 0 to 4
       --section stringArray       fill a markdown section with NAME=VALUE, and repeat the flag for more sections
-      --state string              set the workflow state type, for example started or completed
+      --state string              set the workflow state by exact name, for example In Review
       --status string             alias for --state
       --template string           apply a Linear template by id to set the default title and description
       --title string              issue title
@@ -1963,7 +1963,8 @@ linctl issue relate ISSUE_ID RELATED_ISSUE_ID [flags]
 Flags:
 
 ```
-      --type string   relation type: blocks, duplicate, related, or similar (default "related")
+      --allowed-project stringArray   project id both issues may occupy; repeat the flag; required for cross-project relations
+      --type string                   relation type: blocks, duplicate, related, or similar (default "related")
 ```
 
 ### linctl issue relations
@@ -2096,7 +2097,13 @@ linctl issue title-suggestion REQUEST
 Delete an issue relation after pinned-target comparison
 
 ```
-linctl issue unrelate ISSUE_RELATION_ID
+linctl issue unrelate ISSUE_RELATION_ID [flags]
+```
+
+Flags:
+
+```
+      --allowed-project stringArray   project id both issues may occupy; repeat the flag; required for cross-project relations
 ```
 
 ### linctl issue update
@@ -2123,7 +2130,7 @@ Flags:
       --label stringArray         replace the labels with these ids, and repeat the flag for more labels
       --milestone string          assign to a project milestone id, which needs a pinned project
       --priority string           set the priority to urgent, high, medium, low, none, or a number from 0 to 4
-      --state string              set the workflow state type, for example started or completed
+      --state string              set the workflow state by exact name, for example In Review
       --status string             alias for --state
       --title string              new issue title
 ```

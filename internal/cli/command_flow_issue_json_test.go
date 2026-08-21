@@ -14,6 +14,28 @@ func commandIssueExportIdentifier(fake commandFlowFakeClient) string {
 	return "LIT-1"
 }
 
+func commandFlowWorkflowStatesByTeamJSON() string {
+	return `{"workflowStates":{"nodes":[
+		{"id":"todo-state","name":"Todo","type":"unstarted","position":1},
+		{"id":"type-state-id","name":"Started","type":"started","position":0},
+		{"id":"in-review-state","name":"In Review","type":"started","position":2},
+		{"id":"done-state","name":"Done","type":"completed","position":1}
+	],"pageInfo":{"hasNextPage":false}}}`
+}
+
+func commandFlowStateByID(stateID string) (name string, stateType string) {
+	switch stateID {
+	case "in-review-state":
+		return "In Review", "started"
+	case "done-state":
+		return "Done", "completed"
+	case "type-state-id", "started-state":
+		return "Started", "started"
+	default:
+		return "Todo", "unstarted"
+	}
+}
+
 func commandIssueJSON(identifier string, title string, stateID string, state string, stateType string) string {
 	return commandIssueJSONWithTeam(identifier, title, stateID, state, stateType, "team-id", "LIT")
 }
@@ -52,7 +74,7 @@ func commandIssueJSONWithTeam(
 		"url":"https://linear.app/kyanite/issue/` + identifier + `",
 		"priority":0,
 		"priorityLabel":"No priority",
-		"team":{"id":"` + teamID + `","key":"` + teamKey + `","name":"` + teamKey + `"},
+		"team":{"id":"` + teamID + `","key":"` + teamKey + `","name":"` + teamKey + `","organization":{"id":"org-id"}},
 		"state":{"id":"` + stateID + `","name":"` + state + `","type":"` + stateType + `"},
 		"assignee":null,
 		"project":{"id":"project-id","name":"Pinned project"}

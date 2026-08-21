@@ -17,16 +17,8 @@ func Test_CommandFlows_report_normalization_note_write_errors(t *testing.T) {
 		args []string
 	}{
 		{
-			name: "create state note write failure",
-			args: []string{"issue", "create", "--title", "T", "--state", "todo"},
-		},
-		{
 			name: "create priority note write failure",
 			args: []string{"issue", "create", "--title", "T", "--priority", "high"},
-		},
-		{
-			name: "update state note write failure",
-			args: []string{"issue", "update", "LIT-1", "--state", "todo"},
 		},
 		{
 			name: "update priority note write failure",
@@ -466,7 +458,7 @@ func runCurrentCommandInGitBranch(t *testing.T, args []string) (string, error) {
 	t.Helper()
 
 	return runCurrentCommandInGitBranchWithRuntime(t, args, func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
-		return testCommandRuntime(commandFlowFakeClient{}), nil
+		return testCommandRuntime(wrapCommandFlowAfterWrite(commandFlowFakeClient{})), nil
 	})
 }
 

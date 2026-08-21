@@ -2,6 +2,7 @@ package cli
 
 import (
 	"context"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -78,6 +79,28 @@ func workflowStateTypeCandidates(ctx context.Context, runtime commandRuntime) ([
 	return types, nil
 }
 
+func workflowStateNameCandidates(ctx context.Context, runtime commandRuntime) ([]string, error) {
+	states, err := client.ListWorkflowStates(ctx, runtime.graphqlClient, completionListLimit)
+	if err != nil {
+		return nil, err
+	}
+	seen := map[string]bool{}
+	names := make([]string, 0, len(states.WorkflowStates))
+	for _, state := range states.WorkflowStates {
+		if state.Name == "" {
+			continue
+		}
+		key := strings.ToLower(state.Name)
+		if seen[key] {
+			continue
+		}
+		seen[key] = true
+		names = append(names, state.Name+"\t"+state.Type)
+	}
+
+	return names, nil
+}
+
 // flagCompletion wraps a loader as a cobra flag completion function.
 func flagCompletion(
 	ctx context.Context,
@@ -124,6 +147,11 @@ func registerGlobalCompletions(ctx context.Context, command *cobra.Command, opti
 }
 
 // registerStateCompletion wires dynamic completion for a command's --state flag.
-func registerStateCompletion(ctx context.Context, command *cobra.Command, options *rootOptions) {
-	registerFlagCompletion(command, "state", flagCompletion(ctx, options, workflowStateTypeCandidates))
+func registerStateCompletion(
+	ctx context.Context,
+	command *cobra.Command,
+	options *rootOptions,
+	load completionLoader,
+) {
+	registerFlagCompletion(command, "state", flagCompletion(ctx, options, load))
 }

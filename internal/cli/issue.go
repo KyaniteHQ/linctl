@@ -77,7 +77,7 @@ func addIssueListCommand(ctx context.Context, root *cobra.Command, options *root
 	bindIssueListFlags(command, &limit, &flags)
 	command.Flags().StringVar(&status, "status", "", "alias for --state")
 	annotateReadCollectionCommand(command, collectionKeyForPage[client.IssueList]())
-	registerStateCompletion(ctx, command, options)
+	registerStateCompletion(ctx, command, options, workflowStateTypeCandidates)
 	registerFlagCompletion(command, "project", flagCompletion(ctx, options, projectIDCandidates))
 	root.AddCommand(command)
 }

@@ -5,6 +5,8 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+
+	"github.com/KyaniteHQ/linctl/internal/client"
 )
 
 var priorityAliases = map[string]string{
@@ -20,26 +22,6 @@ var priorityAliases = map[string]string{
 	"2":           "2",
 	"3":           "3",
 	"4":           "4",
-}
-
-var stateTypeAliases = map[string]string{
-	"triage":      "triage",
-	"backlog":     "backlog",
-	"unstarted":   "unstarted",
-	"started":     "started",
-	"completed":   "completed",
-	"canceled":    "canceled",
-	"todo":        "unstarted",
-	"to do":       "unstarted",
-	"in progress": "started",
-	"in-progress": "started",
-	"done":        "completed",
-	"complete":    "completed",
-	"closed":      "completed",
-	"cancelled":   "canceled",
-	"wont do":     "canceled",
-	"wont-do":     "canceled",
-	"won't do":    "canceled",
 }
 
 var healthAliases = map[string]string{
@@ -81,8 +63,7 @@ func normalizedPriorityValue(raw string) (value string, changed bool, err error)
 // normalizedStateType maps a raw state type string to a canonical Linear
 // workflow state type. It returns whether the value changed and any parse error.
 func normalizedStateType(raw string) (value string, changed bool, err error) {
-	key := strings.ToLower(strings.TrimSpace(raw))
-	canonical, ok := stateTypeAliases[key]
+	canonical, ok := client.CanonicalWorkflowStateType(raw)
 	if !ok {
 		return "", false, fmt.Errorf(
 			"unknown state type %q: use triage/backlog/unstarted/started/completed/canceled",

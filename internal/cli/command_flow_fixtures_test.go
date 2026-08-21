@@ -46,7 +46,7 @@ func (writer commandFailingWriter) Write(_ []byte) (int, error) {
 func useCommandRuntime(t *testing.T, graphqlClient graphql.Client) func() {
 	t.Helper()
 
-	return useCommandRuntimeWithFiles(t, graphqlClient, http.DefaultClient)
+	return useCommandRuntimeWithFiles(t, wrapCommandFlowAfterWrite(graphqlClient), http.DefaultClient)
 }
 
 func useCommandRuntimeWithFiles(t *testing.T, graphqlClient graphql.Client, fileClient httpDoer) func() {

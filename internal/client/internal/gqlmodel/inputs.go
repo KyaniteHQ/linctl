@@ -76,6 +76,7 @@ type LinearIssueCreateInput struct {
 // LinearIssueFilter is the sparse Linear IssueFilter linctl composes for team-scoped issue listing.
 type LinearIssueFilter struct {
 	Team                  *LinearIDFilter                 `json:"team,omitempty"`
+	Title                 *LinearStringComparator         `json:"title,omitempty"`
 	State                 *LinearWorkflowStateTypeFilter  `json:"state,omitempty"`
 	Project               *LinearIDFilter                 `json:"project,omitempty"`
 	Assignee              *LinearIDFilter                 `json:"assignee,omitempty"`

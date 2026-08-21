@@ -36,6 +36,7 @@ type IssueSummary struct {
 type IssueDetail struct {
 	Summary     IssueSummary
 	Description string
+	OrgID       string
 }
 
 // IssueList is a page of read-only issues.
@@ -115,6 +116,7 @@ type IssueDependencyGraph struct {
 
 // IssueListFilters scopes read-only issue listing.
 type IssueListFilters struct {
+	Title         string
 	StateType     string
 	ProjectID     string
 	AssigneeID    string
@@ -211,6 +213,9 @@ func ListIssuesByTeam(
 func buildIssueFilter(teamID string, filters IssueListFilters) gqlmodel.LinearIssueFilter {
 	filter := gqlmodel.LinearIssueFilter{
 		Team: &gqlmodel.LinearIDFilter{ID: gqlmodel.LinearIDComparator{Eq: teamID}},
+	}
+	if filters.Title != "" {
+		filter.Title = &gqlmodel.LinearStringComparator{Eq: filters.Title}
 	}
 	if filters.StateType != "" {
 		filter.State = &gqlmodel.LinearWorkflowStateTypeFilter{
@@ -331,7 +336,12 @@ func detailIssue(issue gql.XIssueIssue) IssueDetail {
 	return IssueDetail{
 		Summary:     detailIssueSummary(issue),
 		Description: description,
+		OrgID:       issueOrgID(issue),
 	}
+}
+
+func issueOrgID(issue gql.XIssueIssue) string {
+	return issue.Team.Organization.Id
 }
 
 func issueSummaryFromFields(issue gql.IssueSummaryFields) IssueSummary {

@@ -29,6 +29,7 @@ var ErrViewerNotAssignable = errors.New("viewer is not assignable")
 type IssueCreateRequest struct {
 	Title              string
 	Description        string
+	StateSelector      string
 	StateType          string
 	Priority           string
 	AssigneeID         string
@@ -45,6 +46,7 @@ type IssueUpdateRequest struct {
 	Title              string
 	Description        string
 	Append             string
+	StateSelector      string
 	StateType          string
 	Priority           string
 	AssigneeID         string
@@ -129,11 +131,13 @@ func (guard *guardedClient) createIssue(
 	if err := guard.requireCreateMilestone(ctx, request.ProjectMilestoneID); err != nil {
 		return IssueSummary{}, err
 	}
-	if request.StateType != "" {
-		stateID, stateErr := guard.stateIDOfType(ctx, guard.target.Team.ID, request.StateType)
-		if stateErr != nil {
-			return IssueSummary{}, stateErr
-		}
+	stateID, stateSet, err := guard.resolveNamedOrTypedState(
+		ctx, guard.target.Team.ID, request.StateSelector, request.StateType,
+	)
+	if err != nil {
+		return IssueSummary{}, err
+	}
+	if stateSet {
 		input.StateID = stringPtr(stateID)
 	}
 	priority, err := parsePriority(request.Priority)
@@ -142,14 +146,112 @@ func (guard *guardedClient) createIssue(
 	}
 	input.Priority = priority
 	created, err := gql.IssueCreate(ctx, guard.graphqlClient, input)
+
+	return guard.finishIssueCreate(
+		ctx, request, created, issueCreateWriteError(created, err), stateID, stateSet,
+	)
+}
+
+const createdIssueReconcileLimit = 2
+
+func issueCreateWriteError(created *gql.IssueCreateResponse, err error) error {
 	if err != nil {
-		return IssueSummary{}, fmt.Errorf("create issue: %w", err)
+		return fmt.Errorf("create issue: %w", err)
 	}
-	if !created.IssueCreate.Success || created.IssueCreate.Issue == nil {
-		return IssueSummary{}, fmt.Errorf("%w: issueCreate returned no issue", ErrMutationFailed)
+	if created != nil && created.IssueCreate.Success && created.IssueCreate.Issue != nil {
+		return nil
 	}
 
-	return issueSummaryFromFields(created.IssueCreate.Issue.IssueSummaryFields), nil
+	return fmt.Errorf("%w: issueCreate returned no issue", ErrMutationFailed)
+}
+
+func createdIssueID(created *gql.IssueCreateResponse) string {
+	if created == nil || created.IssueCreate.Issue == nil {
+		return ""
+	}
+
+	return created.IssueCreate.Issue.Id
+}
+
+func createdIssueSummary(created *gql.IssueCreateResponse) IssueSummary {
+	return issueSummaryFromFields(created.IssueCreate.Issue.IssueSummaryFields)
+}
+
+func (guard *guardedClient) finishIssueCreate(
+	ctx context.Context,
+	request IssueCreateRequest,
+	created *gql.IssueCreateResponse,
+	writeErr error,
+	stateID string,
+	stateSet bool,
+) (IssueSummary, error) {
+	issueID := createdIssueID(created)
+	if issueID == "" {
+		return guard.reconcileMissingCreate(ctx, request, writeErr, stateID, stateSet)
+	}
+	if stateSet {
+		return guard.finishStateWrite(ctx, issueID, stateID, writeErr)
+	}
+	if writeErr != nil {
+		return applyMutationRetryClass(IssueStateWriteRetryClass(), IssueSummary{}, false, writeErr)
+	}
+
+	return createdIssueSummary(created), nil
+}
+
+func (guard *guardedClient) reconcileMissingCreate(
+	ctx context.Context,
+	request IssueCreateRequest,
+	writeErr error,
+	stateID string,
+	stateSet bool,
+) (IssueSummary, error) {
+	found, ok, err := guard.findCreatedIssue(ctx, request)
+	if errors.Is(err, ErrWriteInvalid) {
+		return IssueSummary{}, err
+	}
+	if err != nil {
+		return IssueSummary{}, writeErr
+	}
+	if !ok {
+		return applyMutationRetryClass(IssueStateWriteRetryClass(), IssueSummary{}, false, writeErr)
+	}
+	if stateSet {
+		return guard.finishStateWrite(ctx, found.ID, stateID, writeErr)
+	}
+
+	return applyMutationRetryClass(IssueStateWriteRetryClass(), found, true, writeErr)
+}
+
+func (guard *guardedClient) findCreatedIssue(
+	ctx context.Context,
+	request IssueCreateRequest,
+) (IssueSummary, bool, error) {
+	filters := IssueListFilters{Title: request.Title}
+	if guard.target.Project != nil {
+		filters.ProjectID = guard.target.Project.ID
+	}
+	pageSize := createdIssueReconcileLimit
+	listed, err := gql.IssuesByTeamFiltered(
+		ctx, guard.graphqlClient, buildIssueFilter(guard.target.Team.ID, filters),
+		&pageSize, nil, boolPtr(true),
+	)
+	if err != nil {
+		return IssueSummary{}, false, err
+	}
+	nodes := listed.Issues.Nodes
+	if listed.Issues.PageInfo.HasNextPage || len(nodes) > 1 {
+		return IssueSummary{}, false, fmt.Errorf(
+			"%w: created issue title %q is ambiguous",
+			ErrWriteInvalid,
+			request.Title,
+		)
+	}
+	if len(nodes) == 0 {
+		return IssueSummary{}, false, nil
+	}
+
+	return issueSummaryFromFields(nodes[0].IssueSummaryFields), true, nil
 }
 
 // IssueCreateOutcome is one row's result from a CreateIssues batch call,
@@ -291,17 +393,46 @@ func (guard *guardedClient) updateIssue(ctx context.Context, request IssueUpdate
 	if request.Append != "" {
 		description = appendIssueDescription(issue.Description, request.Append)
 	}
+	stateID, stateSet, err := guard.resolveNamedOrTypedState(
+		ctx, issue.Summary.TeamID, request.StateSelector, request.StateType,
+	)
+	if err != nil {
+		return IssueSummary{}, err
+	}
+	if stateSet && issue.Summary.StateID == stateID && issueUpdateOnlyState(request) {
+		return issue.Summary, nil
+	}
 
-	updateInput, err := guard.buildIssueUpdateInput(ctx, request, issue.Summary.TeamID, description)
+	return guard.applyIssueUpdate(ctx, request, description, stateID, stateSet)
+}
+
+func (guard *guardedClient) applyIssueUpdate(
+	ctx context.Context,
+	request IssueUpdateRequest,
+	description string,
+	stateID string,
+	stateSet bool,
+) (IssueSummary, error) {
+	var resolvedStateID *string
+	if stateSet {
+		resolvedStateID = stringPtr(stateID)
+	}
+	updateInput, err := guard.buildIssueUpdateInput(ctx, request, description, resolvedStateID)
 	if err != nil {
 		return IssueSummary{}, err
 	}
 	updated, err := gql.IssueUpdate(ctx, guard.graphqlClient, request.ID, updateInput)
-	if err != nil {
-		return IssueSummary{}, fmt.Errorf("update issue %s: %w", request.ID, err)
+	writeErr := err
+	if writeErr != nil {
+		writeErr = fmt.Errorf("update issue %s: %w", request.ID, writeErr)
+	} else if !updated.IssueUpdate.Success || updated.IssueUpdate.Issue == nil {
+		writeErr = fmt.Errorf("%w: issueUpdate returned no issue", ErrMutationFailed)
 	}
-	if !updated.IssueUpdate.Success || updated.IssueUpdate.Issue == nil {
-		return IssueSummary{}, fmt.Errorf("%w: issueUpdate returned no issue", ErrMutationFailed)
+	if stateSet {
+		return guard.finishStateWrite(ctx, request.ID, stateID, writeErr)
+	}
+	if writeErr != nil {
+		return IssueSummary{}, writeErr
 	}
 
 	return issueSummaryFromFields(updated.IssueUpdate.Issue.IssueSummaryFields), nil
@@ -330,19 +461,28 @@ func validateIssueUpdateRequest(request IssueUpdateRequest) error {
 	return validateDueDate(request.DueDate)
 }
 
-func issueUpdateHasNoFields(request IssueUpdateRequest) bool {
+func issueUpdateNonStateFieldsEmpty(request IssueUpdateRequest) bool {
 	return request.Title == "" && request.Description == "" && request.Append == "" &&
-		request.StateType == "" && request.Priority == "" && request.AssigneeID == "" &&
+		request.Priority == "" && request.AssigneeID == "" &&
 		len(request.LabelIDs) == 0 && request.DueDate == "" && !request.ClearDueDate &&
 		request.Estimate == nil && !request.ClearEstimate &&
 		request.ProjectMilestoneID == "" && !request.ClearMilestone
 }
 
+func issueUpdateHasNoFields(request IssueUpdateRequest) bool {
+	return issueUpdateNonStateFieldsEmpty(request) &&
+		request.StateSelector == "" && request.StateType == ""
+}
+
+func issueUpdateOnlyState(request IssueUpdateRequest) bool {
+	return issueUpdateNonStateFieldsEmpty(request)
+}
+
 func (guard *guardedClient) buildIssueUpdateInput(
-	ctx context.Context,
+	_ context.Context,
 	request IssueUpdateRequest,
-	teamID string,
 	description string,
+	stateID *string,
 ) (LinearIssueUpdateInput, error) {
 	input := LinearIssueUpdateInput{
 		Title:              optionalString(request.Title),
@@ -352,13 +492,7 @@ func (guard *guardedClient) buildIssueUpdateInput(
 		DueDate:            dueDateUpdateJSON(request),
 		Estimate:           estimateUpdateJSON(request),
 		ProjectMilestoneID: projectMilestoneUpdateJSON(request),
-	}
-	if request.StateType != "" {
-		stateID, err := guard.stateIDOfType(ctx, teamID, request.StateType)
-		if err != nil {
-			return LinearIssueUpdateInput{}, err
-		}
-		input.StateID = stringPtr(stateID)
+		StateID:            stateID,
 	}
 	priority, err := parsePriority(request.Priority)
 	if err != nil {
@@ -405,7 +539,7 @@ func (guard *guardedClient) startIssue(ctx context.Context, issueID string) (Iss
 	if err != nil {
 		return IssueSummary{}, err
 	}
-	stateID, err := guard.stateIDOfType(ctx, issue.TeamID, "started")
+	stateID, err := guard.resolveStateTypeID(ctx, issue.TeamID, "started")
 	if err != nil {
 		return IssueSummary{}, err
 	}
@@ -418,14 +552,14 @@ func (guard *guardedClient) startIssue(ctx context.Context, issueID string) (Iss
 	}
 
 	started, err := gql.IssueUpdate(ctx, guard.graphqlClient, issueID, input)
-	if err != nil {
-		return IssueSummary{}, fmt.Errorf("start issue %s: %w", issueID, err)
-	}
-	if !started.IssueUpdate.Success || started.IssueUpdate.Issue == nil {
-		return IssueSummary{}, fmt.Errorf("%w: issue start returned no issue", ErrMutationFailed)
+	writeErr := err
+	if writeErr != nil {
+		writeErr = fmt.Errorf("start issue %s: %w", issueID, writeErr)
+	} else if !started.IssueUpdate.Success || started.IssueUpdate.Issue == nil {
+		writeErr = fmt.Errorf("%w: issue start returned no issue", ErrMutationFailed)
 	}
 
-	return issueSummaryFromFields(started.IssueUpdate.Issue.IssueSummaryFields), nil
+	return guard.finishStateWrite(ctx, issueID, stateID, writeErr)
 }
 
 // CommentOnIssue adds a comment after resolving and comparing the pinned write target.
@@ -527,7 +661,7 @@ func (guard *guardedClient) closeIssue(ctx context.Context, issueID string) (Iss
 	if err != nil {
 		return IssueSummary{}, err
 	}
-	stateID, err := guard.stateIDOfType(ctx, issue.TeamID, "completed")
+	stateID, err := guard.resolveStateTypeID(ctx, issue.TeamID, "completed")
 	if err != nil {
 		return IssueSummary{}, err
 	}
@@ -535,61 +669,14 @@ func (guard *guardedClient) closeIssue(ctx context.Context, issueID string) (Iss
 	closed, err := gql.IssueClose(ctx, guard.graphqlClient, issueID, LinearIssueUpdateInput{
 		StateID: stringPtr(stateID),
 	})
-	if err != nil {
-		return IssueSummary{}, fmt.Errorf("close issue %s: %w", issueID, err)
-	}
-	if !closed.IssueUpdate.Success || closed.IssueUpdate.Issue == nil {
-		return IssueSummary{}, fmt.Errorf("%w: issue close returned no issue", ErrMutationFailed)
-	}
-
-	return issueSummaryFromFields(closed.IssueUpdate.Issue.IssueSummaryFields), nil
-}
-
-// stateIDOfType resolves the lowest-position workflow state of stateType in
-// teamID, memoized per guard so batch writes resolve each team state once.
-func (guard *guardedClient) stateIDOfType(
-	ctx context.Context,
-	teamID string,
-	stateType string,
-) (string, error) {
-	guard.stateIDs.mu.Lock()
-	defer guard.stateIDs.mu.Unlock()
-	key := teamID + "\x00" + stateType
-	if stateID, ok := guard.stateIDs.ids[key]; ok {
-		return stateID, nil
+	writeErr := err
+	if writeErr != nil {
+		writeErr = fmt.Errorf("close issue %s: %w", issueID, writeErr)
+	} else if !closed.IssueUpdate.Success || closed.IssueUpdate.Issue == nil {
+		writeErr = fmt.Errorf("%w: issue close returned no issue", ErrMutationFailed)
 	}
 
-	stateID, err := firstStateIDOfType(ctx, guard.graphqlClient, teamID, stateType)
-	if err != nil {
-		return "", err
-	}
-	guard.stateIDs.ids[key] = stateID
-
-	return stateID, nil
-}
-
-func firstStateIDOfType(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-	teamID string,
-	stateType string,
-) (string, error) {
-	states, err := gql.WorkflowStatesByType(ctx, graphqlClient, teamID, stateType, intPtr(50))
-	if err != nil {
-		return "", fmt.Errorf("list %s workflow states: %w", stateType, err)
-	}
-	if len(states.WorkflowStates.Nodes) == 0 {
-		return "", fmt.Errorf("%w: %s workflow state missing for team_id=%s", ErrWriteInvalid, stateType, teamID)
-	}
-
-	state := states.WorkflowStates.Nodes[0]
-	for _, candidate := range states.WorkflowStates.Nodes[1:] {
-		if candidate.Position < state.Position {
-			state = candidate
-		}
-	}
-
-	return state.Id, nil
+	return guard.finishStateWrite(ctx, issueID, stateID, writeErr)
 }
 
 func parsePriority(raw string) (*int, error) {

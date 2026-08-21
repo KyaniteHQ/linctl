@@ -25,8 +25,9 @@ configured — completion never errors):
 
 - `--team` → team keys (via the team list read)
 - `--project` → project ids, annotated with the project name (via the project list read)
-- `--state` on `issue list`, `issue create`, and `issue update` → workflow state
-  types (via the workflow-state list read)
+- `--state` on `issue list` → workflow state types (via the workflow-state list read)
+- `--state` on `issue create` and `issue update` → exact workflow-state names
+  (via the workflow-state list read)
 - positional argument of `team get` → team keys
 - positional argument of `project get` → project ids
 

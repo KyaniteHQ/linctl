@@ -23,11 +23,11 @@ type attachableLabelCache struct {
 	ids map[string]struct{}
 }
 
-// stateIDCache memoizes resolved workflow state ids per team and state type so
-// batch writes do not re-issue the same free read per row.
+// stateIDCache memoizes the team's workflow states so batch writes resolve
+// each team once. Keys are team ids.
 type stateIDCache struct {
-	mu  sync.Mutex
-	ids map[string]string
+	mu    sync.Mutex
+	lists map[string][]workflowStateCandidate
 }
 
 // estimateConfigCache memoizes team estimate configurations so batch writes do
@@ -54,7 +54,7 @@ func newGuardedClient(
 			ids: map[string]struct{}{},
 		},
 		stateIDs: &stateIDCache{
-			ids: map[string]string{},
+			lists: map[string][]workflowStateCandidate{},
 		},
 		estimateConfigs: &estimateConfigCache{
 			configs: map[string]teamEstimateConfig{},
@@ -72,6 +72,24 @@ func (guard *guardedClient) requireIssue(
 	}
 
 	return issue.Summary, nil
+}
+
+func (guard *guardedClient) requireIssueOnTeam(
+	ctx context.Context,
+	issueID string,
+) (IssueDetail, error) {
+	issue, err := GetIssueDetail(ctx, guard.graphqlClient, issueID)
+	if err != nil {
+		return IssueDetail{}, err
+	}
+	if err := guard.requireOrganization(issue.OrgID); err != nil {
+		return IssueDetail{}, fmt.Errorf("%w: %w", ErrCrossOrganizationRelation, err)
+	}
+	if issue.Summary.TeamID != guard.target.Team.ID || issue.Summary.Team != guard.target.Team.Key {
+		return IssueDetail{}, guard.teamMismatchError("issue", issue.Summary.TeamID, issue.Summary.Team)
+	}
+
+	return issue, nil
 }
 
 func (guard *guardedClient) requireIssueDetail(

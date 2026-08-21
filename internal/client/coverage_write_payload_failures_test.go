@@ -21,9 +21,10 @@ func Test_ClientWriteFailureScenarios_fail_when_issue_payload_omits_entity(t *te
 		}) + `}`,
 		"IssueUpdate":        `{"issueUpdate":{"success":false,"issue":null}}`,
 		"IssueCommentCreate": `{"commentCreate":{"success":true,"comment":{"id":"comment-id","body":"body","url":"url","issue":null}}}`,
-		"WorkflowStatesByType": `{"workflowStates":{"nodes":[
-			{"id":"state-id","name":"State","type":"started","position":1}
-		]}}`,
+		"WorkflowStatesByTeam": workflowStatesByTeamJSON(`
+			{"id":"state-id","name":"Started","type":"started","position":1},
+			{"id":"done-state","name":"Done","type":"completed","position":1}
+		`),
 		"IssueClose": `{"issueUpdate":{"success":false,"issue":null}}`,
 	})
 

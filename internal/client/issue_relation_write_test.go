@@ -46,7 +46,7 @@ func relationIssueReadWrongTeam() string {
 		"url":"https://linear.app/kyanite/issue/LIT-1",
 		"priority":0,
 		"priorityLabel":"No priority",
-		"team":{"id":"other-team","key":"OTHER","name":"other"},
+		"team":{"id":"other-team","key":"OTHER","name":"other","organization":{"id":"org-id"}},
 		"state":{"id":"state-id","name":"Todo","type":"unstarted"},
 		"assignee":null,
 		"project":{"id":"project-id","name":"fixture"}
@@ -137,9 +137,20 @@ func relationPinnedIssueJSON(id string, identifier string, title string) string 
 	})
 }
 
+func emptyIssueRelationsJSON() string {
+	return `{"issue":{"relations":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`
+}
+
 func relationIssuePairFake(extra map[string]string) graphql.Client {
 	first := relationPinnedIssueJSON("issue-id", "LIT-1", "First")
 	second := relationPinnedIssueJSON("related-issue-id", "LIT-2", "Second")
+	responses := map[string]string{
+		"issue_relations": emptyIssueRelationsJSON(),
+		"issueRelation":   `{"issueRelation":` + relationWriteJSON("related") + `}`,
+	}
+	for key, value := range extra {
+		responses[key] = value
+	}
 
 	return issueLookupFake{
 		byID: map[string]string{
@@ -148,7 +159,7 @@ func relationIssuePairFake(extra map[string]string) graphql.Client {
 			"LIT-2":            second,
 			"related-issue-id": second,
 		},
-		inner: issueWriteFakeClient(extra),
+		inner: issueWriteFakeClient(responses),
 	}
 }
 
@@ -174,6 +185,7 @@ func Test_CreateIssueRelation_allows_blocks_without_a_cycle(t *testing.T) {
 		"IssueDependencies": issueRelationDepsJSON(false),
 		"IssueRelationCreate": `{"issueRelationCreate":{"success":true,"issueRelation":` +
 			relationWriteJSON("blocks") + `}}`,
+		"issueRelation": `{"issueRelation":` + relationWriteJSON("blocks") + `}`,
 	})
 
 	relation, err := CreateIssueRelation(context.Background(), graphqlClient, matchingTarget(), IssueRelationCreateRequest{
@@ -343,7 +355,10 @@ func Test_DeleteIssueRelation_removes_relation_when_target_matches(t *testing.T)
 		"IssueRelationDelete": `{"issueRelationDelete":{"success":true,"entityId":"relation-id"}}`,
 	})
 
-	id, err := DeleteIssueRelation(context.Background(), graphqlClient, matchingTarget(), "relation-id")
+	id, err := DeleteIssueRelation(
+		context.Background(), graphqlClient, matchingTarget(),
+		IssueRelationDeleteRequest{RelationID: "relation-id"},
+	)
 
 	require.NoError(t, err)
 	require.Equal(t, "relation-id", id)
@@ -351,7 +366,8 @@ func Test_DeleteIssueRelation_removes_relation_when_target_matches(t *testing.T)
 
 func Test_DeleteIssueRelation_requires_id(t *testing.T) {
 	_, err := DeleteIssueRelation(
-		context.Background(), issueWriteFakeClient(map[string]string{}), matchingTarget(), "",
+		context.Background(), issueWriteFakeClient(map[string]string{}), matchingTarget(),
+		IssueRelationDeleteRequest{},
 	)
 
 	require.ErrorIs(t, err, ErrWriteInvalid)
@@ -362,7 +378,7 @@ func Test_DeleteIssueRelation_refuses_when_target_unresolved(t *testing.T) {
 		OrgID:   "org-id",
 		TeamKey: "WRONG",
 		TeamID:  "wrong-id",
-	}, "relation-id")
+	}, IssueRelationDeleteRequest{RelationID: "relation-id"})
 
 	require.ErrorIs(t, err, ErrTargetMismatch)
 }
@@ -370,7 +386,10 @@ func Test_DeleteIssueRelation_refuses_when_target_unresolved(t *testing.T) {
 func Test_DeleteIssueRelation_wraps_relation_read_error(t *testing.T) {
 	graphqlClient := issueWriteFakeClient(map[string]string{})
 
-	_, err := DeleteIssueRelation(context.Background(), graphqlClient, matchingTarget(), "relation-id")
+	_, err := DeleteIssueRelation(
+		context.Background(), graphqlClient, matchingTarget(),
+		IssueRelationDeleteRequest{RelationID: "relation-id"},
+	)
 
 	require.Error(t, err)
 	require.NotErrorIs(t, err, ErrTargetMismatch)
@@ -382,7 +401,10 @@ func Test_DeleteIssueRelation_refuses_when_issue_team_differs(t *testing.T) {
 		"issue":         relationIssueReadWrongTeam(),
 	})
 
-	_, err := DeleteIssueRelation(context.Background(), graphqlClient, matchingTarget(), "relation-id")
+	_, err := DeleteIssueRelation(
+		context.Background(), graphqlClient, matchingTarget(),
+		IssueRelationDeleteRequest{RelationID: "relation-id"},
+	)
 
 	require.ErrorIs(t, err, ErrTargetMismatch)
 }
@@ -393,7 +415,10 @@ func Test_DeleteIssueRelation_wraps_mutation_error(t *testing.T) {
 		"issue":         relationIssueRead(),
 	})
 
-	_, err := DeleteIssueRelation(context.Background(), graphqlClient, matchingTarget(), "relation-id")
+	_, err := DeleteIssueRelation(
+		context.Background(), graphqlClient, matchingTarget(),
+		IssueRelationDeleteRequest{RelationID: "relation-id"},
+	)
 
 	require.Error(t, err)
 	require.NotErrorIs(t, err, ErrTargetMismatch)
@@ -406,7 +431,10 @@ func Test_DeleteIssueRelation_fails_when_mutation_reports_no_success(t *testing.
 		"IssueRelationDelete": `{"issueRelationDelete":{"success":false,"entityId":"relation-id"}}`,
 	})
 
-	_, err := DeleteIssueRelation(context.Background(), graphqlClient, matchingTarget(), "relation-id")
+	_, err := DeleteIssueRelation(
+		context.Background(), graphqlClient, matchingTarget(),
+		IssueRelationDeleteRequest{RelationID: "relation-id"},
+	)
 
 	require.ErrorIs(t, err, ErrMutationFailed)
 }
