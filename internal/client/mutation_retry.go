@@ -28,6 +28,16 @@ func IssueRelationCreateRetryClass() MutationRetryClass {
 	return MutationRetryReconcile
 }
 
+// WorkflowStateWriteRetryClass is the retry class for workflow-state writes.
+func WorkflowStateWriteRetryClass() MutationRetryClass {
+	return MutationRetryReconcile
+}
+
+// TemplateWriteRetryClass is the retry class for issue-template writes.
+func TemplateWriteRetryClass() MutationRetryClass {
+	return MutationRetryReconcile
+}
+
 func applyMutationRetryClass[T any](
 	class MutationRetryClass,
 	recovered T,

@@ -236,3 +236,37 @@ type LinearTeamCreateInput struct {
 	Description *string `json:"description,omitempty"`
 	Private     *bool   `json:"private,omitempty"`
 }
+
+// LinearTemplateCreateInput is the sparse Linear templateCreate payload linctl supports.
+type LinearTemplateCreateInput struct {
+	ID           *string         `json:"id,omitempty"`
+	Name         string          `json:"name"`
+	Type         string          `json:"type"`
+	TeamID       *string         `json:"teamId,omitempty"`
+	TemplateData json.RawMessage `json:"templateData"`
+}
+
+// LinearTemplateUpdateInput is the sparse Linear templateUpdate payload linctl supports.
+type LinearTemplateUpdateInput struct {
+	Name         *string         `json:"name,omitempty"`
+	TemplateData json.RawMessage `json:"templateData,omitempty"`
+}
+
+// LinearWorkflowStateCreateInput is the sparse Linear workflowStateCreate payload linctl supports.
+type LinearWorkflowStateCreateInput struct {
+	ID          *string  `json:"id,omitempty"`
+	Name        string   `json:"name"`
+	Color       string   `json:"color"`
+	Type        string   `json:"type"`
+	TeamID      string   `json:"teamId"`
+	Description *string  `json:"description,omitempty"`
+	Position    *float64 `json:"position,omitempty"`
+}
+
+// LinearWorkflowStateUpdateInput is the sparse Linear workflowStateUpdate payload linctl supports.
+type LinearWorkflowStateUpdateInput struct {
+	Name        *string  `json:"name,omitempty"`
+	Color       *string  `json:"color,omitempty"`
+	Description *string  `json:"description,omitempty"`
+	Position    *float64 `json:"position,omitempty"`
+}

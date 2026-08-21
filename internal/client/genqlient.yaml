@@ -59,5 +59,13 @@ bindings:
     type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearNotificationUpdateInput
   TeamCreateInput:
     type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearTeamCreateInput
+  TemplateCreateInput:
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearTemplateCreateInput
+  TemplateUpdateInput:
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearTemplateUpdateInput
   TimelessDate:
     type: string
+  WorkflowStateCreateInput:
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearWorkflowStateCreateInput
+  WorkflowStateUpdateInput:
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearWorkflowStateUpdateInput

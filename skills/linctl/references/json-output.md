@@ -149,6 +149,47 @@ Auth readiness succeeds only after linctl proves the token actor, the token scop
 pinned target. linctl reports the app config and the token material as `set` or `missing`, and
 linctl never prints a secret value.
 
+## WorkflowState
+
+`workflow-state get` · `workflow-state create` · `workflow-state update` → **WorkflowStateSummary**
+
+| key | type | notes |
+| --- | --- | --- |
+| `id` | string | |
+| `name` | string | |
+| `type` | string | `backlog`, `unstarted`, `started`, `completed`, or `canceled` on create |
+| `color` | string | |
+| `description` | string | *optional* |
+| `position` | number | |
+| `team_id` | string | |
+| `team_key` | string | |
+| `team_name` | string | |
+
+`workflow-state list` → **WorkflowStateList**:
+`{ "workflow_states": [WorkflowStateSummary], "has_next_page": bool, "end_cursor": string|absent }`
+
+## Template
+
+`template get` → **TemplateSummary**. This shape is data-free. It omits `templateData`.
+
+`template list` → **TemplateList**:
+`{ "templates": [TemplateSummary], "total_count": number, "has_next_page": bool|absent, "end_cursor": string|absent }`
+
+`template content` · `template create` · `template update` → **TemplateDetail**
+
+| key | type | notes |
+| --- | --- | --- |
+| `id` | string | |
+| `name` | string | |
+| `type` | string | writes accept only `issue` |
+| `data` | object | canonical JSON object; key order is sorted |
+| `team_id` | string | |
+| `team_key` | string | |
+| `team_name` | string | |
+| `pipeline_id` | string | *optional*; writes require this empty |
+
+A `CONFLICT` error names the template id. It never includes raw template data.
+
 ## Usage
 
 `usage` · `issue usage` · `project usage` → `{ "topic": string, "text": string }`
@@ -167,6 +208,7 @@ agent can then branch on a stable code instead of a parse of the prose.
 - `TARGET_MISMATCH`: the resolved target does not match the pinned target. This is a hard stop. Do not retry with different auth.
 - `CROSS_ORGANIZATION_RELATION`: a relation would cross Linear organizations. This is a hard stop.
 - `STATE_MISMATCH`: a state write's readback did not match the selected workflow state.
+- `CONFLICT`: a guarded write's stable-id readback exists but does not match the requested fields. Do not replay.
 - `TARGET_NOT_CONFIGURED`: there is no pinned target. Set `org_id`, `team_key`, and `team_id` in `.linctl.toml`.
 - `RATE_LIMITED`: Linear returned a rate-limit response. Wait, then retry.
 - `MUTATION_FAILED`: the mutation ran, but Linear reported no success and no entity.

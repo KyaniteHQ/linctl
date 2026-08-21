@@ -688,7 +688,7 @@ Schema backing:
 - Reads: `Query.workflowStates`, `Query.workflowState`, `Team.states`
 - Writes: `Mutation.workflowStateCreate`, `Mutation.workflowStateUpdate`, `Mutation.workflowStateArchive`
 - Inputs: `WorkflowStateCreateInput`, `WorkflowStateUpdateInput`
-- Relevant fields: `WorkflowState.id`, `WorkflowState.name`, `WorkflowState.type`, `WorkflowState.color`, `WorkflowState.position`, `WorkflowState.team`
+- Relevant fields: `WorkflowState.id`, `WorkflowState.name`, `WorkflowState.type`, `WorkflowState.color`, `WorkflowState.description`, `WorkflowState.position`, `WorkflowState.team`
 
 Planned commands:
 
@@ -697,11 +697,11 @@ Planned commands:
 | `workflow-state list` | `Query.workflowStates` | Read-only |
 | `workflow-state get` | `Query.workflowState` | Read-only |
 | `workflow-state issues` | `WorkflowState.issues` via `Query.workflowState` | Read-only |
-| `workflow-state create` | `Mutation.workflowStateCreate` | Blocked: team workflow configuration needs an explicit admin safety model |
-| `workflow-state update` | `Mutation.workflowStateUpdate` | Blocked: update must resolve and compare the owning team before mutation |
+| `workflow-state create` | `Mutation.workflowStateCreate` with caller-supplied UUID v4; `teamId` from the resolved team | Team-Scoped Write |
+| `workflow-state update` | `Mutation.workflowStateUpdate` after resolving the WorkflowState team | Team-Scoped Write |
 | `workflow-state archive` | `Mutation.workflowStateArchive` | Blocked: destructive command needs explicit safety semantics |
 
-`workflow-state list`, `workflow-state get`, and `workflow-state issues` are implemented in the current CLI. WorkflowState writes are deferred as team/admin configuration surface.
+`workflow-state list`, `workflow-state get`, `workflow-state issues`, `workflow-state create`, and `workflow-state update` are implemented in the current CLI. Create sends the caller-supplied UUID. Create also sends the resolved team id. It does not accept a team flag. Update resolves the existing WorkflowState. It compares team id and key. Type cannot change after create. Target resolution still checks the pinned project. After that, only team ownership is compared. Ambiguous mutation results read back by the supplied id. The writer does not replay. Archive stays blocked.
 
 ## TimeSchedule
 
@@ -831,11 +831,12 @@ Command status:
 | --- | --- | --- |
 | `template list` | `Query.templates` | Read-only |
 | `template get` | `Query.template` | Read-only |
-| `template create` | `Mutation.templateCreate` | Blocked: create can be organization-, team-, or pipeline-scoped and needs explicit guard semantics |
-| `template update` | `Mutation.templateUpdate` | Blocked: update must resolve and compare the template's organization, team, or pipeline scope before mutation |
+| `template content` | `Query.template` via `templateContent` | Read-only exact template data and scope |
+| `template create` | `Mutation.templateCreate` with caller-supplied UUID v4, type `issue`, and `teamId` from the resolved team | Team-Scoped Write |
+| `template update` | `Mutation.templateUpdate` after resolving a team-owned issue template with an empty pipeline | Team-Scoped Write |
 | `template delete` | `Mutation.templateDelete` | Blocked: destructive command needs explicit template-scope safety semantics |
 
-Only `template list` and `template get` are implemented in the current CLI. Template writes are deferred until their organization, team, and pipeline guard model is explicit.
+`template list`, `template get`, `template content`, `template create`, and `template update` are implemented in the current CLI. List and ordinary get stay data-free. `template content` and write receipts return exact canonical JSON data. They also return type, team, and pipeline scope. Create always sends the resolved team id. Create also sends type `issue`. It refuses every other type. Update never sends `teamId`. Update never sends type. A null team is Target Mismatch. A non-empty pipeline is Target Mismatch. Both stop before mutation. Organization-wide, pipeline, project, and document templates stay out of this write surface. Target resolution still checks the pinned project. After that, only team ownership is compared. Ambiguous mutation results read back by the supplied id. The writer does not replay. Delete stays blocked.
 
 ## Initiative
 

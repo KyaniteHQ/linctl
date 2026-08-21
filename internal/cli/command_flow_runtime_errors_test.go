@@ -193,6 +193,11 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"custom-view", "preference-values", "custom-view-id"},
 			{"customer-need", "project-attachment", "customer-need-id"},
 			{"sla-configuration", "list", "team-id"},
+			{"workflow-state", "create", "--id", "550e8400-e29b-41d4-a716-446655440000", "--name", "Ready", "--type", "unstarted", "--color", "#f2c94c"},
+			{"workflow-state", "update", "workflow-state-id", "--name", "Ready"},
+			{"template", "create", "--id", "7c9e6679-7425-40de-944b-e07fc1f90ae7", "--name", "Bug report", "--type", "issue", "--data-file", "template.json"},
+			{"template", "update", "template-id", "--name", "Bug report"},
+			{"template", "content", "template-id"},
 		}
 		for _, args := range commands {
 			t.Run(strings.Join(args, " "), func(t *testing.T) {

@@ -37,6 +37,28 @@ func Test_WritePathInputGuards_report_INVALID_WRITE(t *testing.T) {
 			args: []string{"issue", "relate", "LIT-42", "issue-uuid-42", "--type", "blocks"},
 			want: "cannot relate to itself",
 		},
+		{
+			name: "template data-file stdin",
+			args: []string{
+				"template", "create",
+				"--id", "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+				"--name", "Bug report",
+				"--type", "issue",
+				"--data-file", "-",
+			},
+			want: "not stdin",
+		},
+		{
+			name: "workflow-state type",
+			args: []string{
+				"workflow-state", "create",
+				"--id", "550e8400-e29b-41d4-a716-446655440000",
+				"--name", "Ready",
+				"--type", "triage",
+				"--color", "#f2c94c",
+			},
+			want: "type must be backlog, unstarted, started, completed, or canceled",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

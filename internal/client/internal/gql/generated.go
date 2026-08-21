@@ -28236,6 +28236,115 @@ func (v *TeamsTeamsTeamConnectionPageInfo) GetHasNextPage() bool { return v.HasN
 // GetEndCursor returns TeamsTeamsTeamConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
 func (v *TeamsTeamsTeamConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
 
+// TemplateCreateResponse is returned by TemplateCreate on success.
+type TemplateCreateResponse struct {
+	// Creates a new template.
+	TemplateCreate TemplateCreateTemplateCreateTemplatePayload `json:"templateCreate"`
+}
+
+// GetTemplateCreate returns TemplateCreateResponse.TemplateCreate, and is useful for accessing the field via an interface.
+func (v *TemplateCreateResponse) GetTemplateCreate() TemplateCreateTemplateCreateTemplatePayload {
+	return v.TemplateCreate
+}
+
+// TemplateCreateTemplateCreateTemplatePayload includes the requested fields of the GraphQL type TemplatePayload.
+// The GraphQL type's documentation follows.
+//
+// The result of a template mutation.
+type TemplateCreateTemplateCreateTemplatePayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The template that was created or updated.
+	Template TemplateCreateTemplateCreateTemplatePayloadTemplate `json:"template"`
+}
+
+// GetSuccess returns TemplateCreateTemplateCreateTemplatePayload.Success, and is useful for accessing the field via an interface.
+func (v *TemplateCreateTemplateCreateTemplatePayload) GetSuccess() bool { return v.Success }
+
+// GetTemplate returns TemplateCreateTemplateCreateTemplatePayload.Template, and is useful for accessing the field via an interface.
+func (v *TemplateCreateTemplateCreateTemplatePayload) GetTemplate() TemplateCreateTemplateCreateTemplatePayloadTemplate {
+	return v.Template
+}
+
+// TemplateCreateTemplateCreateTemplatePayloadTemplate includes the requested fields of the GraphQL type Template.
+// The GraphQL type's documentation follows.
+//
+// A reusable template for creating issues, projects, or documents. Templates store pre-filled field values and content as JSON data. They can be scoped to a specific team or shared across the entire workspace. Team-scoped templates may be inherited from parent teams.
+type TemplateCreateTemplateCreateTemplatePayloadTemplate struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the template.
+	Name string `json:"name"`
+	// The entity type this template is for, such as 'issue', 'project', or 'document'.
+	Type string `json:"type"`
+	// The template data as a JSON-encoded string containing the pre-filled attributes for the entity type (e.g., issue fields, project configuration, or document content).
+	TemplateData json.RawMessage `json:"templateData"`
+	// The team that the template is associated with. If null, the template is global to the workspace.
+	Team *TemplateCreateTemplateCreateTemplatePayloadTemplateTeam `json:"team"`
+	// The release pipeline this template is bound to. Required when the template type is 'releaseNote' and forbidden otherwise. The pipeline owns at most one release note template, which defines the format AI follows when generating release notes.
+	Pipeline *TemplateCreateTemplateCreateTemplatePayloadTemplatePipelineReleasePipeline `json:"pipeline"`
+}
+
+// GetId returns TemplateCreateTemplateCreateTemplatePayloadTemplate.Id, and is useful for accessing the field via an interface.
+func (v *TemplateCreateTemplateCreateTemplatePayloadTemplate) GetId() string { return v.Id }
+
+// GetName returns TemplateCreateTemplateCreateTemplatePayloadTemplate.Name, and is useful for accessing the field via an interface.
+func (v *TemplateCreateTemplateCreateTemplatePayloadTemplate) GetName() string { return v.Name }
+
+// GetType returns TemplateCreateTemplateCreateTemplatePayloadTemplate.Type, and is useful for accessing the field via an interface.
+func (v *TemplateCreateTemplateCreateTemplatePayloadTemplate) GetType() string { return v.Type }
+
+// GetTemplateData returns TemplateCreateTemplateCreateTemplatePayloadTemplate.TemplateData, and is useful for accessing the field via an interface.
+func (v *TemplateCreateTemplateCreateTemplatePayloadTemplate) GetTemplateData() json.RawMessage {
+	return v.TemplateData
+}
+
+// GetTeam returns TemplateCreateTemplateCreateTemplatePayloadTemplate.Team, and is useful for accessing the field via an interface.
+func (v *TemplateCreateTemplateCreateTemplatePayloadTemplate) GetTeam() *TemplateCreateTemplateCreateTemplatePayloadTemplateTeam {
+	return v.Team
+}
+
+// GetPipeline returns TemplateCreateTemplateCreateTemplatePayloadTemplate.Pipeline, and is useful for accessing the field via an interface.
+func (v *TemplateCreateTemplateCreateTemplatePayloadTemplate) GetPipeline() *TemplateCreateTemplateCreateTemplatePayloadTemplatePipelineReleasePipeline {
+	return v.Pipeline
+}
+
+// TemplateCreateTemplateCreateTemplatePayloadTemplatePipelineReleasePipeline includes the requested fields of the GraphQL type ReleasePipeline.
+// The GraphQL type's documentation follows.
+//
+// A release pipeline that defines a release workflow with ordered stages. Pipelines can be continuous (each sync creates a completed release) or scheduled (issues accumulate in a started release that is explicitly completed). Pipelines are associated with teams and can filter commits by file path patterns.
+type TemplateCreateTemplateCreateTemplatePayloadTemplatePipelineReleasePipeline struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns TemplateCreateTemplateCreateTemplatePayloadTemplatePipelineReleasePipeline.Id, and is useful for accessing the field via an interface.
+func (v *TemplateCreateTemplateCreateTemplatePayloadTemplatePipelineReleasePipeline) GetId() string {
+	return v.Id
+}
+
+// TemplateCreateTemplateCreateTemplatePayloadTemplateTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
+type TemplateCreateTemplateCreateTemplatePayloadTemplateTeam struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The team's unique key, used as a prefix in issue identifiers (e.g., 'ENG' in 'ENG-123') and in URLs.
+	Key string `json:"key"`
+	// The team's name.
+	Name string `json:"name"`
+}
+
+// GetId returns TemplateCreateTemplateCreateTemplatePayloadTemplateTeam.Id, and is useful for accessing the field via an interface.
+func (v *TemplateCreateTemplateCreateTemplatePayloadTemplateTeam) GetId() string { return v.Id }
+
+// GetKey returns TemplateCreateTemplateCreateTemplatePayloadTemplateTeam.Key, and is useful for accessing the field via an interface.
+func (v *TemplateCreateTemplateCreateTemplatePayloadTemplateTeam) GetKey() string { return v.Key }
+
+// GetName returns TemplateCreateTemplateCreateTemplatePayloadTemplateTeam.Name, and is useful for accessing the field via an interface.
+func (v *TemplateCreateTemplateCreateTemplatePayloadTemplateTeam) GetName() string { return v.Name }
+
 // TemplateSummaryFields includes the GraphQL fields of Template requested by the fragment TemplateSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -28399,6 +28508,115 @@ func (v *TemplateSummaryFieldsTeam) GetKey() string { return v.Key }
 
 // GetName returns TemplateSummaryFieldsTeam.Name, and is useful for accessing the field via an interface.
 func (v *TemplateSummaryFieldsTeam) GetName() string { return v.Name }
+
+// TemplateUpdateResponse is returned by TemplateUpdate on success.
+type TemplateUpdateResponse struct {
+	// Updates an existing template.
+	TemplateUpdate TemplateUpdateTemplateUpdateTemplatePayload `json:"templateUpdate"`
+}
+
+// GetTemplateUpdate returns TemplateUpdateResponse.TemplateUpdate, and is useful for accessing the field via an interface.
+func (v *TemplateUpdateResponse) GetTemplateUpdate() TemplateUpdateTemplateUpdateTemplatePayload {
+	return v.TemplateUpdate
+}
+
+// TemplateUpdateTemplateUpdateTemplatePayload includes the requested fields of the GraphQL type TemplatePayload.
+// The GraphQL type's documentation follows.
+//
+// The result of a template mutation.
+type TemplateUpdateTemplateUpdateTemplatePayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The template that was created or updated.
+	Template TemplateUpdateTemplateUpdateTemplatePayloadTemplate `json:"template"`
+}
+
+// GetSuccess returns TemplateUpdateTemplateUpdateTemplatePayload.Success, and is useful for accessing the field via an interface.
+func (v *TemplateUpdateTemplateUpdateTemplatePayload) GetSuccess() bool { return v.Success }
+
+// GetTemplate returns TemplateUpdateTemplateUpdateTemplatePayload.Template, and is useful for accessing the field via an interface.
+func (v *TemplateUpdateTemplateUpdateTemplatePayload) GetTemplate() TemplateUpdateTemplateUpdateTemplatePayloadTemplate {
+	return v.Template
+}
+
+// TemplateUpdateTemplateUpdateTemplatePayloadTemplate includes the requested fields of the GraphQL type Template.
+// The GraphQL type's documentation follows.
+//
+// A reusable template for creating issues, projects, or documents. Templates store pre-filled field values and content as JSON data. They can be scoped to a specific team or shared across the entire workspace. Team-scoped templates may be inherited from parent teams.
+type TemplateUpdateTemplateUpdateTemplatePayloadTemplate struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the template.
+	Name string `json:"name"`
+	// The entity type this template is for, such as 'issue', 'project', or 'document'.
+	Type string `json:"type"`
+	// The template data as a JSON-encoded string containing the pre-filled attributes for the entity type (e.g., issue fields, project configuration, or document content).
+	TemplateData json.RawMessage `json:"templateData"`
+	// The team that the template is associated with. If null, the template is global to the workspace.
+	Team *TemplateUpdateTemplateUpdateTemplatePayloadTemplateTeam `json:"team"`
+	// The release pipeline this template is bound to. Required when the template type is 'releaseNote' and forbidden otherwise. The pipeline owns at most one release note template, which defines the format AI follows when generating release notes.
+	Pipeline *TemplateUpdateTemplateUpdateTemplatePayloadTemplatePipelineReleasePipeline `json:"pipeline"`
+}
+
+// GetId returns TemplateUpdateTemplateUpdateTemplatePayloadTemplate.Id, and is useful for accessing the field via an interface.
+func (v *TemplateUpdateTemplateUpdateTemplatePayloadTemplate) GetId() string { return v.Id }
+
+// GetName returns TemplateUpdateTemplateUpdateTemplatePayloadTemplate.Name, and is useful for accessing the field via an interface.
+func (v *TemplateUpdateTemplateUpdateTemplatePayloadTemplate) GetName() string { return v.Name }
+
+// GetType returns TemplateUpdateTemplateUpdateTemplatePayloadTemplate.Type, and is useful for accessing the field via an interface.
+func (v *TemplateUpdateTemplateUpdateTemplatePayloadTemplate) GetType() string { return v.Type }
+
+// GetTemplateData returns TemplateUpdateTemplateUpdateTemplatePayloadTemplate.TemplateData, and is useful for accessing the field via an interface.
+func (v *TemplateUpdateTemplateUpdateTemplatePayloadTemplate) GetTemplateData() json.RawMessage {
+	return v.TemplateData
+}
+
+// GetTeam returns TemplateUpdateTemplateUpdateTemplatePayloadTemplate.Team, and is useful for accessing the field via an interface.
+func (v *TemplateUpdateTemplateUpdateTemplatePayloadTemplate) GetTeam() *TemplateUpdateTemplateUpdateTemplatePayloadTemplateTeam {
+	return v.Team
+}
+
+// GetPipeline returns TemplateUpdateTemplateUpdateTemplatePayloadTemplate.Pipeline, and is useful for accessing the field via an interface.
+func (v *TemplateUpdateTemplateUpdateTemplatePayloadTemplate) GetPipeline() *TemplateUpdateTemplateUpdateTemplatePayloadTemplatePipelineReleasePipeline {
+	return v.Pipeline
+}
+
+// TemplateUpdateTemplateUpdateTemplatePayloadTemplatePipelineReleasePipeline includes the requested fields of the GraphQL type ReleasePipeline.
+// The GraphQL type's documentation follows.
+//
+// A release pipeline that defines a release workflow with ordered stages. Pipelines can be continuous (each sync creates a completed release) or scheduled (issues accumulate in a started release that is explicitly completed). Pipelines are associated with teams and can filter commits by file path patterns.
+type TemplateUpdateTemplateUpdateTemplatePayloadTemplatePipelineReleasePipeline struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns TemplateUpdateTemplateUpdateTemplatePayloadTemplatePipelineReleasePipeline.Id, and is useful for accessing the field via an interface.
+func (v *TemplateUpdateTemplateUpdateTemplatePayloadTemplatePipelineReleasePipeline) GetId() string {
+	return v.Id
+}
+
+// TemplateUpdateTemplateUpdateTemplatePayloadTemplateTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
+type TemplateUpdateTemplateUpdateTemplatePayloadTemplateTeam struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The team's unique key, used as a prefix in issue identifiers (e.g., 'ENG' in 'ENG-123') and in URLs.
+	Key string `json:"key"`
+	// The team's name.
+	Name string `json:"name"`
+}
+
+// GetId returns TemplateUpdateTemplateUpdateTemplatePayloadTemplateTeam.Id, and is useful for accessing the field via an interface.
+func (v *TemplateUpdateTemplateUpdateTemplatePayloadTemplateTeam) GetId() string { return v.Id }
+
+// GetKey returns TemplateUpdateTemplateUpdateTemplatePayloadTemplateTeam.Key, and is useful for accessing the field via an interface.
+func (v *TemplateUpdateTemplateUpdateTemplatePayloadTemplateTeam) GetKey() string { return v.Key }
+
+// GetName returns TemplateUpdateTemplateUpdateTemplatePayloadTemplateTeam.Name, and is useful for accessing the field via an interface.
+func (v *TemplateUpdateTemplateUpdateTemplatePayloadTemplateTeam) GetName() string { return v.Name }
 
 // TimeScheduleSummaryFields includes the GraphQL fields of TimeSchedule requested by the fragment TimeScheduleSummaryFields.
 // The GraphQL type's documentation follows.
@@ -29663,6 +29881,143 @@ func (v *ViewerViewerUserOrganization) GetName() string { return v.Name }
 // GetUrlKey returns ViewerViewerUserOrganization.UrlKey, and is useful for accessing the field via an interface.
 func (v *ViewerViewerUserOrganization) GetUrlKey() string { return v.UrlKey }
 
+// WorkflowStateCreateResponse is returned by WorkflowStateCreate on success.
+type WorkflowStateCreateResponse struct {
+	// Creates a new state, adding it to the workflow of a team.
+	WorkflowStateCreate WorkflowStateCreateWorkflowStateCreateWorkflowStatePayload `json:"workflowStateCreate"`
+}
+
+// GetWorkflowStateCreate returns WorkflowStateCreateResponse.WorkflowStateCreate, and is useful for accessing the field via an interface.
+func (v *WorkflowStateCreateResponse) GetWorkflowStateCreate() WorkflowStateCreateWorkflowStateCreateWorkflowStatePayload {
+	return v.WorkflowStateCreate
+}
+
+// WorkflowStateCreateWorkflowStateCreateWorkflowStatePayload includes the requested fields of the GraphQL type WorkflowStatePayload.
+// The GraphQL type's documentation follows.
+//
+// The result of a workflow state mutation, containing the created or updated state and a success indicator.
+type WorkflowStateCreateWorkflowStateCreateWorkflowStatePayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The state that was created or updated.
+	WorkflowState WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState `json:"workflowState"`
+}
+
+// GetSuccess returns WorkflowStateCreateWorkflowStateCreateWorkflowStatePayload.Success, and is useful for accessing the field via an interface.
+func (v *WorkflowStateCreateWorkflowStateCreateWorkflowStatePayload) GetSuccess() bool {
+	return v.Success
+}
+
+// GetWorkflowState returns WorkflowStateCreateWorkflowStateCreateWorkflowStatePayload.WorkflowState, and is useful for accessing the field via an interface.
+func (v *WorkflowStateCreateWorkflowStateCreateWorkflowStatePayload) GetWorkflowState() WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState {
+	return v.WorkflowState
+}
+
+// WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState includes the requested fields of the GraphQL type WorkflowState.
+// The GraphQL type's documentation follows.
+//
+// A state in a team's workflow, representing an issue status such as Triage, Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own set of workflow states that define the progression of issues through the team's process. Workflow states have a type that categorizes them (triage, backlog, unstarted, started, completed, canceled), a position that determines their display order, and a color for visual identification. States can be inherited from parent teams to sub-teams.
+type WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState struct {
+	WorkflowStateSummaryFields `json:"-"`
+}
+
+// GetId returns WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState.Id, and is useful for accessing the field via an interface.
+func (v *WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState) GetId() string {
+	return v.WorkflowStateSummaryFields.Id
+}
+
+// GetName returns WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState.Name, and is useful for accessing the field via an interface.
+func (v *WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState) GetName() string {
+	return v.WorkflowStateSummaryFields.Name
+}
+
+// GetType returns WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState.Type, and is useful for accessing the field via an interface.
+func (v *WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState) GetType() string {
+	return v.WorkflowStateSummaryFields.Type
+}
+
+// GetColor returns WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState.Color, and is useful for accessing the field via an interface.
+func (v *WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState) GetColor() string {
+	return v.WorkflowStateSummaryFields.Color
+}
+
+// GetDescription returns WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState.Description, and is useful for accessing the field via an interface.
+func (v *WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState) GetDescription() *string {
+	return v.WorkflowStateSummaryFields.Description
+}
+
+// GetPosition returns WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState.Position, and is useful for accessing the field via an interface.
+func (v *WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState) GetPosition() float64 {
+	return v.WorkflowStateSummaryFields.Position
+}
+
+// GetTeam returns WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState.Team, and is useful for accessing the field via an interface.
+func (v *WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState) GetTeam() WorkflowStateSummaryFieldsTeam {
+	return v.WorkflowStateSummaryFields.Team
+}
+
+func (v *WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.WorkflowStateSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalWorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Type string `json:"type"`
+
+	Color string `json:"color"`
+
+	Description *string `json:"description"`
+
+	Position float64 `json:"position"`
+
+	Team WorkflowStateSummaryFieldsTeam `json:"team"`
+}
+
+func (v *WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState) __premarshalJSON() (*__premarshalWorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState, error) {
+	var retval __premarshalWorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState
+
+	retval.Id = v.WorkflowStateSummaryFields.Id
+	retval.Name = v.WorkflowStateSummaryFields.Name
+	retval.Type = v.WorkflowStateSummaryFields.Type
+	retval.Color = v.WorkflowStateSummaryFields.Color
+	retval.Description = v.WorkflowStateSummaryFields.Description
+	retval.Position = v.WorkflowStateSummaryFields.Position
+	retval.Team = v.WorkflowStateSummaryFields.Team
+	return &retval, nil
+}
+
 // WorkflowStateSummaryFields includes the GraphQL fields of WorkflowState requested by the fragment WorkflowStateSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -29676,6 +30031,8 @@ type WorkflowStateSummaryFields struct {
 	Type string `json:"type"`
 	// The state's UI color as a HEX string.
 	Color string `json:"color"`
+	// Description of the state.
+	Description *string `json:"description"`
 	// The position of the state in the team's workflow. States are displayed in ascending order of position within their type group.
 	Position float64 `json:"position"`
 	// The team that this workflow state belongs to. Each team has its own set of workflow states.
@@ -29693,6 +30050,9 @@ func (v *WorkflowStateSummaryFields) GetType() string { return v.Type }
 
 // GetColor returns WorkflowStateSummaryFields.Color, and is useful for accessing the field via an interface.
 func (v *WorkflowStateSummaryFields) GetColor() string { return v.Color }
+
+// GetDescription returns WorkflowStateSummaryFields.Description, and is useful for accessing the field via an interface.
+func (v *WorkflowStateSummaryFields) GetDescription() *string { return v.Description }
 
 // GetPosition returns WorkflowStateSummaryFields.Position, and is useful for accessing the field via an interface.
 func (v *WorkflowStateSummaryFields) GetPosition() float64 { return v.Position }
@@ -29721,6 +30081,143 @@ func (v *WorkflowStateSummaryFieldsTeam) GetKey() string { return v.Key }
 
 // GetName returns WorkflowStateSummaryFieldsTeam.Name, and is useful for accessing the field via an interface.
 func (v *WorkflowStateSummaryFieldsTeam) GetName() string { return v.Name }
+
+// WorkflowStateUpdateResponse is returned by WorkflowStateUpdate on success.
+type WorkflowStateUpdateResponse struct {
+	// Updates a state.
+	WorkflowStateUpdate WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayload `json:"workflowStateUpdate"`
+}
+
+// GetWorkflowStateUpdate returns WorkflowStateUpdateResponse.WorkflowStateUpdate, and is useful for accessing the field via an interface.
+func (v *WorkflowStateUpdateResponse) GetWorkflowStateUpdate() WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayload {
+	return v.WorkflowStateUpdate
+}
+
+// WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayload includes the requested fields of the GraphQL type WorkflowStatePayload.
+// The GraphQL type's documentation follows.
+//
+// The result of a workflow state mutation, containing the created or updated state and a success indicator.
+type WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The state that was created or updated.
+	WorkflowState WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState `json:"workflowState"`
+}
+
+// GetSuccess returns WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayload.Success, and is useful for accessing the field via an interface.
+func (v *WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayload) GetSuccess() bool {
+	return v.Success
+}
+
+// GetWorkflowState returns WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayload.WorkflowState, and is useful for accessing the field via an interface.
+func (v *WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayload) GetWorkflowState() WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState {
+	return v.WorkflowState
+}
+
+// WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState includes the requested fields of the GraphQL type WorkflowState.
+// The GraphQL type's documentation follows.
+//
+// A state in a team's workflow, representing an issue status such as Triage, Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own set of workflow states that define the progression of issues through the team's process. Workflow states have a type that categorizes them (triage, backlog, unstarted, started, completed, canceled), a position that determines their display order, and a color for visual identification. States can be inherited from parent teams to sub-teams.
+type WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState struct {
+	WorkflowStateSummaryFields `json:"-"`
+}
+
+// GetId returns WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState.Id, and is useful for accessing the field via an interface.
+func (v *WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState) GetId() string {
+	return v.WorkflowStateSummaryFields.Id
+}
+
+// GetName returns WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState.Name, and is useful for accessing the field via an interface.
+func (v *WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState) GetName() string {
+	return v.WorkflowStateSummaryFields.Name
+}
+
+// GetType returns WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState.Type, and is useful for accessing the field via an interface.
+func (v *WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState) GetType() string {
+	return v.WorkflowStateSummaryFields.Type
+}
+
+// GetColor returns WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState.Color, and is useful for accessing the field via an interface.
+func (v *WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState) GetColor() string {
+	return v.WorkflowStateSummaryFields.Color
+}
+
+// GetDescription returns WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState.Description, and is useful for accessing the field via an interface.
+func (v *WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState) GetDescription() *string {
+	return v.WorkflowStateSummaryFields.Description
+}
+
+// GetPosition returns WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState.Position, and is useful for accessing the field via an interface.
+func (v *WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState) GetPosition() float64 {
+	return v.WorkflowStateSummaryFields.Position
+}
+
+// GetTeam returns WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState.Team, and is useful for accessing the field via an interface.
+func (v *WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState) GetTeam() WorkflowStateSummaryFieldsTeam {
+	return v.WorkflowStateSummaryFields.Team
+}
+
+func (v *WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.WorkflowStateSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalWorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Type string `json:"type"`
+
+	Color string `json:"color"`
+
+	Description *string `json:"description"`
+
+	Position float64 `json:"position"`
+
+	Team WorkflowStateSummaryFieldsTeam `json:"team"`
+}
+
+func (v *WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState) __premarshalJSON() (*__premarshalWorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState, error) {
+	var retval __premarshalWorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState
+
+	retval.Id = v.WorkflowStateSummaryFields.Id
+	retval.Name = v.WorkflowStateSummaryFields.Name
+	retval.Type = v.WorkflowStateSummaryFields.Type
+	retval.Color = v.WorkflowStateSummaryFields.Color
+	retval.Description = v.WorkflowStateSummaryFields.Description
+	retval.Position = v.WorkflowStateSummaryFields.Position
+	retval.Team = v.WorkflowStateSummaryFields.Team
+	return &retval, nil
+}
 
 // WorkflowStatesByTeamResponse is returned by WorkflowStatesByTeam on success.
 type WorkflowStatesByTeamResponse struct {
@@ -30396,6 +30893,50 @@ func (v *__TeamsInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __TeamsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__TeamsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __TemplateCreateInput is used internally by genqlient
+type __TemplateCreateInput struct {
+	Input gqlmodel.LinearTemplateCreateInput `json:"input"`
+}
+
+// GetInput returns __TemplateCreateInput.Input, and is useful for accessing the field via an interface.
+func (v *__TemplateCreateInput) GetInput() gqlmodel.LinearTemplateCreateInput { return v.Input }
+
+// __TemplateUpdateInput is used internally by genqlient
+type __TemplateUpdateInput struct {
+	Id    string                             `json:"id"`
+	Input gqlmodel.LinearTemplateUpdateInput `json:"input"`
+}
+
+// GetId returns __TemplateUpdateInput.Id, and is useful for accessing the field via an interface.
+func (v *__TemplateUpdateInput) GetId() string { return v.Id }
+
+// GetInput returns __TemplateUpdateInput.Input, and is useful for accessing the field via an interface.
+func (v *__TemplateUpdateInput) GetInput() gqlmodel.LinearTemplateUpdateInput { return v.Input }
+
+// __WorkflowStateCreateInput is used internally by genqlient
+type __WorkflowStateCreateInput struct {
+	Input gqlmodel.LinearWorkflowStateCreateInput `json:"input"`
+}
+
+// GetInput returns __WorkflowStateCreateInput.Input, and is useful for accessing the field via an interface.
+func (v *__WorkflowStateCreateInput) GetInput() gqlmodel.LinearWorkflowStateCreateInput {
+	return v.Input
+}
+
+// __WorkflowStateUpdateInput is used internally by genqlient
+type __WorkflowStateUpdateInput struct {
+	Id    string                                  `json:"id"`
+	Input gqlmodel.LinearWorkflowStateUpdateInput `json:"input"`
+}
+
+// GetId returns __WorkflowStateUpdateInput.Id, and is useful for accessing the field via an interface.
+func (v *__WorkflowStateUpdateInput) GetId() string { return v.Id }
+
+// GetInput returns __WorkflowStateUpdateInput.Input, and is useful for accessing the field via an interface.
+func (v *__WorkflowStateUpdateInput) GetInput() gqlmodel.LinearWorkflowStateUpdateInput {
+	return v.Input
+}
 
 // __WorkflowStatesByTeamInput is used internally by genqlient
 type __WorkflowStatesByTeamInput struct {
@@ -73487,6 +74028,11 @@ func (v *team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState) GetColo
 	return v.WorkflowStateSummaryFields.Color
 }
 
+// GetDescription returns team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState.Description, and is useful for accessing the field via an interface.
+func (v *team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState) GetDescription() *string {
+	return v.WorkflowStateSummaryFields.Description
+}
+
 // GetPosition returns team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState.Position, and is useful for accessing the field via an interface.
 func (v *team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState) GetPosition() float64 {
 	return v.WorkflowStateSummaryFields.Position
@@ -73531,6 +74077,8 @@ type __premarshalteam_statesTeamStatesWorkflowStateConnectionNodesWorkflowState 
 
 	Color string `json:"color"`
 
+	Description *string `json:"description"`
+
 	Position float64 `json:"position"`
 
 	Team WorkflowStateSummaryFieldsTeam `json:"team"`
@@ -73551,6 +74099,7 @@ func (v *team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState) __prema
 	retval.Name = v.WorkflowStateSummaryFields.Name
 	retval.Type = v.WorkflowStateSummaryFields.Type
 	retval.Color = v.WorkflowStateSummaryFields.Color
+	retval.Description = v.WorkflowStateSummaryFields.Description
 	retval.Position = v.WorkflowStateSummaryFields.Position
 	retval.Team = v.WorkflowStateSummaryFields.Team
 	return &retval, nil
@@ -73971,8 +74520,14 @@ type templateContentTemplate struct {
 	Id string `json:"id"`
 	// The name of the template.
 	Name string `json:"name"`
+	// The entity type this template is for, such as 'issue', 'project', or 'document'.
+	Type string `json:"type"`
 	// The template data as a JSON-encoded string containing the pre-filled attributes for the entity type (e.g., issue fields, project configuration, or document content).
 	TemplateData json.RawMessage `json:"templateData"`
+	// The team that the template is associated with. If null, the template is global to the workspace.
+	Team *templateContentTemplateTeam `json:"team"`
+	// The release pipeline this template is bound to. Required when the template type is 'releaseNote' and forbidden otherwise. The pipeline owns at most one release note template, which defines the format AI follows when generating release notes.
+	Pipeline *templateContentTemplatePipelineReleasePipeline `json:"pipeline"`
 }
 
 // GetId returns templateContentTemplate.Id, and is useful for accessing the field via an interface.
@@ -73981,8 +74536,53 @@ func (v *templateContentTemplate) GetId() string { return v.Id }
 // GetName returns templateContentTemplate.Name, and is useful for accessing the field via an interface.
 func (v *templateContentTemplate) GetName() string { return v.Name }
 
+// GetType returns templateContentTemplate.Type, and is useful for accessing the field via an interface.
+func (v *templateContentTemplate) GetType() string { return v.Type }
+
 // GetTemplateData returns templateContentTemplate.TemplateData, and is useful for accessing the field via an interface.
 func (v *templateContentTemplate) GetTemplateData() json.RawMessage { return v.TemplateData }
+
+// GetTeam returns templateContentTemplate.Team, and is useful for accessing the field via an interface.
+func (v *templateContentTemplate) GetTeam() *templateContentTemplateTeam { return v.Team }
+
+// GetPipeline returns templateContentTemplate.Pipeline, and is useful for accessing the field via an interface.
+func (v *templateContentTemplate) GetPipeline() *templateContentTemplatePipelineReleasePipeline {
+	return v.Pipeline
+}
+
+// templateContentTemplatePipelineReleasePipeline includes the requested fields of the GraphQL type ReleasePipeline.
+// The GraphQL type's documentation follows.
+//
+// A release pipeline that defines a release workflow with ordered stages. Pipelines can be continuous (each sync creates a completed release) or scheduled (issues accumulate in a started release that is explicitly completed). Pipelines are associated with teams and can filter commits by file path patterns.
+type templateContentTemplatePipelineReleasePipeline struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns templateContentTemplatePipelineReleasePipeline.Id, and is useful for accessing the field via an interface.
+func (v *templateContentTemplatePipelineReleasePipeline) GetId() string { return v.Id }
+
+// templateContentTemplateTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
+type templateContentTemplateTeam struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The team's unique key, used as a prefix in issue identifiers (e.g., 'ENG' in 'ENG-123') and in URLs.
+	Key string `json:"key"`
+	// The team's name.
+	Name string `json:"name"`
+}
+
+// GetId returns templateContentTemplateTeam.Id, and is useful for accessing the field via an interface.
+func (v *templateContentTemplateTeam) GetId() string { return v.Id }
+
+// GetKey returns templateContentTemplateTeam.Key, and is useful for accessing the field via an interface.
+func (v *templateContentTemplateTeam) GetKey() string { return v.Key }
+
+// GetName returns templateContentTemplateTeam.Name, and is useful for accessing the field via an interface.
+func (v *templateContentTemplateTeam) GetName() string { return v.Name }
 
 // templateResponse is returned by template on success.
 type templateResponse struct {
@@ -78493,6 +79093,11 @@ func (v *workflowStateWorkflowState) GetType() string { return v.WorkflowStateSu
 // GetColor returns workflowStateWorkflowState.Color, and is useful for accessing the field via an interface.
 func (v *workflowStateWorkflowState) GetColor() string { return v.WorkflowStateSummaryFields.Color }
 
+// GetDescription returns workflowStateWorkflowState.Description, and is useful for accessing the field via an interface.
+func (v *workflowStateWorkflowState) GetDescription() *string {
+	return v.WorkflowStateSummaryFields.Description
+}
+
 // GetPosition returns workflowStateWorkflowState.Position, and is useful for accessing the field via an interface.
 func (v *workflowStateWorkflowState) GetPosition() float64 {
 	return v.WorkflowStateSummaryFields.Position
@@ -78537,6 +79142,8 @@ type __premarshalworkflowStateWorkflowState struct {
 
 	Color string `json:"color"`
 
+	Description *string `json:"description"`
+
 	Position float64 `json:"position"`
 
 	Team WorkflowStateSummaryFieldsTeam `json:"team"`
@@ -78557,6 +79164,7 @@ func (v *workflowStateWorkflowState) __premarshalJSON() (*__premarshalworkflowSt
 	retval.Name = v.WorkflowStateSummaryFields.Name
 	retval.Type = v.WorkflowStateSummaryFields.Type
 	retval.Color = v.WorkflowStateSummaryFields.Color
+	retval.Description = v.WorkflowStateSummaryFields.Description
 	retval.Position = v.WorkflowStateSummaryFields.Position
 	retval.Team = v.WorkflowStateSummaryFields.Team
 	return &retval, nil
@@ -78823,6 +79431,11 @@ func (v *workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState) 
 	return v.WorkflowStateSummaryFields.Color
 }
 
+// GetDescription returns workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState.Description, and is useful for accessing the field via an interface.
+func (v *workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState) GetDescription() *string {
+	return v.WorkflowStateSummaryFields.Description
+}
+
 // GetPosition returns workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState.Position, and is useful for accessing the field via an interface.
 func (v *workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState) GetPosition() float64 {
 	return v.WorkflowStateSummaryFields.Position
@@ -78867,6 +79480,8 @@ type __premarshalworkflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflo
 
 	Color string `json:"color"`
 
+	Description *string `json:"description"`
+
 	Position float64 `json:"position"`
 
 	Team WorkflowStateSummaryFieldsTeam `json:"team"`
@@ -78887,6 +79502,7 @@ func (v *workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState) 
 	retval.Name = v.WorkflowStateSummaryFields.Name
 	retval.Type = v.WorkflowStateSummaryFields.Type
 	retval.Color = v.WorkflowStateSummaryFields.Color
+	retval.Description = v.WorkflowStateSummaryFields.Description
 	retval.Position = v.WorkflowStateSummaryFields.Position
 	retval.Team = v.WorkflowStateSummaryFields.Team
 	return &retval, nil
@@ -82157,6 +82773,104 @@ func Teams(
 	return data_, err_
 }
 
+// The mutation executed by TemplateCreate.
+const TemplateCreate_Operation = `
+mutation TemplateCreate ($input: TemplateCreateInput!) {
+	templateCreate(input: $input) {
+		success
+		template {
+			id
+			name
+			type
+			templateData
+			team {
+				id
+				key
+				name
+			}
+			pipeline {
+				id
+			}
+		}
+	}
+}
+`
+
+func TemplateCreate(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	input gqlmodel.LinearTemplateCreateInput,
+) (data_ *TemplateCreateResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "TemplateCreate",
+		Query:  TemplateCreate_Operation,
+		Variables: &__TemplateCreateInput{
+			Input: input,
+		},
+	}
+
+	data_ = &TemplateCreateResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by TemplateUpdate.
+const TemplateUpdate_Operation = `
+mutation TemplateUpdate ($id: String!, $input: TemplateUpdateInput!) {
+	templateUpdate(id: $id, input: $input) {
+		success
+		template {
+			id
+			name
+			type
+			templateData
+			team {
+				id
+				key
+				name
+			}
+			pipeline {
+				id
+			}
+		}
+	}
+}
+`
+
+func TemplateUpdate(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	input gqlmodel.LinearTemplateUpdateInput,
+) (data_ *TemplateUpdateResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "TemplateUpdate",
+		Query:  TemplateUpdate_Operation,
+		Variables: &__TemplateUpdateInput{
+			Id:    id,
+			Input: input,
+		},
+	}
+
+	data_ = &TemplateUpdateResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by Viewer.
 const Viewer_Operation = `
 query Viewer {
@@ -82186,6 +82900,108 @@ func Viewer(
 	}
 
 	data_ = &ViewerResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by WorkflowStateCreate.
+const WorkflowStateCreate_Operation = `
+mutation WorkflowStateCreate ($input: WorkflowStateCreateInput!) {
+	workflowStateCreate(input: $input) {
+		success
+		workflowState {
+			... WorkflowStateSummaryFields
+		}
+	}
+}
+fragment WorkflowStateSummaryFields on WorkflowState {
+	id
+	name
+	type
+	color
+	description
+	position
+	team {
+		id
+		key
+		name
+	}
+}
+`
+
+func WorkflowStateCreate(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	input gqlmodel.LinearWorkflowStateCreateInput,
+) (data_ *WorkflowStateCreateResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "WorkflowStateCreate",
+		Query:  WorkflowStateCreate_Operation,
+		Variables: &__WorkflowStateCreateInput{
+			Input: input,
+		},
+	}
+
+	data_ = &WorkflowStateCreateResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by WorkflowStateUpdate.
+const WorkflowStateUpdate_Operation = `
+mutation WorkflowStateUpdate ($id: String!, $input: WorkflowStateUpdateInput!) {
+	workflowStateUpdate(id: $id, input: $input) {
+		success
+		workflowState {
+			... WorkflowStateSummaryFields
+		}
+	}
+}
+fragment WorkflowStateSummaryFields on WorkflowState {
+	id
+	name
+	type
+	color
+	description
+	position
+	team {
+		id
+		key
+		name
+	}
+}
+`
+
+func WorkflowStateUpdate(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	input gqlmodel.LinearWorkflowStateUpdateInput,
+) (data_ *WorkflowStateUpdateResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "WorkflowStateUpdate",
+		Query:  WorkflowStateUpdate_Operation,
+		Variables: &__WorkflowStateUpdateInput{
+			Id:    id,
+			Input: input,
+		},
+	}
+
+	data_ = &WorkflowStateUpdateResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -95853,6 +96669,7 @@ fragment WorkflowStateSummaryFields on WorkflowState {
 	name
 	type
 	color
+	description
 	position
 	team {
 		id
@@ -96100,7 +96917,16 @@ query templateContent ($id: String!) {
 	template(id: $id) {
 		id
 		name
+		type
 		templateData
+		team {
+			id
+			key
+			name
+		}
+		pipeline {
+			id
+		}
 	}
 }
 `
@@ -98045,6 +98871,7 @@ fragment WorkflowStateSummaryFields on WorkflowState {
 	name
 	type
 	color
+	description
 	position
 	team {
 		id
@@ -98175,6 +99002,7 @@ fragment WorkflowStateSummaryFields on WorkflowState {
 	name
 	type
 	color
+	description
 	position
 	team {
 		id

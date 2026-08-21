@@ -23,6 +23,7 @@ func Test_errorCode_maps_sentinels_and_fallbacks(t *testing.T) {
 		{name: "target mismatch", err: fmt.Errorf("%w: x", client.ErrTargetMismatch), code: "TARGET_MISMATCH"},
 		{name: "cross-organization relation", err: fmt.Errorf("%w: x", client.ErrCrossOrganizationRelation), code: "CROSS_ORGANIZATION_RELATION"},
 		{name: "state mismatch", err: fmt.Errorf("%w: x", client.ErrStateMismatch), code: "STATE_MISMATCH"},
+		{name: "write conflict", err: fmt.Errorf("%w: x", client.ErrWriteConflict), code: "CONFLICT"},
 		{name: "target not configured", err: fmt.Errorf("%w: x", client.ErrTargetNotConfigured), code: "TARGET_NOT_CONFIGURED"},
 		{name: "rate limited", err: fmt.Errorf("%w: x", client.ErrRateLimited), code: "RATE_LIMITED"},
 		{name: "mutation failed", err: fmt.Errorf("%w: x", client.ErrMutationFailed), code: "MUTATION_FAILED"},

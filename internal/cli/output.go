@@ -37,6 +37,8 @@ func errorCode(err error) string {
 		return "CROSS_ORGANIZATION_RELATION"
 	case errors.Is(err, client.ErrStateMismatch):
 		return "STATE_MISMATCH"
+	case errors.Is(err, client.ErrWriteConflict):
+		return "CONFLICT"
 	case errors.Is(err, client.ErrTargetMismatch):
 		return "TARGET_MISMATCH"
 	case errors.Is(err, client.ErrTargetNotConfigured):

@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
@@ -104,6 +105,87 @@ func GetTemplateByID(ctx context.Context, graphqlClient graphql.Client, id strin
 	}
 
 	return templateSummary(result.Template.TemplateSummaryFields), nil
+}
+
+// TemplateDetail is the exact template model used by template content and
+// guarded write receipts. Ordinary list and get commands stay on TemplateSummary.
+type TemplateDetail struct {
+	ID         string          `json:"id"`
+	Name       string          `json:"name"`
+	Type       string          `json:"type"`
+	Data       json.RawMessage `json:"data"`
+	TeamID     string          `json:"team_id"`
+	TeamKey    string          `json:"team_key"`
+	TeamName   string          `json:"team_name"`
+	PipelineID string          `json:"pipeline_id,omitempty"`
+}
+
+// GetTemplateDetail returns exact template data and scope by id.
+func GetTemplateDetail(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+) (TemplateDetail, error) {
+	if id == "" {
+		return TemplateDetail{}, requiredFieldError("template id")
+	}
+	result, err := gql.XTemplateContent(ctx, graphqlClient, id)
+	if err != nil {
+		return TemplateDetail{}, fmt.Errorf("get template content %s: %w", id, err)
+	}
+	teamID, teamKey, teamName := "", "", ""
+	if result.Template.Team != nil {
+		teamID = result.Template.Team.Id
+		teamKey = result.Template.Team.Key
+		teamName = result.Template.Team.Name
+	}
+	pipelineID := ""
+	if result.Template.Pipeline != nil {
+		pipelineID = result.Template.Pipeline.Id
+	}
+
+	return newTemplateDetail(
+		id,
+		result.Template.Id,
+		result.Template.Name,
+		result.Template.Type,
+		result.Template.TemplateData,
+		teamID,
+		teamKey,
+		teamName,
+		pipelineID,
+	)
+}
+
+func newTemplateDetail(
+	requestedID string,
+	id string,
+	name string,
+	templateType string,
+	data json.RawMessage,
+	teamID string,
+	teamKey string,
+	teamName string,
+	pipelineID string,
+) (TemplateDetail, error) {
+	if id == "" {
+		return TemplateDetail{}, notFoundError("template %s", requestedID)
+	}
+	canonical, err := CanonicalTemplateData(data)
+	if err != nil {
+		return TemplateDetail{}, fmt.Errorf("decode template %s data: %w", requestedID, err)
+	}
+
+	return TemplateDetail{
+		ID:         id,
+		Name:       name,
+		Type:       templateType,
+		Data:       canonical,
+		TeamID:     teamID,
+		TeamKey:    teamKey,
+		TeamName:   teamName,
+		PipelineID: pipelineID,
+	}, nil
 }
 
 func (query organizationTemplatesQuery) page(
