@@ -36,6 +36,19 @@ func Test_CanonicalTemplateData_rejects_trailing_JSON(t *testing.T) {
 	require.ErrorIs(t, err, ErrWriteInvalid)
 }
 
+func Test_CanonicalTemplateData_rejects_trailing_delimiters(t *testing.T) {
+	for _, raw := range []string{`{"a":1}]`, `{"a":1}}`, `{"a":1}]garbage`} {
+		_, err := CanonicalTemplateData([]byte(raw))
+		require.ErrorIs(t, err, ErrWriteInvalid, raw)
+	}
+}
+
+func Test_CanonicalTemplateData_allows_trailing_whitespace(t *testing.T) {
+	canonical, err := CanonicalTemplateData([]byte("{\"a\":1} \n\t"))
+	require.NoError(t, err)
+	require.JSONEq(t, `{"a":1}`, string(canonical))
+}
+
 func Test_mustJSON_panics_when_value_cannot_marshal(t *testing.T) {
 	require.Panics(t, func() {
 		mustJSON(make(chan int))

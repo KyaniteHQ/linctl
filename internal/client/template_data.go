@@ -3,7 +3,9 @@ package client
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 )
 
 // CanonicalTemplateData normalizes object-shaped template JSON.
@@ -40,7 +42,7 @@ func decodeJSONValue(raw json.RawMessage) (any, error) {
 	if err := decoder.Decode(&value); err != nil {
 		return nil, fmt.Errorf("%w: malformed template JSON", ErrWriteInvalid)
 	}
-	if decoder.More() {
+	if err := decoder.Decode(&struct{}{}); !errors.Is(err, io.EOF) {
 		return nil, fmt.Errorf("%w: malformed template JSON", ErrWriteInvalid)
 	}
 
