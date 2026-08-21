@@ -171,7 +171,7 @@ func newTemplateDetail(
 	if id == "" {
 		return TemplateDetail{}, notFoundError("template %s", requestedID)
 	}
-	canonical, err := CanonicalTemplateData(data)
+	canonical, err := canonicalTemplateReadback(data)
 	if err != nil {
 		return TemplateDetail{}, fmt.Errorf("decode template %s data: %w", requestedID, err)
 	}

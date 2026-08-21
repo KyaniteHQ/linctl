@@ -28254,96 +28254,10 @@ func (v *TemplateCreateResponse) GetTemplateCreate() TemplateCreateTemplateCreat
 type TemplateCreateTemplateCreateTemplatePayload struct {
 	// Whether the operation was successful.
 	Success bool `json:"success"`
-	// The template that was created or updated.
-	Template TemplateCreateTemplateCreateTemplatePayloadTemplate `json:"template"`
 }
 
 // GetSuccess returns TemplateCreateTemplateCreateTemplatePayload.Success, and is useful for accessing the field via an interface.
 func (v *TemplateCreateTemplateCreateTemplatePayload) GetSuccess() bool { return v.Success }
-
-// GetTemplate returns TemplateCreateTemplateCreateTemplatePayload.Template, and is useful for accessing the field via an interface.
-func (v *TemplateCreateTemplateCreateTemplatePayload) GetTemplate() TemplateCreateTemplateCreateTemplatePayloadTemplate {
-	return v.Template
-}
-
-// TemplateCreateTemplateCreateTemplatePayloadTemplate includes the requested fields of the GraphQL type Template.
-// The GraphQL type's documentation follows.
-//
-// A reusable template for creating issues, projects, or documents. Templates store pre-filled field values and content as JSON data. They can be scoped to a specific team or shared across the entire workspace. Team-scoped templates may be inherited from parent teams.
-type TemplateCreateTemplateCreateTemplatePayloadTemplate struct {
-	// The unique identifier of the entity.
-	Id string `json:"id"`
-	// The name of the template.
-	Name string `json:"name"`
-	// The entity type this template is for, such as 'issue', 'project', or 'document'.
-	Type string `json:"type"`
-	// The template data as a JSON-encoded string containing the pre-filled attributes for the entity type (e.g., issue fields, project configuration, or document content).
-	TemplateData json.RawMessage `json:"templateData"`
-	// The team that the template is associated with. If null, the template is global to the workspace.
-	Team *TemplateCreateTemplateCreateTemplatePayloadTemplateTeam `json:"team"`
-	// The release pipeline this template is bound to. Required when the template type is 'releaseNote' and forbidden otherwise. The pipeline owns at most one release note template, which defines the format AI follows when generating release notes.
-	Pipeline *TemplateCreateTemplateCreateTemplatePayloadTemplatePipelineReleasePipeline `json:"pipeline"`
-}
-
-// GetId returns TemplateCreateTemplateCreateTemplatePayloadTemplate.Id, and is useful for accessing the field via an interface.
-func (v *TemplateCreateTemplateCreateTemplatePayloadTemplate) GetId() string { return v.Id }
-
-// GetName returns TemplateCreateTemplateCreateTemplatePayloadTemplate.Name, and is useful for accessing the field via an interface.
-func (v *TemplateCreateTemplateCreateTemplatePayloadTemplate) GetName() string { return v.Name }
-
-// GetType returns TemplateCreateTemplateCreateTemplatePayloadTemplate.Type, and is useful for accessing the field via an interface.
-func (v *TemplateCreateTemplateCreateTemplatePayloadTemplate) GetType() string { return v.Type }
-
-// GetTemplateData returns TemplateCreateTemplateCreateTemplatePayloadTemplate.TemplateData, and is useful for accessing the field via an interface.
-func (v *TemplateCreateTemplateCreateTemplatePayloadTemplate) GetTemplateData() json.RawMessage {
-	return v.TemplateData
-}
-
-// GetTeam returns TemplateCreateTemplateCreateTemplatePayloadTemplate.Team, and is useful for accessing the field via an interface.
-func (v *TemplateCreateTemplateCreateTemplatePayloadTemplate) GetTeam() *TemplateCreateTemplateCreateTemplatePayloadTemplateTeam {
-	return v.Team
-}
-
-// GetPipeline returns TemplateCreateTemplateCreateTemplatePayloadTemplate.Pipeline, and is useful for accessing the field via an interface.
-func (v *TemplateCreateTemplateCreateTemplatePayloadTemplate) GetPipeline() *TemplateCreateTemplateCreateTemplatePayloadTemplatePipelineReleasePipeline {
-	return v.Pipeline
-}
-
-// TemplateCreateTemplateCreateTemplatePayloadTemplatePipelineReleasePipeline includes the requested fields of the GraphQL type ReleasePipeline.
-// The GraphQL type's documentation follows.
-//
-// A release pipeline that defines a release workflow with ordered stages. Pipelines can be continuous (each sync creates a completed release) or scheduled (issues accumulate in a started release that is explicitly completed). Pipelines are associated with teams and can filter commits by file path patterns.
-type TemplateCreateTemplateCreateTemplatePayloadTemplatePipelineReleasePipeline struct {
-	// The unique identifier of the entity.
-	Id string `json:"id"`
-}
-
-// GetId returns TemplateCreateTemplateCreateTemplatePayloadTemplatePipelineReleasePipeline.Id, and is useful for accessing the field via an interface.
-func (v *TemplateCreateTemplateCreateTemplatePayloadTemplatePipelineReleasePipeline) GetId() string {
-	return v.Id
-}
-
-// TemplateCreateTemplateCreateTemplatePayloadTemplateTeam includes the requested fields of the GraphQL type Team.
-// The GraphQL type's documentation follows.
-//
-// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
-type TemplateCreateTemplateCreateTemplatePayloadTemplateTeam struct {
-	// The unique identifier of the entity.
-	Id string `json:"id"`
-	// The team's unique key, used as a prefix in issue identifiers (e.g., 'ENG' in 'ENG-123') and in URLs.
-	Key string `json:"key"`
-	// The team's name.
-	Name string `json:"name"`
-}
-
-// GetId returns TemplateCreateTemplateCreateTemplatePayloadTemplateTeam.Id, and is useful for accessing the field via an interface.
-func (v *TemplateCreateTemplateCreateTemplatePayloadTemplateTeam) GetId() string { return v.Id }
-
-// GetKey returns TemplateCreateTemplateCreateTemplatePayloadTemplateTeam.Key, and is useful for accessing the field via an interface.
-func (v *TemplateCreateTemplateCreateTemplatePayloadTemplateTeam) GetKey() string { return v.Key }
-
-// GetName returns TemplateCreateTemplateCreateTemplatePayloadTemplateTeam.Name, and is useful for accessing the field via an interface.
-func (v *TemplateCreateTemplateCreateTemplatePayloadTemplateTeam) GetName() string { return v.Name }
 
 // TemplateSummaryFields includes the GraphQL fields of Template requested by the fragment TemplateSummaryFields.
 // The GraphQL type's documentation follows.
@@ -28527,96 +28441,10 @@ func (v *TemplateUpdateResponse) GetTemplateUpdate() TemplateUpdateTemplateUpdat
 type TemplateUpdateTemplateUpdateTemplatePayload struct {
 	// Whether the operation was successful.
 	Success bool `json:"success"`
-	// The template that was created or updated.
-	Template TemplateUpdateTemplateUpdateTemplatePayloadTemplate `json:"template"`
 }
 
 // GetSuccess returns TemplateUpdateTemplateUpdateTemplatePayload.Success, and is useful for accessing the field via an interface.
 func (v *TemplateUpdateTemplateUpdateTemplatePayload) GetSuccess() bool { return v.Success }
-
-// GetTemplate returns TemplateUpdateTemplateUpdateTemplatePayload.Template, and is useful for accessing the field via an interface.
-func (v *TemplateUpdateTemplateUpdateTemplatePayload) GetTemplate() TemplateUpdateTemplateUpdateTemplatePayloadTemplate {
-	return v.Template
-}
-
-// TemplateUpdateTemplateUpdateTemplatePayloadTemplate includes the requested fields of the GraphQL type Template.
-// The GraphQL type's documentation follows.
-//
-// A reusable template for creating issues, projects, or documents. Templates store pre-filled field values and content as JSON data. They can be scoped to a specific team or shared across the entire workspace. Team-scoped templates may be inherited from parent teams.
-type TemplateUpdateTemplateUpdateTemplatePayloadTemplate struct {
-	// The unique identifier of the entity.
-	Id string `json:"id"`
-	// The name of the template.
-	Name string `json:"name"`
-	// The entity type this template is for, such as 'issue', 'project', or 'document'.
-	Type string `json:"type"`
-	// The template data as a JSON-encoded string containing the pre-filled attributes for the entity type (e.g., issue fields, project configuration, or document content).
-	TemplateData json.RawMessage `json:"templateData"`
-	// The team that the template is associated with. If null, the template is global to the workspace.
-	Team *TemplateUpdateTemplateUpdateTemplatePayloadTemplateTeam `json:"team"`
-	// The release pipeline this template is bound to. Required when the template type is 'releaseNote' and forbidden otherwise. The pipeline owns at most one release note template, which defines the format AI follows when generating release notes.
-	Pipeline *TemplateUpdateTemplateUpdateTemplatePayloadTemplatePipelineReleasePipeline `json:"pipeline"`
-}
-
-// GetId returns TemplateUpdateTemplateUpdateTemplatePayloadTemplate.Id, and is useful for accessing the field via an interface.
-func (v *TemplateUpdateTemplateUpdateTemplatePayloadTemplate) GetId() string { return v.Id }
-
-// GetName returns TemplateUpdateTemplateUpdateTemplatePayloadTemplate.Name, and is useful for accessing the field via an interface.
-func (v *TemplateUpdateTemplateUpdateTemplatePayloadTemplate) GetName() string { return v.Name }
-
-// GetType returns TemplateUpdateTemplateUpdateTemplatePayloadTemplate.Type, and is useful for accessing the field via an interface.
-func (v *TemplateUpdateTemplateUpdateTemplatePayloadTemplate) GetType() string { return v.Type }
-
-// GetTemplateData returns TemplateUpdateTemplateUpdateTemplatePayloadTemplate.TemplateData, and is useful for accessing the field via an interface.
-func (v *TemplateUpdateTemplateUpdateTemplatePayloadTemplate) GetTemplateData() json.RawMessage {
-	return v.TemplateData
-}
-
-// GetTeam returns TemplateUpdateTemplateUpdateTemplatePayloadTemplate.Team, and is useful for accessing the field via an interface.
-func (v *TemplateUpdateTemplateUpdateTemplatePayloadTemplate) GetTeam() *TemplateUpdateTemplateUpdateTemplatePayloadTemplateTeam {
-	return v.Team
-}
-
-// GetPipeline returns TemplateUpdateTemplateUpdateTemplatePayloadTemplate.Pipeline, and is useful for accessing the field via an interface.
-func (v *TemplateUpdateTemplateUpdateTemplatePayloadTemplate) GetPipeline() *TemplateUpdateTemplateUpdateTemplatePayloadTemplatePipelineReleasePipeline {
-	return v.Pipeline
-}
-
-// TemplateUpdateTemplateUpdateTemplatePayloadTemplatePipelineReleasePipeline includes the requested fields of the GraphQL type ReleasePipeline.
-// The GraphQL type's documentation follows.
-//
-// A release pipeline that defines a release workflow with ordered stages. Pipelines can be continuous (each sync creates a completed release) or scheduled (issues accumulate in a started release that is explicitly completed). Pipelines are associated with teams and can filter commits by file path patterns.
-type TemplateUpdateTemplateUpdateTemplatePayloadTemplatePipelineReleasePipeline struct {
-	// The unique identifier of the entity.
-	Id string `json:"id"`
-}
-
-// GetId returns TemplateUpdateTemplateUpdateTemplatePayloadTemplatePipelineReleasePipeline.Id, and is useful for accessing the field via an interface.
-func (v *TemplateUpdateTemplateUpdateTemplatePayloadTemplatePipelineReleasePipeline) GetId() string {
-	return v.Id
-}
-
-// TemplateUpdateTemplateUpdateTemplatePayloadTemplateTeam includes the requested fields of the GraphQL type Team.
-// The GraphQL type's documentation follows.
-//
-// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
-type TemplateUpdateTemplateUpdateTemplatePayloadTemplateTeam struct {
-	// The unique identifier of the entity.
-	Id string `json:"id"`
-	// The team's unique key, used as a prefix in issue identifiers (e.g., 'ENG' in 'ENG-123') and in URLs.
-	Key string `json:"key"`
-	// The team's name.
-	Name string `json:"name"`
-}
-
-// GetId returns TemplateUpdateTemplateUpdateTemplatePayloadTemplateTeam.Id, and is useful for accessing the field via an interface.
-func (v *TemplateUpdateTemplateUpdateTemplatePayloadTemplateTeam) GetId() string { return v.Id }
-
-// GetKey returns TemplateUpdateTemplateUpdateTemplatePayloadTemplateTeam.Key, and is useful for accessing the field via an interface.
-func (v *TemplateUpdateTemplateUpdateTemplatePayloadTemplateTeam) GetKey() string { return v.Key }
-
-// GetName returns TemplateUpdateTemplateUpdateTemplatePayloadTemplateTeam.Name, and is useful for accessing the field via an interface.
-func (v *TemplateUpdateTemplateUpdateTemplatePayloadTemplateTeam) GetName() string { return v.Name }
 
 // TimeScheduleSummaryFields includes the GraphQL fields of TimeSchedule requested by the fragment TimeScheduleSummaryFields.
 // The GraphQL type's documentation follows.
@@ -29899,123 +29727,11 @@ func (v *WorkflowStateCreateResponse) GetWorkflowStateCreate() WorkflowStateCrea
 type WorkflowStateCreateWorkflowStateCreateWorkflowStatePayload struct {
 	// Whether the operation was successful.
 	Success bool `json:"success"`
-	// The state that was created or updated.
-	WorkflowState WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState `json:"workflowState"`
 }
 
 // GetSuccess returns WorkflowStateCreateWorkflowStateCreateWorkflowStatePayload.Success, and is useful for accessing the field via an interface.
 func (v *WorkflowStateCreateWorkflowStateCreateWorkflowStatePayload) GetSuccess() bool {
 	return v.Success
-}
-
-// GetWorkflowState returns WorkflowStateCreateWorkflowStateCreateWorkflowStatePayload.WorkflowState, and is useful for accessing the field via an interface.
-func (v *WorkflowStateCreateWorkflowStateCreateWorkflowStatePayload) GetWorkflowState() WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState {
-	return v.WorkflowState
-}
-
-// WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState includes the requested fields of the GraphQL type WorkflowState.
-// The GraphQL type's documentation follows.
-//
-// A state in a team's workflow, representing an issue status such as Triage, Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own set of workflow states that define the progression of issues through the team's process. Workflow states have a type that categorizes them (triage, backlog, unstarted, started, completed, canceled), a position that determines their display order, and a color for visual identification. States can be inherited from parent teams to sub-teams.
-type WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState struct {
-	WorkflowStateSummaryFields `json:"-"`
-}
-
-// GetId returns WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState.Id, and is useful for accessing the field via an interface.
-func (v *WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState) GetId() string {
-	return v.WorkflowStateSummaryFields.Id
-}
-
-// GetName returns WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState.Name, and is useful for accessing the field via an interface.
-func (v *WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState) GetName() string {
-	return v.WorkflowStateSummaryFields.Name
-}
-
-// GetType returns WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState.Type, and is useful for accessing the field via an interface.
-func (v *WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState) GetType() string {
-	return v.WorkflowStateSummaryFields.Type
-}
-
-// GetColor returns WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState.Color, and is useful for accessing the field via an interface.
-func (v *WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState) GetColor() string {
-	return v.WorkflowStateSummaryFields.Color
-}
-
-// GetDescription returns WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState.Description, and is useful for accessing the field via an interface.
-func (v *WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState) GetDescription() *string {
-	return v.WorkflowStateSummaryFields.Description
-}
-
-// GetPosition returns WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState.Position, and is useful for accessing the field via an interface.
-func (v *WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState) GetPosition() float64 {
-	return v.WorkflowStateSummaryFields.Position
-}
-
-// GetTeam returns WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState.Team, and is useful for accessing the field via an interface.
-func (v *WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState) GetTeam() WorkflowStateSummaryFieldsTeam {
-	return v.WorkflowStateSummaryFields.Team
-}
-
-func (v *WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState) UnmarshalJSON(b []byte) error {
-
-	if string(b) == "null" {
-		return nil
-	}
-
-	var firstPass struct {
-		*WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState
-		graphql.NoUnmarshalJSON
-	}
-	firstPass.WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState = v
-
-	err := json.Unmarshal(b, &firstPass)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(
-		b, &v.WorkflowStateSummaryFields)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-type __premarshalWorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState struct {
-	Id string `json:"id"`
-
-	Name string `json:"name"`
-
-	Type string `json:"type"`
-
-	Color string `json:"color"`
-
-	Description *string `json:"description"`
-
-	Position float64 `json:"position"`
-
-	Team WorkflowStateSummaryFieldsTeam `json:"team"`
-}
-
-func (v *WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState) MarshalJSON() ([]byte, error) {
-	premarshaled, err := v.__premarshalJSON()
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(premarshaled)
-}
-
-func (v *WorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState) __premarshalJSON() (*__premarshalWorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState, error) {
-	var retval __premarshalWorkflowStateCreateWorkflowStateCreateWorkflowStatePayloadWorkflowState
-
-	retval.Id = v.WorkflowStateSummaryFields.Id
-	retval.Name = v.WorkflowStateSummaryFields.Name
-	retval.Type = v.WorkflowStateSummaryFields.Type
-	retval.Color = v.WorkflowStateSummaryFields.Color
-	retval.Description = v.WorkflowStateSummaryFields.Description
-	retval.Position = v.WorkflowStateSummaryFields.Position
-	retval.Team = v.WorkflowStateSummaryFields.Team
-	return &retval, nil
 }
 
 // WorkflowStateSummaryFields includes the GraphQL fields of WorkflowState requested by the fragment WorkflowStateSummaryFields.
@@ -30100,123 +29816,11 @@ func (v *WorkflowStateUpdateResponse) GetWorkflowStateUpdate() WorkflowStateUpda
 type WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayload struct {
 	// Whether the operation was successful.
 	Success bool `json:"success"`
-	// The state that was created or updated.
-	WorkflowState WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState `json:"workflowState"`
 }
 
 // GetSuccess returns WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayload.Success, and is useful for accessing the field via an interface.
 func (v *WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayload) GetSuccess() bool {
 	return v.Success
-}
-
-// GetWorkflowState returns WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayload.WorkflowState, and is useful for accessing the field via an interface.
-func (v *WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayload) GetWorkflowState() WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState {
-	return v.WorkflowState
-}
-
-// WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState includes the requested fields of the GraphQL type WorkflowState.
-// The GraphQL type's documentation follows.
-//
-// A state in a team's workflow, representing an issue status such as Triage, Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own set of workflow states that define the progression of issues through the team's process. Workflow states have a type that categorizes them (triage, backlog, unstarted, started, completed, canceled), a position that determines their display order, and a color for visual identification. States can be inherited from parent teams to sub-teams.
-type WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState struct {
-	WorkflowStateSummaryFields `json:"-"`
-}
-
-// GetId returns WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState.Id, and is useful for accessing the field via an interface.
-func (v *WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState) GetId() string {
-	return v.WorkflowStateSummaryFields.Id
-}
-
-// GetName returns WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState.Name, and is useful for accessing the field via an interface.
-func (v *WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState) GetName() string {
-	return v.WorkflowStateSummaryFields.Name
-}
-
-// GetType returns WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState.Type, and is useful for accessing the field via an interface.
-func (v *WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState) GetType() string {
-	return v.WorkflowStateSummaryFields.Type
-}
-
-// GetColor returns WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState.Color, and is useful for accessing the field via an interface.
-func (v *WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState) GetColor() string {
-	return v.WorkflowStateSummaryFields.Color
-}
-
-// GetDescription returns WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState.Description, and is useful for accessing the field via an interface.
-func (v *WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState) GetDescription() *string {
-	return v.WorkflowStateSummaryFields.Description
-}
-
-// GetPosition returns WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState.Position, and is useful for accessing the field via an interface.
-func (v *WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState) GetPosition() float64 {
-	return v.WorkflowStateSummaryFields.Position
-}
-
-// GetTeam returns WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState.Team, and is useful for accessing the field via an interface.
-func (v *WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState) GetTeam() WorkflowStateSummaryFieldsTeam {
-	return v.WorkflowStateSummaryFields.Team
-}
-
-func (v *WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState) UnmarshalJSON(b []byte) error {
-
-	if string(b) == "null" {
-		return nil
-	}
-
-	var firstPass struct {
-		*WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState
-		graphql.NoUnmarshalJSON
-	}
-	firstPass.WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState = v
-
-	err := json.Unmarshal(b, &firstPass)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(
-		b, &v.WorkflowStateSummaryFields)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-type __premarshalWorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState struct {
-	Id string `json:"id"`
-
-	Name string `json:"name"`
-
-	Type string `json:"type"`
-
-	Color string `json:"color"`
-
-	Description *string `json:"description"`
-
-	Position float64 `json:"position"`
-
-	Team WorkflowStateSummaryFieldsTeam `json:"team"`
-}
-
-func (v *WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState) MarshalJSON() ([]byte, error) {
-	premarshaled, err := v.__premarshalJSON()
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(premarshaled)
-}
-
-func (v *WorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState) __premarshalJSON() (*__premarshalWorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState, error) {
-	var retval __premarshalWorkflowStateUpdateWorkflowStateUpdateWorkflowStatePayloadWorkflowState
-
-	retval.Id = v.WorkflowStateSummaryFields.Id
-	retval.Name = v.WorkflowStateSummaryFields.Name
-	retval.Type = v.WorkflowStateSummaryFields.Type
-	retval.Color = v.WorkflowStateSummaryFields.Color
-	retval.Description = v.WorkflowStateSummaryFields.Description
-	retval.Position = v.WorkflowStateSummaryFields.Position
-	retval.Team = v.WorkflowStateSummaryFields.Team
-	return &retval, nil
 }
 
 // WorkflowStatesByTeamResponse is returned by WorkflowStatesByTeam on success.
@@ -82778,20 +82382,6 @@ const TemplateCreate_Operation = `
 mutation TemplateCreate ($input: TemplateCreateInput!) {
 	templateCreate(input: $input) {
 		success
-		template {
-			id
-			name
-			type
-			templateData
-			team {
-				id
-				key
-				name
-			}
-			pipeline {
-				id
-			}
-		}
 	}
 }
 `
@@ -82826,20 +82416,6 @@ const TemplateUpdate_Operation = `
 mutation TemplateUpdate ($id: String!, $input: TemplateUpdateInput!) {
 	templateUpdate(id: $id, input: $input) {
 		success
-		template {
-			id
-			name
-			type
-			templateData
-			team {
-				id
-				key
-				name
-			}
-			pipeline {
-				id
-			}
-		}
 	}
 }
 `
@@ -82916,22 +82492,6 @@ const WorkflowStateCreate_Operation = `
 mutation WorkflowStateCreate ($input: WorkflowStateCreateInput!) {
 	workflowStateCreate(input: $input) {
 		success
-		workflowState {
-			... WorkflowStateSummaryFields
-		}
-	}
-}
-fragment WorkflowStateSummaryFields on WorkflowState {
-	id
-	name
-	type
-	color
-	description
-	position
-	team {
-		id
-		key
-		name
 	}
 }
 `
@@ -82966,22 +82526,6 @@ const WorkflowStateUpdate_Operation = `
 mutation WorkflowStateUpdate ($id: String!, $input: WorkflowStateUpdateInput!) {
 	workflowStateUpdate(id: $id, input: $input) {
 		success
-		workflowState {
-			... WorkflowStateSummaryFields
-		}
-	}
-}
-fragment WorkflowStateSummaryFields on WorkflowState {
-	id
-	name
-	type
-	color
-	description
-	position
-	team {
-		id
-		key
-		name
 	}
 }
 `

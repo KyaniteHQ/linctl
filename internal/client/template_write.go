@@ -214,6 +214,9 @@ func (guard *guardedClient) finishTemplateUpdate(
 }
 
 func templateMatchesUpdate(observed TemplateDetail, request TemplateUpdateRequest) bool {
+	if observed.ID != request.ID {
+		return false
+	}
 	if observed.Type != issueTemplateType {
 		return false
 	}

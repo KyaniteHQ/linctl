@@ -8,19 +8,31 @@ import (
 	"io"
 )
 
-// CanonicalTemplateData normalizes object-shaped template JSON.
-// It ignores whitespace and object key order, preserves number lexemes,
-// and unwraps one JSON-encoded object layer from Linear readback.
+// CanonicalTemplateData normalizes object-shaped template write input.
+// It ignores whitespace and object key order and preserves number lexemes.
 func CanonicalTemplateData(raw json.RawMessage) (json.RawMessage, error) {
 	value, err := decodeJSONValue(raw)
 	if err != nil {
 		return nil, err
 	}
-	object, err := templateDataObject(value)
+
+	return marshalTemplateObject(value)
+}
+
+func canonicalTemplateReadback(raw json.RawMessage) (json.RawMessage, error) {
+	value, err := decodeJSONValue(raw)
 	if err != nil {
 		return nil, err
 	}
-	return mustJSON(object), nil
+	if encoded, ok := value.(string); ok {
+		unwrapped, err := decodeJSONValue(json.RawMessage(encoded))
+		if err != nil {
+			return nil, fmt.Errorf("%w: template data must be a JSON object", ErrWriteInvalid)
+		}
+		value = unwrapped
+	}
+
+	return marshalTemplateObject(value)
 }
 
 func mustJSON(value any) json.RawMessage {
@@ -49,18 +61,11 @@ func decodeJSONValue(raw json.RawMessage) (any, error) {
 	return value, nil
 }
 
-func templateDataObject(value any) (map[string]any, error) {
-	if encoded, ok := value.(string); ok {
-		unwrapped, err := decodeJSONValue(json.RawMessage(encoded))
-		if err != nil {
-			return nil, fmt.Errorf("%w: template data must be a JSON object", ErrWriteInvalid)
-		}
-		value = unwrapped
-	}
+func marshalTemplateObject(value any) (json.RawMessage, error) {
 	object, ok := value.(map[string]any)
 	if !ok {
 		return nil, fmt.Errorf("%w: template data must be a JSON object", ErrWriteInvalid)
 	}
 
-	return object, nil
+	return mustJSON(object), nil
 }

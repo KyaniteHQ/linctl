@@ -25,10 +25,22 @@ func Test_CanonicalTemplateData_preserves_number_lexemes(t *testing.T) {
 	require.NotEqual(t, string(one), string(onePointZero))
 }
 
-func Test_CanonicalTemplateData_unwraps_one_encoded_object_layer(t *testing.T) {
-	canonical, err := CanonicalTemplateData([]byte(`"{\"title\":\"Bug\",\"n\":1.0}"`))
+func Test_canonicalTemplateReadback_unwraps_one_encoded_object_layer(t *testing.T) {
+	canonical, err := canonicalTemplateReadback([]byte(`"{\"title\":\"Bug\",\"n\":1.0}"`))
 	require.NoError(t, err)
 	require.Equal(t, `{"n":1.0,"title":"Bug"}`, string(canonical)) //nolint:testifylint // lexeme must stay 1.0
+}
+
+func Test_canonicalTemplateReadback_rejects_malformed_JSON(t *testing.T) {
+	for _, raw := range []string{`{`, `"{"`} {
+		_, err := canonicalTemplateReadback([]byte(raw))
+		require.ErrorIs(t, err, ErrWriteInvalid, raw)
+	}
+}
+
+func Test_CanonicalTemplateData_rejects_encoded_object_layer(t *testing.T) {
+	_, err := CanonicalTemplateData([]byte(`"{\"title\":\"Bug\"}"`))
+	require.ErrorIs(t, err, ErrWriteInvalid)
 }
 
 func Test_CanonicalTemplateData_rejects_trailing_JSON(t *testing.T) {
@@ -56,7 +68,7 @@ func Test_mustJSON_panics_when_value_cannot_marshal(t *testing.T) {
 }
 
 func Test_CanonicalTemplateData_rejects_non_objects(t *testing.T) {
-	for _, raw := range []string{``, `null`, `[]`, `123`, `"hello"`, `"[]"`, `"null"`, `true`} {
+	for _, raw := range []string{``, `{`, `null`, `[]`, `123`, `"hello"`, `"[]"`, `"null"`, `true`} {
 		_, err := CanonicalTemplateData([]byte(raw))
 		require.ErrorIs(t, err, ErrWriteInvalid, raw)
 	}

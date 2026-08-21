@@ -170,6 +170,7 @@ func Test_TemplateCreate_rejects_data_file_failures_before_mutation(t *testing.T
 		{name: "array", path: writeTemplateDataFile(t, `[]`)},
 		{name: "scalar", path: writeTemplateDataFile(t, `123`)},
 		{name: "null", path: writeTemplateDataFile(t, `null`)},
+		{name: "encoded object", path: writeTemplateDataFile(t, `"{\"title\":\"Bug\"}"`)},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {

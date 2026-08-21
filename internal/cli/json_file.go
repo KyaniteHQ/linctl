@@ -20,7 +20,7 @@ func readJSONObjectFile(path string) ([]byte, error) {
 		return nil, fmt.Errorf("%w: read data file %s: %w", client.ErrWriteInvalid, path, err)
 	}
 
-	return client.CanonicalTemplateData(data)
+	return data, nil
 }
 
 func requiredDataFileError() error {

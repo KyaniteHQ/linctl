@@ -35,18 +35,12 @@ query workflowState_issues($id: String!, $first: Int, $after: String, $includeAr
 mutation WorkflowStateCreate($input: WorkflowStateCreateInput!) {
   workflowStateCreate(input: $input) {
     success
-    workflowState {
-      ...WorkflowStateSummaryFields
-    }
   }
 }
 
 mutation WorkflowStateUpdate($id: String!, $input: WorkflowStateUpdateInput!) {
   workflowStateUpdate(id: $id, input: $input) {
     success
-    workflowState {
-      ...WorkflowStateSummaryFields
-    }
   }
 }
 

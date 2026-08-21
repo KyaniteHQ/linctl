@@ -44,40 +44,12 @@ query templateContent($id: String!) {
 mutation TemplateCreate($input: TemplateCreateInput!) {
   templateCreate(input: $input) {
     success
-    template {
-      id
-      name
-      type
-      templateData
-      team {
-        id
-        key
-        name
-      }
-      pipeline {
-        id
-      }
-    }
   }
 }
 
 mutation TemplateUpdate($id: String!, $input: TemplateUpdateInput!) {
   templateUpdate(id: $id, input: $input) {
     success
-    template {
-      id
-      name
-      type
-      templateData
-      team {
-        id
-        key
-        name
-      }
-      pipeline {
-        id
-      }
-    }
   }
 }
 
