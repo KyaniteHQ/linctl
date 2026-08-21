@@ -11,12 +11,13 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Khan/genqlient/graphql"
 	"github.com/stretchr/testify/require"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
 )
 
-func runBulkFlow(t *testing.T, fake commandFlowFakeClient, args []string) (stdout string, err error) {
+func runBulkFlow(t *testing.T, fake graphql.Client, args []string) (stdout string, err error) {
 	t.Helper()
 	restore := useCommandRuntime(t, fake)
 	defer restore()
@@ -133,16 +134,17 @@ func Test_CommandFlows_issue_import_quiet_result(t *testing.T) {
 
 func Test_CommandFlows_issue_import_dry_run_previews(t *testing.T) {
 	writePinnedImportDryRunConfig(t)
-	path := writeImportFile(t, "rows.json", `[{"title":"First","priority":"high","state":"started"}]`)
+	path := writeImportFile(t, "rows.json", `[{"title":"First","priority":"high","state":"In Review"}]`)
 
 	stdout, err := runBulkFlow(t, commandFlowFakeClient{}, []string{"issue", "import", path, "--dry-run"})
 	require.NoError(t, err)
-	require.Contains(t, stdout, `would create "First" state=started priority=2`)
+	require.Contains(t, stdout, `would create "First" state=In Review priority=2`)
 
 	jsonOut, err := runBulkFlow(t, commandFlowFakeClient{}, []string{"--json", "issue", "import", path, "--dry-run"})
 	require.NoError(t, err)
 	require.Contains(t, jsonOut, `"dry_run": true`)
-	require.Contains(t, jsonOut, `"state_type": "started"`)
+	require.Contains(t, jsonOut, `"state": "In Review"`)
+	require.NotContains(t, jsonOut, `"state_type"`)
 
 	quiet, err := runBulkFlow(t, commandFlowFakeClient{}, []string{"--quiet", "issue", "import", path, "--dry-run"})
 	require.NoError(t, err)
@@ -272,6 +274,47 @@ func Test_CommandFlows_issue_import_surfaces_input_errors(t *testing.T) {
 			}
 		})
 	}
+}
+
+func Test_importRowToRequest_keeps_exact_state_name(t *testing.T) {
+	request, err := importRowToRequest(issueImportRow{
+		Title:    "First",
+		State:    "  In Review  ",
+		Priority: "high",
+	}, "LIT")
+
+	require.NoError(t, err)
+	require.Equal(t, "In Review", request.StateSelector)
+	require.Empty(t, request.StateType)
+	require.Equal(t, "2", request.Priority)
+}
+
+func Test_importRowToRequest_does_not_map_state_name_to_type(t *testing.T) {
+	request, err := importRowToRequest(issueImportRow{Title: "First", State: "started"}, "LIT")
+
+	require.NoError(t, err)
+	require.Equal(t, "started", request.StateSelector)
+	require.Empty(t, request.StateType)
+}
+
+func Test_CommandFlows_issue_import_selects_exact_state_name(t *testing.T) {
+	path := writeImportFile(t, "rows.json", `[{"title":"First","state":"In Review"}]`)
+	fake := &issueWriteCaptureClient{
+		directWriteCaptureClient: directWriteCaptureClient{
+			operation: "IssueCreate",
+			variables: []expectedWriteVariable{
+				{path: []string{"input", "title"}, value: "First"},
+				{path: []string{"input", "stateId"}, value: "in-review-state"},
+			},
+			delegate: commandFlowFakeClient{},
+		},
+	}
+
+	stdout, err := runBulkFlow(t, fake, []string{"issue", "import", path})
+
+	require.NoError(t, err)
+	require.Equal(t, 1, fake.calls)
+	require.Contains(t, stdout, "LIT-2")
 }
 
 func Test_importRowToRequest_reports_INVALID_WRITE(t *testing.T) {

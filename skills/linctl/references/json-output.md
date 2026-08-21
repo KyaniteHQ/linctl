@@ -58,6 +58,11 @@ the relation summary fields plus `issue` and `related_issue` as IssueSummary val
 `issue pr` → **PullRequestPlan**:
 `{ "title": string, "body": string, "command": ["gh", "pr", "create", "--title", title, "--body", body] }`
 
+`issue import FILE --dry-run` → **issueImportPreview**:
+`{ "count": number, "dry_run": true, "issues": [{ "title": string, "description": string|absent, "state": string|absent, "priority": string|absent }] }`
+
+`state` is the exact workflow-state name from the file.
+
 `issue import FILE` → **issueImportResult**:
 `{ "count": number, "issues": [IssueSummary], "failures": [{ "row": number, "title": string, "error": string }]|absent }`
 

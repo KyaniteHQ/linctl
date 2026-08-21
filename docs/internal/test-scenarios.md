@@ -1152,12 +1152,14 @@ Success is pass/fail:
      `go test ./internal/client`, `Test_ClientReadIssueAndProjectScenarios_return_compact_lists_details_and_members`.
 
 218. Exact workflow-state name
-   - Success: `linctl issue update ISSUE --state "In Review"` selects that started state when the team has several started states, then reads the issue back. `--state started` does not fall back to a type. `issue start` and `issue close` still pick the lowest-position state of that type.
+   - Success: `linctl issue update ISSUE --state "In Review"` selects that started state when the team has several started states, then reads the issue back. `--state started` does not fall back to a type. `issue import` uses the same exact name. `issue start` and `issue close` still pick the lowest-position state of that type.
    - Evidence: `go test ./internal/client`, `Test_UpdateIssue_selects_exact_started_state_name`,
      `Test_UpdateIssue_refuses_when_readback_state_does_not_match`,
      `Test_UpdateIssue_returns_state_mismatch_when_write_fails_and_readback_is_wrong`,
      `Test_selectWorkflowStateID_does_not_fall_back_to_type`,
-     `Test_StartIssue_selects_lowest_position_started_type_not_name_started`.
+     `Test_StartIssue_selects_lowest_position_started_type_not_name_started`;
+     `go test ./internal/cli`, `Test_importRowToRequest_keeps_exact_state_name`,
+     `Test_CommandFlows_issue_import_selects_exact_state_name`.
 
 219. Cross-project related relation
    - Success: `linctl issue relate A B --type related --allowed-project P1 --allowed-project P2` links two same-team issues in those projects and keeps each issue in its original project. A pinned project stays in the allowed set. Different projects without `--allowed-project` fail before mutation. `issue unrelate` uses the same organization, team, and allowed-project boundary.

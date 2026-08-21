@@ -37,7 +37,7 @@ type issueImportRow struct {
 type issueImportPlan struct {
 	Title       string `json:"title"`
 	Description string `json:"description,omitempty"`
-	StateType   string `json:"state_type,omitempty"`
+	State       string `json:"state,omitempty"`
 	Priority    string `json:"priority,omitempty"`
 }
 
@@ -335,7 +335,8 @@ func buildImportRequests(rows []issueImportRow, pinnedTeamKey string) ([]client.
 }
 
 // importRowToRequest validates one row against the pinned target and normalizes
-// its state and priority before it becomes a guarded create request.
+// its priority before it becomes a guarded create request. State is an exact
+// workflow-state name, matching issue create --state.
 func importRowToRequest(row issueImportRow, pinnedTeamKey string) (client.IssueCreateRequest, error) {
 	if strings.TrimSpace(row.Title) == "" {
 		return client.IssueCreateRequest{}, fmt.Errorf("%w: title is required", client.ErrWriteInvalid)
@@ -346,20 +347,16 @@ func importRowToRequest(row issueImportRow, pinnedTeamKey string) (client.IssueC
 			client.ErrWriteInvalid, team, pinnedTeamKey,
 		)
 	}
-	stateType, err := normalizeOptional(row.State, normalizedStateType)
-	if err != nil {
-		return client.IssueCreateRequest{}, err
-	}
 	priority, err := normalizeOptional(row.Priority, normalizedPriorityValue)
 	if err != nil {
 		return client.IssueCreateRequest{}, err
 	}
 
 	return client.IssueCreateRequest{
-		Title:       row.Title,
-		Description: row.Description,
-		StateType:   stateType,
-		Priority:    priority,
+		Title:         row.Title,
+		Description:   row.Description,
+		StateSelector: strings.TrimSpace(row.State),
+		Priority:      priority,
 	}, nil
 }
 
@@ -391,7 +388,7 @@ func writeImportPreview(command *cobra.Command, options *rootOptions, requests [
 		if err := render.WriteLine(
 			command.OutOrStdout(),
 			"would create %q state=%s priority=%s",
-			plan.Title, emptyDash(plan.StateType), emptyDash(plan.Priority),
+			plan.Title, emptyDash(plan.State), emptyDash(plan.Priority),
 		); err != nil {
 			return err
 		}
@@ -406,7 +403,7 @@ func importPlans(requests []client.IssueCreateRequest) []issueImportPlan {
 		plans = append(plans, issueImportPlan{
 			Title:       request.Title,
 			Description: request.Description,
-			StateType:   request.StateType,
+			State:       request.StateSelector,
 			Priority:    request.Priority,
 		})
 	}

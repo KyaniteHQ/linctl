@@ -73,6 +73,7 @@ var usageTopics = map[string]usagePayload{
 			"Use --description-file FILE to read the description from a file. " +
 			"Update an issue with linctl issue update LIT-123 --title \"...\" --description \"...\". " +
 			"Select one started state by exact name: linctl issue update LIT-123 --state \"In Review\". " +
+			"issue import uses the same exact state name. " +
 			"Relate two issues with linctl issue relate A B --type related. " +
 			"Name every allowed project with --allowed-project when the issues sit in different projects. " +
 			"issue unrelate uses the same --allowed-project flag. " +
