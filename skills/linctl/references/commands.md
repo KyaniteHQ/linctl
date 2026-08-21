@@ -1963,7 +1963,7 @@ linctl issue relate ISSUE_ID RELATED_ISSUE_ID [flags]
 Flags:
 
 ```
-      --allowed-project stringArray   project id both issues may occupy; repeat the flag; required to relate across projects
+      --allowed-project stringArray   project id both issues may occupy; repeat the flag; required for cross-project relations
       --type string                   relation type: blocks, duplicate, related, or similar (default "related")
 ```
 
@@ -2097,7 +2097,13 @@ linctl issue title-suggestion REQUEST
 Delete an issue relation after pinned-target comparison
 
 ```
-linctl issue unrelate ISSUE_RELATION_ID
+linctl issue unrelate ISSUE_RELATION_ID [flags]
+```
+
+Flags:
+
+```
+      --allowed-project stringArray   project id both issues may occupy; repeat the flag; required for cross-project relations
 ```
 
 ### linctl issue update

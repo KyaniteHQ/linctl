@@ -75,6 +75,7 @@ var usageTopics = map[string]usagePayload{
 			"Select one started state by exact name: linctl issue update LIT-123 --state \"In Review\". " +
 			"Relate two issues with linctl issue relate A B --type related. " +
 			"Name every allowed project with --allowed-project when the issues sit in different projects. " +
+			"issue unrelate uses the same --allowed-project flag. " +
 			"Append to the description with linctl issue update LIT-123 --append \"note\" or --append-file FILE. " +
 			"Use linctl issue start LIT-123 to assign the issue and move it to the started state. " +
 			"That command assigns a human viewer, or delegates the issue to an assignable app. " +

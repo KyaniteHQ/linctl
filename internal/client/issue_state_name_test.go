@@ -271,6 +271,31 @@ func Test_UpdateIssue_returns_readback_error_when_issue_vanishes(t *testing.T) {
 	require.ErrorContains(t, err, "injected issue failure")
 }
 
+func Test_UpdateIssue_returns_state_mismatch_when_write_fails_and_readback_is_wrong(t *testing.T) {
+	before := issueFixture{
+		Identifier: "LIT-1", Title: "job", ProjectID: "project-id", Project: "fixture",
+		StateID: "todo-state", State: "Todo", StateType: "unstarted",
+	}
+	wrong := before
+	wrong.StateID = "in-progress-state"
+	wrong.State = "In Progress"
+	wrong.StateType = "started"
+	graphqlClient := withIssueAfterWrite(issueWriteFakeClient(map[string]string{
+		"issue":                `{"issue":` + issueJSON(before) + `}`,
+		"WorkflowStatesByTeam": multipleStartedStatesJSON(),
+		"IssueUpdate":          "",
+	}).withError(errors.New("timeout")), wrong)
+
+	_, err := UpdateIssue(
+		context.Background(), graphqlClient, matchingTarget(),
+		IssueUpdateRequest{ID: "LIT-1", StateSelector: "In Review"},
+	)
+
+	require.ErrorIs(t, err, ErrStateMismatch)
+	require.ErrorContains(t, err, "in-review-state")
+	require.ErrorContains(t, err, "timeout")
+}
+
 func Test_UpdateIssue_prefers_mutation_error_when_readback_also_fails(t *testing.T) {
 	before := issueFixture{
 		Identifier: "LIT-1", Title: "job", ProjectID: "project-id", Project: "fixture",

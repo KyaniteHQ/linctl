@@ -1155,17 +1155,21 @@ Success is pass/fail:
    - Success: `linctl issue update ISSUE --state "In Review"` selects that started state when the team has several started states, then reads the issue back. `--state started` does not fall back to a type. `issue start` and `issue close` still pick the lowest-position state of that type.
    - Evidence: `go test ./internal/client`, `Test_UpdateIssue_selects_exact_started_state_name`,
      `Test_UpdateIssue_refuses_when_readback_state_does_not_match`,
+     `Test_UpdateIssue_returns_state_mismatch_when_write_fails_and_readback_is_wrong`,
      `Test_selectWorkflowStateID_does_not_fall_back_to_type`,
      `Test_StartIssue_selects_lowest_position_started_type_not_name_started`.
 
 219. Cross-project related relation
-   - Success: `linctl issue relate A B --type related --allowed-project P1 --allowed-project P2` links two same-team issues in those projects and keeps each issue in its original project. A pinned project stays in the allowed set. Different projects without `--allowed-project` fail before mutation.
+   - Success: `linctl issue relate A B --type related --allowed-project P1 --allowed-project P2` links two same-team issues in those projects and keeps each issue in its original project. A pinned project stays in the allowed set. Different projects without `--allowed-project` fail before mutation. `issue unrelate` uses the same organization, team, and allowed-project boundary.
    - Evidence: `go test ./internal/client`, `Test_CreateIssueRelation_links_issues_in_explicit_allowed_projects`,
      `Test_CreateIssueRelation_keeps_pinned_project_in_allowlist_union`,
      `Test_CreateIssueRelation_refuses_project_outside_allowlist_before_mutation`,
      `Test_CreateIssueRelation_refuses_cross_project_on_team_only_pin_without_allowlist`,
      `Test_CreateIssueRelation_refuses_cross_organization_relation`,
-     `Test_requireIssueOnTeam_fails_closed_when_org_is_absent`.
+     `Test_requireIssueOnTeam_fails_closed_when_org_is_absent`,
+     `Test_DeleteIssueRelation_removes_cross_project_relation_with_allowlist`,
+     `Test_DeleteIssueRelation_refuses_cross_project_without_allowlist`,
+     `Test_DeleteIssueRelation_refuses_project_outside_allowlist`.
 
 220. Relation readback
    - Success: a successful relate returns both issues and the relation after a follow-up read.

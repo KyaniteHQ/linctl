@@ -11,23 +11,25 @@ const issueRelationReconcilePageSize = 50
 
 func (guard *guardedClient) requireRelationIssues(
 	ctx context.Context,
-	request IssueRelationCreateRequest,
+	issueID string,
+	relatedIssueID string,
+	allowedProjectIDs []string,
 ) (IssueDetail, IssueDetail, error) {
-	allowed, err := guard.relationAllowedProjects(ctx, request.AllowedProjectIDs)
+	allowed, err := guard.relationAllowedProjects(ctx, allowedProjectIDs)
 	if err != nil {
 		return IssueDetail{}, IssueDetail{}, err
 	}
-	issue, err := guard.requireIssueOnTeam(ctx, request.IssueID)
+	issue, err := guard.requireIssueOnTeam(ctx, issueID)
 	if err != nil {
 		return IssueDetail{}, IssueDetail{}, err
 	}
-	related, err := guard.requireIssueOnTeam(ctx, request.RelatedIssueID)
+	related, err := guard.requireIssueOnTeam(ctx, relatedIssueID)
 	if err != nil {
 		return IssueDetail{}, IssueDetail{}, err
 	}
-	if issue.Summary.ProjectID != related.Summary.ProjectID && len(request.AllowedProjectIDs) == 0 {
+	if issue.Summary.ProjectID != related.Summary.ProjectID && len(allowedProjectIDs) == 0 {
 		return IssueDetail{}, IssueDetail{}, fmt.Errorf(
-			"%w: relating across projects needs --allowed-project for each project",
+			"%w: cross-project relation writes need --allowed-project for each project",
 			ErrWriteInvalid,
 		)
 	}

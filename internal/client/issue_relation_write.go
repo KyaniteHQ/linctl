@@ -29,6 +29,12 @@ type IssueRelationCreateRequest struct {
 	AllowedProjectIDs []string
 }
 
+// IssueRelationDeleteRequest describes a guarded issue-relation delete.
+type IssueRelationDeleteRequest struct {
+	RelationID        string
+	AllowedProjectIDs []string
+}
+
 // IssueRelationWriteResult is the relation plus both endpoints after readback.
 type IssueRelationWriteResult struct {
 	IssueRelationSummary
@@ -62,7 +68,9 @@ func (guard *guardedClient) createIssueRelation(
 	ctx context.Context,
 	request IssueRelationCreateRequest,
 ) (IssueRelationWriteResult, error) {
-	issue, related, err := guard.requireRelationIssues(ctx, request)
+	issue, related, err := guard.requireRelationIssues(
+		ctx, request.IssueID, request.RelatedIssueID, request.AllowedProjectIDs,
+	)
 	if err != nil {
 		return IssueRelationWriteResult{}, err
 	}
@@ -84,14 +92,15 @@ func (guard *guardedClient) createIssueRelation(
 }
 
 // DeleteIssueRelation removes an existing relation after resolving the relation
-// and comparing the pinned target for both linked issues.
+// and comparing the same organization, team, and allowed-project boundary as
+// CreateIssueRelation for both linked issues.
 func DeleteIssueRelation(
 	ctx context.Context,
 	graphqlClient graphql.Client,
 	expected config.Target,
-	relationID string,
+	request IssueRelationDeleteRequest,
 ) (string, error) {
-	if relationID == "" {
+	if request.RelationID == "" {
 		return "", requiredFieldError("relation id")
 	}
 
@@ -100,48 +109,32 @@ func DeleteIssueRelation(
 		return "", err
 	}
 
-	return guard.deleteIssueRelation(ctx, relationID)
+	return guard.deleteIssueRelation(ctx, request)
 }
 
-func (guard *guardedClient) deleteIssueRelation(ctx context.Context, relationID string) (string, error) {
-	relation, err := GetIssueRelationByID(ctx, guard.graphqlClient, relationID)
+func (guard *guardedClient) deleteIssueRelation(
+	ctx context.Context,
+	request IssueRelationDeleteRequest,
+) (string, error) {
+	relation, err := GetIssueRelationByID(ctx, guard.graphqlClient, request.RelationID)
 	if err != nil {
 		return "", err
 	}
-	if _, err := guard.requireIssuePair(
-		ctx, relation.IssueIdentifier, relation.RelatedIssueIdentifier,
+	if _, _, err := guard.requireRelationIssues(
+		ctx, relation.IssueID, relation.RelatedIssueID, request.AllowedProjectIDs,
 	); err != nil {
 		return "", err
 	}
 
-	deleted, err := gql.IssueRelationDelete(ctx, guard.graphqlClient, relationID)
+	deleted, err := gql.IssueRelationDelete(ctx, guard.graphqlClient, request.RelationID)
 	if err != nil {
-		return "", fmt.Errorf("delete issue relation %s: %w", relationID, err)
+		return "", fmt.Errorf("delete issue relation %s: %w", request.RelationID, err)
 	}
 	if err := mutationSuccess(deleted.IssueRelationDelete.Success, "issueRelationDelete"); err != nil {
 		return "", err
 	}
 
 	return relation.ID, nil
-}
-
-// requireIssuePair resolves both endpoints of a relation through the guard,
-// confirming each issue belongs to the resolved team before any mutation.
-func (guard *guardedClient) requireIssuePair(
-	ctx context.Context,
-	firstID string,
-	secondID string,
-) ([2]IssueSummary, error) {
-	var resolved [2]IssueSummary
-	for index, id := range [2]string{firstID, secondID} {
-		summary, err := guard.requireIssue(ctx, id)
-		if err != nil {
-			return resolved, err
-		}
-		resolved[index] = summary
-	}
-
-	return resolved, nil
 }
 
 func validateIssueRelationCreateRequest(request IssueRelationCreateRequest) error {

@@ -355,7 +355,10 @@ func Test_DeleteIssueRelation_removes_relation_when_target_matches(t *testing.T)
 		"IssueRelationDelete": `{"issueRelationDelete":{"success":true,"entityId":"relation-id"}}`,
 	})
 
-	id, err := DeleteIssueRelation(context.Background(), graphqlClient, matchingTarget(), "relation-id")
+	id, err := DeleteIssueRelation(
+		context.Background(), graphqlClient, matchingTarget(),
+		IssueRelationDeleteRequest{RelationID: "relation-id"},
+	)
 
 	require.NoError(t, err)
 	require.Equal(t, "relation-id", id)
@@ -363,7 +366,8 @@ func Test_DeleteIssueRelation_removes_relation_when_target_matches(t *testing.T)
 
 func Test_DeleteIssueRelation_requires_id(t *testing.T) {
 	_, err := DeleteIssueRelation(
-		context.Background(), issueWriteFakeClient(map[string]string{}), matchingTarget(), "",
+		context.Background(), issueWriteFakeClient(map[string]string{}), matchingTarget(),
+		IssueRelationDeleteRequest{},
 	)
 
 	require.ErrorIs(t, err, ErrWriteInvalid)
@@ -374,7 +378,7 @@ func Test_DeleteIssueRelation_refuses_when_target_unresolved(t *testing.T) {
 		OrgID:   "org-id",
 		TeamKey: "WRONG",
 		TeamID:  "wrong-id",
-	}, "relation-id")
+	}, IssueRelationDeleteRequest{RelationID: "relation-id"})
 
 	require.ErrorIs(t, err, ErrTargetMismatch)
 }
@@ -382,7 +386,10 @@ func Test_DeleteIssueRelation_refuses_when_target_unresolved(t *testing.T) {
 func Test_DeleteIssueRelation_wraps_relation_read_error(t *testing.T) {
 	graphqlClient := issueWriteFakeClient(map[string]string{})
 
-	_, err := DeleteIssueRelation(context.Background(), graphqlClient, matchingTarget(), "relation-id")
+	_, err := DeleteIssueRelation(
+		context.Background(), graphqlClient, matchingTarget(),
+		IssueRelationDeleteRequest{RelationID: "relation-id"},
+	)
 
 	require.Error(t, err)
 	require.NotErrorIs(t, err, ErrTargetMismatch)
@@ -394,7 +401,10 @@ func Test_DeleteIssueRelation_refuses_when_issue_team_differs(t *testing.T) {
 		"issue":         relationIssueReadWrongTeam(),
 	})
 
-	_, err := DeleteIssueRelation(context.Background(), graphqlClient, matchingTarget(), "relation-id")
+	_, err := DeleteIssueRelation(
+		context.Background(), graphqlClient, matchingTarget(),
+		IssueRelationDeleteRequest{RelationID: "relation-id"},
+	)
 
 	require.ErrorIs(t, err, ErrTargetMismatch)
 }
@@ -405,7 +415,10 @@ func Test_DeleteIssueRelation_wraps_mutation_error(t *testing.T) {
 		"issue":         relationIssueRead(),
 	})
 
-	_, err := DeleteIssueRelation(context.Background(), graphqlClient, matchingTarget(), "relation-id")
+	_, err := DeleteIssueRelation(
+		context.Background(), graphqlClient, matchingTarget(),
+		IssueRelationDeleteRequest{RelationID: "relation-id"},
+	)
 
 	require.Error(t, err)
 	require.NotErrorIs(t, err, ErrTargetMismatch)
@@ -418,7 +431,10 @@ func Test_DeleteIssueRelation_fails_when_mutation_reports_no_success(t *testing.
 		"IssueRelationDelete": `{"issueRelationDelete":{"success":false,"entityId":"relation-id"}}`,
 	})
 
-	_, err := DeleteIssueRelation(context.Background(), graphqlClient, matchingTarget(), "relation-id")
+	_, err := DeleteIssueRelation(
+		context.Background(), graphqlClient, matchingTarget(),
+		IssueRelationDeleteRequest{RelationID: "relation-id"},
+	)
 
 	require.ErrorIs(t, err, ErrMutationFailed)
 }

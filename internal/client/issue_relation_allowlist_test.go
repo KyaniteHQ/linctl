@@ -556,6 +556,82 @@ func Test_CreateIssueRelation_allows_same_project_on_team_only_pin(t *testing.T)
 	require.Equal(t, "relation-id", result.ID)
 }
 
+func Test_DeleteIssueRelation_removes_cross_project_relation_with_allowlist(t *testing.T) {
+	first := relationIssueJSON("issue-id", "LIT-1", "project-id", "fixture")
+	second := relationIssueJSON("related-issue-id", "LIT-2", "other-project", "other")
+	inner := issueWriteFakeClient(map[string]string{
+		"issueRelation":       `{"issueRelation":` + relationWriteJSON("related") + `}`,
+		"IssueRelationDelete": `{"issueRelationDelete":{"success":true,"entityId":"relation-id"}}`,
+	})
+	projects := newSequentialOpClient(inner)
+	projects.payloads["project"] = []string{
+		`{"project":` + projectJSON(projectFixture{ID: "other-project", Name: "other", Status: "Backlog"}) + `}`,
+	}
+	graphqlClient := issueLookupFake{
+		byID: map[string]string{
+			"LIT-1": first, "issue-id": first,
+			"LIT-2": second, "related-issue-id": second,
+		},
+		inner: projects,
+	}
+
+	id, err := DeleteIssueRelation(context.Background(), graphqlClient, matchingTarget(), IssueRelationDeleteRequest{
+		RelationID:        "relation-id",
+		AllowedProjectIDs: []string{"other-project"},
+	})
+
+	require.NoError(t, err)
+	require.Equal(t, "relation-id", id)
+}
+
+func Test_DeleteIssueRelation_refuses_cross_project_without_allowlist(t *testing.T) {
+	first := relationIssueJSON("issue-id", "LIT-1", "project-id", "fixture")
+	second := relationIssueJSON("related-issue-id", "LIT-2", "other-project", "other")
+	recorder := &mutationRecordingClient{inner: issueLookupFake{
+		byID: map[string]string{
+			"LIT-1": first, "issue-id": first,
+			"LIT-2": second, "related-issue-id": second,
+		},
+		inner: issueWriteFakeClient(map[string]string{
+			"issueRelation": `{"issueRelation":` + relationWriteJSON("related") + `}`,
+		}),
+	}}
+
+	_, err := DeleteIssueRelation(
+		context.Background(), recorder, matchingTarget(),
+		IssueRelationDeleteRequest{RelationID: "relation-id"},
+	)
+
+	require.ErrorIs(t, err, ErrWriteInvalid)
+	require.ErrorContains(t, err, "--allowed-project")
+	require.False(t, recorder.sentOperation("IssueRelationDelete"))
+}
+
+func Test_DeleteIssueRelation_refuses_project_outside_allowlist(t *testing.T) {
+	first := relationIssueJSON("issue-id", "LIT-1", "project-id", "fixture")
+	second := relationIssueJSON("related-issue-id", "LIT-2", "other-project", "other")
+	recorder := &mutationRecordingClient{inner: issueLookupFake{
+		byID: map[string]string{
+			"LIT-1": first, "issue-id": first,
+			"LIT-2": second, "related-issue-id": second,
+		},
+		inner: issueWriteFakeClient(map[string]string{
+			"issueRelation": `{"issueRelation":` + relationWriteJSON("related") + `}`,
+			"project": `{"project":` + projectJSON(projectFixture{
+				ID: "project-id", Name: "fixture", Status: "Backlog",
+			}) + `}`,
+		}),
+	}}
+
+	_, err := DeleteIssueRelation(context.Background(), recorder, matchingTarget(), IssueRelationDeleteRequest{
+		RelationID:        "relation-id",
+		AllowedProjectIDs: []string{"project-id"},
+	})
+
+	require.ErrorIs(t, err, ErrTargetMismatch)
+	require.False(t, recorder.sentOperation("IssueRelationDelete"))
+}
+
 func Test_CreateIssueRelation_reconcile_returns_error_when_relation_scan_fails(t *testing.T) {
 	sequenced := newSequentialOpClient(relationIssuePairFake(map[string]string{
 		"IssueRelationCreate": "",

@@ -48,17 +48,17 @@ func (guard *guardedClient) finishStateWrite(
 
 		return observed.Summary, nil
 	}
-	if writeErr != nil {
-		return applyMutationRetryClass(
-			IssueStateWriteRetryClass(), IssueSummary{}, false, writeErr,
-		)
-	}
 
-	return IssueSummary{}, fmt.Errorf(
+	mismatch := fmt.Errorf(
 		"%w: expected state_id=%s resolved state_id=%s name=%q",
 		ErrStateMismatch,
 		wantStateID,
 		observed.Summary.StateID,
 		observed.Summary.State,
 	)
+	if writeErr != nil {
+		return IssueSummary{}, fmt.Errorf("%w: %w", mismatch, writeErr)
+	}
+
+	return IssueSummary{}, mismatch
 }

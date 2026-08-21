@@ -212,7 +212,9 @@ func Test_Integration_issueCoordinationWriteRoundTrip_whenTargetPinned(t *testin
 		Type:           "related",
 	})
 	require.NoError(t, relateErr)
-	deletedRelationID, unrelateErr := DeleteIssueRelation(ctx, transport, target, relation.ID)
+	deletedRelationID, unrelateErr := DeleteIssueRelation(
+		ctx, transport, target, IssueRelationDeleteRequest{RelationID: relation.ID},
+	)
 	require.NoError(t, unrelateErr)
 	deletedCommentID, deleteCommentErr := DeleteComment(ctx, transport, target, comment.ID)
 	require.NoError(t, deleteCommentErr)
