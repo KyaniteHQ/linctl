@@ -89,6 +89,10 @@ type AccessKeyReleaseStage {
   The name of the release stage.
   """
   name: String!
+  """
+  The type of the release stage.
+  """
+  type: ReleaseStageType!
 }
 
 """
@@ -221,6 +225,10 @@ type AgentActivity implements Node {
   Whether the activity is ephemeral, and should disappear after the next agent activity.
   """
   ephemeral: Boolean!
+  """
+  [Internal] The reason this activity was persisted without being sent to the agent runtime.
+  """
+  executionSkippedReason: AgentActivityExecutionSkippedReason
   """
   The unique identifier of the entity.
   """
@@ -426,6 +434,13 @@ type AgentActivityErrorContent {
   The type of activity.
   """
   type: AgentActivityType!
+}
+
+"""
+The reason an agent activity was persisted without being sent to the agent runtime.
+"""
+enum AgentActivityExecutionSkippedReason {
+  quotaExceeded
 }
 
 """
@@ -808,6 +823,10 @@ type AgentSession implements Node {
   """
   issue: Issue
   """
+  [Internal] How Adaptive selected the model route used by this coding session.
+  """
+  modelSelection: JSON
+  """
   A dynamically updated plan describing the agent's execution strategy, including steps to be taken and their current status. Updated as the agent progresses through its work. Null if no plan has been set.
   """
   plan: JSON
@@ -882,15 +901,15 @@ type AgentSession implements Node {
   """
   url: String
   """
-  [Internal] The coding agent's live working-tree diff metadata (changes not yet pushed to origin), reported by the sandbox. Per-file content is fetched on demand from the workspace-diff-blob route. Null when in sync.
+  [Internal] Legacy live working-tree diff metadata. Null when the sandbox is in sync.
   """
-  workspaceDiff: JSON
+  workspaceDiff: JSON @deprecated(reason: "Use the session's Diff model instead.")
   """
-  [Internal] Per-file list of the agent's live working-tree diff at the given content hash. Served behind a repository-read-access gate (the synced summary carries only aggregate counts); null when the requester lacks repository access or there is no current diff.
+  [Internal] Legacy per-file metadata for the agent session's live working-tree diff.
   """
   workspaceDiffFiles(
     """
-    The diff's content hash, from the session's `workspaceDiff`.
+    The diff content hash from workspaceDiff.
     """
     contentHash: String!
   ): [AgentSessionWorkspaceDiffFile!] @deprecated(reason: "Use Diff.files instead.")
@@ -1642,6 +1661,10 @@ type AiConversationAckPart implements AiConversationBasePart {
   """
   metadata: AiConversationPartMetadata!
   """
+  [Internal] A one-line, third-person summary of the action the agent completed. Null when the agent acknowledged without describing an action.
+  """
+  summary: String
+  """
   The type of the part.
   """
   type: AiConversationPartType!
@@ -1753,6 +1776,20 @@ type AiConversationCodeIntelligenceToolCallArgs {
   question: String!
 }
 
+"""
+The affirmative response recorded for a confirmation elicitation.
+"""
+type AiConversationConfirmationElicitationResponseData {
+  """
+  True when the user confirmed the action.
+  """
+  confirmed: Boolean!
+  """
+  The kind of elicitation that was answered.
+  """
+  kind: AiConversationElicitationKind!
+}
+
 type AiConversationCreateEntityToolCall implements AiConversationBaseToolCall {
   """
   The arguments to the tool call.
@@ -1783,7 +1820,15 @@ type AiConversationCreateEntityToolCallArgs {
 }
 
 type AiConversationCreateEntityToolCallResult {
+  createdEntities: [AiConversationCreateEntityToolCallResultCreatedEntities!]
   startedAgentSessions: [AiConversationSearchEntitiesToolCallResultEntities!]
+}
+
+type AiConversationCreateEntityToolCallResultCreatedEntities {
+  id: String!
+  label: String
+  parent: AiConversationSearchEntitiesToolCallResultEntities
+  type: String!
 }
 
 type AiConversationCreateSandboxToolCall implements AiConversationBaseToolCall {
@@ -1828,16 +1873,26 @@ type AiConversationDeleteEntityToolCall implements AiConversationBaseToolCall {
   The result of the tool call.
   """
   rawResult: JSON
+  """
+  The result of the tool call.
+  """
+  result: AiConversationDeleteEntityToolCallResult
 }
 
 type AiConversationDeleteEntityToolCallArgs {
   entity: AiConversationSearchEntitiesToolCallResultEntities!
 }
 
+type AiConversationDeleteEntityToolCallResult {
+  deletedEntities: [AiConversationCreateEntityToolCallResultCreatedEntities!]
+}
+
 """
 The kind of input an AI conversation elicitation asks for.
 """
 enum AiConversationElicitationKind {
+  confirmation
+  mcpServerConnection
   multipleChoice
 }
 
@@ -1850,19 +1905,23 @@ type AiConversationElicitationOption {
   """
   label: String!
   """
-  The prompt sent as a normal user reply when selected.
+  The user prompt rendered to the agent when this option is selected. Null when selecting the option only dismisses the elicitation without replying.
   """
-  prompt: String!
+  prompt: String
 }
 
 """
-A lightweight question or choice prompt shown with an AI conversation.
+A structured request for user input shown with an AI conversation.
 """
 type AiConversationElicitationPart implements AiConversationBasePart {
   """
   The ID of the part.
   """
   id: String!
+  """
+  The existing MCP integration to reconnect. Null when creating a new connection.
+  """
+  integrationId: String
   """
   The kind of input this elicitation asks for.
   """
@@ -1872,17 +1931,67 @@ type AiConversationElicitationPart implements AiConversationBasePart {
   """
   metadata: AiConversationPartMetadata!
   """
-  Selectable prompt options for multiple-choice elicitations.
+  The selectable actions for multiple-choice and confirmation elicitations.
   """
   options: [AiConversationElicitationOption!]!
   """
-  The title shown above the elicitation choices.
+  The requested owner of the MCP server connection. Null for other elicitation kinds.
+  """
+  scope: AiConversationMcpServerConnectionScope
+  """
+  The MCP server URL for a new connection. Null for reconnects and other elicitation kinds.
+  """
+  serverUrl: String
+  """
+  The optional title shown above the elicitation choices.
   """
   title: String
   """
   The type of the part.
   """
   type: AiConversationPartType!
+}
+
+"""
+The kind-specific data recorded when a user answers an AI conversation elicitation.
+"""
+union AiConversationElicitationResponseData =
+  | AiConversationConfirmationElicitationResponseData
+  | AiConversationMcpServerConnectionElicitationResponseData
+  | AiConversationMultipleChoiceElicitationResponseData
+
+"""
+A structured user response to an elicitation in an AI conversation.
+"""
+type AiConversationElicitationResponsePart implements AiConversationBasePart {
+  """
+  Additional user-authored commentary submitted with the response. For a response batch, only the first response contains it. Null when none was provided.
+  """
+  bodyData: JSONObject
+  """
+  The kind-specific response data.
+  """
+  data: AiConversationElicitationResponseData!
+  """
+  The identifier of the elicitation that was answered.
+  """
+  elicitationId: String!
+  """
+  The ID of the part.
+  """
+  id: String!
+  """
+  The metadata of the part.
+  """
+  metadata: AiConversationPartMetadata!
+  """
+  The type of the part.
+  """
+  type: AiConversationPartType!
+  """
+  The user who answered the elicitation.
+  """
+  user: User
 }
 
 type AiConversationEntityCardWidget implements AiConversationBaseWidget {
@@ -1945,6 +2054,7 @@ enum AiConversationEntityCardWidgetArgsAction {
 enum AiConversationEntityCardWidgetArgsType {
   AgentSession
   AiPrompt
+  AiPromptRules
   CustomView
   Customer
   CustomerNeed
@@ -2030,7 +2140,9 @@ type AiConversationEntityListWidgetArgsEntities {
 [Internal] The entity type
 """
 enum AiConversationEntityListWidgetArgsEntitiesType {
+  AgentSession
   AiPrompt
+  AiPromptRules
   CustomView
   Customer
   CustomerNeed
@@ -2096,7 +2208,6 @@ The category of an error part in an AI conversation.
 """
 enum AiConversationErrorType {
   billing
-  featureDisabled
   unknown
   untrustedSources
   usageLimit
@@ -2355,6 +2466,61 @@ type AiConversationListCodingSessionsToolCallResultAgentSessions {
   type: String!
 }
 
+"""
+The integration connected by an MCP server connection elicitation.
+"""
+type AiConversationMcpServerConnectionElicitationResponseData {
+  """
+  The identifier of the MCP server integration that was connected.
+  """
+  integrationId: String!
+  """
+  The kind of elicitation that was answered.
+  """
+  kind: AiConversationElicitationKind!
+}
+
+"""
+The owner scope for an MCP server connection requested in an AI conversation.
+"""
+type AiConversationMcpServerConnectionScope {
+  """
+  The identifier of the team that will own the connection. Null for other scope types.
+  """
+  teamId: String
+  """
+  The type of owner that will receive the MCP server connection.
+  """
+  type: AiConversationMcpServerConnectionScopeType!
+  """
+  The identifier of the Loop that will own the connection. Null for other scope types.
+  """
+  workflowDefinitionId: String
+}
+
+"""
+The owner scope for an MCP server connection requested in an AI conversation.
+"""
+enum AiConversationMcpServerConnectionScopeType {
+  team
+  user
+  workflowDefinition
+}
+
+"""
+The selected option in a multiple-choice AI conversation elicitation.
+"""
+type AiConversationMultipleChoiceElicitationResponseData {
+  """
+  The kind of elicitation that was answered.
+  """
+  kind: AiConversationElicitationKind!
+  """
+  The zero-based index of the selected option.
+  """
+  selectedOptionIndex: Int!
+}
+
 type AiConversationNavigateToPageToolCall implements AiConversationBaseToolCall {
   """
   The arguments to the tool call.
@@ -2410,11 +2576,21 @@ type AiConversationNotifyUsersToolCall implements AiConversationBaseToolCall {
   The result of the tool call.
   """
   rawResult: JSON
+  """
+  The result of the tool call.
+  """
+  result: AiConversationNotifyUsersToolCallResult
 }
 
 type AiConversationNotifyUsersToolCallArgs {
+  message: String
   summary: String
   userIds: [String!]!
+}
+
+type AiConversationNotifyUsersToolCallResult {
+  notifiedUserIds: [String!]
+  skippedUserIds: [String!]
 }
 
 """
@@ -2423,6 +2599,7 @@ A part in an AI conversation.
 union AiConversationPart =
   | AiConversationAckPart
   | AiConversationElicitationPart
+  | AiConversationElicitationResponsePart
   | AiConversationErrorPart
   | AiConversationEventPart
   | AiConversationPromptPart
@@ -2475,6 +2652,7 @@ The type of a part in an AI conversation.
 enum AiConversationPartType {
   ack
   elicitation
+  elicitationResponse
   error
   event
   prompt
@@ -2483,6 +2661,35 @@ enum AiConversationPartType {
   toolCall
   widget
   widgetPlaceholder
+}
+
+type AiConversationPostChatMessageToolCall implements AiConversationBaseToolCall {
+  """
+  The arguments to the tool call.
+  """
+  args: AiConversationPostChatMessageToolCallArgs
+  displayInfo: AiConversationToolDisplayInfo!
+  """
+  The name of the tool that was called.
+  """
+  name: AiConversationTool!
+  """
+  The arguments of the tool call.
+  """
+  rawArgs: JSON
+  """
+  The result of the tool call.
+  """
+  rawResult: JSON
+}
+
+type AiConversationPostChatMessageToolCallArgs {
+  platform: AiConversationPostChatMessageToolCallArgsPlatform!
+}
+
+enum AiConversationPostChatMessageToolCallArgsPlatform {
+  microsoftTeams
+  slack
 }
 
 type AiConversationPromptCodingSessionToolCall implements AiConversationBaseToolCall {
@@ -2516,8 +2723,10 @@ type AiConversationPromptCodingSessionToolCallArgs {
 
 type AiConversationPromptCodingSessionToolCallResult {
   agentSession: AiConversationSearchEntitiesToolCallResultEntities!
+  created: Boolean
   entities: [AiConversationSearchEntitiesToolCallResultEntities!]
   pullRequests: [AiConversationSearchEntitiesToolCallResultEntities!]
+  quotaBlocked: Boolean
 }
 
 """
@@ -2697,6 +2906,30 @@ type AiConversationReadSandboxFileToolCallArgs {
   path: String!
 }
 
+type AiConversationReadSettingToolCall implements AiConversationBaseToolCall {
+  """
+  The arguments to the tool call.
+  """
+  args: AiConversationReadSettingToolCallArgs
+  displayInfo: AiConversationToolDisplayInfo!
+  """
+  The name of the tool that was called.
+  """
+  name: AiConversationTool!
+  """
+  The arguments of the tool call.
+  """
+  rawArgs: JSON
+  """
+  The result of the tool call.
+  """
+  rawResult: JSON
+}
+
+type AiConversationReadSettingToolCallArgs {
+  id: String!
+}
+
 """
 A reasoning part in an AI conversation.
 """
@@ -2803,10 +3036,18 @@ type AiConversationRestoreEntityToolCall implements AiConversationBaseToolCall {
   The result of the tool call.
   """
   rawResult: JSON
+  """
+  The result of the tool call.
+  """
+  result: AiConversationRestoreEntityToolCallResult
 }
 
 type AiConversationRestoreEntityToolCallArgs {
   entity: AiConversationSearchEntitiesToolCallResultEntities!
+}
+
+type AiConversationRestoreEntityToolCallResult {
+  restoredEntities: [AiConversationCreateEntityToolCallResultCreatedEntities!]
 }
 
 type AiConversationRetrieveEntitiesToolCall implements AiConversationBaseToolCall {
@@ -2913,6 +3154,31 @@ type AiConversationSearchEntitiesToolCallResultEntities {
   type: String!
 }
 
+type AiConversationSearchSettingsToolCall implements AiConversationBaseToolCall {
+  """
+  The arguments to the tool call.
+  """
+  args: AiConversationSearchSettingsToolCallArgs
+  displayInfo: AiConversationToolDisplayInfo!
+  """
+  The name of the tool that was called.
+  """
+  name: AiConversationTool!
+  """
+  The arguments of the tool call.
+  """
+  rawArgs: JSON
+  """
+  The result of the tool call.
+  """
+  rawResult: JSON
+}
+
+type AiConversationSearchSettingsToolCallArgs {
+  parentId: String
+  query: String
+}
+
 type AiConversationSetSpendLimitToolCall implements AiConversationBaseToolCall {
   """
   The arguments to the tool call.
@@ -2935,6 +3201,47 @@ type AiConversationSetSpendLimitToolCall implements AiConversationBaseToolCall {
 
 type AiConversationSetSpendLimitToolCallArgs {
   summary: String
+}
+
+type AiConversationSettingWidget implements AiConversationBaseWidget {
+  """
+  The arguments to the widget.
+  """
+  args: AiConversationSettingWidgetArgs
+  """
+  Display information for the widget, including ProseMirror and Markdown representations.
+  """
+  displayInfo: AiConversationWidgetDisplayInfo
+  """
+  The name of the widget.
+  """
+  name: AiConversationWidgetName!
+  """
+  The arguments of the widget.
+  """
+  rawArgs: JSON
+}
+
+type AiConversationSettingWidgetArgs {
+  """
+  The stable semantic setting ID returned by SearchSettings
+  """
+  id: String!
+  """
+  The settings target when the setting scope does not imply it
+  """
+  target: AiConversationSettingWidgetArgsTarget
+}
+
+type AiConversationSettingWidgetArgsTarget {
+  """
+  The settings target UUID, when the scope does not imply it
+  """
+  id: String
+  """
+  The settings target entity type
+  """
+  type: String!
 }
 
 type AiConversationSpawnSubagentToolCall implements AiConversationBaseToolCall {
@@ -3139,12 +3446,14 @@ enum AiConversationTool {
   ListCodingSessions
   NavigateToPage
   NotifyUsers
+  PostChatMessage
   PromptCodingSession
   QueryActivity
   QueryUpdates
   QueryView
   ReadFile
   ReadSandboxFile
+  ReadSetting
   RemoveSpendLimit
   Research
   RestoreEntity
@@ -3152,6 +3461,7 @@ enum AiConversationTool {
   RetryPullRequestCheck
   SearchDocumentation
   SearchEntities
+  SearchSettings
   SetSpendLimit
   SpawnSubagent
   StartCodingSession
@@ -3184,12 +3494,14 @@ union AiConversationToolCall =
   | AiConversationListCodingSessionsToolCall
   | AiConversationNavigateToPageToolCall
   | AiConversationNotifyUsersToolCall
+  | AiConversationPostChatMessageToolCall
   | AiConversationPromptCodingSessionToolCall
   | AiConversationQueryActivityToolCall
   | AiConversationQueryUpdatesToolCall
   | AiConversationQueryViewToolCall
   | AiConversationReadFileToolCall
   | AiConversationReadSandboxFileToolCall
+  | AiConversationReadSettingToolCall
   | AiConversationRemoveSpendLimitToolCall
   | AiConversationResearchToolCall
   | AiConversationRestoreEntityToolCall
@@ -3197,6 +3509,7 @@ union AiConversationToolCall =
   | AiConversationRetryPullRequestCheckToolCall
   | AiConversationSearchDocumentationToolCall
   | AiConversationSearchEntitiesToolCall
+  | AiConversationSearchSettingsToolCall
   | AiConversationSetSpendLimitToolCall
   | AiConversationSpawnSubagentToolCall
   | AiConversationStartCodingSessionToolCall
@@ -3327,6 +3640,7 @@ type AiConversationUpdateEntityToolCallArgs {
 
 type AiConversationUpdateEntityToolCallResult {
   startedAgentSessions: [AiConversationSearchEntitiesToolCallResultEntities!]
+  updatedEntities: [AiConversationCreateEntityToolCallResultCreatedEntities!]
 }
 
 """
@@ -3375,7 +3689,10 @@ type AiConversationWebSearchToolCallArgs {
 """
 The widget.
 """
-union AiConversationWidget = AiConversationEntityCardWidget | AiConversationEntityListWidget
+union AiConversationWidget =
+  | AiConversationEntityCardWidget
+  | AiConversationEntityListWidget
+  | AiConversationSettingWidget
 
 type AiConversationWidgetDisplayInfo {
   """
@@ -3394,6 +3711,7 @@ The name of a widget in an AI conversation.
 enum AiConversationWidgetName {
   EntityCard
   EntityList
+  Setting
 }
 
 """
@@ -6540,7 +6858,7 @@ A customer organization tracked in Linear's customer management system. Customer
 """
 type Customer implements Node {
   """
-  The approximate count of customer needs (requests) associated with this customer. This is a denormalized counter and may not reflect the exact count at all times.
+  The approximate number of distinct requests associated with this customer, deduplicated per issue or project. This is a denormalized counter and may not reflect the exact count at all times.
   """
   approximateNeedCount: Float!
   """
@@ -7146,6 +7464,10 @@ type CustomerNeedNotification implements Entity & Node & Notification {
   """
   actorAvatarUrl: String
   """
+  [Internal] Whether the notification's user actor is deactivated in the workspace.
+  """
+  actorInactive: Boolean!
+  """
   [Internal] Notification actor initials if avatar is not available.
   """
   actorInitials: String
@@ -7440,6 +7762,10 @@ type CustomerNotification implements Entity & Node & Notification {
   [Internal] Notification avatar URL.
   """
   actorAvatarUrl: String
+  """
+  [Internal] Whether the notification's user actor is deactivated in the workspace.
+  """
+  actorInactive: Boolean!
   """
   [Internal] Notification actor initials if avatar is not available.
   """
@@ -8256,7 +8582,7 @@ Payload for a customer webhook.
 """
 type CustomerWebhookPayload {
   """
-  The approximate number of needs of the customer.
+  The approximate number of distinct requests associated with this customer, deduplicated per issue or project. This is a denormalized counter and may not reflect the exact count at all times.
   """
   approximateNeedCount: Float!
   """
@@ -9523,6 +9849,43 @@ type Document implements Node {
   """
   sortOrder: Float!
   """
+  Users who are subscribed to the document.
+  """
+  subscribers(
+    """
+    A cursor to be used with first for forward pagination
+    """
+    after: String
+    """
+    A cursor to be used with last for backward pagination.
+    """
+    before: String
+    """
+    Filter returned subscribers.
+    """
+    filter: UserFilter
+    """
+    The number of items to forward paginate (used with after). Defaults to 50.
+    """
+    first: Int
+    """
+    Should archived resources be included (default: false)
+    """
+    includeArchived: Boolean
+    """
+    Should query return disabled/suspended users (default: false).
+    """
+    includeDisabled: Boolean
+    """
+    The number of items to backward paginate (used with before). Defaults to 50.
+    """
+    last: Int
+    """
+    By which field should the pagination order by. Available options are createdAt (default) and updatedAt.
+    """
+    orderBy: PaginationOrderBy
+  ): UserConnection!
+  """
   [Internal] A one-sentence AI-generated summary of the document content. Null if no summary has been generated.
   """
   summary: String
@@ -9647,6 +10010,10 @@ type DocumentContent implements Node {
   The issue that the content is associated with. Null if the content belongs to a different parent entity type.
   """
   issue: Issue
+  """
+  [Internal] The meeting that the content is associated with. Null if the content belongs to a different parent entity type.
+  """
+  meeting: Meeting
   """
   The project that the content is associated with. Null if the content belongs to a different parent entity type.
   """
@@ -9778,7 +10145,7 @@ type DocumentContentHistoryCheckpointType {
   """
   [Internal] Source metadata associated with the AI document checkpoint.
   """
-  sourceMetadata: JSON
+  sourceMetadata: JSONObject
 }
 
 type DocumentContentHistoryPayload {
@@ -9818,7 +10185,7 @@ type DocumentContentHistoryType {
   """
   [Internal] The document content as a ProseMirror document at the time this history entry was captured.
   """
-  contentData: JSON
+  contentData: JSONObject
   """
   The timestamp of the document content state when this snapshot was captured. This can differ from createdAt because the content is captured from its state at the previously known updatedAt timestamp in the case of an update. On document creation, these timestamps can be identical.
   """
@@ -9838,7 +10205,7 @@ type DocumentContentHistoryType {
   """
   Metadata associated with the history entry, including content diffs and AI-generated change summaries.
   """
-  metadata: JSON
+  metadata: JSONObject
 }
 
 """
@@ -10051,6 +10418,10 @@ input DocumentFilter {
   """
   release: ReleaseFilter
   """
+  [Internal] Comparator for the document's searchable content.
+  """
+  searchableContent: ContentComparator
+  """
   Comparator for the document slug ID.
   """
   slugId: StringComparator
@@ -10084,6 +10455,10 @@ type DocumentNotification implements Entity & Node & Notification {
   [Internal] Notification avatar URL.
   """
   actorAvatarUrl: String
+  """
+  [Internal] Whether the notification's user actor is deactivated in the workspace.
+  """
+  actorInactive: Boolean!
   """
   [Internal] Notification actor initials if avatar is not available.
   """
@@ -10359,6 +10734,43 @@ type DocumentSearchResult implements Node {
   The sort order of the document in its parent entity's resources list. This order is shared with other resource types such as external links.
   """
   sortOrder: Float!
+  """
+  Users who are subscribed to the document.
+  """
+  subscribers(
+    """
+    A cursor to be used with first for forward pagination
+    """
+    after: String
+    """
+    A cursor to be used with last for backward pagination.
+    """
+    before: String
+    """
+    Filter returned subscribers.
+    """
+    filter: UserFilter
+    """
+    The number of items to forward paginate (used with after). Defaults to 50.
+    """
+    first: Int
+    """
+    Should archived resources be included (default: false)
+    """
+    includeArchived: Boolean
+    """
+    Should query return disabled/suspended users (default: false).
+    """
+    includeDisabled: Boolean
+    """
+    The number of items to backward paginate (used with before). Defaults to 50.
+    """
+    last: Int
+    """
+    By which field should the pagination order by. Available options are createdAt (default) and updatedAt.
+    """
+    orderBy: PaginationOrderBy
+  ): UserConnection!
   """
   [Internal] A one-sentence AI-generated summary of the document content. Null if no summary has been generated.
   """
@@ -10641,6 +11053,10 @@ type Draft implements Node {
   """
   data: JSONObject
   """
+  Metadata about the AI generation of the draft. Null when the draft was not auto-generated. This is a computed field derived from 'data', so clients can read the generation metadata without parsing that payload.
+  """
+  generationMetadata: DraftGenerationMetadata
+  """
   The unique identifier of the entity.
   """
   id: ID!
@@ -10655,7 +11071,7 @@ type Draft implements Node {
   """
   Whether the draft was autogenerated for the user.
   """
-  isAutogenerated: Boolean! @deprecated(reason: "Use 'data.generationMetadata' instead")
+  isAutogenerated: Boolean! @deprecated(reason: "Use 'generationMetadata' instead")
   """
   The issue for which this is a draft comment. Null if the draft belongs to a different parent entity type.
   """
@@ -10685,6 +11101,10 @@ type Draft implements Node {
   """
   team: Team
   """
+  The health status carried by a project update or initiative update draft. Possible values are onTrack, atRisk, or offTrack. Null for other draft types. This is a computed field derived from 'data', so clients can read the health without parsing that payload.
+  """
+  updateHealth: DraftUpdateHealthType
+  """
   The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
       been updated after creation.
   """
@@ -10711,6 +11131,33 @@ type DraftEdge {
   """
   cursor: String!
   node: Draft!
+}
+
+"""
+Metadata about AI-generated draft content.
+"""
+type DraftGenerationMetadata {
+  """
+  The time at which the draft content was generated.
+  """
+  generatedAt: DateTime!
+  """
+  The generated text content as a ProseMirror document.
+  """
+  generatedContent: JSONObject!
+  """
+  The number of times the draft content has been generated.
+  """
+  generationCount: Int!
+}
+
+"""
+The health status carried by a project update or initiative update draft.
+"""
+enum DraftUpdateHealthType {
+  atRisk
+  offTrack
+  onTrack
 }
 
 """
@@ -11150,12 +11597,56 @@ input EmojiCreateInput {
   url: String!
 }
 
+"""
+Emoji creation date sorting options.
+"""
+input EmojiCreatedAtSort {
+  """
+  Whether nulls should be sorted first or last
+  """
+  nulls: PaginationNulls = last
+  """
+  The order for the individual sort
+  """
+  order: PaginationSortOrder
+}
+
 type EmojiEdge {
   """
   Used in `before` and `after` args
   """
   cursor: String!
   node: Emoji!
+}
+
+"""
+Custom emoji filtering options.
+"""
+input EmojiFilter {
+  """
+  Compound filters, all of which need to be matched by the emoji.
+  """
+  and: [EmojiFilter!]
+  """
+  Comparator for the created at date.
+  """
+  createdAt: DateComparator
+  """
+  Comparator for the identifier.
+  """
+  id: IDComparator
+  """
+  Comparator for the emoji name.
+  """
+  name: StringComparator
+  """
+  Compound filters, one of which needs to be matched by the emoji.
+  """
+  or: [EmojiFilter!]
+  """
+  Comparator for the updated at date.
+  """
+  updatedAt: DateComparator
 }
 
 """
@@ -11174,6 +11665,16 @@ type EmojiPayload {
   Whether the operation was successful.
   """
   success: Boolean!
+}
+
+"""
+Custom emoji sorting options.
+"""
+input EmojiSortInput {
+  """
+  Sort by emoji creation date.
+  """
+  createdAt: EmojiCreatedAtSort
 }
 
 """
@@ -11977,6 +12478,10 @@ type Favorite implements Node {
   The favorited user.
   """
   user: User
+  """
+  The favorited loop.
+  """
+  workflowDefinition: WorkflowDefinition
 }
 
 type FavoriteConnection {
@@ -12105,6 +12610,10 @@ input FavoriteCreateInput {
   The identifier of the user to favorite.
   """
   userId: String
+  """
+  The identifier of the loop to favorite.
+  """
+  workflowDefinitionId: String
 }
 
 type FavoriteEdge {
@@ -12269,28 +12778,6 @@ enum FeedSummarySchedule {
   daily
   never
   weekly
-}
-
-"""
-The result of a data fetch query using natural language.
-"""
-type FetchDataPayload {
-  """
-  The fetched data as a JSON object. The shape depends on the natural language query and the resolved GraphQL query. Null if the query returned no results.
-  """
-  data: JSONObject
-  """
-  The filter variables that were generated and applied to the GraphQL query. Null if no filters were needed.
-  """
-  filters: JSONObject
-  """
-  The GraphQL query that was generated from the natural language input and executed to produce the data. Useful for debugging or reusing the query directly.
-  """
-  query: String
-  """
-  Whether the fetch operation was successful.
-  """
-  success: Boolean!
 }
 
 type FileUploadDeletePayload {
@@ -12695,6 +13182,14 @@ input GitHubImportSettingsInput {
   The names of the repositories connected for the GitHub integration.
   """
   repositories: [GitHubRepoInput!]!
+  """
+  The date the repository list was last loaded from GitHub. Unset while the first load is still in progress.
+  """
+  repositoriesSyncedAt: DateTime
+  """
+  The number of repositories the installation can access, as reported by GitHub. Known before the repository list itself has loaded.
+  """
+  repositoryCount: Float
 }
 
 """
@@ -13169,6 +13664,15 @@ type ImageUploadFromUrlPayload {
   url: String
 }
 
+"""
+Which Inbox notifications contribute to Inbox badges.
+"""
+enum InboxBadgeScope {
+  all
+  none
+  priority
+}
+
 input InheritanceEntityMapping {
   """
   Mapping of the IssueLabel ID to the new IssueLabel name.
@@ -13178,6 +13682,10 @@ input InheritanceEntityMapping {
   Mapping of the ProjectLabel ID to the new ProjectLabel name.
   """
   projectLabels: JSONObject
+  """
+  [Internal] Mapping of the ProjectStatus ID to the workspace or parent team ProjectStatus ID its projects move to.
+  """
+  projectStatuses: JSONObject
   """
   Mapping of the WorkflowState ID to the new WorkflowState ID.
   """
@@ -13389,7 +13897,7 @@ type Initiative implements Node {
   """
   lastUpdate: InitiativeUpdate
   """
-  [ALPHA] The team that leads the initiative. Null if no lead team is assigned.
+  The team that leads the initiative. Null if no lead team is assigned.
   """
   leadTeam: Team
   """
@@ -13618,7 +14126,7 @@ type Initiative implements Node {
   """
   url: String!
   """
-  [ALPHA] The visibility of the initiative, derived from its lead team. Public when no lead team is assigned.
+  The visibility of the initiative, derived from its lead team. Public when no lead team is assigned.
   """
   visibility: InitiativeVisibility!
 }
@@ -13720,7 +14228,7 @@ input InitiativeCollectionFilter {
   """
   labels: InitiativeLabelCollectionFilter
   """
-  [ALPHA] Filters that the initiative lead team must satisfy.
+  Filters that the initiative lead team must satisfy.
   """
   leadTeam: NullableTeamFilter
   """
@@ -13808,7 +14316,7 @@ input InitiativeCreateInput {
   """
   labelIds: [String!]
   """
-  [ALPHA] The team that leads the initiative.
+  The team that leads the initiative.
   """
   leadTeamId: String
   """
@@ -13924,7 +14432,7 @@ input InitiativeFilter {
   """
   labels: InitiativeLabelCollectionFilter
   """
-  [ALPHA] Filters that the initiative lead team must satisfy.
+  Filters that the initiative lead team must satisfy.
   """
   leadTeam: NullableTeamFilter
   """
@@ -14541,6 +15049,10 @@ type InitiativeNotification implements Entity & Node & Notification {
   [Internal] Notification avatar URL.
   """
   actorAvatarUrl: String
+  """
+  [Internal] Whether the notification's user actor is deactivated in the workspace.
+  """
+  actorInactive: Boolean!
   """
   [Internal] Notification actor initials if avatar is not available.
   """
@@ -15364,7 +15876,7 @@ input InitiativeUpdateInput {
   """
   labelIds: [String!]
   """
-  [ALPHA] The team that leads the initiative. Set to null to clear.
+  The team that leads the initiative. Set to null to clear.
   """
   leadTeamId: String
   """
@@ -18110,6 +18622,10 @@ type IssueDraft implements Node {
   """
   projectMilestoneId: String
   """
+  Serialized issue relations to recreate when the draft is published.
+  """
+  relations: JSONObject!
+  """
   Identifiers of the releases associated with the draft. These releases will be linked to the issue when the draft is published.
   """
   releaseIds: [String!]!
@@ -19662,6 +20178,10 @@ type IssueNotification implements Entity & Node & Notification {
   [Internal] Notification avatar URL.
   """
   actorAvatarUrl: String
+  """
+  [Internal] Whether the notification's user actor is deactivated in the workspace.
+  """
+  actorInactive: Boolean!
   """
   [Internal] Notification actor initials if avatar is not available.
   """
@@ -22067,7 +22587,7 @@ scalar JSONObject
 
 input JiraConfigurationInput {
   """
-  The Jira personal access token.
+  The Jira personal access token, or the API key of a Jira Cloud service account.
   """
   accessToken: String!
   """
@@ -22082,6 +22602,10 @@ input JiraConfigurationInput {
   Whether this integration will be setup using the manual webhook flow.
   """
   manualSetup: Boolean
+  """
+  Whether the access token is the API key of a Jira Cloud service account. Defaults to detecting the service account key prefix. The site's cloudId is resolved from the hostname, and webhooks are always set up manually.
+  """
+  serviceAccount: Boolean
 }
 
 input JiraFetchProjectStatusesInput {
@@ -22150,6 +22674,10 @@ input JiraPersonalSettingsInput {
   The name of the Jira site currently authorized through the integration.
   """
   siteName: String
+  """
+  The id of the workspace Jira integration this personal integration authenticates through.
+  """
+  workspaceIntegrationId: String
 }
 
 input JiraProjectDataInput {
@@ -22167,11 +22695,26 @@ input JiraProjectDataInput {
   name: String!
 }
 
+type JiraProjectStatusesPayload {
+  """
+  The Jira project's issue statuses (non-Epic).
+  """
+  issueStatuses: [String!]!
+  """
+  The Jira project's project statuses (Epic).
+  """
+  projectStatuses: [String!]!
+}
+
 input JiraSettingsInput {
   """
   The custom OAuth server token endpoint URL (enterprise SSO).
   """
   customOAuthServerUrl: String
+  """
+  Whether this integration authenticates with a Jira Cloud service account API key.
+  """
+  isCloudServiceAccount: Boolean
   """
   Whether this integration uses custom OAuth authentication (enterprise SSO).
   """
@@ -22204,15 +22747,11 @@ input JiraSettingsInput {
   Whether the user needs to provide setup information about the webhook to complete the integration setup. Only relevant for integrations that use a manual setup flow
   """
   setupPending: Boolean
-  """
-  Jira status names grouped by project, separated into issue statuses (non-Epic) and project statuses (Epic). Structure: projectId -> { issueStatuses: string[], projectStatuses: string[] }
-  """
-  statusNamesPerIssueType: JSONObject
 }
 
 input JiraUpdateInput {
   """
-  The Jira personal access token.
+  The Jira personal access token, or the API key of a Jira Cloud service account.
   """
   accessToken: String
   """
@@ -22220,7 +22759,7 @@ input JiraUpdateInput {
   """
   deleteWebhook: Boolean
   """
-  The Jira user email address associated with the personal access token.
+  The Jira user email address associated with the access token.
   """
   email: String
   """
@@ -22439,6 +22978,77 @@ input McpServerCustomHeaderInput {
   value: String!
 }
 
+"""
+[Internal] A meeting attached to one project or initiative. Its transcript is stored in related document content.
+"""
+type Meeting implements Node {
+  """
+  [Internal] The transcript analysis state: `pending` while analysis runs and `completed` after it finishes. Null before analysis starts.
+  """
+  analysisStatus: MeetingAnalysisStatus
+  """
+  The time at which the entity was archived. Null if the entity has not been archived.
+  """
+  archivedAt: DateTime
+  """
+  [Internal] The meeting attendees. Each entry has a name and may include an active workspace user identifier.
+  """
+  attendees: [JSONObject!]
+  """
+  [Internal] The source that owns the attendee list. Null when attendees have not been set.
+  """
+  attendeesSource: String
+  """
+  The time at which the entity was created.
+  """
+  createdAt: DateTime!
+  """
+  [Internal] The user who created the meeting. Null if the user was deleted.
+  """
+  creator: User
+  """
+  [Internal] The date when the meeting occurred. Null when clients should use the creation date.
+  """
+  date: TimelessDate
+  """
+  The unique identifier of the entity.
+  """
+  id: ID!
+  """
+  [Internal] The initiative that contains the meeting. Null when the meeting belongs to a project.
+  """
+  initiative: Initiative
+  """
+  [Internal] The project that contains the meeting. Null when the meeting belongs to an initiative.
+  """
+  project: Project
+  """
+  [Internal] The meeting's unique URL slug.
+  """
+  slugId: String!
+  """
+  [Internal] The meeting summary in markdown format. Null before a summary exists.
+  """
+  summary: String
+  """
+  [Internal] The meeting summary as a Prosemirror document. Null before a summary exists.
+  """
+  summaryData: String
+  """
+  The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+      been updated after creation.
+  """
+  updatedAt: DateTime!
+}
+
+"""
+[Internal] The analysis state of a meeting transcript.
+"""
+enum MeetingAnalysisStatus {
+  completed
+  pending
+}
+
 type MicrosoftTeamsChannel {
   """
   The display name of the channel.
@@ -22599,6 +23209,15 @@ type Mutation {
     The agent session object to create.
     """
     input: AgentSessionCreateOnIssue!
+  ): AgentSessionPayload!
+  """
+  [Internal] Restarts a routed coding session with the default model.
+  """
+  agentSessionRestartWithDefaultModel(
+    """
+    The identifier of the agent session to restart.
+    """
+    id: String!
   ): AgentSessionPayload!
   """
   Updates an agent session.
@@ -23434,7 +24053,7 @@ type Mutation {
     The cycle object to create.
     """
     input: CycleCreateInput!
-  ): CyclePayload!
+  ): CyclePayload! @deprecated(reason: "Cycle creation is not supported.")
   """
   Shifts all cycles starts and ends by a certain number of days, starting from the provided cycle onwards.
   """
@@ -24310,14 +24929,14 @@ type Mutation {
   ): IntegrationPayload!
     @deprecated(reason: "This mutation is deprecated, please use `integrationSettingsUpdate` instead")
   """
-  [INTERNAL] Fetches Jira project statuses and stores them in integration settings.
+  [INTERNAL] Fetches Jira project statuses for the status mapping settings UI.
   """
   integrationJiraFetchProjectStatuses(
     """
     Input for fetching Jira project statuses.
     """
     input: JiraFetchProjectStatusesInput!
-  ): JiraFetchProjectStatusesPayload!
+  ): JiraFetchProjectStatusesPayload! @deprecated(reason: "Use the `integrationJiraProjectStatuses` query instead.")
   """
   Connect your Jira account to Linear.
   """
@@ -24888,7 +25507,7 @@ type Mutation {
     trash: Boolean
   ): IssueArchivePayload!
   """
-  Creates a list of issues in one transaction.
+  Creates a list of issues atomically.
   """
   issueBatchCreate(
     """
@@ -27087,6 +27706,10 @@ interface Notification implements Entity & Node {
   """
   actorAvatarUrl: String
   """
+  [Internal] Whether the notification's user actor is deactivated in the workspace.
+  """
+  actorInactive: Boolean!
+  """
   [Internal] Notification actor initials if avatar is not available.
   """
   actorInitials: String
@@ -27834,6 +28457,7 @@ enum NotificationSubscriptionType {
   pullRequest
   team
   user
+  workflowDefinition
 }
 
 """
@@ -28341,7 +28965,7 @@ input NullableInitiativeFilter {
   """
   labels: InitiativeLabelCollectionFilter
   """
-  [ALPHA] Filters that the initiative lead team must satisfy.
+  Filters that the initiative lead team must satisfy.
   """
   leadTeam: NullableTeamFilter
   """
@@ -29223,6 +29847,10 @@ input NullableTemplateFilter {
   """
   or: [NullableTemplateFilter!]
   """
+  Filters that the template's team must satisfy.
+  """
+  team: NullableTeamFilter
+  """
   Comparator for the template's type.
   """
   type: StringComparator
@@ -29816,6 +30444,10 @@ type OauthClientApprovalNotification implements Entity & Node & Notification {
   [Internal] Notification avatar URL.
   """
   actorAvatarUrl: String
+  """
+  [Internal] Whether the notification's user actor is deactivated in the workspace.
+  """
+  actorInactive: Boolean!
   """
   [Internal] Notification actor initials if avatar is not available.
   """
@@ -31008,6 +31640,10 @@ Input for updating workspace security settings such as role-based access control
 """
 input OrganizationSecuritySettingsInput {
   """
+  The minimum role required to grant or revoke the workspace admin role.
+  """
+  adminManagementRole: UserRoleType
+  """
   The minimum role required to manage agent guidance prompts and settings.
   """
   agentGuidanceRole: UserRoleType
@@ -31717,6 +32353,15 @@ enum PartnerDiscountType {
 }
 
 """
+The kind of partner program an offer belongs to.
+"""
+enum PartnerOfferCategory {
+  accelerator
+  investor
+  startup_community
+}
+
+"""
 [Internal] Public details of an active partner-program offer.
 """
 type PartnerOfferDetailsPayload {
@@ -31799,6 +32444,20 @@ type PartnerOfferWorkspacesPayload {
   The viewer's workspaces hosted in the cell that served this request. Workspaces hosted in other cells are not included; query each cell to assemble the full list.
   """
   workspaces: [PartnerOfferWorkspacePayload!]!
+}
+
+"""
+[Internal] A partner listed in the Linear Startup Program.
+"""
+type PartnerProgramPartnerPayload {
+  """
+  The kind of partner program the offer belongs to.
+  """
+  category: PartnerOfferCategory!
+  """
+  Display name of the partner.
+  """
+  partnerName: String!
 }
 
 type PasskeyLoginStartResponse {
@@ -31919,6 +32578,10 @@ type PostNotification implements Entity & Node & Notification {
   [Internal] Notification avatar URL.
   """
   actorAvatarUrl: String
+  """
+  [Internal] Whether the notification's user actor is deactivated in the workspace.
+  """
+  actorInactive: Boolean!
   """
   [Internal] Notification actor initials if avatar is not available.
   """
@@ -32137,6 +32800,10 @@ type ProductAnnouncementNotification implements Entity & Node & Notification {
   [Internal] Notification avatar URL.
   """
   actorAvatarUrl: String
+  """
+  [Internal] Whether the notification's user actor is deactivated in the workspace.
+  """
+  actorInactive: Boolean!
   """
   [Internal] Notification actor initials if avatar is not available.
   """
@@ -32500,7 +33167,7 @@ type Project implements Node {
   """
   id: ID!
   """
-  [Internal] The human-readable identifier of the project. Returns the custom identifier override when set, otherwise the workspace default `<prefix>-<number>`. Null for legacy projects that have not been backfilled.
+  [Internal] The human-readable identifier of the project. Returns the custom identifier override when set, otherwise the default `P-<leadTeamKey>-<number>`. Null for projects without a lead team and for legacy projects that have not been backfilled.
   """
   identifier: String
   """
@@ -34567,6 +35234,10 @@ type ProjectNotification implements Entity & Node & Notification {
   """
   actorAvatarUrl: String
   """
+  [Internal] Whether the notification's user actor is deactivated in the workspace.
+  """
+  actorInactive: Boolean!
+  """
   [Internal] Notification actor initials if avatar is not available.
   """
   actorInitials: String
@@ -35236,7 +35907,7 @@ type ProjectSearchResult implements Node {
   """
   id: ID!
   """
-  [Internal] The human-readable identifier of the project. Returns the custom identifier override when set, otherwise the workspace default `<prefix>-<number>`. Null for legacy projects that have not been backfilled.
+  [Internal] The human-readable identifier of the project. Returns the custom identifier override when set, otherwise the default `P-<leadTeamKey>-<number>`. Null for projects without a lead team and for legacy projects that have not been backfilled.
   """
   identifier: String
   """
@@ -35866,7 +36537,7 @@ type ProjectStatus implements Node {
   """
   position: Float!
   """
-  [Internal] The team that the status is scoped to. If null, the status is a workspace-level status available to all teams in the workspace.
+  [Internal] The team that the status is scoped to. If null, the status is a workspace-level status.
   """
   team: Team
   """
@@ -35973,6 +36644,10 @@ input ProjectStatusCreateInput {
   """
   position: Float!
   """
+  [Internal] The identifier of the team to scope the status to. If not given, the status is a workspace-level status.
+  """
+  teamId: String
+  """
   The type of the project status.
   """
   type: ProjectStatusType!
@@ -36022,6 +36697,10 @@ input ProjectStatusFilter {
   Filters that the project status projects must satisfy.
   """
   projects: ProjectCollectionFilter
+  """
+  Filters that the project status's team must satisfy. Use `{ null: true }` to filter workspace-level statuses.
+  """
+  team: NullableTeamFilter
   """
   Comparator for the project status type.
   """
@@ -36984,6 +37663,34 @@ type PullRequest implements Node {
   """
   mergedAt: DateTime
   """
+  [Internal] The external user who merged the pull request, when the person who merged it is not mapped to a Linear account. Null if the pull request has not been merged or the merger is a Linear user.
+  """
+  mergedByExternalUser: ExternalUser
+  """
+  [Internal] The Linear user who merged the pull request. This is the person who merged it, which the hosting provider reports separately from the merge commit's author. Null if the pull request has not been merged, was merged by an external user not mapped to a Linear account, or if that account has been deleted.
+  """
+  mergedByUser: User
+  """
+  [Internal] The host-qualified external ID of the native stack that contains this pull request. Null if the pull request is not in a native stack or stack data is unavailable.
+  """
+  nativeStackId: String
+  """
+  [Internal] The number the hosting provider assigns to the native stack within its repository. Null if the pull request is not in a native stack or stack data is unavailable.
+  """
+  nativeStackNumber: Float
+  """
+  [Internal] The pull request's one-based position in its native stack, where 1 is closest to the target branch. Null if the pull request is not in a native stack or stack data is unavailable.
+  """
+  nativeStackPosition: Float
+  """
+  [Internal] The total number of pull requests in the native stack. Null if the pull request is not in a native stack or stack data is unavailable.
+  """
+  nativeStackSize: Float
+  """
+  [Internal] The target branch shared by the native stack. Null if the pull request is not in a native stack or stack data is unavailable.
+  """
+  nativeStackTargetBranch: String
+  """
   The pull request number as assigned by the hosting provider (e.g., #123 on GitHub). Unique within a repository.
   """
   number: Float!
@@ -37107,6 +37814,14 @@ type PullRequestCommit {
   """
   committedAt: String!
   """
+  The external user ID for the commit's committer. Null if no matching external user is available.
+  """
+  committerExternalUserId: String
+  """
+  The Linear user ID for the commit's committer. Null if no matching Linear user is available.
+  """
+  committerUserId: String
+  """
   Number of deletions in this commit. 0 when the hosting provider did not report per-commit diff stats.
   """
   deletions: Float!
@@ -37221,6 +37936,10 @@ type PullRequestNotification implements Entity & Node & Notification {
   [Internal] Notification avatar URL.
   """
   actorAvatarUrl: String
+  """
+  [Internal] Whether the notification's user actor is deactivated in the workspace.
+  """
+  actorInactive: Boolean!
   """
   [Internal] Notification actor initials if avatar is not available.
   """
@@ -38227,6 +38946,10 @@ type Query {
     """
     before: String
     """
+    Filter returned emojis.
+    """
+    filter: EmojiFilter
+    """
     The number of items to forward paginate (used with after). Defaults to 50.
     """
     first: Int
@@ -38242,6 +38965,10 @@ type Query {
     By which field should the pagination order by. Available options are createdAt (default) and updatedAt.
     """
     orderBy: PaginationOrderBy
+    """
+    [INTERNAL] Sort returned emojis.
+    """
+    sort: [EmojiSortInput!]
   ): EmojiConnection!
   """
   Retrieves a single entity external link by its identifier.
@@ -38332,19 +39059,6 @@ type Query {
     """
     orderBy: PaginationOrderBy
   ): FavoriteConnection!
-  """
-  [Internal] Fetch an arbitrary set of data using natural language query. Be specific about what you want including properties for each entity, sort order, filters, limit and properties.
-  """
-  fetchData(
-    """
-    Natural language query describing what data to fetch.
-
-        Examples:
-        - "All issues for the project with id 12345678-1234-1234-1234-123456789abc including comments"
-        - "The latest project update for each project that's a part of the initiative with id 12345678-1234-1234-1234-123456789abc, including it's sub-initiatives"
-    """
-    query: String!
-  ): FetchDataPayload!
   """
   Returns a single initiative by its identifier or URL slug.
   """
@@ -38579,6 +39293,19 @@ type Query {
     """
     scopes: [String!]!
   ): IntegrationHasScopesPayload!
+  """
+  [INTERNAL] Fetches a Jira project's status names, split into issue (non-Epic) and project (Epic) statuses.
+  """
+  integrationJiraProjectStatuses(
+    """
+    The id of the Jira integration.
+    """
+    integrationId: String!
+    """
+    The Jira project ID to fetch statuses for.
+    """
+    projectId: String!
+  ): JiraProjectStatusesPayload!
   """
   Retrieves a single integration template connection by its identifier.
   """
@@ -38993,7 +39720,7 @@ type Query {
     sort: [IssueSortInput!]
   ): IssueConnection!
   """
-  Returns the latest release for the pipeline associated with the access key.
+  Returns the most recently completed or updated release for the pipeline associated with the access key.
   """
   latestReleaseByAccessKey: AccessKeyRelease
   """
@@ -39193,6 +39920,10 @@ type Query {
     """
     token: String!
   ): PartnerOfferWorkspacesPayload
+  """
+  [Internal] Lists every partner with an active partner-program offer, ordered by display name. Backs the partner directory on the marketing website.
+  """
+  partnerProgramPartners: [PartnerProgramPartnerPayload!]!
   """
   Returns a single project by its identifier or URL slug.
   """
@@ -39457,7 +40188,7 @@ type Query {
   """
   rateLimitStatus: RateLimitPayload!
   """
-  Returns recent releases for the pipeline associated with the access key, ordered with in-progress releases first, followed by the most recently completed releases.
+  Returns releases for the pipeline associated with the access key, ordered with the most recently completed or updated first.
   """
   recentReleasesByAccessKey(
     """
@@ -39977,6 +40708,23 @@ type Query {
     id: String!
   ): Template!
   """
+  Templates matching a filter, in the order they appear in the app. Filter on a null team to return only workspace-level templates.
+  """
+  templateSearch(
+    """
+    Filter to apply to the template results.
+    """
+    filter: TemplateFilter
+    """
+    Maximum results. Capped at 250.
+    """
+    first: Int = 50
+    """
+    Should archived resources be included (default: false).
+    """
+    includeArchived: Boolean = false
+  ): [Template!]!
+  """
   All templates in the workspace, including both team-scoped and workspace-level templates.
   """
   templates: [Template!]!
@@ -40065,6 +40813,48 @@ type Query {
     """
     id: String!
   ): TriageResponsibility!
+  """
+  One usage-based billing alert, by its identifier.
+  """
+  usageAlert(
+    """
+    The identifier of the usage alert to retrieve.
+    """
+    id: String!
+  ): UsageAlert!
+  """
+  The workspace's usage-based billing alerts, such as a low or exhausted usage credit balance. Alerts for expired promotional credits are archived and excluded unless archived resources are requested. Use resolvedAt to tell an open alert from one whose condition has since cleared.
+  """
+  usageAlerts(
+    """
+    A cursor to be used with first for forward pagination
+    """
+    after: String
+    """
+    A cursor to be used with last for backward pagination.
+    """
+    before: String
+    """
+    Filter returned usage alerts.
+    """
+    filter: UsageAlertFilter
+    """
+    The number of items to forward paginate (used with after). Defaults to 50.
+    """
+    first: Int
+    """
+    Should archived resources be included (default: false)
+    """
+    includeArchived: Boolean
+    """
+    The number of items to backward paginate (used with before). Defaults to 50.
+    """
+    last: Int
+    """
+    By which field should the pagination order by. Available options are createdAt (default) and updatedAt.
+    """
+    orderBy: PaginationOrderBy
+  ): UsageAlertConnection!
   """
   Fetches a specific user by their ID.
   """
@@ -42313,6 +43103,10 @@ input ReleaseSyncInput {
   """
   pipelineId: String!
   """
+  When true, an existing scheduled release keeps its stored commit SHA instead of taking this sync's commit. Set by CLI syncs from a checkout behind the stored commit, so the scan baseline does not move backwards. Has no effect on continuous pipelines, which identify releases by commit SHA.
+  """
+  preserveStoredCommitSha: Boolean
+  """
   Pull request references to look up. Issues linked to found PRs will be associated with this release.
   """
   pullRequestReferences: [PullRequestReferenceInput!]
@@ -42363,6 +43157,10 @@ input ReleaseSyncInputBase {
   """
   name: String
   """
+  When true, an existing scheduled release keeps its stored commit SHA instead of taking this sync's commit. Set by CLI syncs from a checkout behind the stored commit, so the scan baseline does not move backwards. Has no effect on continuous pipelines, which identify releases by commit SHA.
+  """
+  preserveStoredCommitSha: Boolean
+  """
   Pull request references to look up. Issues linked to found PRs will be associated with this release.
   """
   pullRequestReferences: [PullRequestReferenceInput!]
@@ -42388,6 +43186,10 @@ input ReleaseSyncInputBase {
 Input for updating a release by pipeline identifier. Extends the base update input with the target pipeline identifier.
 """
 input ReleaseUpdateByPipelineInput {
+  """
+  Optional release description to apply when updating the release. Pass null to clear it.
+  """
+  description: String
   """
   Documents to attach to the updated release. Existing documents with the same title are updated.
   """
@@ -42422,6 +43224,10 @@ input ReleaseUpdateByPipelineInput {
 Base input for updating a release by pipeline. Contains optional version and stage name. The pipeline ID is provided separately or inferred from the access key.
 """
 input ReleaseUpdateByPipelineInputBase {
+  """
+  Optional release description to apply when updating the release. Pass null to clear it.
+  """
+  description: String
   """
   Documents to attach to the updated release. Existing documents with the same title are updated.
   """
@@ -43064,6 +43870,14 @@ enum SLADayCountType {
 }
 
 """
+Determines when timing begins for an SLA applied by a rule.
+"""
+enum SLAStartMode {
+  issueCreation
+  ruleMatch
+}
+
+"""
 [INTERNAL] Comparator for Salesforce metadata.
 """
 input SalesforceMetadataIntegrationComparator {
@@ -43345,6 +44159,10 @@ type SlaConfiguration {
   The SLA type used when the rule sets an SLA.
   """
   slaType: SLADayCountType
+  """
+  When SLA timing begins. Null when the rule removes an SLA.
+  """
+  startMode: SLAStartMode
 }
 
 enum SlaStatus {
@@ -43552,6 +44370,10 @@ type SlackChannelNameMapping {
   """
   postAcceptedFromTriageUpdates: Boolean
   """
+  Whether or not synced Slack threads should be updated with a message when their Ask has an updated assignee.
+  """
+  postAssignmentUpdates: Boolean
+  """
   Whether or not synced Slack threads should be updated with a message and emoji when their Ask is canceled.
   """
   postCancellationUpdates: Boolean
@@ -43559,6 +44381,10 @@ type SlackChannelNameMapping {
   Whether or not synced Slack threads should be updated with a message and emoji when their Ask is completed.
   """
   postCompletionUpdates: Boolean
+  """
+  Whether or not synced Slack threads should be updated with a message when their Ask's SLA is at risk or breached.
+  """
+  postSlaUpdates: Boolean
   """
   Which teams are connected to the channel and settings for those teams.
   """
@@ -43611,6 +44437,10 @@ input SlackChannelNameMappingInput {
   """
   postAcceptedFromTriageUpdates: Boolean
   """
+  Whether or not synced Slack threads should be updated with a message when their Ask has an updated assignee.
+  """
+  postAssignmentUpdates: Boolean
+  """
   Whether or not synced Slack threads should be updated with a message and emoji when their Ask is canceled.
   """
   postCancellationUpdates: Boolean
@@ -43618,6 +44448,10 @@ input SlackChannelNameMappingInput {
   Whether or not synced Slack threads should be updated with a message and emoji when their Ask is completed.
   """
   postCompletionUpdates: Boolean
+  """
+  Whether or not synced Slack threads should be updated with a message when their Ask's SLA is at risk or breached.
+  """
+  postSlaUpdates: Boolean
   """
   Which teams are connected to the channel and settings for those teams.
   """
@@ -43673,6 +44507,10 @@ input SlackSettingsInput {
   """
   enableLinearAgentWorkflowAccess: Boolean
   """
+  Whether Loops may read and send messages through this Slack integration.
+  """
+  enableLoops: Boolean
+  """
   Enterprise id of the connected Slack enterprise
   """
   enterpriseId: String
@@ -43715,7 +44553,7 @@ Comparator for issue source type.
 """
 input SourceMetadataComparator {
   """
-  Null constraint. Matches any non-null values if the given value is false, otherwise it matches null values.
+  Null constraint. When true, matches issues without an external source: issues with no source metadata and issues created through the API, an OAuth application, or a loop. When false, matches issues created by an integration or an intake source such as email.
   """
   null: Boolean
   """
@@ -44700,6 +45538,10 @@ type Team implements Node {
   """
   inheritIssueEstimation: Boolean!
   """
+  [Internal] Whether the team should inherit its project statuses from its parent team, or from the workspace when it has no parent.
+  """
+  inheritProjectStatuses: Boolean!
+  """
   [Internal] Whether the team should inherit its Slack auto-create project channel setting from its parent. Only applies to sub-teams.
   """
   inheritSlackAutoCreateProjectChannel: Boolean!
@@ -44708,7 +45550,7 @@ type Team implements Node {
   """
   inheritWorkflowStatuses: Boolean!
   """
-  [ALPHA] Whether team initiatives are enabled and shown in the team's sidebar.
+  Whether team initiatives are enabled and shown in the team's sidebar.
   """
   initiativesEnabled: Boolean!
   """
@@ -45392,6 +46234,10 @@ input TeamCreateInput {
   """
   inheritProductIntelligenceScope: Boolean
   """
+  [Internal] Whether the team should inherit project statuses from its parent team, or from the workspace when it has no parent.
+  """
+  inheritProjectStatuses: Boolean
+  """
   [Internal] Whether the team should inherit its Slack auto-create project channel setting from its parent. Only applies to sub-teams.
   """
   inheritSlackAutoCreateProjectChannel: Boolean
@@ -45400,7 +46246,7 @@ input TeamCreateInput {
   """
   inheritWorkflowStatuses: Boolean
   """
-  [ALPHA] Whether initiatives are shown in the team's sidebar.
+  Whether initiatives are shown in the team's sidebar.
   """
   initiativesEnabled: Boolean
   """
@@ -46042,6 +46888,10 @@ input TeamUpdateInput {
   """
   inheritProductIntelligenceScope: Boolean
   """
+  [Internal] Whether the team should inherit project statuses from its parent team, or from the workspace when it has no parent.
+  """
+  inheritProjectStatuses: Boolean
+  """
   [Internal] Whether the team should inherit its Slack auto-create project channel setting from its parent. Only applies to sub-teams.
   """
   inheritSlackAutoCreateProjectChannel: Boolean
@@ -46050,7 +46900,7 @@ input TeamUpdateInput {
   """
   inheritWorkflowStatuses: Boolean
   """
-  [ALPHA] Whether initiatives are shown in the team's sidebar.
+  Whether initiatives are shown in the team's sidebar.
   """
   initiativesEnabled: Boolean
   """
@@ -46217,6 +47067,10 @@ type Template implements Node {
   """
   color: String
   """
+  The template's content in markdown format: the body it pre-fills on the entity it creates. Distinct from `description`, which says what the template is for. Form templates serialize their form fields as markdown placeholders instead. Null when the template has no content.
+  """
+  content: String
+  """
   The time at which the entity was created.
   """
   createdAt: DateTime!
@@ -46348,6 +47202,48 @@ type TemplateEdge {
 }
 
 """
+Template filtering options.
+"""
+input TemplateFilter {
+  """
+  Compound filters, all of which need to be matched by the template.
+  """
+  and: [TemplateFilter!]
+  """
+  Comparator for the created at date.
+  """
+  createdAt: DateComparator
+  """
+  Comparator for the identifier.
+  """
+  id: IDComparator
+  """
+  Comparator for the inherited template's ID.
+  """
+  inheritedFromId: IDComparator
+  """
+  Comparator for the template's name.
+  """
+  name: StringComparator
+  """
+  Compound filters, one of which need to be matched by the template.
+  """
+  or: [TemplateFilter!]
+  """
+  Filters that the template's team must satisfy.
+  """
+  team: NullableTeamFilter
+  """
+  Comparator for the template's type.
+  """
+  type: StringComparator
+  """
+  Comparator for the updated at date.
+  """
+  updatedAt: DateComparator
+}
+
+"""
 The result of a template mutation.
 """
 type TemplatePayload {
@@ -46436,6 +47332,10 @@ type TimeSchedule implements Node {
   """
   archivedAt: DateTime
   """
+  [ALPHA] The schedule configuration.
+  """
+  config: TimeScheduleConfig
+  """
   The time at which the entity was created.
   """
   createdAt: DateTime!
@@ -46474,6 +47374,23 @@ type TimeSchedule implements Node {
   updatedAt: DateTime!
 }
 
+"""
+[ALPHA] The configuration of a time schedule.
+"""
+type TimeScheduleConfig {
+  """
+  Record of the next on-call shift keyed by Linear user id, e.g. `{ "<linearUserId>": { "startsAt": "X", "endsAt": "Y" } }`.
+  """
+  nextShiftByUserId: JSONObject!
+}
+
+input TimeScheduleConfigInput {
+  """
+  Record of the next on-call shift keyed by Linear user id, e.g. `{ "<linearUserId>": { "startsAt": "X", "endsAt": "Y" } }`.
+  """
+  nextShiftByUserId: JSONObject!
+}
+
 type TimeScheduleConnection {
   edges: [TimeScheduleEdge!]!
   nodes: [TimeSchedule!]!
@@ -46484,6 +47401,10 @@ type TimeScheduleConnection {
 Input for creating a new time schedule.
 """
 input TimeScheduleCreateInput {
+  """
+  [ALPHA] The schedule configuration.
+  """
+  config: TimeScheduleConfigInput
   """
   The schedule entries.
   """
@@ -46577,6 +47498,10 @@ type TimeSchedulePayload {
 Input for updating an existing time schedule.
 """
 input TimeScheduleUpdateInput {
+  """
+  [ALPHA] The schedule configuration. Pass null to clear it.
+  """
+  config: TimeScheduleConfigInput
   """
   The schedule entries.
   """
@@ -46903,9 +47828,13 @@ type UsageAlert implements Node {
   """
   id: ID!
   """
-  Type-specific metadata captured when the alert was triggered.
+  Type-specific snapshot captured when the alert was triggered, keyed by the alert type — for example the credit balance and threshold for a lowBalance alert. A resolution entry is added once new usage credits have landed and cleared the alert's condition.
   """
   metadata: JSONObject!
+  """
+  The time when the usage alert was resolved or archived. Null if the alert is still active.
+  """
+  resolvedAt: DateTime
   """
   The kind of usage alert that was triggered.
   """
@@ -46915,6 +47844,50 @@ type UsageAlert implements Node {
       been updated after creation.
   """
   updatedAt: DateTime!
+}
+
+type UsageAlertConnection {
+  edges: [UsageAlertEdge!]!
+  nodes: [UsageAlert!]!
+  pageInfo: PageInfo!
+}
+
+type UsageAlertEdge {
+  """
+  Used in `before` and `after` args
+  """
+  cursor: String!
+  node: UsageAlert!
+}
+
+"""
+Usage alert filtering options.
+"""
+input UsageAlertFilter {
+  """
+  Compound filters, all of which need to be matched by the alert.
+  """
+  and: [UsageAlertFilter!]
+  """
+  Comparator for the created at date.
+  """
+  createdAt: DateComparator
+  """
+  Comparator for the identifier.
+  """
+  id: IDComparator
+  """
+  Compound filters, one of which need to be matched by the alert.
+  """
+  or: [UsageAlertFilter!]
+  """
+  Comparator for the condition the alert was triggered by.
+  """
+  type: UsageAlertTypeComparator
+  """
+  Comparator for the updated at date.
+  """
+  updatedAt: DateComparator
 }
 
 """
@@ -46933,6 +47906,10 @@ type UsageAlertNotification implements Entity & Node & Notification {
   [Internal] Notification avatar URL.
   """
   actorAvatarUrl: String
+  """
+  [Internal] Whether the notification's user actor is deactivated in the workspace.
+  """
+  actorInactive: Boolean!
   """
   [Internal] Notification actor initials if avatar is not available.
   """
@@ -47038,6 +48015,46 @@ type UsageAlertNotification implements Entity & Node & Notification {
   The recipient user of this notification.
   """
   user: User!
+}
+
+"""
+The condition a usage alert was triggered by.
+"""
+enum UsageAlertType {
+  """
+  Usage credits ran out.
+  """
+  exhausted
+  """
+  A promotional usage credit grant is nearing its expiration.
+  """
+  expiringPromoCredit
+  """
+  Prepaid usage credits crossed below the low-balance threshold.
+  """
+  lowBalance
+}
+
+"""
+Comparator for the condition a usage alert was triggered by.
+"""
+input UsageAlertTypeComparator {
+  """
+  Equals constraint.
+  """
+  eq: UsageAlertType
+  """
+  In-array constraint.
+  """
+  in: [UsageAlertType!]
+  """
+  Not-equals constraint.
+  """
+  neq: UsageAlertType
+  """
+  Not-in-array constraint.
+  """
+  nin: [UsageAlertType!]
 }
 
 """
@@ -47727,6 +48744,7 @@ enum UserFlagType {
   issueMovePromptCompleted
   joinTeamIntroductionDismissed
   listSelectionTip
+  loopEditRestrictionSpeedbumpShown
   migrateThemePreference
   milestoneOnboardingIsSeenAndDismissed
   projectBacklogWelcomeDismissed
@@ -47928,6 +48946,10 @@ type UserSettings implements Node {
   """
   notificationDeliveryPreferences: NotificationDeliveryPreferences!
   """
+  [Internal] The user's preferred merge method for pull requests. Null if the user chooses a method for each pull request.
+  """
+  pullRequestMergeStrategyPreference: PullRequestMergeMethod
+  """
   Whether to show full user names instead of display names.
   """
   showFullUserNames: Boolean!
@@ -48123,6 +49145,10 @@ input UserSettingsUpdateInput {
   """
   feedSummarySchedule: FeedSummarySchedule
   """
+  [Internal] Which Inbox notifications contribute to Inbox badges. 'all' includes all unread notifications; 'priority' includes only Priority Inbox notifications; 'none' hides the count.
+  """
+  inboxBadgeScope: InboxBadgeScope
+  """
   The user's notification category preferences.
   """
   notificationCategoryPreferences: NotificationCategoryPreferencesInput
@@ -48134,6 +49160,10 @@ input UserSettingsUpdateInput {
   The user's notification delivery preferences.
   """
   notificationDeliveryPreferences: NotificationDeliveryPreferencesInput
+  """
+  [Internal] Whether the Priority Inbox is enabled for the user.
+  """
+  priorityInboxEnabled: Boolean
   """
   The user's settings. Merged key by key into the existing settings: keys missing from the object are left unchanged, and a key set to null is removed.
   """
@@ -48488,6 +49518,14 @@ type ViewPreferencesValues {
   """
   automationOrdering: String
   """
+  Whether to show the run duration in Loop run history.
+  """
+  automationRunHistoryShowDuration: Boolean
+  """
+  Whether to show the issue identifier in Loop run history.
+  """
+  automationRunHistoryShowIssueIdentifier: Boolean
+  """
   Whether to show sub-team loops.
   """
   automationShowDescendants: Boolean
@@ -48632,6 +49670,26 @@ type ViewPreferencesValues {
   """
   dashboardsOrdering: String
   """
+  Whether to show the creator field for documents.
+  """
+  documentFieldCreator: Boolean
+  """
+  Whether to show the created date field for documents.
+  """
+  documentFieldDateCreated: Boolean
+  """
+  Whether to show the updated date field for documents.
+  """
+  documentFieldDateUpdated: Boolean
+  """
+  Whether to show the owner field for documents.
+  """
+  documentFieldOwner: Boolean
+  """
+  Whether to show the parent field for documents.
+  """
+  documentFieldParent: Boolean
+  """
   Whether to show important embedded customer needs first.
   """
   embeddedCustomerNeedsShowImportantFirst: Boolean
@@ -48734,15 +49792,15 @@ type ViewPreferencesValues {
   """
   The focus view grouping.
   """
-  focusViewGrouping: String
+  focusViewGrouping: String @deprecated(reason: "No longer available")
   """
   The focus view ordering.
   """
-  focusViewOrdering: String
+  focusViewOrdering: String @deprecated(reason: "No longer available")
   """
   The focus view ordering direction.
   """
-  focusViewOrderingDirection: String
+  focusViewOrderingDirection: String @deprecated(reason: "No longer available")
   """
   The ordering mode for groups. Supersedes projectGroupOrdering.
   """
@@ -49192,6 +50250,10 @@ type ViewPreferencesValues {
   """
   reviewFieldRepository: Boolean
   """
+  Whether to show the most pressing SLA from connected issues on review list items. Null if the preference is unset.
+  """
+  reviewFieldSla: Boolean
+  """
   Whether to show review status details on a second line.
   """
   reviewFieldStatusDetails: Boolean
@@ -49332,7 +50394,7 @@ type ViewPreferencesValues {
   """
   showSupervisedIssues: Boolean
   """
-  [ALPHA] Whether to show team-level initiatives in the workspace.
+  Whether to show team-level initiatives in the workspace.
   """
   showTeamInitiatives: Boolean
   """
@@ -49429,6 +50491,7 @@ enum ViewType {
   agents
   allIssues
   archive
+  automationRunHistory
   automations
   backlog
   board
@@ -49446,7 +50509,7 @@ enum ViewType {
   feedCreated
   feedFollowing
   feedPopular
-  focus
+  focus @deprecated(reason: "No longer available")
   inbox
   inboxOther
   inboxPriority
@@ -49788,6 +50851,10 @@ type WelcomeMessageNotification implements Entity & Node & Notification {
   """
   actorAvatarUrl: String
   """
+  [Internal] Whether the notification's user actor is deactivated in the workspace.
+  """
+  actorInactive: Boolean!
+  """
   [Internal] Notification actor initials if avatar is not available.
   """
   actorInitials: String
@@ -49890,6 +50957,12 @@ type WelcomeMessageNotification implements Entity & Node & Notification {
   welcomeMessageId: String!
 }
 
+enum WorkflowActivationMode {
+  anyUpdate
+  conditionsStartedMatching
+  watchedPropertyChanged
+}
+
 """
 A time-triggered automation workflow definition that executes on a recurring schedule. Cron job definitions are scoped to a team and contain a set of activities (actions) that run automatically according to the configured cron schedule, such as periodically assigning issues or sending notifications.
 """
@@ -49950,6 +51023,10 @@ An automation workflow definition that executes a set of activities when trigger
 """
 type WorkflowDefinition implements Node {
   """
+  The explicit activation semantics for entity updates. When null, the mode is inferred from the legacy trigger fields.
+  """
+  activationMode: WorkflowActivationMode
+  """
   The ordered list of activities (actions) that are executed when the workflow triggers, such as updating issue properties, sending notifications, or calling webhooks.
   """
   activities: JSONObject!
@@ -49994,6 +51071,10 @@ type WorkflowDefinition implements Node {
   """
   description: String
   """
+  The edit access setting for this workflow definition. When unset, access is derived from restrictEditing.
+  """
+  editAccess: WorkflowDefinitionEditAccess
+  """
   Whether the workflow is enabled and will execute when its trigger conditions are met.
   """
   enabled: Boolean!
@@ -50037,6 +51118,10 @@ type WorkflowDefinition implements Node {
   The contextual project view associated with the workflow.
   """
   project: Project
+  """
+  Whether editing the workflow is restricted to its owner, team owners, and workspace administrators.
+  """
+  restrictEditing: Boolean! @deprecated(reason: "Use editAccess instead.")
   """
   Whether the workflow should only execute once per entity. When true, the workflow is excluded from matching automations for an entity if it has already been executed for that entity.
   """
@@ -50088,6 +51173,13 @@ type WorkflowDefinition implements Node {
   userContextViewType: UserContextViewType
 }
 
+enum WorkflowDefinitionEditAccess {
+  everyone
+  owner
+  teamOwners
+  workspaceAdmins
+}
+
 """
 Comparator for the workflow definition that created an issue.
 """
@@ -50130,6 +51222,10 @@ type WorkflowDefinitionNotification implements Entity & Node & Notification {
   [Internal] Notification avatar URL.
   """
   actorAvatarUrl: String
+  """
+  [Internal] Whether the notification's user actor is deactivated in the workspace.
+  """
+  actorInactive: Boolean!
   """
   [Internal] Notification actor initials if avatar is not available.
   """
@@ -50522,6 +51618,8 @@ input WorkflowStateUpdateInput {
 }
 
 enum WorkflowTrigger {
+  cycleEnded
+  cycleStarted
   entityCreated
   entityCreatedOrUpdated
   entityRemoved
@@ -50530,6 +51628,7 @@ enum WorkflowTrigger {
 }
 
 enum WorkflowTriggerType {
+  cycle
   document
   initiative
   issue
