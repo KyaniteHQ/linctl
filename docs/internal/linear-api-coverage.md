@@ -1,6 +1,6 @@
 # Linear API coverage ledger
 
-Generated from current local sources and upstream Linear SDK commit `a3480b1`.
+Generated from current local sources and upstream Linear SDK commit `c57cbba`.
 
 Sources (paths relative to the upstream Linear SDK checkout):
 
@@ -16,9 +16,9 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 
 | Surface | Total | Covered/exposed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods with generated local operations | 468 | 160 | 468 |
-| Upstream Query root fields used by generated local operations | 166 | 116 | 166 |
-| Upstream Mutation root fields used by generated local operations | 373 | 46 | 373 |
+| Upstream SDK root methods with generated local operations | 471 | 160 | 471 |
+| Upstream Query root fields used by generated local operations | 170 | 116 | 170 |
+| Upstream Mutation root fields used by generated local operations | 374 | 46 | 374 |
 | Local generated Go operations declared in GraphQL files | 314 | 314 | 314 |
 | Public CLI commands from command inventory | 442 | 329 | 442 |
 
@@ -397,6 +397,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `teamMemberships` | method | generated_operation | local GraphQL operation uses this root |
 | `teams` | method | generated_operation | local GraphQL operation uses this root |
 | `template` | method | generated_operation | local GraphQL operation uses this root |
+| `templateSearch` | method | safe_candidate | read operation may fit future CLI coverage |
 | `templates` | getter | generated_operation | local GraphQL operation uses this root |
 | `templatesForIntegration` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `timeSchedule` | method | generated_operation | local GraphQL operation uses this root |
@@ -477,6 +478,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `updateViewPreferences` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateWebhook` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `updateWorkflowState` | method | generated_operation | local GraphQL operation uses this root |
+| `usageAlert` | method | safe_candidate | read operation may fit future CLI coverage |
+| `usageAlerts` | method | safe_candidate | read operation may fit future CLI coverage |
 | `user` | method | generated_operation | local GraphQL operation uses this root |
 | `userChangeRole` | method | intentionally_excluded | user role changes are organization administration outside the ordinary agent CLI surface |
 | `userDiscordConnect` | method | intentionally_excluded | Discord account connection belongs to user auth/integration setup, not work CLI reads |
@@ -552,7 +555,6 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `failuresForOauthWebhooks` | `[WebhookFailureEvent!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `favorite` | `Favorite!` | generated_operation | root field used by local GraphQL operation |
 | `favorites` | `FavoriteConnection!` | generated_operation | root field used by local GraphQL operation |
-| `fetchData` | `FetchDataPayload!` | safe_candidate | read operation may fit future CLI coverage |
 | `initiative` | `Initiative!` | generated_operation | root field used by local GraphQL operation |
 | `initiativeFilterSuggestion` | `InitiativeFilterSuggestionPayload!` | safe_candidate | read operation may fit future CLI coverage |
 | `initiativeLabel` | `InitiativeLabel!` | generated_operation | root field used by local GraphQL operation |
@@ -567,6 +569,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `initiatives` | `InitiativeConnection!` | generated_operation | root field used by local GraphQL operation |
 | `integration` | `Integration!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationHasScopes` | `IntegrationHasScopesPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
+| `integrationJiraProjectStatuses` | `JiraProjectStatusesPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationTemplate` | `IntegrationTemplate!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationTemplates` | `IntegrationTemplateConnection!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrations` | `IntegrationConnection!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -607,6 +610,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `organizationMeta` | `OrganizationMeta` | safe_candidate | read operation may fit future CLI coverage |
 | `partnerOfferDetails` | `PartnerOfferDetailsPayload` | safe_candidate | read operation may fit future CLI coverage |
 | `partnerOfferWorkspaces` | `PartnerOfferWorkspacesPayload` | safe_candidate | read operation may fit future CLI coverage |
+| `partnerProgramPartners` | `[PartnerProgramPartnerPayload!]!` | safe_candidate | read operation may fit future CLI coverage |
 | `project` | `Project!` | generated_operation | root field used by local GraphQL operation |
 | `projectFilterSuggestion` | `ProjectFilterSuggestionPayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectLabel` | `ProjectLabel!` | generated_operation | root field used by local GraphQL operation |
@@ -649,12 +653,15 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `teamMemberships` | `TeamMembershipConnection!` | generated_operation | root field used by local GraphQL operation |
 | `teams` | `TeamConnection!` | generated_operation | root field used by local GraphQL operation |
 | `template` | `Template!` | generated_operation | root field used by local GraphQL operation |
+| `templateSearch` | `[Template!]!` | safe_candidate | read operation may fit future CLI coverage |
 | `templates` | `[Template!]!` | generated_operation | root field used by local GraphQL operation |
 | `templatesForIntegration` | `[Template!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `timeSchedule` | `TimeSchedule!` | generated_operation | root field used by local GraphQL operation |
 | `timeSchedules` | `TimeScheduleConnection!` | generated_operation | root field used by local GraphQL operation |
 | `triageResponsibilities` | `TriageResponsibilityConnection!` | generated_operation | root field used by local GraphQL operation |
 | `triageResponsibility` | `TriageResponsibility!` | generated_operation | root field used by local GraphQL operation |
+| `usageAlert` | `UsageAlert!` | safe_candidate | read operation may fit future CLI coverage |
+| `usageAlerts` | `UsageAlertConnection!` | safe_candidate | read operation may fit future CLI coverage |
 | `user` | `User!` | generated_operation | root field used by local GraphQL operation |
 | `userSessions` | `[AuthenticationSessionResponse!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `userSettings` | `UserSettings!` | generated_operation | root field used by local GraphQL operation |
@@ -677,6 +684,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `agentSessionCreate` | `AgentSessionPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSessionCreateOnComment` | `AgentSessionPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSessionCreateOnIssue` | `AgentSessionPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
+| `agentSessionRestartWithDefaultModel` | `AgentSessionPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSessionUpdate` | `AgentSessionPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSessionUpdateExternalUrl` | `AgentSessionPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSkillCreate` | `AgentSkillPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
