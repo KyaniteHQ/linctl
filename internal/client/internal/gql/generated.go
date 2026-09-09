@@ -2494,7 +2494,7 @@ type CustomerSummaryFields struct {
 	Revenue *int `json:"revenue"`
 	// The number of employees or seats at the customer organization. Null if size data has not been provided. May be synced from an external data source such as a CRM integration.
 	Size *float64 `json:"size"`
-	// The approximate count of customer needs (requests) associated with this customer. This is a denormalized counter and may not reflect the exact count at all times.
+	// The approximate number of distinct requests associated with this customer, deduplicated per issue or project. This is a denormalized counter and may not reflect the exact count at all times.
 	ApproximateNeedCount float64 `json:"approximateNeedCount"`
 	// A unique, human-readable URL slug for the customer. Automatically generated and used in customer page URLs.
 	SlugId string `json:"slugId"`
