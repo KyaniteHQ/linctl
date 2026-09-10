@@ -1279,7 +1279,11 @@ The scheduled/manual `integration.yml` workflow sets `LINCTL_TEST_ENABLE_WRITES:
 at job level, so the guarded-write round trips run nightly against the OAuth
 fixture target and their cleanup runs as part of the test. A final
 `scripts/live-sweep.sh` step runs with `if: always()` to close or archive any
-`linctl-it-*` issues and projects left behind by a hard-killed run.
+`linctl-it-*` issues and projects left behind by a hard-killed run. Close and
+archive retry Linear HTTP 502 and 503 up to 3 times (the transport
+`defaultRetries` budget). Wait uses `Retry-After` when the CLI error carries it,
+otherwise `100ms * (attempt+1)`, capped at 30s. A leftover failure prints the
+resource id and fails the step after the rest of the sweep.
 
 The missing-fixture readiness check is `env -u LINCTL_OAUTH_CLIENT_ID bash scripts/live-oauth.sh`,
 which must exit 2 with a missing-fixture message and without printing secret values.
