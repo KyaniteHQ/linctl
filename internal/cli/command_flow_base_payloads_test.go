@@ -62,6 +62,8 @@ func commandFlowOrgWritePayload(operation string) (string, bool) {
 		return `{"initiativeCreate":{"success":true,"initiative":` + commandInitiativeJSON() + `}}`, true
 	case "TeamDelete":
 		return `{"teamDelete":{"success":true,"entityId":"ops-team-id"}}`, true
+	case "TeamSettingsUpdate":
+		return `{"teamUpdate":{"success":true,"team":` + commandTeamJSON(true) + `}}`, true
 	default:
 		return "", false
 	}

@@ -3951,7 +3951,7 @@ linctl target
 
 ### linctl team
 
-Read Linear teams, create one, or delete one
+Read Linear teams, create one, change its settings, or delete one
 
 ```
 linctl team
@@ -4124,6 +4124,23 @@ Flags:
 
 ```
       --limit int   maximum release pipelines to return (default 50)
+```
+
+### linctl team settings
+
+Change a team's triage, default state, or inherited states with --org-wide
+
+```
+linctl team settings TEAM_ID [flags]
+```
+
+Flags:
+
+```
+      --default-state string      workflow state id that new issues start in; must belong to the team or its parent
+      --inherit-workflow-states   inherit workflow states from the parent team; pass =false to stop inheriting
+      --org-wide                  required: a Team is organization-owned and is what a pin names; confirms this write changes a team's settings in the organization
+      --triage                    enable triage; pass --triage=false to disable it
 ```
 
 ### linctl team states

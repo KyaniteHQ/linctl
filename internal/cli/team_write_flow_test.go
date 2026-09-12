@@ -167,3 +167,64 @@ func Test_TeamCreate_writes_a_sub_team(t *testing.T) {
 	require.Contains(t, stdout.String(), "sub-team-id CASE case")
 	require.Empty(t, stderr.String())
 }
+
+func Test_TeamSettingsCommandFlow_reports_runtime_errors(t *testing.T) {
+	original := buildCommandRuntime
+	buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
+		return commandRuntime{}, errors.New("runtime failed")
+	}
+	defer func() {
+		buildCommandRuntime = original
+	}()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetArgs([]string{"team", "settings", "team-id", "--triage", "--org-wide"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.ErrorContains(t, err, "runtime failed")
+}
+
+func Test_TeamSettingsCommandFlow_reports_writer_errors(t *testing.T) {
+	restore := useCommandRuntime(t, commandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(commandFailingWriter{})
+	command.SetArgs([]string{"team", "settings", "team-id", "--triage", "--org-wide"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.ErrorContains(t, err, "write failed")
+}
+
+// Test_TeamSettings_requires_org_wide proves the end-to-end refusal with the
+// flag named on stderr and nothing written to stdout.
+func Test_TeamSettings_requires_org_wide(t *testing.T) {
+	restore := useCommandRuntime(t, commandFlowFakeClient{})
+	defer restore()
+
+	var stdout, stderr bytes.Buffer
+	err := execute(context.Background(), BuildInfo{}, strings.NewReader(""), &stdout, &stderr,
+		[]string{"team", "settings", "team-id", "--triage"})
+
+	require.ErrorIs(t, err, client.ErrTargetMismatch)
+	require.Empty(t, stdout.String())
+	require.Contains(t, stderr.String(), "org-wide")
+}
+
+// Test_TeamSettings_writes_the_settings is the allow arm: the fixture team and
+// workflow state both sit in the pinned organization and team.
+func Test_TeamSettings_writes_the_settings(t *testing.T) {
+	restore := useCommandRuntime(t, commandFlowFakeClient{})
+	defer restore()
+
+	var stdout, stderr bytes.Buffer
+	err := execute(context.Background(), BuildInfo{}, strings.NewReader(""), &stdout, &stderr,
+		[]string{
+			"team", "settings", "team-id", "--triage=false", "--default-state", "workflow-state-id",
+			"--inherit-workflow-states", "--org-wide",
+		})
+
+	require.NoError(t, err)
+	require.Contains(t, stdout.String(), "team-id LIT linctl")
+	require.Empty(t, stderr.String())
+}

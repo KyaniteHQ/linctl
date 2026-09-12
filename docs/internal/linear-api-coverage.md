@@ -16,11 +16,11 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 
 | Surface | Total | Covered/exposed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods with generated local operations | 473 | 163 | 473 |
+| Upstream SDK root methods with generated local operations | 473 | 164 | 473 |
 | Upstream Query root fields used by generated local operations | 171 | 116 | 171 |
-| Upstream Mutation root fields used by generated local operations | 375 | 49 | 375 |
-| Local generated Go operations declared in GraphQL files | 317 | 317 | 317 |
-| Public CLI commands from command inventory | 442 | 332 | 442 |
+| Upstream Mutation root fields used by generated local operations | 375 | 50 | 375 |
+| Local generated Go operations declared in GraphQL files | 318 | 318 | 318 |
+| Public CLI commands from command inventory | 443 | 333 | 443 |
 
 ## Upstream SDK Root Methods
 
@@ -469,7 +469,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `updateReleaseStage` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateRoadmap` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateRoadmapToProject` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `updateTeam` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `updateTeam` | method | generated_operation | local GraphQL operation uses this root |
 | `updateTeamMembership` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateTemplate` | method | generated_operation | local GraphQL operation uses this root |
 | `updateTimeSchedule` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -1019,7 +1019,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `teamMembershipDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `teamMembershipUpdate` | `TeamMembershipPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `teamUnarchive` | `TeamArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `teamUpdate` | `TeamPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `teamUpdate` | `TeamPayload!` | generated_operation | root field used by local GraphQL operation |
 | `templateCreate` | `TemplatePayload!` | generated_operation | root field used by local GraphQL operation |
 | `templateDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `templateUpdate` | `TemplatePayload!` | generated_operation | root field used by local GraphQL operation |
@@ -1115,6 +1115,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `TargetProject` | query | `project` | generated | `internal/client/internal/gql/generated.go` |
 | `TeamCreate` | mutation | `teamCreate` | generated | `internal/client/internal/gql/generated.go` |
 | `TeamDelete` | mutation | `teamDelete` | generated | `internal/client/internal/gql/generated.go` |
+| `TeamSettingsUpdate` | mutation | `teamUpdate` | generated | `internal/client/internal/gql/generated.go` |
 | `Teams` | query | `teams` | generated | `internal/client/internal/gql/generated.go` |
 | `TemplateCreate` | mutation | `templateCreate` | generated | `internal/client/internal/gql/generated.go` |
 | `TemplateUpdate` | mutation | `templateUpdate` | generated | `internal/client/internal/gql/generated.go` |
@@ -1636,6 +1637,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Team | `team get` | `Query.team` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Team | `team create` | `Mutation.teamCreate` | Org-Scoped Write, additive only: `--org-wide` required, and the created Team's organization is compared against the Resolved Target's organization, failing closed on mismatch. A Team is what a pin names, so there is no team comparison to make. `--parent` resolves the parent and compares its organization, and the created Team's parent is compared against the request; `--inherit-workflow-states` (a field Linear marks internal in its schema) and `--triage` ride on the same create. Membership and metadata writes stay blocked | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Team | `team update` | `Mutation.teamUpdate` | Blocked: team metadata writes need stronger authority checks than ordinary target comparison | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
+| Team | `team settings` | `Mutation.teamUpdate` with `triageEnabled`, `defaultIssueStateId`, `inheritWorkflowStatuses` only | Org-Scoped Write: `--org-wide` required, the Team is resolved and its organization compared against the Resolved Target's organization, and a default state must belong to the Team or to the parent it inherits from. Name, key, and description are not reachable | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Team | `team delete` | `Mutation.teamDelete` | Org-Scoped Write, irreversible: `--org-wide` required, the Team is resolved and its organization compared against the Resolved Target's organization, and the pinned Team itself is refused. Linear archives the Team and schedules its data for deletion; linctl has no restore path | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Team | `team cycles` | `Team.cycles` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
 | Team | `team issues` | `Team.issues` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |

@@ -28456,6 +28456,145 @@ func (v *TeamMembershipSummaryFieldsUser) __premarshalJSON() (*__premarshalTeamM
 	return &retval, nil
 }
 
+// TeamSettingsUpdateResponse is returned by TeamSettingsUpdate on success.
+type TeamSettingsUpdateResponse struct {
+	// Updates a team's settings, properties, or configuration. Requires team owner or workspace admin permissions for most changes.
+	TeamUpdate TeamSettingsUpdateTeamUpdateTeamPayload `json:"teamUpdate"`
+}
+
+// GetTeamUpdate returns TeamSettingsUpdateResponse.TeamUpdate, and is useful for accessing the field via an interface.
+func (v *TeamSettingsUpdateResponse) GetTeamUpdate() TeamSettingsUpdateTeamUpdateTeamPayload {
+	return v.TeamUpdate
+}
+
+// TeamSettingsUpdateTeamUpdateTeamPayload includes the requested fields of the GraphQL type TeamPayload.
+// The GraphQL type's documentation follows.
+//
+// Team operation response.
+type TeamSettingsUpdateTeamUpdateTeamPayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The team that was created or updated.
+	Team *TeamSettingsUpdateTeamUpdateTeamPayloadTeam `json:"team"`
+}
+
+// GetSuccess returns TeamSettingsUpdateTeamUpdateTeamPayload.Success, and is useful for accessing the field via an interface.
+func (v *TeamSettingsUpdateTeamUpdateTeamPayload) GetSuccess() bool { return v.Success }
+
+// GetTeam returns TeamSettingsUpdateTeamUpdateTeamPayload.Team, and is useful for accessing the field via an interface.
+func (v *TeamSettingsUpdateTeamUpdateTeamPayload) GetTeam() *TeamSettingsUpdateTeamUpdateTeamPayloadTeam {
+	return v.Team
+}
+
+// TeamSettingsUpdateTeamUpdateTeamPayloadTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
+type TeamSettingsUpdateTeamUpdateTeamPayloadTeam struct {
+	TeamSummaryFields `json:"-"`
+}
+
+// GetId returns TeamSettingsUpdateTeamUpdateTeamPayloadTeam.Id, and is useful for accessing the field via an interface.
+func (v *TeamSettingsUpdateTeamUpdateTeamPayloadTeam) GetId() string { return v.TeamSummaryFields.Id }
+
+// GetKey returns TeamSettingsUpdateTeamUpdateTeamPayloadTeam.Key, and is useful for accessing the field via an interface.
+func (v *TeamSettingsUpdateTeamUpdateTeamPayloadTeam) GetKey() string { return v.TeamSummaryFields.Key }
+
+// GetName returns TeamSettingsUpdateTeamUpdateTeamPayloadTeam.Name, and is useful for accessing the field via an interface.
+func (v *TeamSettingsUpdateTeamUpdateTeamPayloadTeam) GetName() string {
+	return v.TeamSummaryFields.Name
+}
+
+// GetDescription returns TeamSettingsUpdateTeamUpdateTeamPayloadTeam.Description, and is useful for accessing the field via an interface.
+func (v *TeamSettingsUpdateTeamUpdateTeamPayloadTeam) GetDescription() *string {
+	return v.TeamSummaryFields.Description
+}
+
+// GetArchivedAt returns TeamSettingsUpdateTeamUpdateTeamPayloadTeam.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *TeamSettingsUpdateTeamUpdateTeamPayloadTeam) GetArchivedAt() *string {
+	return v.TeamSummaryFields.ArchivedAt
+}
+
+// GetTriageEnabled returns TeamSettingsUpdateTeamUpdateTeamPayloadTeam.TriageEnabled, and is useful for accessing the field via an interface.
+func (v *TeamSettingsUpdateTeamUpdateTeamPayloadTeam) GetTriageEnabled() bool {
+	return v.TeamSummaryFields.TriageEnabled
+}
+
+// GetParent returns TeamSettingsUpdateTeamUpdateTeamPayloadTeam.Parent, and is useful for accessing the field via an interface.
+func (v *TeamSettingsUpdateTeamUpdateTeamPayloadTeam) GetParent() *TeamSummaryFieldsParentTeam {
+	return v.TeamSummaryFields.Parent
+}
+
+// GetOrganization returns TeamSettingsUpdateTeamUpdateTeamPayloadTeam.Organization, and is useful for accessing the field via an interface.
+func (v *TeamSettingsUpdateTeamUpdateTeamPayloadTeam) GetOrganization() TeamSummaryFieldsOrganization {
+	return v.TeamSummaryFields.Organization
+}
+
+func (v *TeamSettingsUpdateTeamUpdateTeamPayloadTeam) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*TeamSettingsUpdateTeamUpdateTeamPayloadTeam
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.TeamSettingsUpdateTeamUpdateTeamPayloadTeam = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.TeamSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalTeamSettingsUpdateTeamUpdateTeamPayloadTeam struct {
+	Id string `json:"id"`
+
+	Key string `json:"key"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	TriageEnabled bool `json:"triageEnabled"`
+
+	Parent *TeamSummaryFieldsParentTeam `json:"parent"`
+
+	Organization TeamSummaryFieldsOrganization `json:"organization"`
+}
+
+func (v *TeamSettingsUpdateTeamUpdateTeamPayloadTeam) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *TeamSettingsUpdateTeamUpdateTeamPayloadTeam) __premarshalJSON() (*__premarshalTeamSettingsUpdateTeamUpdateTeamPayloadTeam, error) {
+	var retval __premarshalTeamSettingsUpdateTeamUpdateTeamPayloadTeam
+
+	retval.Id = v.TeamSummaryFields.Id
+	retval.Key = v.TeamSummaryFields.Key
+	retval.Name = v.TeamSummaryFields.Name
+	retval.Description = v.TeamSummaryFields.Description
+	retval.ArchivedAt = v.TeamSummaryFields.ArchivedAt
+	retval.TriageEnabled = v.TeamSummaryFields.TriageEnabled
+	retval.Parent = v.TeamSummaryFields.Parent
+	retval.Organization = v.TeamSummaryFields.Organization
+	return &retval, nil
+}
+
 // TeamSummaryFields includes the GraphQL fields of Team requested by the fragment TeamSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -30899,6 +31038,18 @@ type __TeamDeleteInput struct {
 
 // GetId returns __TeamDeleteInput.Id, and is useful for accessing the field via an interface.
 func (v *__TeamDeleteInput) GetId() string { return v.Id }
+
+// __TeamSettingsUpdateInput is used internally by genqlient
+type __TeamSettingsUpdateInput struct {
+	Id    string                           `json:"id"`
+	Input gqlmodel.LinearTeamSettingsInput `json:"input"`
+}
+
+// GetId returns __TeamSettingsUpdateInput.Id, and is useful for accessing the field via an interface.
+func (v *__TeamSettingsUpdateInput) GetId() string { return v.Id }
+
+// GetInput returns __TeamSettingsUpdateInput.Input, and is useful for accessing the field via an interface.
+func (v *__TeamSettingsUpdateInput) GetInput() gqlmodel.LinearTeamSettingsInput { return v.Input }
 
 // __TeamsInput is used internally by genqlient
 type __TeamsInput struct {
@@ -83015,6 +83166,62 @@ func TeamDelete(
 	}
 
 	data_ = &TeamDeleteResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by TeamSettingsUpdate.
+const TeamSettingsUpdate_Operation = `
+mutation TeamSettingsUpdate ($id: String!, $input: TeamUpdateInput!) {
+	teamUpdate(id: $id, input: $input) {
+		success
+		team {
+			... TeamSummaryFields
+		}
+	}
+}
+fragment TeamSummaryFields on Team {
+	id
+	key
+	name
+	description
+	archivedAt
+	triageEnabled
+	parent {
+		id
+		key
+	}
+	organization {
+		id
+		name
+		urlKey
+	}
+}
+`
+
+func TeamSettingsUpdate(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	input gqlmodel.LinearTeamSettingsInput,
+) (data_ *TeamSettingsUpdateResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "TeamSettingsUpdate",
+		Query:  TeamSettingsUpdate_Operation,
+		Variables: &__TeamSettingsUpdateInput{
+			Id:    id,
+			Input: input,
+		},
+	}
+
+	data_ = &TeamSettingsUpdateResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

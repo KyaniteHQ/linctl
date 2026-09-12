@@ -61,6 +61,8 @@ bindings:
     type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearNotificationUpdateInput
   InitiativeCreateInput:
     type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearInitiativeCreateInput
+  TeamUpdateInput:
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearTeamSettingsInput
   TeamCreateInput:
     type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearTeamCreateInput
   TemplateCreateInput:

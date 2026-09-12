@@ -245,3 +245,12 @@ mutation TeamDelete($id: String!) {
     entityId
   }
 }
+
+mutation TeamSettingsUpdate($id: String!, $input: TeamUpdateInput!) {
+  teamUpdate(id: $id, input: $input) {
+    success
+    team {
+      ...TeamSummaryFields
+    }
+  }
+}

@@ -256,6 +256,14 @@ type LinearTeamCreateInput struct {
 	TriageEnabled           *bool   `json:"triageEnabled,omitempty"`
 }
 
+// LinearTeamSettingsInput is the sparse Linear teamUpdate payload linctl supports:
+// team settings only, never name, key, or description.
+type LinearTeamSettingsInput struct {
+	TriageEnabled           *bool   `json:"triageEnabled,omitempty"`
+	DefaultIssueStateID     *string `json:"defaultIssueStateId,omitempty"`
+	InheritWorkflowStatuses *bool   `json:"inheritWorkflowStatuses,omitempty"`
+}
+
 // LinearTemplateCreateInput is the sparse Linear templateCreate payload linctl supports.
 type LinearTemplateCreateInput struct {
 	ID           *string         `json:"id,omitempty"`

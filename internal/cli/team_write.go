@@ -70,3 +70,38 @@ func writeTeamDeletion(command *cobra.Command, options *rootOptions, id string) 
 		"archived team "+id+" and scheduled its deletion: cannot be undone via linctl",
 	)
 }
+
+const orgWideTeamSettingsHelp = "required: a Team is organization-owned and is what a pin names; confirms this " +
+	"write changes a team's settings in the organization"
+
+func addTeamSettingsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	var triage, inherit bool
+	request := client.TeamSettingsRequest{}
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.TeamSummary]{
+		Use:   "settings TEAM_ID",
+		Short: "Change a team's triage, default state, or inherited states with --org-wide",
+		Args:  cobra.ExactArgs(1),
+		Configure: func(command *cobra.Command) {
+			command.Flags().BoolVar(&triage, "triage", false, "enable triage; pass --triage=false to disable it")
+			command.Flags().StringVar(&request.DefaultStateID, "default-state", "",
+				"workflow state id that new issues start in; must belong to the team or its parent")
+			command.Flags().BoolVar(&inherit, "inherit-workflow-states", false,
+				"inherit workflow states from the parent team; pass =false to stop inheriting")
+			command.Flags().BoolVar(&request.OrgWide, "org-wide", false, orgWideTeamSettingsHelp)
+		},
+		Run: func(
+			ctx context.Context, command *cobra.Command, runtime commandRuntime, args []string,
+		) (client.TeamSummary, error) {
+			request.ID = args[0]
+			if command.Flags().Changed("triage") {
+				request.Triage = &triage
+			}
+			if command.Flags().Changed("inherit-workflow-states") {
+				request.Inherit = &inherit
+			}
+
+			return client.UpdateTeamSettings(ctx, runtime.graphqlClient, runtime.config.Target, request)
+		},
+		Write: writeTeam,
+	})
+}
