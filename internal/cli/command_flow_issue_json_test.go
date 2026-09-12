@@ -109,6 +109,19 @@ func commandIssueJSONWithProject(
 	)
 }
 
+func commandSubTeamJSON(parentID string) string {
+	return `{
+		"id":"sub-team-id",
+		"key":"CASE",
+		"name":"case",
+		"description":null,
+		"archivedAt":null,
+		"triageEnabled":true,
+		"parent":{"id":"` + parentID + `","key":"LIT"},
+		"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}
+	}`
+}
+
 func commandDestinationTeamJSON(teamID string, teamKey string) string {
 	return `{
 		"id":"` + teamID + `",

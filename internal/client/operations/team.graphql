@@ -200,6 +200,11 @@ fragment TeamSummaryFields on Team {
   name
   description
   archivedAt
+  triageEnabled
+  parent {
+    id
+    key
+  }
   organization {
     id
     name

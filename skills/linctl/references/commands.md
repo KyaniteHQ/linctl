@@ -3968,11 +3968,14 @@ linctl team create [flags]
 Flags:
 
 ```
-      --description string   team description
-      --key string           team key, which Linear derives from the name when you do not set it
-      --name string          team name
-      --org-wide             required: a Team is organization-owned and is what a pin names, so a create cannot land inside the pinned team; confirms this write adds a team to the organization
-      --private              create the team as a private team
+      --description string        team description
+      --inherit-workflow-states   inherit workflow states from the parent team; needs --parent
+      --key string                team key, which Linear derives from the name when you do not set it
+      --name string               team name
+      --org-wide                  required: a Team is organization-owned and is what a pin names, so a create cannot land inside the pinned team; confirms this write adds a team to the organization
+      --parent string             parent team id, which makes the new team a sub-team
+      --private                   create the team as a private team
+      --triage                    enable triage on the new team
 ```
 
 ### linctl team cycles

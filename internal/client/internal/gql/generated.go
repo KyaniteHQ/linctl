@@ -28187,6 +28187,16 @@ func (v *TeamCreateTeamCreateTeamPayloadTeam) GetArchivedAt() *string {
 	return v.TeamSummaryFields.ArchivedAt
 }
 
+// GetTriageEnabled returns TeamCreateTeamCreateTeamPayloadTeam.TriageEnabled, and is useful for accessing the field via an interface.
+func (v *TeamCreateTeamCreateTeamPayloadTeam) GetTriageEnabled() bool {
+	return v.TeamSummaryFields.TriageEnabled
+}
+
+// GetParent returns TeamCreateTeamCreateTeamPayloadTeam.Parent, and is useful for accessing the field via an interface.
+func (v *TeamCreateTeamCreateTeamPayloadTeam) GetParent() *TeamSummaryFieldsParentTeam {
+	return v.TeamSummaryFields.Parent
+}
+
 // GetOrganization returns TeamCreateTeamCreateTeamPayloadTeam.Organization, and is useful for accessing the field via an interface.
 func (v *TeamCreateTeamCreateTeamPayloadTeam) GetOrganization() TeamSummaryFieldsOrganization {
 	return v.TeamSummaryFields.Organization
@@ -28228,6 +28238,10 @@ type __premarshalTeamCreateTeamCreateTeamPayloadTeam struct {
 
 	ArchivedAt *string `json:"archivedAt"`
 
+	TriageEnabled bool `json:"triageEnabled"`
+
+	Parent *TeamSummaryFieldsParentTeam `json:"parent"`
+
 	Organization TeamSummaryFieldsOrganization `json:"organization"`
 }
 
@@ -28247,6 +28261,8 @@ func (v *TeamCreateTeamCreateTeamPayloadTeam) __premarshalJSON() (*__premarshalT
 	retval.Name = v.TeamSummaryFields.Name
 	retval.Description = v.TeamSummaryFields.Description
 	retval.ArchivedAt = v.TeamSummaryFields.ArchivedAt
+	retval.TriageEnabled = v.TeamSummaryFields.TriageEnabled
+	retval.Parent = v.TeamSummaryFields.Parent
 	retval.Organization = v.TeamSummaryFields.Organization
 	return &retval, nil
 }
@@ -28455,6 +28471,10 @@ type TeamSummaryFields struct {
 	Description *string `json:"description"`
 	// The time at which the entity was archived. Null if the entity has not been archived.
 	ArchivedAt *string `json:"archivedAt"`
+	// Whether triage mode is enabled for the team. When enabled, issues created by non-members or integrations are routed to a triage state for review before entering the normal workflow.
+	TriageEnabled bool `json:"triageEnabled"`
+	// The team's parent team.
+	Parent *TeamSummaryFieldsParentTeam `json:"parent"`
 	// The workspace that the team belongs to.
 	Organization TeamSummaryFieldsOrganization `json:"organization"`
 }
@@ -28473,6 +28493,12 @@ func (v *TeamSummaryFields) GetDescription() *string { return v.Description }
 
 // GetArchivedAt returns TeamSummaryFields.ArchivedAt, and is useful for accessing the field via an interface.
 func (v *TeamSummaryFields) GetArchivedAt() *string { return v.ArchivedAt }
+
+// GetTriageEnabled returns TeamSummaryFields.TriageEnabled, and is useful for accessing the field via an interface.
+func (v *TeamSummaryFields) GetTriageEnabled() bool { return v.TriageEnabled }
+
+// GetParent returns TeamSummaryFields.Parent, and is useful for accessing the field via an interface.
+func (v *TeamSummaryFields) GetParent() *TeamSummaryFieldsParentTeam { return v.Parent }
 
 // GetOrganization returns TeamSummaryFields.Organization, and is useful for accessing the field via an interface.
 func (v *TeamSummaryFields) GetOrganization() TeamSummaryFieldsOrganization { return v.Organization }
@@ -28498,6 +28524,23 @@ func (v *TeamSummaryFieldsOrganization) GetName() string { return v.Name }
 
 // GetUrlKey returns TeamSummaryFieldsOrganization.UrlKey, and is useful for accessing the field via an interface.
 func (v *TeamSummaryFieldsOrganization) GetUrlKey() string { return v.UrlKey }
+
+// TeamSummaryFieldsParentTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
+type TeamSummaryFieldsParentTeam struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The team's unique key, used as a prefix in issue identifiers (e.g., 'ENG' in 'ENG-123') and in URLs.
+	Key string `json:"key"`
+}
+
+// GetId returns TeamSummaryFieldsParentTeam.Id, and is useful for accessing the field via an interface.
+func (v *TeamSummaryFieldsParentTeam) GetId() string { return v.Id }
+
+// GetKey returns TeamSummaryFieldsParentTeam.Key, and is useful for accessing the field via an interface.
+func (v *TeamSummaryFieldsParentTeam) GetKey() string { return v.Key }
 
 // TeamsResponse is returned by Teams on success.
 type TeamsResponse struct {
@@ -60847,6 +60890,16 @@ func (v *organization_teamsOrganizationTeamsTeamConnectionNodesTeam) GetArchived
 	return v.TeamSummaryFields.ArchivedAt
 }
 
+// GetTriageEnabled returns organization_teamsOrganizationTeamsTeamConnectionNodesTeam.TriageEnabled, and is useful for accessing the field via an interface.
+func (v *organization_teamsOrganizationTeamsTeamConnectionNodesTeam) GetTriageEnabled() bool {
+	return v.TeamSummaryFields.TriageEnabled
+}
+
+// GetParent returns organization_teamsOrganizationTeamsTeamConnectionNodesTeam.Parent, and is useful for accessing the field via an interface.
+func (v *organization_teamsOrganizationTeamsTeamConnectionNodesTeam) GetParent() *TeamSummaryFieldsParentTeam {
+	return v.TeamSummaryFields.Parent
+}
+
 // GetOrganization returns organization_teamsOrganizationTeamsTeamConnectionNodesTeam.Organization, and is useful for accessing the field via an interface.
 func (v *organization_teamsOrganizationTeamsTeamConnectionNodesTeam) GetOrganization() TeamSummaryFieldsOrganization {
 	return v.TeamSummaryFields.Organization
@@ -60888,6 +60941,10 @@ type __premarshalorganization_teamsOrganizationTeamsTeamConnectionNodesTeam stru
 
 	ArchivedAt *string `json:"archivedAt"`
 
+	TriageEnabled bool `json:"triageEnabled"`
+
+	Parent *TeamSummaryFieldsParentTeam `json:"parent"`
+
 	Organization TeamSummaryFieldsOrganization `json:"organization"`
 }
 
@@ -60907,6 +60964,8 @@ func (v *organization_teamsOrganizationTeamsTeamConnectionNodesTeam) __premarsha
 	retval.Name = v.TeamSummaryFields.Name
 	retval.Description = v.TeamSummaryFields.Description
 	retval.ArchivedAt = v.TeamSummaryFields.ArchivedAt
+	retval.TriageEnabled = v.TeamSummaryFields.TriageEnabled
+	retval.Parent = v.TeamSummaryFields.Parent
 	retval.Organization = v.TeamSummaryFields.Organization
 	return &retval, nil
 }
@@ -66845,6 +66904,16 @@ func (v *project_teamsProjectTeamsTeamConnectionNodesTeam) GetArchivedAt() *stri
 	return v.TeamSummaryFields.ArchivedAt
 }
 
+// GetTriageEnabled returns project_teamsProjectTeamsTeamConnectionNodesTeam.TriageEnabled, and is useful for accessing the field via an interface.
+func (v *project_teamsProjectTeamsTeamConnectionNodesTeam) GetTriageEnabled() bool {
+	return v.TeamSummaryFields.TriageEnabled
+}
+
+// GetParent returns project_teamsProjectTeamsTeamConnectionNodesTeam.Parent, and is useful for accessing the field via an interface.
+func (v *project_teamsProjectTeamsTeamConnectionNodesTeam) GetParent() *TeamSummaryFieldsParentTeam {
+	return v.TeamSummaryFields.Parent
+}
+
 // GetOrganization returns project_teamsProjectTeamsTeamConnectionNodesTeam.Organization, and is useful for accessing the field via an interface.
 func (v *project_teamsProjectTeamsTeamConnectionNodesTeam) GetOrganization() TeamSummaryFieldsOrganization {
 	return v.TeamSummaryFields.Organization
@@ -66886,6 +66955,10 @@ type __premarshalproject_teamsProjectTeamsTeamConnectionNodesTeam struct {
 
 	ArchivedAt *string `json:"archivedAt"`
 
+	TriageEnabled bool `json:"triageEnabled"`
+
+	Parent *TeamSummaryFieldsParentTeam `json:"parent"`
+
 	Organization TeamSummaryFieldsOrganization `json:"organization"`
 }
 
@@ -66905,6 +66978,8 @@ func (v *project_teamsProjectTeamsTeamConnectionNodesTeam) __premarshalJSON() (*
 	retval.Name = v.TeamSummaryFields.Name
 	retval.Description = v.TeamSummaryFields.Description
 	retval.ArchivedAt = v.TeamSummaryFields.ArchivedAt
+	retval.TriageEnabled = v.TeamSummaryFields.TriageEnabled
+	retval.Parent = v.TeamSummaryFields.Parent
 	retval.Organization = v.TeamSummaryFields.Organization
 	return &retval, nil
 }
@@ -68211,6 +68286,16 @@ func (v *releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam) GetAr
 	return v.TeamSummaryFields.ArchivedAt
 }
 
+// GetTriageEnabled returns releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam.TriageEnabled, and is useful for accessing the field via an interface.
+func (v *releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam) GetTriageEnabled() bool {
+	return v.TeamSummaryFields.TriageEnabled
+}
+
+// GetParent returns releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam.Parent, and is useful for accessing the field via an interface.
+func (v *releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam) GetParent() *TeamSummaryFieldsParentTeam {
+	return v.TeamSummaryFields.Parent
+}
+
 // GetOrganization returns releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam.Organization, and is useful for accessing the field via an interface.
 func (v *releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam) GetOrganization() TeamSummaryFieldsOrganization {
 	return v.TeamSummaryFields.Organization
@@ -68252,6 +68337,10 @@ type __premarshalreleasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTea
 
 	ArchivedAt *string `json:"archivedAt"`
 
+	TriageEnabled bool `json:"triageEnabled"`
+
+	Parent *TeamSummaryFieldsParentTeam `json:"parent"`
+
 	Organization TeamSummaryFieldsOrganization `json:"organization"`
 }
 
@@ -68271,6 +68360,8 @@ func (v *releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam) __pre
 	retval.Name = v.TeamSummaryFields.Name
 	retval.Description = v.TeamSummaryFields.Description
 	retval.ArchivedAt = v.TeamSummaryFields.ArchivedAt
+	retval.TriageEnabled = v.TeamSummaryFields.TriageEnabled
+	retval.Parent = v.TeamSummaryFields.Parent
 	retval.Organization = v.TeamSummaryFields.Organization
 	return &retval, nil
 }
@@ -72331,6 +72422,12 @@ func (v *teamTeam) GetDescription() *string { return v.TeamSummaryFields.Descrip
 // GetArchivedAt returns teamTeam.ArchivedAt, and is useful for accessing the field via an interface.
 func (v *teamTeam) GetArchivedAt() *string { return v.TeamSummaryFields.ArchivedAt }
 
+// GetTriageEnabled returns teamTeam.TriageEnabled, and is useful for accessing the field via an interface.
+func (v *teamTeam) GetTriageEnabled() bool { return v.TeamSummaryFields.TriageEnabled }
+
+// GetParent returns teamTeam.Parent, and is useful for accessing the field via an interface.
+func (v *teamTeam) GetParent() *TeamSummaryFieldsParentTeam { return v.TeamSummaryFields.Parent }
+
 // GetOrganization returns teamTeam.Organization, and is useful for accessing the field via an interface.
 func (v *teamTeam) GetOrganization() TeamSummaryFieldsOrganization {
 	return v.TeamSummaryFields.Organization
@@ -72372,6 +72469,10 @@ type __premarshalteamTeam struct {
 
 	ArchivedAt *string `json:"archivedAt"`
 
+	TriageEnabled bool `json:"triageEnabled"`
+
+	Parent *TeamSummaryFieldsParentTeam `json:"parent"`
+
 	Organization TeamSummaryFieldsOrganization `json:"organization"`
 }
 
@@ -72391,6 +72492,8 @@ func (v *teamTeam) __premarshalJSON() (*__premarshalteamTeam, error) {
 	retval.Name = v.TeamSummaryFields.Name
 	retval.Description = v.TeamSummaryFields.Description
 	retval.ArchivedAt = v.TeamSummaryFields.ArchivedAt
+	retval.TriageEnabled = v.TeamSummaryFields.TriageEnabled
+	retval.Parent = v.TeamSummaryFields.Parent
 	retval.Organization = v.TeamSummaryFields.Organization
 	return &retval, nil
 }
@@ -74403,6 +74506,16 @@ func (v *teams_listTeamsTeamConnectionNodesTeam) GetArchivedAt() *string {
 	return v.TeamSummaryFields.ArchivedAt
 }
 
+// GetTriageEnabled returns teams_listTeamsTeamConnectionNodesTeam.TriageEnabled, and is useful for accessing the field via an interface.
+func (v *teams_listTeamsTeamConnectionNodesTeam) GetTriageEnabled() bool {
+	return v.TeamSummaryFields.TriageEnabled
+}
+
+// GetParent returns teams_listTeamsTeamConnectionNodesTeam.Parent, and is useful for accessing the field via an interface.
+func (v *teams_listTeamsTeamConnectionNodesTeam) GetParent() *TeamSummaryFieldsParentTeam {
+	return v.TeamSummaryFields.Parent
+}
+
 // GetOrganization returns teams_listTeamsTeamConnectionNodesTeam.Organization, and is useful for accessing the field via an interface.
 func (v *teams_listTeamsTeamConnectionNodesTeam) GetOrganization() TeamSummaryFieldsOrganization {
 	return v.TeamSummaryFields.Organization
@@ -74444,6 +74557,10 @@ type __premarshalteams_listTeamsTeamConnectionNodesTeam struct {
 
 	ArchivedAt *string `json:"archivedAt"`
 
+	TriageEnabled bool `json:"triageEnabled"`
+
+	Parent *TeamSummaryFieldsParentTeam `json:"parent"`
+
 	Organization TeamSummaryFieldsOrganization `json:"organization"`
 }
 
@@ -74463,6 +74580,8 @@ func (v *teams_listTeamsTeamConnectionNodesTeam) __premarshalJSON() (*__premarsh
 	retval.Name = v.TeamSummaryFields.Name
 	retval.Description = v.TeamSummaryFields.Description
 	retval.ArchivedAt = v.TeamSummaryFields.ArchivedAt
+	retval.TriageEnabled = v.TeamSummaryFields.TriageEnabled
+	retval.Parent = v.TeamSummaryFields.Parent
 	retval.Organization = v.TeamSummaryFields.Organization
 	return &retval, nil
 }
@@ -77627,6 +77746,16 @@ func (v *user_teamsUserTeamsTeamConnectionNodesTeam) GetArchivedAt() *string {
 	return v.TeamSummaryFields.ArchivedAt
 }
 
+// GetTriageEnabled returns user_teamsUserTeamsTeamConnectionNodesTeam.TriageEnabled, and is useful for accessing the field via an interface.
+func (v *user_teamsUserTeamsTeamConnectionNodesTeam) GetTriageEnabled() bool {
+	return v.TeamSummaryFields.TriageEnabled
+}
+
+// GetParent returns user_teamsUserTeamsTeamConnectionNodesTeam.Parent, and is useful for accessing the field via an interface.
+func (v *user_teamsUserTeamsTeamConnectionNodesTeam) GetParent() *TeamSummaryFieldsParentTeam {
+	return v.TeamSummaryFields.Parent
+}
+
 // GetOrganization returns user_teamsUserTeamsTeamConnectionNodesTeam.Organization, and is useful for accessing the field via an interface.
 func (v *user_teamsUserTeamsTeamConnectionNodesTeam) GetOrganization() TeamSummaryFieldsOrganization {
 	return v.TeamSummaryFields.Organization
@@ -77668,6 +77797,10 @@ type __premarshaluser_teamsUserTeamsTeamConnectionNodesTeam struct {
 
 	ArchivedAt *string `json:"archivedAt"`
 
+	TriageEnabled bool `json:"triageEnabled"`
+
+	Parent *TeamSummaryFieldsParentTeam `json:"parent"`
+
 	Organization TeamSummaryFieldsOrganization `json:"organization"`
 }
 
@@ -77687,6 +77820,8 @@ func (v *user_teamsUserTeamsTeamConnectionNodesTeam) __premarshalJSON() (*__prem
 	retval.Name = v.TeamSummaryFields.Name
 	retval.Description = v.TeamSummaryFields.Description
 	retval.ArchivedAt = v.TeamSummaryFields.ArchivedAt
+	retval.TriageEnabled = v.TeamSummaryFields.TriageEnabled
+	retval.Parent = v.TeamSummaryFields.Parent
 	retval.Organization = v.TeamSummaryFields.Organization
 	return &retval, nil
 }
@@ -78961,6 +79096,16 @@ func (v *viewer_teamsViewerUserTeamsTeamConnectionNodesTeam) GetArchivedAt() *st
 	return v.TeamSummaryFields.ArchivedAt
 }
 
+// GetTriageEnabled returns viewer_teamsViewerUserTeamsTeamConnectionNodesTeam.TriageEnabled, and is useful for accessing the field via an interface.
+func (v *viewer_teamsViewerUserTeamsTeamConnectionNodesTeam) GetTriageEnabled() bool {
+	return v.TeamSummaryFields.TriageEnabled
+}
+
+// GetParent returns viewer_teamsViewerUserTeamsTeamConnectionNodesTeam.Parent, and is useful for accessing the field via an interface.
+func (v *viewer_teamsViewerUserTeamsTeamConnectionNodesTeam) GetParent() *TeamSummaryFieldsParentTeam {
+	return v.TeamSummaryFields.Parent
+}
+
 // GetOrganization returns viewer_teamsViewerUserTeamsTeamConnectionNodesTeam.Organization, and is useful for accessing the field via an interface.
 func (v *viewer_teamsViewerUserTeamsTeamConnectionNodesTeam) GetOrganization() TeamSummaryFieldsOrganization {
 	return v.TeamSummaryFields.Organization
@@ -79002,6 +79147,10 @@ type __premarshalviewer_teamsViewerUserTeamsTeamConnectionNodesTeam struct {
 
 	ArchivedAt *string `json:"archivedAt"`
 
+	TriageEnabled bool `json:"triageEnabled"`
+
+	Parent *TeamSummaryFieldsParentTeam `json:"parent"`
+
 	Organization TeamSummaryFieldsOrganization `json:"organization"`
 }
 
@@ -79021,6 +79170,8 @@ func (v *viewer_teamsViewerUserTeamsTeamConnectionNodesTeam) __premarshalJSON() 
 	retval.Name = v.TeamSummaryFields.Name
 	retval.Description = v.TeamSummaryFields.Description
 	retval.ArchivedAt = v.TeamSummaryFields.ArchivedAt
+	retval.TriageEnabled = v.TeamSummaryFields.TriageEnabled
+	retval.Parent = v.TeamSummaryFields.Parent
 	retval.Organization = v.TeamSummaryFields.Organization
 	return &retval, nil
 }
@@ -82802,6 +82953,11 @@ fragment TeamSummaryFields on Team {
 	name
 	description
 	archivedAt
+	triageEnabled
+	parent {
+		id
+		key
+	}
 	organization {
 		id
 		name
@@ -91784,6 +91940,11 @@ fragment TeamSummaryFields on Team {
 	name
 	description
 	archivedAt
+	triageEnabled
+	parent {
+		id
+		key
+	}
 	organization {
 		id
 		name
@@ -94019,6 +94180,11 @@ fragment TeamSummaryFields on Team {
 	name
 	description
 	archivedAt
+	triageEnabled
+	parent {
+		id
+		key
+	}
 	organization {
 		id
 		name
@@ -94598,6 +94764,11 @@ fragment TeamSummaryFields on Team {
 	name
 	description
 	archivedAt
+	triageEnabled
+	parent {
+		id
+		key
+	}
 	organization {
 		id
 		name
@@ -95973,6 +96144,11 @@ fragment TeamSummaryFields on Team {
 	name
 	description
 	archivedAt
+	triageEnabled
+	parent {
+		id
+		key
+	}
 	organization {
 		id
 		name
@@ -96898,6 +97074,11 @@ fragment TeamSummaryFields on Team {
 	name
 	description
 	archivedAt
+	triageEnabled
+	parent {
+		id
+		key
+	}
 	organization {
 		id
 		name
@@ -98381,6 +98562,11 @@ fragment TeamSummaryFields on Team {
 	name
 	description
 	archivedAt
+	triageEnabled
+	parent {
+		id
+		key
+	}
 	organization {
 		id
 		name
@@ -98910,6 +99096,11 @@ fragment TeamSummaryFields on Team {
 	name
 	description
 	archivedAt
+	triageEnabled
+	parent {
+		id
+		key
+	}
 	organization {
 		id
 		name
