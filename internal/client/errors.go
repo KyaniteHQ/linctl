@@ -19,6 +19,11 @@ var ErrWriteInvalid = errors.New("invalid write")
 // mutation.
 var ErrStateMismatch = errors.New("state mismatch")
 
+// ErrTransitionDenied marks a workflow state change that the credential's
+// transitions allowlist does not list. It is a hard stop: the mutation is never
+// sent, and no other flag or auth can widen the allowlist.
+var ErrTransitionDenied = errors.New("transition denied")
+
 // ErrWriteConflict marks a guarded write whose stable-ID readback exists but
 // does not match the requested fields. It is a hard stop: linctl does not
 // replay the mutation.

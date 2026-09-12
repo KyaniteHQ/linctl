@@ -75,6 +75,10 @@ func Test_WritePin_target_struct_tags_match_pin_keys(t *testing.T) {
 	for index := range targetType.NumField() {
 		tag := targetType.Field(index).Tag.Get("toml")
 		require.NotEmpty(t, tag)
+		if tag == "-" {
+			// Transitions is policy carried on the Target, never a pin key.
+			continue
+		}
 		tags = append(tags, tag)
 	}
 	require.Equal(t, PinFileKeys(), tags)

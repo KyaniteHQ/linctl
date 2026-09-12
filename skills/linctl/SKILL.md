@@ -246,6 +246,7 @@ Blocked:
 - Use `linctl current --json` when the branch carries a Linear issue key.
 - Never print a secret. Report OAuth material as `set` or `missing`.
 - Keep each write pinned to the `[target]` block of `.linctl.toml`. Create it with `linctl init`. Do not add a bypass flag.
+- When `.linctl.toml` has a `[transitions]` table, a state change outside it fails with `TRANSITION_DENIED`. Report the limit. Do not edit the table or pick another state.
 - Name each test resource `linctl-it-<runid>`, then close it or archive it after the check.
 - For the live smoke, run `go tool task live-smoke`.
 - For the browser auth smoke, run `go tool task browser-login-smoke`.
