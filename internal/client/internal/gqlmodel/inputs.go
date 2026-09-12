@@ -236,6 +236,14 @@ type LinearInitiativeCreateInput struct {
 	Status      *string `json:"status,omitempty"`
 }
 
+// LinearAgentActivityCreateInput is the sparse Linear agentActivityCreate payload linctl supports.
+type LinearAgentActivityCreateInput struct {
+	AgentSessionID string          `json:"agentSessionId"`
+	Content        json.RawMessage `json:"content"`
+	Ephemeral      *bool           `json:"ephemeral,omitempty"`
+	Signal         *string         `json:"signal,omitempty"`
+}
+
 // LinearTeamCreateInput is the sparse Linear teamCreate payload linctl supports.
 type LinearTeamCreateInput struct {
 	Name        string  `json:"name"`

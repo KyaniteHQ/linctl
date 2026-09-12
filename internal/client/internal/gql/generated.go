@@ -48,6 +48,178 @@ func (v *ActorBotSummaryFields) GetUserDisplayName() *string { return v.UserDisp
 // GetAvatarUrl returns ActorBotSummaryFields.AvatarUrl, and is useful for accessing the field via an interface.
 func (v *ActorBotSummaryFields) GetAvatarUrl() *string { return v.AvatarUrl }
 
+// AgentActivityCreateAgentActivityCreateAgentActivityPayload includes the requested fields of the GraphQL type AgentActivityPayload.
+// The GraphQL type's documentation follows.
+//
+// The result of an agent activity mutation.
+type AgentActivityCreateAgentActivityCreateAgentActivityPayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The agent activity that was created or updated.
+	AgentActivity AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity `json:"agentActivity"`
+}
+
+// GetSuccess returns AgentActivityCreateAgentActivityCreateAgentActivityPayload.Success, and is useful for accessing the field via an interface.
+func (v *AgentActivityCreateAgentActivityCreateAgentActivityPayload) GetSuccess() bool {
+	return v.Success
+}
+
+// GetAgentActivity returns AgentActivityCreateAgentActivityCreateAgentActivityPayload.AgentActivity, and is useful for accessing the field via an interface.
+func (v *AgentActivityCreateAgentActivityCreateAgentActivityPayload) GetAgentActivity() AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity {
+	return v.AgentActivity
+}
+
+// AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity includes the requested fields of the GraphQL type AgentActivity.
+// The GraphQL type's documentation follows.
+//
+// An activity performed by or directed at an AI coding agent during a session. Activities represent the observable steps of an agent's work, including thoughts, actions (tool calls), responses, prompts from users, errors, and elicitation requests. Each activity belongs to an agent session and is associated with the user who initiated it.
+type AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity struct {
+	AgentActivitySummaryFields `json:"-"`
+}
+
+// GetId returns AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity.Id, and is useful for accessing the field via an interface.
+func (v *AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity) GetId() string {
+	return v.AgentActivitySummaryFields.Id
+}
+
+// GetCreatedAt returns AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity.CreatedAt, and is useful for accessing the field via an interface.
+func (v *AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity) GetCreatedAt() string {
+	return v.AgentActivitySummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity) GetUpdatedAt() string {
+	return v.AgentActivitySummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity) GetArchivedAt() *string {
+	return v.AgentActivitySummaryFields.ArchivedAt
+}
+
+// GetSignal returns AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity.Signal, and is useful for accessing the field via an interface.
+func (v *AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity) GetSignal() *AgentActivitySignal {
+	return v.AgentActivitySummaryFields.Signal
+}
+
+// GetEphemeral returns AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity.Ephemeral, and is useful for accessing the field via an interface.
+func (v *AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity) GetEphemeral() bool {
+	return v.AgentActivitySummaryFields.Ephemeral
+}
+
+// GetAgentSession returns AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity.AgentSession, and is useful for accessing the field via an interface.
+func (v *AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity) GetAgentSession() AgentActivitySummaryFieldsAgentSession {
+	return v.AgentActivitySummaryFields.AgentSession
+}
+
+// GetSourceComment returns AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity.SourceComment, and is useful for accessing the field via an interface.
+func (v *AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity) GetSourceComment() *AgentActivitySummaryFieldsSourceComment {
+	return v.AgentActivitySummaryFields.SourceComment
+}
+
+// GetUser returns AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity.User, and is useful for accessing the field via an interface.
+func (v *AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity) GetUser() AgentActivitySummaryFieldsUser {
+	return v.AgentActivitySummaryFields.User
+}
+
+// GetContent returns AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity.Content, and is useful for accessing the field via an interface.
+func (v *AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity) GetContent() AgentActivitySummaryFieldsContentAgentActivityContent {
+	return v.AgentActivitySummaryFields.Content
+}
+
+func (v *AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.AgentActivitySummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalAgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Signal *AgentActivitySignal `json:"signal"`
+
+	Ephemeral bool `json:"ephemeral"`
+
+	AgentSession AgentActivitySummaryFieldsAgentSession `json:"agentSession"`
+
+	SourceComment *AgentActivitySummaryFieldsSourceComment `json:"sourceComment"`
+
+	User AgentActivitySummaryFieldsUser `json:"user"`
+
+	Content json.RawMessage `json:"content"`
+}
+
+func (v *AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity) __premarshalJSON() (*__premarshalAgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity, error) {
+	var retval __premarshalAgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity
+
+	retval.Id = v.AgentActivitySummaryFields.Id
+	retval.CreatedAt = v.AgentActivitySummaryFields.CreatedAt
+	retval.UpdatedAt = v.AgentActivitySummaryFields.UpdatedAt
+	retval.ArchivedAt = v.AgentActivitySummaryFields.ArchivedAt
+	retval.Signal = v.AgentActivitySummaryFields.Signal
+	retval.Ephemeral = v.AgentActivitySummaryFields.Ephemeral
+	retval.AgentSession = v.AgentActivitySummaryFields.AgentSession
+	retval.SourceComment = v.AgentActivitySummaryFields.SourceComment
+	retval.User = v.AgentActivitySummaryFields.User
+	{
+
+		dst := &retval.Content
+		src := v.AgentActivitySummaryFields.Content
+		var err error
+		*dst, err = __marshalAgentActivitySummaryFieldsContentAgentActivityContent(
+			&src)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"unable to marshal AgentActivityCreateAgentActivityCreateAgentActivityPayloadAgentActivity.AgentActivitySummaryFields.Content: %w", err)
+		}
+	}
+	return &retval, nil
+}
+
+// AgentActivityCreateResponse is returned by AgentActivityCreate on success.
+type AgentActivityCreateResponse struct {
+	// Creates an agent activity.
+	AgentActivityCreate AgentActivityCreateAgentActivityCreateAgentActivityPayload `json:"agentActivityCreate"`
+}
+
+// GetAgentActivityCreate returns AgentActivityCreateResponse.AgentActivityCreate, and is useful for accessing the field via an interface.
+func (v *AgentActivityCreateResponse) GetAgentActivityCreate() AgentActivityCreateAgentActivityCreateAgentActivityPayload {
+	return v.AgentActivityCreate
+}
+
 // A modifier that provides additional instructions on how the activity should be interpreted.
 type AgentActivitySignal string
 
@@ -30071,6 +30243,16 @@ type WorkflowStatesByTeamWorkflowStatesWorkflowStateConnectionPageInfo struct {
 // GetHasNextPage returns WorkflowStatesByTeamWorkflowStatesWorkflowStateConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
 func (v *WorkflowStatesByTeamWorkflowStatesWorkflowStateConnectionPageInfo) GetHasNextPage() bool {
 	return v.HasNextPage
+}
+
+// __AgentActivityCreateInput is used internally by genqlient
+type __AgentActivityCreateInput struct {
+	Input gqlmodel.LinearAgentActivityCreateInput `json:"input"`
+}
+
+// GetInput returns __AgentActivityCreateInput.Input, and is useful for accessing the field via an interface.
+func (v *__AgentActivityCreateInput) GetInput() gqlmodel.LinearAgentActivityCreateInput {
+	return v.Input
 }
 
 // __AttachmentLinkURLInput is used internally by genqlient
@@ -79321,6 +79503,90 @@ func (v *workflowStatesWorkflowStatesWorkflowStateConnectionPageInfo) GetHasNext
 // GetEndCursor returns workflowStatesWorkflowStatesWorkflowStateConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
 func (v *workflowStatesWorkflowStatesWorkflowStateConnectionPageInfo) GetEndCursor() *string {
 	return v.EndCursor
+}
+
+// The mutation executed by AgentActivityCreate.
+const AgentActivityCreate_Operation = `
+mutation AgentActivityCreate ($input: AgentActivityCreateInput!) {
+	agentActivityCreate(input: $input) {
+		success
+		agentActivity {
+			... AgentActivitySummaryFields
+		}
+	}
+}
+fragment AgentActivitySummaryFields on AgentActivity {
+	id
+	createdAt
+	updatedAt
+	archivedAt
+	signal
+	ephemeral
+	agentSession {
+		id
+	}
+	sourceComment {
+		id
+	}
+	user {
+		id
+	}
+	content {
+		__typename
+		... on AgentActivityActionContent {
+			type
+			action
+			parameter
+			result
+		}
+		... on AgentActivityElicitationContent {
+			type
+			body
+		}
+		... on AgentActivityErrorContent {
+			type
+			body
+			reasonCode
+		}
+		... on AgentActivityPromptContent {
+			type
+			body
+		}
+		... on AgentActivityResponseContent {
+			type
+			body
+		}
+		... on AgentActivityThoughtContent {
+			type
+			body
+		}
+	}
+}
+`
+
+func AgentActivityCreate(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	input gqlmodel.LinearAgentActivityCreateInput,
+) (data_ *AgentActivityCreateResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "AgentActivityCreate",
+		Query:  AgentActivityCreate_Operation,
+		Variables: &__AgentActivityCreateInput{
+			Input: input,
+		},
+	}
+
+	data_ = &AgentActivityCreateResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
 }
 
 // The mutation executed by AttachmentLinkURL.

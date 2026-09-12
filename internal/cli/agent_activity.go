@@ -9,13 +9,13 @@ import (
 )
 
 func addAgentActivityCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addReadListGetCommand(
+	command := addReadListGetCommand(
 		ctx,
 		root,
 		options,
 		readListGetSpec[client.AgentActivityList, client.AgentActivitySummary]{
 			Use:       "agent-activity",
-			Short:     "Read Linear AgentActivities",
+			Short:     "Read Linear AgentActivities and emit one into an agent session",
 			ListShort: "List Linear AgentActivities",
 			LimitHelp: "maximum AgentActivities to return",
 			GetUse:    "get AGENT_ACTIVITY_ID",
@@ -25,6 +25,7 @@ func addAgentActivityCommand(ctx context.Context, root *cobra.Command, options *
 			WriteItem: writeAgentActivity,
 		},
 	)
+	addAgentActivityCreateCommand(ctx, command, options)
 }
 
 func writeAgentActivity(command *cobra.Command, options *rootOptions, activity client.AgentActivitySummary) error {

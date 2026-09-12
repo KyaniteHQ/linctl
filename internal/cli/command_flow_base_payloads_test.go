@@ -67,6 +67,15 @@ func commandFlowOrgWritePayload(operation string) (string, bool) {
 	}
 }
 
+func commandFlowAgentPayload(operation string) (string, bool) {
+	switch operation {
+	case "AgentActivityCreate":
+		return `{"agentActivityCreate":{"success":true,"agentActivity":` + commandAgentActivityJSON() + `}}`, true
+	default:
+		return "", false
+	}
+}
+
 func commandFlowTeamMembershipPayload(operation string) (string, bool) {
 	switch operation {
 	case "teamMemberships":

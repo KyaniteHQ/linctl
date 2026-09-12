@@ -37,11 +37,11 @@ Command coverage:
 | --- | --- | --- |
 | `agent-activity list` | `Query.agentActivities` | Read-only |
 | `agent-activity get` | `Query.agentActivity` | Read-only |
-| `agent-activity create` | `Mutation.agentActivityCreate` | Blocked: create writes into an agent session and needs explicit session/comment guard semantics |
+| `agent-activity create` | `Mutation.agentActivityCreate` | Resource-Scoped Write, additive only: the AgentSession is resolved, must be attached to an issue, and that issue is compared against the pinned team and pinned project, failing closed on mismatch. Content is one of Linear's typed activity payloads (thought, elicitation, response, error, action); prompt activities stay blocked |
 | `agent-activity update` | `Mutation.agentActivityUpdate` | Blocked: update must resolve the agent session and activity scope before mutation |
 | `agent-activity archive` | `Mutation.agentActivityArchive` | Blocked: destructive command needs explicit AgentActivity safety semantics |
 
-Only `agent-activity list` and `agent-activity get` are implemented in the current CLI. AgentActivity writes remain deferred until their session and comment guard model is explicit.
+`agent-activity list`, `agent-activity get`, and `agent-activity create` are implemented in the current CLI. AgentActivity update and archive remain deferred until their session guard model is explicit.
 
 ## AgentSkill
 
