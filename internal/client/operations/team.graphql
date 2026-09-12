@@ -233,3 +233,10 @@ mutation TeamCreate($input: TeamCreateInput!) {
     }
   }
 }
+
+mutation TeamDelete($id: String!) {
+  teamDelete(id: $id) {
+    success
+    entityId
+  }
+}

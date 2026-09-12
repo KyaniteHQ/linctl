@@ -3930,7 +3930,7 @@ linctl target
 
 ### linctl team
 
-Read Linear teams and create one
+Read Linear teams, create one, or delete one
 
 ```
 linctl team
@@ -3966,6 +3966,20 @@ Flags:
 
 ```
       --limit int   maximum Cycles to return (default 50)
+```
+
+### linctl team delete
+
+Archive a team and schedule its deletion with --org-wide, which linctl cannot undo
+
+```
+linctl team delete TEAM_ID [flags]
+```
+
+Flags:
+
+```
+      --org-wide   required: a Team is organization-owned and is what a pin names; confirms this write archives a team in the organization and schedules its data for deletion
 ```
 
 ### linctl team get
