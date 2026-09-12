@@ -593,7 +593,7 @@ Planned commands:
 | `label get` | `Query.issueLabel` | Read-only |
 | `label children` | `IssueLabel.children` | Read-only |
 | `label issues` | `IssueLabel.issues` | Read-only |
-| `label create` | `Mutation.issueLabelCreate` with `teamId` from the resolved team, or omitted with `--org-wide` | Team-Scoped Write by default; Org-Scoped Write with `--org-wide`; `--parent` requires the parent label to share the same effective scope |
+| `label create` | `Mutation.issueLabelCreate` with `teamId` from the resolved team, or omitted with `--org-wide` | Team-Scoped Write by default; Org-Scoped Write with `--org-wide`; `--parent` requires the parent label to share the same effective scope; `--is-group` creates a label group and is refused together with `--parent` |
 | `label update` | `Mutation.issueLabelUpdate` | Resource-scoped: resolve the label and compare its team; an organization-wide label (null team) requires `--org-wide` |
 | `label retire` | `Mutation.issueLabelRetire` | Resource-scoped, same resolution and comparison as `label update` |
 | `label restore` | `Mutation.issueLabelRestore` | Resource-scoped, same resolution and comparison as `label update` |

@@ -517,3 +517,29 @@ func Test_RestoreLabel_fails_when_mutation_reports_no_success(t *testing.T) {
 
 	require.ErrorIs(t, err, ErrMutationFailed)
 }
+
+func Test_CreateLabel_sends_is_group_when_asked(t *testing.T) {
+	capture := &variableCapturingClient{inner: issueWriteFakeClient(map[string]string{
+		"IssueLabelCreate": `{"issueLabelCreate":{"success":true,"issueLabel":` +
+			issueLabelJSON("label-id", "Type", "", "") + `}}`,
+	})}
+
+	_, err := CreateLabel(
+		context.Background(), capture, matchingTarget(),
+		LabelCreateRequest{Name: "Type", IsGroup: true, OrgWide: true},
+	)
+
+	require.NoError(t, err)
+	require.Contains(t, capture.variables["IssueLabelCreate"], `"isGroup":true`)
+}
+
+func Test_CreateLabel_refuses_a_group_with_a_parent(t *testing.T) {
+	recorder := &mutationRecordingClient{inner: issueWriteFakeClient(map[string]string{})}
+
+	_, err := CreateLabel(context.Background(), recorder, matchingTarget(),
+		LabelCreateRequest{Name: "Type", IsGroup: true, ParentID: "parent-id", OrgWide: true})
+
+	require.ErrorIs(t, err, ErrWriteInvalid)
+	require.ErrorContains(t, err, "cannot have a parent")
+	require.False(t, recorder.sentOperation("IssueLabelCreate"))
+}
