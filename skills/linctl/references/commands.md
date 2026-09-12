@@ -1252,6 +1252,23 @@ Read Linear initiatives
 linctl initiative
 ```
 
+### linctl initiative create
+
+Create an initiative with --org-wide, because an initiative is always outside the pinned team
+
+```
+linctl initiative create [flags]
+```
+
+Flags:
+
+```
+      --description string   initiative description
+      --name string          initiative name
+      --org-wide             required: an Initiative is organization-owned and sits above every team, so a create cannot land inside the pinned team; confirms this write adds an initiative to the organization
+      --status string        initiative status: Proposed, Planned, Active, Completed, or Canceled; Linear defaults it when unset
+```
+
 ### linctl initiative documents
 
 List documents associated with one Linear initiative

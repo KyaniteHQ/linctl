@@ -862,11 +862,11 @@ Planned commands:
 | `initiative updates` | `Initiative.initiativeUpdates` via `Query.initiative` | Read-only |
 | `initiative documents` | `Initiative.documents` via `Query.initiative` | Read-only |
 | `initiative projects` | `Initiative.projects` via `Query.initiative` | Read-only direct projects |
-| `initiative create` | `Mutation.createInitiative` | Blocked: initiative create needs an explicit organization-scoped safety model |
+| `initiative create` | `Mutation.initiativeCreate` | Org-Scoped Write, additive only: `--org-wide` required, and the created Initiative's organization is compared against the Resolved Target's organization, failing closed on mismatch. An Initiative sits above every team, so there is no team comparison to make; update and archive stay blocked |
 | `initiative update` | `Mutation.updateInitiative` | Blocked: update must resolve and compare the owning organization before mutation |
 | `initiative archive` | `Mutation.archiveInitiative` | Blocked: destructive command needs explicit safety semantics |
 
-Initiative writes are deferred as organization-scoped planning surface.
+Initiative update and archive are deferred as organization-scoped planning surface.
 
 ## InitiativeLabel
 

@@ -49,6 +49,8 @@ func commandFlowOrganizationPayload(operation string) (string, bool) {
 		return `{"organization":{"templates":{"nodes":[` + commandTemplateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "TeamCreate":
 		return `{"teamCreate":{"success":true,"team":` + commandTeamJSON(true) + `}}`, true
+	case "InitiativeCreate":
+		return `{"initiativeCreate":{"success":true,"initiative":` + commandInitiativeJSON() + `}}`, true
 	case "organization_users":
 		return `{"organization":{"users":{"nodes":[` + commandUserJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	default:

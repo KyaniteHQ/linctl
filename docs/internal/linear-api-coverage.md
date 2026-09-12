@@ -16,11 +16,11 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 
 | Surface | Total | Covered/exposed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods with generated local operations | 473 | 160 | 473 |
+| Upstream SDK root methods with generated local operations | 473 | 161 | 473 |
 | Upstream Query root fields used by generated local operations | 171 | 116 | 171 |
-| Upstream Mutation root fields used by generated local operations | 375 | 46 | 375 |
-| Local generated Go operations declared in GraphQL files | 314 | 314 | 314 |
-| Public CLI commands from command inventory | 442 | 329 | 442 |
+| Upstream Mutation root fields used by generated local operations | 375 | 47 | 375 |
+| Local generated Go operations declared in GraphQL files | 315 | 315 | 315 |
+| Public CLI commands from command inventory | 442 | 330 | 442 |
 
 ## Upstream SDK Root Methods
 
@@ -98,7 +98,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `createFavorite` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createGitAutomationState` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createGitAutomationTargetBranch` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `createInitiative` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `createInitiative` | method | generated_operation | local GraphQL operation uses this root |
 | `createInitiativeLabel` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createInitiativeRelation` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createInitiativeToProject` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -780,7 +780,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `inboxNotificationUpdate` | `InboxNotificationUpdatePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `initiativeAddLabel` | `InitiativePayload!` | blocked_needs_design | initiative label mutation needs initiative target pinning and target-mismatch tests |
 | `initiativeArchive` | `InitiativeArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `initiativeCreate` | `InitiativePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `initiativeCreate` | `InitiativePayload!` | generated_operation | root field used by local GraphQL operation |
 | `initiativeDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `initiativeLabelCreate` | `InitiativeLabelPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `initiativeLabelDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
@@ -1072,6 +1072,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `DocumentCreate` | mutation | `documentCreate` | generated | `internal/client/internal/gql/generated.go` |
 | `DocumentUpdate` | mutation | `documentUpdate` | generated | `internal/client/internal/gql/generated.go` |
 | `Documents` | query | `documents` | generated | `internal/client/internal/gql/generated.go` |
+| `InitiativeCreate` | mutation | `initiativeCreate` | generated | `internal/client/internal/gql/generated.go` |
 | `InitiativeLabelRestore` | mutation | `initiativeLabelRestore` | generated | `internal/client/internal/gql/generated.go` |
 | `InitiativeLabelRetire` | mutation | `initiativeLabelRetire` | generated | `internal/client/internal/gql/generated.go` |
 | `InitiativeUpdateCreate` | mutation | `initiativeUpdateCreate` | generated | `internal/client/internal/gql/generated.go` |
@@ -1711,7 +1712,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Initiative | `initiative updates` | `Initiative.initiativeUpdates` via `Query.initiative` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Initiative | `initiative documents` | `Initiative.documents` via `Query.initiative` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Initiative | `initiative projects` | `Initiative.projects` via `Query.initiative` | Read-only direct projects | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
-| Initiative | `initiative create` | `Mutation.createInitiative` | Blocked: initiative create needs an explicit organization-scoped safety model | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
+| Initiative | `initiative create` | `Mutation.initiativeCreate` | Org-Scoped Write, additive only: `--org-wide` required, and the created Initiative's organization is compared against the Resolved Target's organization, failing closed on mismatch. An Initiative sits above every team, so there is no team comparison to make; update and archive stay blocked | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Initiative | `initiative update` | `Mutation.updateInitiative` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
 | Initiative | `initiative archive` | `Mutation.archiveInitiative` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
 | InitiativeLabel | `initiative-label list` | `Query.initiativeLabels` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |

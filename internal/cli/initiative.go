@@ -25,6 +25,7 @@ func addInitiativeCommand(ctx context.Context, root *cobra.Command, options *roo
 			WriteItem: writeInitiative,
 		},
 	)
+	addInitiativeCreateCommand(ctx, command, options)
 	addInitiativeHistoryCommand(ctx, command, options)
 	addInitiativeLinksCommand(ctx, command, options)
 	addSubInitiativesCommand(ctx, command, options)
