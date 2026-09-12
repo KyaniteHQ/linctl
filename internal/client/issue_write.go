@@ -402,6 +402,11 @@ func (guard *guardedClient) updateIssue(ctx context.Context, request IssueUpdate
 	if stateSet && issue.Summary.StateID == stateID && issueUpdateOnlyState(request) {
 		return issue.Summary, nil
 	}
+	if stateSet {
+		if err := guard.requireTransition(issue.Summary, stateID); err != nil {
+			return IssueSummary{}, err
+		}
+	}
 
 	return guard.applyIssueUpdate(ctx, request, description, stateID, stateSet)
 }
@@ -543,6 +548,9 @@ func (guard *guardedClient) startIssue(ctx context.Context, issueID string) (Iss
 	if err != nil {
 		return IssueSummary{}, err
 	}
+	if err := guard.requireTransition(issue, stateID); err != nil {
+		return IssueSummary{}, err
+	}
 
 	input := LinearIssueUpdateInput{StateID: stringPtr(stateID)}
 	if guard.target.Viewer.App {
@@ -663,6 +671,9 @@ func (guard *guardedClient) closeIssue(ctx context.Context, issueID string) (Iss
 	}
 	stateID, err := guard.resolveStateTypeID(ctx, issue.TeamID, "completed")
 	if err != nil {
+		return IssueSummary{}, err
+	}
+	if err := guard.requireTransition(issue, stateID); err != nil {
 		return IssueSummary{}, err
 	}
 

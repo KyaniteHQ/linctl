@@ -21,7 +21,17 @@ type Target struct {
 	TeamKey   string `toml:"team_key"`
 	TeamID    string `toml:"team_id"`
 	ProjectID string `toml:"project_id"`
+	// Transitions is the credential's workflow transition allowlist. It is read
+	// from the top-level [transitions] table, never from [target], so it carries
+	// no toml tag of its own.
+	Transitions Transitions `toml:"-" json:"-"`
 }
+
+// Transitions is a workflow transition allowlist keyed by the current state
+// name. Each entry lists the state names an issue may move to from that state.
+// Names are compared case-insensitively. An empty allowlist permits every
+// transition; a non-empty one refuses any state change it does not list.
+type Transitions map[string][]string
 
 // LoadRequest describes the config sources to load.
 type LoadRequest struct {
@@ -38,13 +48,15 @@ type Resolved struct {
 }
 
 type fileConfig struct {
-	Profile  string                   `toml:"profile"`
-	Target   Target                   `toml:"target"`
-	Profiles map[string]profileConfig `toml:"profiles"`
+	Profile     string                   `toml:"profile"`
+	Target      Target                   `toml:"target"`
+	Transitions Transitions              `toml:"transitions"`
+	Profiles    map[string]profileConfig `toml:"profiles"`
 }
 
 type profileConfig struct {
-	Target Target `toml:"target"`
+	Target      Target      `toml:"target"`
+	Transitions Transitions `toml:"transitions"`
 }
 
 // Load resolves config with repo config overriding global config, then explicit overrides.
@@ -69,6 +81,7 @@ func Load(ctx context.Context, request LoadRequest) (Resolved, error) {
 		return Resolved{}, err
 	}
 	target := mergeTarget(mergeTarget(mergedConfig.Target, profile.Target), request.TargetOverride)
+	target.Transitions = mergeTransitions(mergedConfig.Transitions, profile.Transitions)
 	override := request.TargetOverride
 	if override.OrgID != "" || override.TeamKey != "" || override.TeamID != "" {
 		// An explicit org or team override invalidates a pinned team id: the id
@@ -120,9 +133,10 @@ func readConfigFile(path string) (fileConfig, error) {
 
 func mergeConfig(base fileConfig, overlay fileConfig) fileConfig {
 	merged := fileConfig{
-		Profile:  cmp.Or(overlay.Profile, base.Profile),
-		Target:   mergeTarget(base.Target, overlay.Target),
-		Profiles: map[string]profileConfig{},
+		Profile:     cmp.Or(overlay.Profile, base.Profile),
+		Target:      mergeTarget(base.Target, overlay.Target),
+		Transitions: mergeTransitions(base.Transitions, overlay.Transitions),
+		Profiles:    map[string]profileConfig{},
 	}
 	for name, profile := range base.Profiles {
 		merged.Profiles[name] = profile
@@ -130,7 +144,8 @@ func mergeConfig(base fileConfig, overlay fileConfig) fileConfig {
 	for name, profile := range overlay.Profiles {
 		baseProfile := merged.Profiles[name]
 		merged.Profiles[name] = profileConfig{
-			Target: mergeTarget(baseProfile.Target, profile.Target),
+			Target:      mergeTarget(baseProfile.Target, profile.Target),
+			Transitions: mergeTransitions(baseProfile.Transitions, profile.Transitions),
 		}
 	}
 
@@ -139,9 +154,21 @@ func mergeConfig(base fileConfig, overlay fileConfig) fileConfig {
 
 func mergeTarget(base Target, overlay Target) Target {
 	return Target{
-		OrgID:     cmp.Or(overlay.OrgID, base.OrgID),
-		TeamKey:   cmp.Or(overlay.TeamKey, base.TeamKey),
-		TeamID:    cmp.Or(overlay.TeamID, base.TeamID),
-		ProjectID: cmp.Or(overlay.ProjectID, base.ProjectID),
+		OrgID:       cmp.Or(overlay.OrgID, base.OrgID),
+		TeamKey:     cmp.Or(overlay.TeamKey, base.TeamKey),
+		TeamID:      cmp.Or(overlay.TeamID, base.TeamID),
+		ProjectID:   cmp.Or(overlay.ProjectID, base.ProjectID),
+		Transitions: mergeTransitions(base.Transitions, overlay.Transitions),
 	}
+}
+
+// mergeTransitions replaces the whole allowlist when the overlay sets one: a
+// narrower repo or profile allowlist must not be widened by entries from a
+// broader global one.
+func mergeTransitions(base Transitions, overlay Transitions) Transitions {
+	if len(overlay) > 0 {
+		return overlay
+	}
+
+	return base
 }

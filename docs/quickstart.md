@@ -104,6 +104,13 @@ team_id  = "your-linear-team-id"
 
 # Optional. This makes a write narrower, down to a single project.
 # project_id = "your-linear-project-id"
+
+# Optional. An allowlist of workflow transitions, keyed by the current state
+# name. When present, `issue update --state`, `issue start`, and `issue close`
+# refuse any state change it does not list, with error code TRANSITION_DENIED.
+# [transitions]
+# "Todo" = ["In Progress"]
+# "In Progress" = ["In Review", "Todo"]
 ```
 
 </details>

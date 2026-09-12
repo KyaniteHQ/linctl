@@ -252,3 +252,79 @@ func Test_Load_reports_bad_config_path_error(t *testing.T) {
 
 	require.ErrorContains(t, err, "read config")
 }
+
+func Test_Load_reads_transitions_from_the_repo_config(t *testing.T) {
+	root := t.TempDir()
+	repoPath := filepath.Join(root, "repo.toml")
+	require.NoError(t, os.WriteFile(repoPath, []byte(`
+[target]
+org_id = "repo-org"
+team_key = "REPO"
+team_id = "repo-team"
+
+[transitions]
+"Todo" = ["In Progress"]
+"In Progress" = ["In Review", "Todo"]
+`), 0o600))
+
+	resolved, err := Load(context.Background(), LoadRequest{RepoPath: repoPath})
+
+	require.NoError(t, err)
+	require.Equal(t, Transitions{
+		"Todo":        {"In Progress"},
+		"In Progress": {"In Review", "Todo"},
+	}, resolved.Target.Transitions)
+}
+
+func Test_Load_lets_a_profile_allowlist_replace_the_file_allowlist(t *testing.T) {
+	// A narrower profile allowlist must not be widened by file-level entries,
+	// so the overlay replaces the whole table rather than merging keys.
+	root := t.TempDir()
+	globalPath := filepath.Join(root, "global.toml")
+	repoPath := filepath.Join(root, "repo.toml")
+	require.NoError(t, os.WriteFile(globalPath, []byte(`
+[transitions]
+"Todo" = ["Canceled"]
+
+[profiles.reviewer.transitions]
+"Todo" = ["Backlog"]
+`), 0o600))
+	require.NoError(t, os.WriteFile(repoPath, []byte(`
+profile = "reviewer"
+
+[target]
+org_id = "repo-org"
+team_key = "REPO"
+team_id = "repo-team"
+
+[transitions]
+"Todo" = ["In Progress"]
+"In Review" = ["Done"]
+
+[profiles.reviewer.transitions]
+"In Review" = ["Done", "In Progress"]
+`), 0o600))
+
+	resolved, err := Load(context.Background(), LoadRequest{
+		GlobalPath: globalPath, RepoPath: repoPath, TargetOverride: Target{TeamKey: "OTHER"},
+	})
+
+	require.NoError(t, err)
+	require.Equal(t, Transitions{"In Review": {"Done", "In Progress"}}, resolved.Target.Transitions)
+}
+
+func Test_Load_leaves_transitions_empty_when_no_config_sets_them(t *testing.T) {
+	root := t.TempDir()
+	repoPath := filepath.Join(root, "repo.toml")
+	require.NoError(t, os.WriteFile(repoPath, []byte(`
+[target]
+org_id = "repo-org"
+team_key = "REPO"
+team_id = "repo-team"
+`), 0o600))
+
+	resolved, err := Load(context.Background(), LoadRequest{RepoPath: repoPath})
+
+	require.NoError(t, err)
+	require.Empty(t, resolved.Target.Transitions)
+}
