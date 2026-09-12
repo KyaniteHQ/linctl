@@ -19,6 +19,8 @@ func addLabelCreateCommand(ctx context.Context, root *cobra.Command, options *ro
 			command.Flags().StringVar(&request.Color, "color", "", "label color")
 			command.Flags().StringVar(&request.Description, "description", "", "label description")
 			command.Flags().StringVar(&request.ParentID, "parent", "", "parent label id")
+			command.Flags().BoolVar(&request.IsGroup, "is-group", false,
+				"create a label group, which holds child labels and cannot itself have a parent")
 			command.Flags().BoolVar(
 				&request.OrgWide, "org-wide", false,
 				"create an organization-wide label instead of a team-scoped label",

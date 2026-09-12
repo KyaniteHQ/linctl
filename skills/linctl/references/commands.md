@@ -2511,6 +2511,7 @@ Flags:
 ```
       --color string         label color
       --description string   label description
+      --is-group             create a label group, which holds child labels and cannot itself have a parent
       --name string          label name
       --org-wide             create an organization-wide label instead of a team-scoped label
       --parent string        parent label id

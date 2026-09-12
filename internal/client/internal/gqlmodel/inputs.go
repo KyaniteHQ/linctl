@@ -131,6 +131,7 @@ type LinearIssueLabelCreateInput struct {
 	Color       *string `json:"color,omitempty"`
 	ParentID    *string `json:"parentId,omitempty"`
 	TeamID      *string `json:"teamId,omitempty"`
+	IsGroup     *bool   `json:"isGroup,omitempty"`
 }
 
 // LinearIssueLabelUpdateInput is the sparse Linear issueLabelUpdate payload linctl supports.

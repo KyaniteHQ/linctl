@@ -21,6 +21,7 @@ type LabelCreateRequest struct {
 	Color       string
 	Description string
 	ParentID    string
+	IsGroup     bool
 	OrgWide     bool
 }
 
@@ -48,6 +49,11 @@ func CreateLabel(
 	if err := validateLabelColor(request.Color); err != nil {
 		return LabelSummary{}, err
 	}
+	if request.IsGroup && request.ParentID != "" {
+		return LabelSummary{}, fmt.Errorf(
+			"%w: a label group cannot have a parent; Linear allows one level of nesting", ErrWriteInvalid,
+		)
+	}
 
 	guard, err := newGuardedClient(ctx, graphqlClient, expected)
 	if err != nil {
@@ -68,13 +74,18 @@ func (guard *guardedClient) createLabel(ctx context.Context, request LabelCreate
 		}
 	}
 
-	created, err := gql.IssueLabelCreate(ctx, guard.graphqlClient, boolPtr(false), LinearIssueLabelCreateInput{
+	input := LinearIssueLabelCreateInput{
 		Name:        request.Name,
 		Description: optionalString(request.Description),
 		Color:       optionalString(request.Color),
 		ParentID:    optionalString(request.ParentID),
 		TeamID:      teamID,
-	})
+	}
+	if request.IsGroup {
+		input.IsGroup = &request.IsGroup
+	}
+
+	created, err := gql.IssueLabelCreate(ctx, guard.graphqlClient, boolPtr(false), input)
 	if err != nil {
 		return LabelSummary{}, fmt.Errorf("create label: %w", err)
 	}
