@@ -18,6 +18,9 @@ type TeamCreateRequest struct {
 	Key         string
 	Description string
 	Private     bool
+	ParentID    string
+	Inherit     bool
+	Triage      bool
 	OrgWide     bool
 }
 
@@ -35,6 +38,11 @@ func CreateTeam(
 ) (TeamSummary, error) {
 	if request.Name == "" {
 		return TeamSummary{}, requiredFieldError("name")
+	}
+	if request.Inherit && request.ParentID == "" {
+		return TeamSummary{}, fmt.Errorf(
+			"%w: --inherit-workflow-states needs --parent; only a sub-team inherits states", ErrWriteInvalid,
+		)
 	}
 	if !request.OrgWide {
 		return TeamSummary{}, fmt.Errorf(
@@ -55,13 +63,25 @@ func (guard *guardedClient) createTeam(
 	ctx context.Context,
 	request TeamCreateRequest,
 ) (TeamSummary, error) {
+	if request.ParentID != "" {
+		if err := guard.requireParentTeam(ctx, request.ParentID); err != nil {
+			return TeamSummary{}, err
+		}
+	}
 	input := LinearTeamCreateInput{
 		Name:        request.Name,
 		Key:         optionalString(request.Key),
 		Description: optionalString(request.Description),
+		ParentID:    optionalString(request.ParentID),
 	}
 	if request.Private {
 		input.Private = &request.Private
+	}
+	if request.Inherit {
+		input.InheritWorkflowStatuses = &request.Inherit
+	}
+	if request.Triage {
+		input.TriageEnabled = &request.Triage
 	}
 
 	created, err := gql.TeamCreate(ctx, guard.graphqlClient, input)
@@ -76,8 +96,26 @@ func (guard *guardedClient) createTeam(
 	if err := guard.requireOrganization(summary.OrgID); err != nil {
 		return TeamSummary{}, err
 	}
+	if summary.ParentID != request.ParentID {
+		return TeamSummary{}, fmt.Errorf(
+			"%w: expected parent_id=%q resolved parent_id=%q on created team %s",
+			ErrTargetMismatch, request.ParentID, summary.ParentID, summary.ID,
+		)
+	}
 
 	return summary, nil
+}
+
+// requireParentTeam resolves the parent of a sub-team create and compares its
+// organization to the pinned target, so a sub-team can only hang under a team
+// in the pinned organization.
+func (guard *guardedClient) requireParentTeam(ctx context.Context, parentID string) error {
+	parent, err := GetTeamByID(ctx, guard.graphqlClient, parentID)
+	if err != nil {
+		return err
+	}
+
+	return guard.requireOrganization(parent.OrgID)
 }
 
 // TeamDeleteRequest describes a guarded Team delete. Linear's teamDelete archives

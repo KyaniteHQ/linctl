@@ -264,3 +264,83 @@ func Test_DeleteTeam_fails_when_mutation_reports_no_success(t *testing.T) {
 
 	require.ErrorIs(t, err, ErrMutationFailed)
 }
+
+func subTeamJSON(parentID string, orgID string) string {
+	return `{
+		"id": "created-team-id",
+		"key": "CASE",
+		"name": "case",
+		"description": null,
+		"archivedAt": null,
+		"triageEnabled": true,
+		"parent": {"id": "` + parentID + `", "key": "LIT"},
+		"organization": {"id": "` + orgID + `", "name": "Kyanite", "urlKey": "kyanite"}
+	}`
+}
+
+func Test_CreateTeam_creates_a_sub_team_under_a_parent_in_the_organization(t *testing.T) {
+	recorder := &recordingGraphQLClient{inner: projectWriteFakeClient(map[string]string{
+		"team":       `{"team":` + otherTeamJSON("team-id", "org-id") + `}`,
+		"TeamCreate": `{"teamCreate":{"success":true,"team":` + subTeamJSON("team-id", "org-id") + `}}`,
+	})}
+
+	team, err := CreateTeam(context.Background(), recorder, matchingTarget(), TeamCreateRequest{
+		Name: "case", ParentID: "team-id", Inherit: true, Triage: true, OrgWide: true,
+	})
+
+	require.NoError(t, err)
+	require.Equal(t, "team-id", team.ParentID)
+	require.Equal(t, "LIT", team.ParentKey)
+	require.True(t, team.Triage)
+	require.JSONEq(t, `{"input": {
+		"name": "case", "parentId": "team-id", "inheritWorkflowStatuses": true, "triageEnabled": true
+	}}`, string(recorder.variablesFor(t, "TeamCreate")))
+}
+
+func Test_CreateTeam_refuses_inherit_without_a_parent(t *testing.T) {
+	recorder := &mutationRecordingClient{inner: projectWriteFakeClient(map[string]string{})}
+
+	_, err := CreateTeam(context.Background(), recorder, matchingTarget(), TeamCreateRequest{
+		Name: "case", Inherit: true, OrgWide: true,
+	})
+
+	require.ErrorIs(t, err, ErrWriteInvalid)
+	require.ErrorContains(t, err, "--parent")
+	require.False(t, recorder.sentOperation("TeamCreate"))
+}
+
+func Test_CreateTeam_wraps_parent_lookup_error(t *testing.T) {
+	recorder := &mutationRecordingClient{inner: projectWriteFakeClient(map[string]string{})}
+
+	_, err := CreateTeam(context.Background(), recorder, matchingTarget(), TeamCreateRequest{
+		Name: "case", ParentID: "missing-id", OrgWide: true,
+	})
+
+	require.ErrorContains(t, err, "get team missing-id")
+	require.False(t, recorder.sentOperation("TeamCreate"))
+}
+
+func Test_CreateTeam_refuses_a_parent_in_another_organization(t *testing.T) {
+	recorder := &mutationRecordingClient{inner: projectWriteFakeClient(map[string]string{
+		"team": `{"team":` + otherTeamJSON("ops-team-id", "other-org-id") + `}`,
+	})}
+
+	_, err := CreateTeam(context.Background(), recorder, matchingTarget(), TeamCreateRequest{
+		Name: "case", ParentID: "ops-team-id", OrgWide: true,
+	})
+
+	require.ErrorIs(t, err, ErrTargetMismatch)
+	require.False(t, recorder.sentOperation("TeamCreate"))
+}
+
+func Test_CreateTeam_refuses_a_created_team_whose_parent_differs(t *testing.T) {
+	// The post-write check reads what Linear returned: a team that landed under
+	// a different parent than the one requested is a hard stop.
+	_, err := CreateTeam(context.Background(), projectWriteFakeClient(map[string]string{
+		"team":       `{"team":` + otherTeamJSON("team-id", "org-id") + `}`,
+		"TeamCreate": `{"teamCreate":{"success":true,"team":` + subTeamJSON("other-parent-id", "org-id") + `}}`,
+	}), matchingTarget(), TeamCreateRequest{Name: "case", ParentID: "team-id", OrgWide: true})
+
+	require.ErrorIs(t, err, ErrTargetMismatch)
+	require.ErrorContains(t, err, "parent_id")
+}

@@ -23,6 +23,11 @@ func addTeamCreateCommand(ctx context.Context, root *cobra.Command, options *roo
 				"team key, which Linear derives from the name when you do not set it")
 			command.Flags().StringVar(&request.Description, "description", "", "team description")
 			command.Flags().BoolVar(&request.Private, "private", false, "create the team as a private team")
+			command.Flags().StringVar(&request.ParentID, "parent", "",
+				"parent team id, which makes the new team a sub-team")
+			command.Flags().BoolVar(&request.Inherit, "inherit-workflow-states", false,
+				"inherit workflow states from the parent team; needs --parent")
+			command.Flags().BoolVar(&request.Triage, "triage", false, "enable triage on the new team")
 			command.Flags().BoolVar(&request.OrgWide, "org-wide", false, orgWideTeamHelp)
 		},
 		Run: func(

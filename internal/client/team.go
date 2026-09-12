@@ -16,6 +16,9 @@ type TeamSummary struct {
 	Name        string `json:"name"`
 	Description string `json:"description,omitempty"`
 	ArchivedAt  string `json:"archived_at,omitempty"`
+	Triage      bool   `json:"triage"`
+	ParentID    string `json:"parent_id,omitempty"`
+	ParentKey   string `json:"parent_key,omitempty"`
 	OrgID       string `json:"org_id"`
 	OrgName     string `json:"org_name"`
 	OrgURLKey   string `json:"org_url_key"`
@@ -525,16 +528,23 @@ func teamTemplatesNodeSummary(template teamTemplatesNode) TemplateSummary {
 }
 
 func teamSummary(team gql.TeamSummaryFields) TeamSummary {
-	return TeamSummary{
+	summary := TeamSummary{
 		ID:          team.Id,
 		Key:         team.Key,
 		Name:        team.Name,
 		Description: stringValue(team.Description),
 		ArchivedAt:  stringValue(team.ArchivedAt),
+		Triage:      team.TriageEnabled,
 		OrgID:       team.Organization.Id,
 		OrgName:     team.Organization.Name,
 		OrgURLKey:   team.Organization.UrlKey,
 	}
+	if team.Parent != nil {
+		summary.ParentID = team.Parent.Id
+		summary.ParentKey = team.Parent.Key
+	}
+
+	return summary
 }
 
 func gitAutomationStateSummary(fields gql.GitAutomationStateSummaryFields) GitAutomationStateSummary {

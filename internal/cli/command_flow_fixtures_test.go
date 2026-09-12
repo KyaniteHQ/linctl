@@ -185,11 +185,28 @@ func (client commandFlowFakeClient) MakeRequest(
 	if crossTeamPayload, ok := commandFlowCrossTeamPayload(request); ok {
 		payload = crossTeamPayload
 	}
+	if subTeamPayload, ok := commandFlowSubTeamPayload(request); ok {
+		payload = subTeamPayload
+	}
 	if issuePayload, ok := commandFlowIssueLookupPayload(request); ok {
 		payload = issuePayload
 	}
 
 	return json.Unmarshal([]byte(`{"data":`+payload+`}`), response)
+}
+
+// commandFlowSubTeamPayload answers a TeamCreate that names a parent with a
+// team that carries that parent, so the post-write parent check can pass.
+func commandFlowSubTeamPayload(request *graphql.Request) (string, bool) {
+	if request.OpName != "TeamCreate" {
+		return "", false
+	}
+	parentID, err := requestVariable[string](request, "input", "parentId")
+	if err != nil {
+		return "", false
+	}
+
+	return `{"teamCreate":{"success":true,"team":` + commandSubTeamJSON(parentID) + `}}`, true
 }
 
 func commandFlowIssueLookupPayload(request *graphql.Request) (string, bool) {

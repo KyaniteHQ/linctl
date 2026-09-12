@@ -617,7 +617,7 @@ Planned commands:
 | --- | --- | --- |
 | `team list` | `Query.teams` | Read-only |
 | `team get` | `Query.team` | Read-only |
-| `team create` | `Mutation.teamCreate` | Org-Scoped Write, additive only: `--org-wide` required, and the created Team's organization is compared against the Resolved Target's organization, failing closed on mismatch. A Team is what a pin names, so there is no team comparison to make; membership and metadata writes stay blocked |
+| `team create` | `Mutation.teamCreate` | Org-Scoped Write, additive only: `--org-wide` required, and the created Team's organization is compared against the Resolved Target's organization, failing closed on mismatch. A Team is what a pin names, so there is no team comparison to make. `--parent` resolves the parent and compares its organization, and the created Team's parent is compared against the request; `--inherit-workflow-states` (a field Linear marks internal in its schema) and `--triage` ride on the same create. Membership and metadata writes stay blocked |
 | `team update` | `Mutation.teamUpdate` | Blocked: team metadata writes need stronger authority checks than ordinary target comparison |
 | `team delete` | `Mutation.teamDelete` | Org-Scoped Write, irreversible: `--org-wide` required, the Team is resolved and its organization compared against the Resolved Target's organization, and the pinned Team itself is refused. Linear archives the Team and schedules its data for deletion; linctl has no restore path |
 | `team cycles` | `Team.cycles` | Read-only |

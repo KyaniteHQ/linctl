@@ -149,3 +149,21 @@ func Test_TeamDelete_writes_the_deletion(t *testing.T) {
 	require.Contains(t, stdout.String(), "cannot be undone via linctl")
 	require.Empty(t, stderr.String())
 }
+
+// Test_TeamCreate_writes_a_sub_team is the allow arm for --parent: the fixture
+// parent team-id is in the pinned organization.
+func Test_TeamCreate_writes_a_sub_team(t *testing.T) {
+	restore := useCommandRuntime(t, commandFlowFakeClient{})
+	defer restore()
+
+	var stdout, stderr bytes.Buffer
+	err := execute(context.Background(), BuildInfo{}, strings.NewReader(""), &stdout, &stderr,
+		[]string{
+			"team", "create", "--name", "case", "--parent", "team-id", "--inherit-workflow-states",
+			"--triage", "--org-wide",
+		})
+
+	require.NoError(t, err)
+	require.Contains(t, stdout.String(), "sub-team-id CASE case")
+	require.Empty(t, stderr.String())
+}
