@@ -247,10 +247,13 @@ type LinearAgentActivityCreateInput struct {
 
 // LinearTeamCreateInput is the sparse Linear teamCreate payload linctl supports.
 type LinearTeamCreateInput struct {
-	Name        string  `json:"name"`
-	Key         *string `json:"key,omitempty"`
-	Description *string `json:"description,omitempty"`
-	Private     *bool   `json:"private,omitempty"`
+	Name                    string  `json:"name"`
+	Key                     *string `json:"key,omitempty"`
+	Description             *string `json:"description,omitempty"`
+	Private                 *bool   `json:"private,omitempty"`
+	ParentID                *string `json:"parentId,omitempty"`
+	InheritWorkflowStatuses *bool   `json:"inheritWorkflowStatuses,omitempty"`
+	TriageEnabled           *bool   `json:"triageEnabled,omitempty"`
 }
 
 // LinearTemplateCreateInput is the sparse Linear templateCreate payload linctl supports.
