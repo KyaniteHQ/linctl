@@ -63,3 +63,12 @@ fragment AgentActivitySummaryFields on AgentActivity {
     }
   }
 }
+
+mutation AgentActivityCreate($input: AgentActivityCreateInput!) {
+  agentActivityCreate(input: $input) {
+    success
+    agentActivity {
+      ...AgentActivitySummaryFields
+    }
+  }
+}

@@ -16,11 +16,11 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 
 | Surface | Total | Covered/exposed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods with generated local operations | 473 | 162 | 473 |
+| Upstream SDK root methods with generated local operations | 473 | 163 | 473 |
 | Upstream Query root fields used by generated local operations | 171 | 116 | 171 |
-| Upstream Mutation root fields used by generated local operations | 375 | 48 | 375 |
-| Local generated Go operations declared in GraphQL files | 316 | 316 | 316 |
-| Public CLI commands from command inventory | 442 | 331 | 442 |
+| Upstream Mutation root fields used by generated local operations | 375 | 49 | 375 |
+| Local generated Go operations declared in GraphQL files | 317 | 317 | 317 |
+| Public CLI commands from command inventory | 442 | 332 | 442 |
 
 ## Upstream SDK Root Methods
 
@@ -79,7 +79,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `commentUnresolve` | method | generated_operation | local GraphQL operation uses this root |
 | `comments` | method | generated_operation | local GraphQL operation uses this root |
 | `constructor` | method | blocked_needs_design | SDK method is not matched to a GraphQL root field; explicit classification required |
-| `createAgentActivity` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `createAgentActivity` | method | generated_operation | local GraphQL operation uses this root |
 | `createAgentSkill` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createAttachment` | method | generated_operation | local GraphQL operation uses this root |
 | `createComment` | method | generated_operation | local GraphQL operation uses this root |
@@ -680,7 +680,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 
 | Field | Return type | Status | Evidence |
 | --- | --- | --- | --- |
-| `agentActivityCreate` | `AgentActivityPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `agentActivityCreate` | `AgentActivityPayload!` | generated_operation | root field used by local GraphQL operation |
 | `agentActivityCreatePrompt` | `AgentActivityPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `agentActivityDeleteQueued` | `AgentActivityPayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `agentActivitySendQueued` | `AgentActivityPayload!` | blocked_needs_design | mutation needs product and safety design |
@@ -1060,6 +1060,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 
 | Operation | Kind | Root fields | Status | Evidence |
 | --- | --- | --- | --- | --- |
+| `AgentActivityCreate` | mutation | `agentActivityCreate` | generated | `internal/client/internal/gql/generated.go` |
 | `AttachmentLinkURL` | mutation | `attachmentCreate` | generated | `internal/client/internal/gql/generated.go` |
 | `CommentDelete` | mutation | `commentDelete` | generated | `internal/client/internal/gql/generated.go` |
 | `CommentResolve` | mutation | `commentResolve` | generated | `internal/client/internal/gql/generated.go` |
@@ -1395,7 +1396,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Core target | `rate-limit status` | `Query.rateLimitStatus` | Read-only quota status for the authenticated Linear client. | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | AgentActivity | `agent-activity list` | `Query.agentActivities` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | AgentActivity | `agent-activity get` | `Query.agentActivity` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
-| AgentActivity | `agent-activity create` | `Mutation.agentActivityCreate` | Blocked: create writes into an agent session and needs explicit session/comment guard semantics | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
+| AgentActivity | `agent-activity create` | `Mutation.agentActivityCreate` | Resource-Scoped Write, additive only: the AgentSession is resolved, must be attached to an issue, and that issue is compared against the pinned team and pinned project, failing closed on mismatch. Content is one of Linear's typed activity payloads (thought, elicitation, response, error, action); prompt activities stay blocked | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | AgentActivity | `agent-activity update` | `Mutation.agentActivityUpdate` | Blocked: update must resolve the agent session and activity scope before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
 | AgentActivity | `agent-activity archive` | `Mutation.agentActivityArchive` | Blocked: destructive command needs explicit AgentActivity safety semantics | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
 | AgentSkill | `agent-skill list` | `Query.agentSkills` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
