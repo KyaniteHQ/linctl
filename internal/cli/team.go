@@ -9,8 +9,9 @@ import (
 )
 
 func addTeamCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	teamCommand := newGroupCommand("team", "Read Linear teams and create one")
+	teamCommand := newGroupCommand("team", "Read Linear teams, create one, or delete one")
 	addTeamCreateCommand(ctx, teamCommand, options)
+	addTeamDeleteCommand(ctx, teamCommand, options)
 	addTeamListCommand(ctx, teamCommand, options)
 	addTeamGetCommand(ctx, teamCommand, options)
 	addTeamCyclesCommand(ctx, teamCommand, options)

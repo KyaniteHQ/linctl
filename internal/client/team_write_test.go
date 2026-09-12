@@ -151,3 +151,116 @@ func Test_CreateTeam_proceeds_when_pinned_project_present(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "created-team-id", team.ID)
 }
+
+func teamDeletePayloads(orgID string) map[string]string {
+	return map[string]string{
+		"team":       `{"team":` + otherTeamJSON("ops-team-id", orgID) + `}`,
+		"TeamDelete": `{"teamDelete":{"success":true,"entityId":"ops-team-id"}}`,
+	}
+}
+
+func otherTeamJSON(id string, orgID string) string {
+	return `{
+		"id": "` + id + `",
+		"key": "OPS",
+		"name": "Operations",
+		"description": null,
+		"archivedAt": null,
+		"organization": {"id": "` + orgID + `", "name": "Kyanite", "urlKey": "kyanite"}
+	}`
+}
+
+func Test_DeleteTeam_deletes_another_team_in_the_organization(t *testing.T) {
+	id, err := DeleteTeam(
+		context.Background(), projectWriteFakeClient(teamDeletePayloads("org-id")), matchingTarget(),
+		TeamDeleteRequest{ID: "ops-team-id", OrgWide: true},
+	)
+
+	require.NoError(t, err)
+	require.Equal(t, "ops-team-id", id)
+}
+
+func Test_DeleteTeam_requires_id(t *testing.T) {
+	recorder := &mutationRecordingClient{inner: projectWriteFakeClient(map[string]string{})}
+
+	_, err := DeleteTeam(context.Background(), recorder, matchingTarget(), TeamDeleteRequest{OrgWide: true})
+
+	require.ErrorIs(t, err, ErrWriteInvalid)
+	require.False(t, recorder.sentOperation("TeamDelete"))
+}
+
+func Test_DeleteTeam_refuses_without_org_wide(t *testing.T) {
+	recorder := &mutationRecordingClient{inner: projectWriteFakeClient(map[string]string{})}
+
+	_, err := DeleteTeam(context.Background(), recorder, matchingTarget(), TeamDeleteRequest{ID: "ops-team-id"})
+
+	require.ErrorIs(t, err, ErrTargetMismatch)
+	require.False(t, recorder.sentOperation("TeamDelete"))
+}
+
+func Test_DeleteTeam_refuses_when_target_unresolved(t *testing.T) {
+	recorder := &mutationRecordingClient{inner: projectWriteFakeClient(map[string]string{})}
+
+	_, err := DeleteTeam(context.Background(), recorder, config.Target{
+		OrgID: "org-id", TeamKey: "WRONG", TeamID: "wrong-id",
+	}, TeamDeleteRequest{ID: "ops-team-id", OrgWide: true})
+
+	require.ErrorIs(t, err, ErrTargetMismatch)
+	require.False(t, recorder.sentOperation("TeamDelete"))
+}
+
+func Test_DeleteTeam_wraps_team_lookup_error(t *testing.T) {
+	recorder := &mutationRecordingClient{inner: projectWriteFakeClient(map[string]string{})}
+
+	_, err := DeleteTeam(context.Background(), recorder, matchingTarget(), TeamDeleteRequest{
+		ID: "ops-team-id", OrgWide: true,
+	})
+
+	require.ErrorContains(t, err, "get team ops-team-id")
+	require.False(t, recorder.sentOperation("TeamDelete"))
+}
+
+func Test_DeleteTeam_refuses_a_team_in_another_organization(t *testing.T) {
+	recorder := &mutationRecordingClient{inner: projectWriteFakeClient(teamDeletePayloads("other-org-id"))}
+
+	_, err := DeleteTeam(context.Background(), recorder, matchingTarget(), TeamDeleteRequest{
+		ID: "ops-team-id", OrgWide: true,
+	})
+
+	require.ErrorIs(t, err, ErrTargetMismatch)
+	require.False(t, recorder.sentOperation("TeamDelete"))
+}
+
+func Test_DeleteTeam_refuses_the_pinned_team(t *testing.T) {
+	// Deleting the pinned team would leave every later write with no team to
+	// compare against, so the pin's own subject is a hard stop.
+	recorder := &mutationRecordingClient{inner: projectWriteFakeClient(map[string]string{
+		"team": `{"team":` + otherTeamJSON("team-id", "org-id") + `}`,
+	})}
+
+	_, err := DeleteTeam(context.Background(), recorder, matchingTarget(), TeamDeleteRequest{
+		ID: "team-id", OrgWide: true,
+	})
+
+	require.ErrorIs(t, err, ErrTargetMismatch)
+	require.ErrorContains(t, err, "pinned team")
+	require.False(t, recorder.sentOperation("TeamDelete"))
+}
+
+func Test_DeleteTeam_wraps_mutation_error(t *testing.T) {
+	_, err := DeleteTeam(context.Background(), projectWriteFakeClient(map[string]string{
+		"team": `{"team":` + otherTeamJSON("ops-team-id", "org-id") + `}`,
+	}), matchingTarget(), TeamDeleteRequest{ID: "ops-team-id", OrgWide: true})
+
+	require.ErrorContains(t, err, "delete team ops-team-id")
+	require.NotErrorIs(t, err, ErrTargetMismatch)
+}
+
+func Test_DeleteTeam_fails_when_mutation_reports_no_success(t *testing.T) {
+	_, err := DeleteTeam(context.Background(), projectWriteFakeClient(map[string]string{
+		"team":       `{"team":` + otherTeamJSON("ops-team-id", "org-id") + `}`,
+		"TeamDelete": `{"teamDelete":{"success":false,"entityId":"ops-team-id"}}`,
+	}), matchingTarget(), TeamDeleteRequest{ID: "ops-team-id", OrgWide: true})
+
+	require.ErrorIs(t, err, ErrMutationFailed)
+}

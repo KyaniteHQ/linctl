@@ -33,3 +33,35 @@ func addTeamCreateCommand(ctx context.Context, root *cobra.Command, options *roo
 		Write: writeTeam,
 	})
 }
+
+const orgWideTeamDeleteHelp = "required: a Team is organization-owned and is what a pin names; confirms this " +
+	"write archives a team in the organization and schedules its data for deletion"
+
+func addTeamDeleteCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	request := client.TeamDeleteRequest{}
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[string]{
+		Use:          "delete TEAM_ID",
+		Short:        "Archive a team and schedule its deletion with --org-wide, which linctl cannot undo",
+		Args:         cobra.ExactArgs(1),
+		Irreversible: true,
+		Configure: func(command *cobra.Command) {
+			command.Flags().BoolVar(&request.OrgWide, "org-wide", false, orgWideTeamDeleteHelp)
+		},
+		Run: func(ctx context.Context, _ *cobra.Command, runtime commandRuntime, args []string) (string, error) {
+			request.ID = args[0]
+
+			return client.DeleteTeam(ctx, runtime.graphqlClient, runtime.config.Target, request)
+		},
+		Write: writeTeamDeletion,
+	})
+}
+
+// writeTeamDeletion overrides the human deletion line with an explicit
+// irreversibility warning: Linear archives the team and schedules its data for
+// deletion, and there is no restore path via linctl.
+func writeTeamDeletion(command *cobra.Command, options *rootOptions, id string) error {
+	return writeDeletionMessage(
+		command, options, id,
+		"archived team "+id+" and scheduled its deletion: cannot be undone via linctl",
+	)
+}

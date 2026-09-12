@@ -546,6 +546,9 @@ func commandFlowPayload(operation string, fake commandFlowFakeClient) (string, e
 		return payload, nil
 	}
 
+	if payload, ok := commandFlowOrgWritePayload(operation); ok {
+		return payload, nil
+	}
 	if payload, ok := commandFlowTeamMembershipPayload(operation); ok {
 		return payload, nil
 	}

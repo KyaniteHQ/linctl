@@ -28079,6 +28079,32 @@ func (v *TeamCreateTeamCreateTeamPayloadTeam) __premarshalJSON() (*__premarshalT
 	return &retval, nil
 }
 
+// TeamDeleteResponse is returned by TeamDelete on success.
+type TeamDeleteResponse struct {
+	// Archives a team and schedules its data for deletion. Requires team owner or workspace admin permissions.
+	TeamDelete TeamDeleteTeamDeleteDeletePayload `json:"teamDelete"`
+}
+
+// GetTeamDelete returns TeamDeleteResponse.TeamDelete, and is useful for accessing the field via an interface.
+func (v *TeamDeleteResponse) GetTeamDelete() TeamDeleteTeamDeleteDeletePayload { return v.TeamDelete }
+
+// TeamDeleteTeamDeleteDeletePayload includes the requested fields of the GraphQL type DeletePayload.
+// The GraphQL type's documentation follows.
+//
+// A generic payload return from entity deletion mutations.
+type TeamDeleteTeamDeleteDeletePayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The identifier of the deleted entity.
+	EntityId string `json:"entityId"`
+}
+
+// GetSuccess returns TeamDeleteTeamDeleteDeletePayload.Success, and is useful for accessing the field via an interface.
+func (v *TeamDeleteTeamDeleteDeletePayload) GetSuccess() bool { return v.Success }
+
+// GetEntityId returns TeamDeleteTeamDeleteDeletePayload.EntityId, and is useful for accessing the field via an interface.
+func (v *TeamDeleteTeamDeleteDeletePayload) GetEntityId() string { return v.EntityId }
+
 // TeamMembershipSummaryFields includes the GraphQL fields of TeamMembership requested by the fragment TeamMembershipSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -30640,6 +30666,14 @@ type __TeamCreateInput struct {
 
 // GetInput returns __TeamCreateInput.Input, and is useful for accessing the field via an interface.
 func (v *__TeamCreateInput) GetInput() gqlmodel.LinearTeamCreateInput { return v.Input }
+
+// __TeamDeleteInput is used internally by genqlient
+type __TeamDeleteInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __TeamDeleteInput.Id, and is useful for accessing the field via an interface.
+func (v *__TeamDeleteInput) GetId() string { return v.Id }
 
 // __TeamsInput is used internally by genqlient
 type __TeamsInput struct {
@@ -82524,6 +82558,41 @@ func TeamCreate(
 	}
 
 	data_ = &TeamCreateResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by TeamDelete.
+const TeamDelete_Operation = `
+mutation TeamDelete ($id: String!) {
+	teamDelete(id: $id) {
+		success
+		entityId
+	}
+}
+`
+
+func TeamDelete(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *TeamDeleteResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "TeamDelete",
+		Query:  TeamDelete_Operation,
+		Variables: &__TeamDeleteInput{
+			Id: id,
+		},
+	}
+
+	data_ = &TeamDeleteResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
