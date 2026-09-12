@@ -4558,6 +4558,157 @@ var AllGitAutomationStates = []GitAutomationStates{
 	GitAutomationStatesStart,
 }
 
+// InitiativeCreateInitiativeCreateInitiativePayload includes the requested fields of the GraphQL type InitiativePayload.
+// The GraphQL type's documentation follows.
+//
+// The payload returned by the initiative mutations.
+type InitiativeCreateInitiativeCreateInitiativePayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The initiative that was created or updated.
+	Initiative InitiativeCreateInitiativeCreateInitiativePayloadInitiative `json:"initiative"`
+}
+
+// GetSuccess returns InitiativeCreateInitiativeCreateInitiativePayload.Success, and is useful for accessing the field via an interface.
+func (v *InitiativeCreateInitiativeCreateInitiativePayload) GetSuccess() bool { return v.Success }
+
+// GetInitiative returns InitiativeCreateInitiativeCreateInitiativePayload.Initiative, and is useful for accessing the field via an interface.
+func (v *InitiativeCreateInitiativeCreateInitiativePayload) GetInitiative() InitiativeCreateInitiativeCreateInitiativePayloadInitiative {
+	return v.Initiative
+}
+
+// InitiativeCreateInitiativeCreateInitiativePayloadInitiative includes the requested fields of the GraphQL type Initiative.
+// The GraphQL type's documentation follows.
+//
+// An initiative is a high-level strategic grouping of projects toward a business goal. Initiatives can contain multiple projects, have their own status updates and health tracking, and can be organized hierarchically with parent-child relationships.
+type InitiativeCreateInitiativeCreateInitiativePayloadInitiative struct {
+	InitiativeSummaryFields `json:"-"`
+}
+
+// GetId returns InitiativeCreateInitiativeCreateInitiativePayloadInitiative.Id, and is useful for accessing the field via an interface.
+func (v *InitiativeCreateInitiativeCreateInitiativePayloadInitiative) GetId() string {
+	return v.InitiativeSummaryFields.Id
+}
+
+// GetName returns InitiativeCreateInitiativeCreateInitiativePayloadInitiative.Name, and is useful for accessing the field via an interface.
+func (v *InitiativeCreateInitiativeCreateInitiativePayloadInitiative) GetName() string {
+	return v.InitiativeSummaryFields.Name
+}
+
+// GetDescription returns InitiativeCreateInitiativeCreateInitiativePayloadInitiative.Description, and is useful for accessing the field via an interface.
+func (v *InitiativeCreateInitiativeCreateInitiativePayloadInitiative) GetDescription() *string {
+	return v.InitiativeSummaryFields.Description
+}
+
+// GetStatus returns InitiativeCreateInitiativeCreateInitiativePayloadInitiative.Status, and is useful for accessing the field via an interface.
+func (v *InitiativeCreateInitiativeCreateInitiativePayloadInitiative) GetStatus() InitiativeStatus {
+	return v.InitiativeSummaryFields.Status
+}
+
+// GetPriority returns InitiativeCreateInitiativeCreateInitiativePayloadInitiative.Priority, and is useful for accessing the field via an interface.
+func (v *InitiativeCreateInitiativeCreateInitiativePayloadInitiative) GetPriority() int {
+	return v.InitiativeSummaryFields.Priority
+}
+
+// GetTargetDate returns InitiativeCreateInitiativeCreateInitiativePayloadInitiative.TargetDate, and is useful for accessing the field via an interface.
+func (v *InitiativeCreateInitiativeCreateInitiativePayloadInitiative) GetTargetDate() *string {
+	return v.InitiativeSummaryFields.TargetDate
+}
+
+// GetSlugId returns InitiativeCreateInitiativeCreateInitiativePayloadInitiative.SlugId, and is useful for accessing the field via an interface.
+func (v *InitiativeCreateInitiativeCreateInitiativePayloadInitiative) GetSlugId() string {
+	return v.InitiativeSummaryFields.SlugId
+}
+
+// GetUrl returns InitiativeCreateInitiativeCreateInitiativePayloadInitiative.Url, and is useful for accessing the field via an interface.
+func (v *InitiativeCreateInitiativeCreateInitiativePayloadInitiative) GetUrl() string {
+	return v.InitiativeSummaryFields.Url
+}
+
+// GetOrganization returns InitiativeCreateInitiativeCreateInitiativePayloadInitiative.Organization, and is useful for accessing the field via an interface.
+func (v *InitiativeCreateInitiativeCreateInitiativePayloadInitiative) GetOrganization() InitiativeSummaryFieldsOrganization {
+	return v.InitiativeSummaryFields.Organization
+}
+
+func (v *InitiativeCreateInitiativeCreateInitiativePayloadInitiative) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*InitiativeCreateInitiativeCreateInitiativePayloadInitiative
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.InitiativeCreateInitiativeCreateInitiativePayloadInitiative = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.InitiativeSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalInitiativeCreateInitiativeCreateInitiativePayloadInitiative struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	Status InitiativeStatus `json:"status"`
+
+	Priority int `json:"priority"`
+
+	TargetDate *string `json:"targetDate"`
+
+	SlugId string `json:"slugId"`
+
+	Url string `json:"url"`
+
+	Organization InitiativeSummaryFieldsOrganization `json:"organization"`
+}
+
+func (v *InitiativeCreateInitiativeCreateInitiativePayloadInitiative) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *InitiativeCreateInitiativeCreateInitiativePayloadInitiative) __premarshalJSON() (*__premarshalInitiativeCreateInitiativeCreateInitiativePayloadInitiative, error) {
+	var retval __premarshalInitiativeCreateInitiativeCreateInitiativePayloadInitiative
+
+	retval.Id = v.InitiativeSummaryFields.Id
+	retval.Name = v.InitiativeSummaryFields.Name
+	retval.Description = v.InitiativeSummaryFields.Description
+	retval.Status = v.InitiativeSummaryFields.Status
+	retval.Priority = v.InitiativeSummaryFields.Priority
+	retval.TargetDate = v.InitiativeSummaryFields.TargetDate
+	retval.SlugId = v.InitiativeSummaryFields.SlugId
+	retval.Url = v.InitiativeSummaryFields.Url
+	retval.Organization = v.InitiativeSummaryFields.Organization
+	return &retval, nil
+}
+
+// InitiativeCreateResponse is returned by InitiativeCreate on success.
+type InitiativeCreateResponse struct {
+	// Creates a new initiative.
+	InitiativeCreate InitiativeCreateInitiativeCreateInitiativePayload `json:"initiativeCreate"`
+}
+
+// GetInitiativeCreate returns InitiativeCreateResponse.InitiativeCreate, and is useful for accessing the field via an interface.
+func (v *InitiativeCreateResponse) GetInitiativeCreate() InitiativeCreateInitiativeCreateInitiativePayload {
+	return v.InitiativeCreate
+}
+
 // InitiativeHistorySummaryFields includes the GraphQL fields of InitiativeHistory requested by the fragment InitiativeHistorySummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -30023,6 +30174,14 @@ func (v *__DocumentsInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __DocumentsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__DocumentsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __InitiativeCreateInput is used internally by genqlient
+type __InitiativeCreateInput struct {
+	Input gqlmodel.LinearInitiativeCreateInput `json:"input"`
+}
+
+// GetInput returns __InitiativeCreateInput.Input, and is useful for accessing the field via an interface.
+func (v *__InitiativeCreateInput) GetInput() gqlmodel.LinearInitiativeCreateInput { return v.Input }
 
 // __InitiativeLabelRestoreInput is used internally by genqlient
 type __InitiativeLabelRestoreInput struct {
@@ -79819,6 +79978,56 @@ func Documents(
 	}
 
 	data_ = &DocumentsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by InitiativeCreate.
+const InitiativeCreate_Operation = `
+mutation InitiativeCreate ($input: InitiativeCreateInput!) {
+	initiativeCreate(input: $input) {
+		success
+		initiative {
+			... InitiativeSummaryFields
+		}
+	}
+}
+fragment InitiativeSummaryFields on Initiative {
+	id
+	name
+	description
+	status
+	priority
+	targetDate
+	slugId
+	url
+	organization {
+		id
+	}
+}
+`
+
+func InitiativeCreate(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	input gqlmodel.LinearInitiativeCreateInput,
+) (data_ *InitiativeCreateResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "InitiativeCreate",
+		Query:  InitiativeCreate_Operation,
+		Variables: &__InitiativeCreateInput{
+			Input: input,
+		},
+	}
+
+	data_ = &InitiativeCreateResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

@@ -135,3 +135,12 @@ fragment InitiativeHistorySummaryFields on InitiativeHistory {
     id
   }
 }
+
+mutation InitiativeCreate($input: InitiativeCreateInput!) {
+  initiativeCreate(input: $input) {
+    success
+    initiative {
+      ...InitiativeSummaryFields
+    }
+  }
+}

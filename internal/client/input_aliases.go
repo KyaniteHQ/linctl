@@ -65,6 +65,9 @@ type LinearNotificationUpdateInput = gqlmodel.LinearNotificationUpdateInput
 // LinearProjectUpdateInput is the client compatibility alias for the GraphQL input model.
 type LinearProjectUpdateInput = gqlmodel.LinearProjectUpdateInput
 
+// LinearInitiativeCreateInput is the client compatibility alias for the GraphQL input model.
+type LinearInitiativeCreateInput = gqlmodel.LinearInitiativeCreateInput
+
 // LinearTeamCreateInput is the client compatibility alias for the GraphQL input model.
 type LinearTeamCreateInput = gqlmodel.LinearTeamCreateInput
 
