@@ -174,6 +174,11 @@ func addAuthAppCommand(ctx context.Context, root *cobra.Command, options *rootOp
 			if err := authContext.store.SaveTokenState(ctx, authContext.profile, token); err != nil {
 				return err
 			}
+			if len(flags.scopes) > 0 {
+				if err := authContext.store.SaveAppScopes(ctx, authContext.profile, app.Scopes); err != nil {
+					return err
+				}
+			}
 			if options.quiet {
 				return nil
 			}

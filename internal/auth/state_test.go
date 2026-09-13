@@ -237,6 +237,28 @@ func Test_Store_saves_named_profile_app_config_and_token_state(t *testing.T) {
 	}, got.Profiles["work"].Token)
 }
 
+func Test_Store_saves_app_scopes_for_default_and_named_profile(t *testing.T) {
+	t.Parallel()
+	store := NewStore(testPaths(t))
+	require.NoError(t, store.SaveAppConfig(context.Background(), "", AppConfig{
+		ClientID:     "client-id",
+		ClientSecret: "client-secret",
+		Scopes:       []string{"read"},
+	}))
+
+	require.NoError(t, store.SaveAppScopes(context.Background(), "", []string{"read", "initiative:write"}))
+	require.NoError(t, store.SaveAppScopes(context.Background(), "work", []string{"read"}))
+
+	got, err := store.Load(context.Background())
+	require.NoError(t, err)
+	require.Equal(t, AppConfig{
+		ClientID:     "client-id",
+		ClientSecret: "client-secret",
+		Scopes:       []string{"read", "initiative:write"},
+	}, got.App)
+	require.Equal(t, AppConfig{Scopes: []string{"read"}}, got.Profiles["work"].App)
+}
+
 func Test_Store_empty_paths_are_noop(t *testing.T) {
 	t.Parallel()
 	store := NewStore(Paths{})
