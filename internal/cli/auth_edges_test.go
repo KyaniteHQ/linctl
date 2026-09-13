@@ -255,6 +255,70 @@ func Test_AuthApp_quiet_and_human_output(t *testing.T) {
 	}
 }
 
+func Test_AuthApp_scopes_flag_persists_into_app_config(t *testing.T) {
+	paths := cliAuthTestPaths(t)
+	require.NoError(t, auth.NewStore(paths).SaveAppConfig(context.Background(), "", auth.AppConfig{
+		ClientID:     "client-id",
+		ClientSecret: "client-secret",
+		Scopes:       []string{"read"},
+	}))
+	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
+		"oauth-access-token",
+		"",
+		"Bearer",
+		time.Now().Add(time.Hour),
+		[]string{"read", "write", "initiative:write"},
+	)}
+	restore := useAuthCommandHooks(t, paths, fakeOAuth, &fakeAuthReadinessChecker{report: readyAuthReport("app")})
+	defer restore()
+
+	err := execute(context.Background(), BuildInfo{}, nil, &bytes.Buffer{}, &bytes.Buffer{}, []string{
+		"auth", "app", "--scopes", "read,write,initiative:write",
+	})
+
+	require.NoError(t, err)
+	state, err := auth.NewStore(paths).Load(context.Background())
+	require.NoError(t, err)
+	require.Equal(t, auth.AppConfig{
+		ClientID:     "client-id",
+		ClientSecret: "client-secret",
+		Scopes:       []string{"read", "write", "initiative:write"},
+	}, state.App)
+}
+
+func Test_AuthApp_reports_app_scopes_save_error(t *testing.T) {
+	root := t.TempDir()
+	paths := auth.Paths{
+		AppConfigPath: filepath.Join(root, "auth-app.json"),
+		TokenPath:     filepath.Join(root, "auth-token.json"),
+	}
+	require.NoError(t, auth.NewStore(paths).SaveAppConfig(context.Background(), "", auth.AppConfig{
+		ClientID:     "client-id",
+		ClientSecret: "client-secret",
+	}))
+	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
+		"oauth-access-token",
+		"",
+		"Bearer",
+		time.Now().Add(time.Hour),
+		[]string{"read"},
+	)}
+	restore := useAuthCommandHooks(t, paths, fakeOAuth, &fakeAuthReadinessChecker{
+		report: readyAuthReport("app"),
+		beforeReturn: func() {
+			require.NoError(t, os.Remove(paths.AppConfigPath))
+			require.NoError(t, os.Mkdir(paths.AppConfigPath, 0o700))
+		},
+	})
+	defer restore()
+
+	err := execute(context.Background(), BuildInfo{}, nil, &bytes.Buffer{}, &bytes.Buffer{}, []string{
+		"auth", "app", "--scopes", "read",
+	})
+
+	require.ErrorContains(t, err, "auth app config")
+}
+
 func Test_AuthApp_reports_token_state_save_error(t *testing.T) {
 	root := t.TempDir()
 	paths := auth.Paths{

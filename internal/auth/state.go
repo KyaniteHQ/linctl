@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"runtime"
+	"slices"
 	"sync"
 	"time"
 )
@@ -308,6 +309,28 @@ func (store Store) SaveAppConfig(ctx context.Context, profile string, app AppCon
 				appState.Profiles = map[string]persistedAppConfig{}
 			}
 			appState.Profiles[profile] = persistedAppConfig(app)
+		},
+	)
+}
+
+// SaveAppScopes rewrites only the scopes of the stored app configuration, so a
+// later re-mint from the stored config carries the same grant as the token that
+// was just issued. Client material on disk stays as it is.
+func (store Store) SaveAppScopes(ctx context.Context, profile string, scopes []string) error {
+	return mutateAuthFile(
+		ctx, store.paths.AppConfigPath, "auth app config", "save auth app scopes",
+		func(appState *appConfigFile) {
+			if profile == "" {
+				appState.App.Scopes = slices.Clone(scopes)
+
+				return
+			}
+			if appState.Profiles == nil {
+				appState.Profiles = map[string]persistedAppConfig{}
+			}
+			profileApp := appState.Profiles[profile]
+			profileApp.Scopes = slices.Clone(scopes)
+			appState.Profiles[profile] = profileApp
 		},
 	)
 }
