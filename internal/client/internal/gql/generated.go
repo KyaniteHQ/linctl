@@ -42800,7 +42800,12 @@ func (v *cyclesResponse) GetCycles() cyclesCyclesCycleConnection { return v.Cycl
 // A rich-text document that lives within a project, initiative, team, issue, release, or cycle. Documents support collaborative editing via ProseMirror/Yjs and store their content in a separate DocumentContent entity. Each document is associated with exactly one parent entity.
 type documentDocument struct {
 	DocumentSummaryFields `json:"-"`
+	// The document's content in markdown format.
+	Content *string `json:"content"`
 }
+
+// GetContent returns documentDocument.Content, and is useful for accessing the field via an interface.
+func (v *documentDocument) GetContent() *string { return v.Content }
 
 // GetId returns documentDocument.Id, and is useful for accessing the field via an interface.
 func (v *documentDocument) GetId() string { return v.DocumentSummaryFields.Id }
@@ -42858,6 +42863,8 @@ func (v *documentDocument) UnmarshalJSON(b []byte) error {
 }
 
 type __premarshaldocumentDocument struct {
+	Content *string `json:"content"`
+
 	Id string `json:"id"`
 
 	Title string `json:"title"`
@@ -42886,6 +42893,7 @@ func (v *documentDocument) MarshalJSON() ([]byte, error) {
 func (v *documentDocument) __premarshalJSON() (*__premarshaldocumentDocument, error) {
 	var retval __premarshaldocumentDocument
 
+	retval.Content = v.Content
 	retval.Id = v.DocumentSummaryFields.Id
 	retval.Title = v.DocumentSummaryFields.Title
 	retval.SlugId = v.DocumentSummaryFields.SlugId
@@ -87075,6 +87083,7 @@ const document_Operation = `
 query document ($id: String!) {
 	document(id: $id) {
 		... DocumentSummaryFields
+		content
 	}
 }
 fragment DocumentSummaryFields on Document {

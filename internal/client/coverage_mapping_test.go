@@ -68,6 +68,7 @@ func Test_SummaryMappingScenarios_preserve_reference_domain_variants(t *testing.
 	require.Equal(t, "2026-06-19T12:00:00Z", document.ArchivedAt)
 	require.Equal(t, "cycle", document.ParentType)
 	require.Equal(t, "Planning", document.ParentName)
+	require.Empty(t, document.Content)
 
 	team, err := GetTeamByID(context.Background(), graphqlClient, "team-id")
 	require.NoError(t, err)

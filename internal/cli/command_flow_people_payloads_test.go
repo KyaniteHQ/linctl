@@ -58,7 +58,8 @@ func commandFlowPeopleAndReferencePayload(operation string, fake commandFlowFake
 		return `{"document":` + commandDocumentJSON(
 			"Team note",
 			`"project":{"id":"project-id","name":"Pinned project"},`+
-				`"team":{"id":"team-id","key":"LIT","name":"linctl"},"issue":null,"cycle":null`,
+				`"team":{"id":"team-id","key":"LIT","name":"linctl"},"issue":null,"cycle":null,`+
+				`"content":"# Team note\n\nBody line."`,
 		) + `}`, true
 	case "DocumentCreate":
 		return `{"documentCreate":{"success":true,"document":` + commandDocumentJSON(

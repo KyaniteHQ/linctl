@@ -20,6 +20,12 @@ type DocumentSummary struct {
 	ParentName string `json:"parent_name,omitempty"`
 }
 
+// DocumentDetail is one Document with its markdown content, returned by `document get`.
+type DocumentDetail struct {
+	DocumentSummary
+	Content string `json:"content"`
+}
+
 // DocumentList is a page of Documents.
 type DocumentList struct {
 	Documents []DocumentSummary `json:"documents"`
@@ -65,14 +71,19 @@ func ListDocuments(ctx context.Context, graphqlClient graphql.Client, limit int)
 	return DocumentList{Documents: page.Items, Page: page.Page}, nil
 }
 
-// GetDocumentByID returns one Document by id or slug.
-func GetDocumentByID(ctx context.Context, graphqlClient graphql.Client, id string) (DocumentSummary, error) {
+// GetDocumentByID returns one Document by id or slug, with its content.
+func GetDocumentByID(ctx context.Context, graphqlClient graphql.Client, id string) (DocumentDetail, error) {
 	document, err := gql.XDocument(ctx, graphqlClient, id)
 	if err != nil {
-		return DocumentSummary{}, fmt.Errorf("get document %s: %w", id, err)
+		return DocumentDetail{}, fmt.Errorf("get document %s: %w", id, err)
 	}
 
-	return documentSummary(document.Document.DocumentSummaryFields), nil
+	detail := DocumentDetail{DocumentSummary: documentSummary(document.Document.DocumentSummaryFields)}
+	if document.Document.Content != nil {
+		detail.Content = *document.Document.Content
+	}
+
+	return detail, nil
 }
 
 // ListDocumentComments returns body-free comments associated with one Document.
