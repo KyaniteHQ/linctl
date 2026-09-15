@@ -1047,7 +1047,7 @@ Flags:
 
 ### linctl document get
 
-Get one document by id or slug
+Get one document by id or slug, with its markdown content
 
 ```
 linctl document get DOCUMENT_ID

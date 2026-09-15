@@ -198,7 +198,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "project update", args: []string{"project", "update", "project-id", "--name", "Updated project"}, contains: "project-id Updated project [Started]", fake: commandFlowFakeClient{expectedProjectUpdateName: "Updated project"}},
 		{name: "project archive", args: []string{"project", "archive", "project-id"}, contains: "project-id Archived project [Canceled]"},
 		{name: "document list", args: []string{"document", "list", "--limit", "1"}, contains: "document-id Spec [project]"},
-		{name: "document get", args: []string{"document", "get", "document-id"}, contains: "document-id Team note [team]"},
+		{name: "document get", args: []string{"document", "get", "document-id"}, contains: "document-id Team note [team]\n\n# Team note\n\nBody line.\n"},
 		{name: "document comments", args: []string{"document", "comments", "document-id", "--limit", "1"}, contains: "comment-id Omer 2026-06-19T12:00:00Z"},
 		{name: "document create", args: []string{"document", "create", "--title", "Created doc"}, contains: "document-id Created doc [team]"},
 		{name: "document update", args: []string{"document", "update", "document-id", "--title", "Updated doc"}, contains: "document-id Updated doc [team]"},

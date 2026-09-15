@@ -6,28 +6,29 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
+	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addDocumentCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	documentCommand := addReadListGetCommand(
-		ctx,
-		root,
-		options,
-		readListGetSpec[client.DocumentList, client.DocumentSummary]{
-			Use:       "document",
-			Short:     "Read Linear documents",
-			ListShort: "List visible documents",
-			LimitHelp: "maximum documents to return",
-			GetUse:    "get DOCUMENT_ID",
-			GetShort:  "Get one document by id or slug",
-			LoadList:  loadDocumentList,
-			LoadGet:   loadDocument,
-			WriteItem: writeDocument,
-		},
-	)
+	documentCommand := newGroupCommand("document", "Read Linear documents")
+	addListCommand(ctx, documentCommand, options, listCommandSpec[client.DocumentList, client.DocumentSummary]{
+		Use:       "list",
+		Short:     "List visible documents",
+		LimitHelp: "documents",
+		Args:      cobra.NoArgs,
+		Load:      loadDocumentList,
+		WriteItem: writeDocument,
+	})
+	addReadGetCommand(ctx, documentCommand, options, readGetSpec[client.DocumentDetail]{
+		Use:   "get DOCUMENT_ID",
+		Short: "Get one document by id or slug, with its markdown content",
+		Load:  loadDocument,
+		Write: writeDocumentDetail,
+	})
 	addDocumentCommentsCommand(ctx, documentCommand, options)
 	addDocumentCreateCommand(ctx, documentCommand, options)
 	addDocumentUpdateCommand(ctx, documentCommand, options)
+	root.AddCommand(documentCommand)
 }
 
 func addDocumentCreateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -107,6 +108,23 @@ func writeDocument(command *cobra.Command, options *rootOptions, document client
 	)
 }
 
+// writeDocumentDetail renders the summary line, then the content after one blank line.
+// JSON carries the content in the `content` field.
+func writeDocumentDetail(command *cobra.Command, options *rootOptions, document client.DocumentDetail) error {
+	return writeItem(command, options, document, document.ID,
+		func(command *cobra.Command, _ *rootOptions, document client.DocumentDetail) error {
+			err := render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s [%s]", document.ID, document.Title, emptyDash(document.ParentType),
+			)
+			if err != nil || document.Content == "" {
+				return err
+			}
+
+			return render.WriteLine(command.OutOrStdout(), "\n%s", document.Content)
+		})
+}
+
 func loadDocumentList(
 	ctx context.Context,
 	runtime commandRuntime,
@@ -117,6 +135,6 @@ func loadDocumentList(
 	return documents, err
 }
 
-func loadDocument(ctx context.Context, runtime commandRuntime, id string) (client.DocumentSummary, error) {
+func loadDocument(ctx context.Context, runtime commandRuntime, id string) (client.DocumentDetail, error) {
 	return client.GetDocumentByID(ctx, runtime.graphqlClient, id)
 }

@@ -272,6 +272,7 @@ func Test_ClientReadCoreSearchReleaseScenarios_return_compact_lists_details_and_
 	require.True(t, documents.HasNextPage)
 	require.Equal(t, "project", documents.Documents[0].ParentType)
 	require.Equal(t, "Team note", document.Title)
+	require.Equal(t, "# Team note\n\nBody line.", document.Content)
 	require.Equal(t, "team", document.ParentType)
 	require.Equal(t, "document-id", documentComments.DocumentID)
 	require.Equal(t, "comment-id", documentComments.Comments[0].ID)
