@@ -190,6 +190,10 @@ func addIssueUpdateCommand(ctx context.Context, root *cobra.Command, options *ro
 				"set the priority to urgent, high, medium, low, none, or a number from 0 to 4",
 			)
 			command.Flags().StringVar(&request.AssigneeID, "assignee", "", "reassign the issue to a user id")
+			command.Flags().StringVar(
+				&request.DelegateID, "delegate", "", "delegate the issue to an agent user id",
+			)
+			command.Flags().BoolVar(&request.ClearDelegate, "clear-delegate", false, "remove the delegated agent")
 			command.Flags().StringArrayVar(
 				&request.LabelIDs, "label", nil,
 				"replace the labels with these ids, and repeat the flag for more labels",

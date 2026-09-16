@@ -3,7 +3,14 @@ package client
 import (
 	"context"
 	"fmt"
+	"time"
 )
+
+// stateReadbackDelays are the waits before each re-read of a state write that
+// still shows the old state. Linear's read path can trail an accepted
+// issueUpdate: a live move from Triage to Needs Plan read back Triage while the
+// data change webhook already carried Needs Plan.
+var stateReadbackDelays = []time.Duration{500 * time.Millisecond, time.Second, 2 * time.Second}
 
 func (guard *guardedClient) resolveNamedOrTypedState(
 	ctx context.Context,
@@ -31,7 +38,7 @@ func (guard *guardedClient) finishStateWrite(
 	wantStateID string,
 	writeErr error,
 ) (IssueSummary, error) {
-	observed, err := GetIssueDetail(ctx, guard.graphqlClient, issueID)
+	observed, err := guard.readBackState(ctx, issueID, wantStateID)
 	if err != nil {
 		if writeErr != nil {
 			return IssueSummary{}, writeErr
@@ -61,4 +68,27 @@ func (guard *guardedClient) finishStateWrite(
 	}
 
 	return IssueSummary{}, mismatch
+}
+
+// readBackState reads the issue, and re-reads it after each delay while the
+// state is not the wanted one yet.
+func (guard *guardedClient) readBackState(
+	ctx context.Context,
+	issueID string,
+	wantStateID string,
+) (IssueDetail, error) {
+	observed, err := GetIssueDetail(ctx, guard.graphqlClient, issueID)
+	for _, delay := range stateReadbackDelays {
+		if err != nil || observed.Summary.StateID == wantStateID {
+			break
+		}
+		select {
+		case <-ctx.Done():
+			return observed, nil
+		case <-time.After(delay):
+		}
+		observed, err = GetIssueDetail(ctx, guard.graphqlClient, issueID)
+	}
+
+	return observed, err
 }

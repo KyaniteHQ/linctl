@@ -2157,9 +2157,11 @@ Flags:
       --append string             text to append to the issue description
       --append-file string        read text to append from file
       --assignee string           reassign the issue to a user id
+      --clear-delegate            remove the delegated agent
       --clear-due-date            clear the due date
       --clear-estimate            clear the estimate
       --clear-milestone           clear the milestone
+      --delegate string           delegate the issue to an agent user id
       --description string        new issue description
       --description-file string   read new issue description from file
       --due-date string           set the due date in YYYY-MM-DD format

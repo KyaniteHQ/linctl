@@ -50,6 +50,8 @@ type IssueUpdateRequest struct {
 	StateType          string
 	Priority           string
 	AssigneeID         string
+	DelegateID         string
+	ClearDelegate      bool
 	LabelIDs           []string
 	DueDate            string
 	ClearDueDate       bool
@@ -448,7 +450,9 @@ func validateIssueUpdateRequest(request IssueUpdateRequest) error {
 		return requiredFieldError("issue id")
 	}
 	if issueUpdateHasNoFields(request) {
-		return requiredFieldError("title, description, state, priority, assignee, label, due date, or estimate")
+		return requiredFieldError(
+			"title, description, state, priority, assignee, delegate, label, due date, or estimate",
+		)
 	}
 	if request.Description != "" && request.Append != "" {
 		return fmt.Errorf("%w: description and append are mutually exclusive", ErrWriteInvalid)
@@ -462,6 +466,9 @@ func validateIssueUpdateRequest(request IssueUpdateRequest) error {
 	if request.ProjectMilestoneID != "" && request.ClearMilestone {
 		return fmt.Errorf("%w: milestone and clear-milestone are mutually exclusive", ErrWriteInvalid)
 	}
+	if request.DelegateID != "" && request.ClearDelegate {
+		return fmt.Errorf("%w: delegate and clear-delegate are mutually exclusive", ErrWriteInvalid)
+	}
 
 	return validateDueDate(request.DueDate)
 }
@@ -469,6 +476,7 @@ func validateIssueUpdateRequest(request IssueUpdateRequest) error {
 func issueUpdateNonStateFieldsEmpty(request IssueUpdateRequest) bool {
 	return request.Title == "" && request.Description == "" && request.Append == "" &&
 		request.Priority == "" && request.AssigneeID == "" &&
+		request.DelegateID == "" && !request.ClearDelegate &&
 		len(request.LabelIDs) == 0 && request.DueDate == "" && !request.ClearDueDate &&
 		request.Estimate == nil && !request.ClearEstimate &&
 		request.ProjectMilestoneID == "" && !request.ClearMilestone
@@ -493,6 +501,7 @@ func (guard *guardedClient) buildIssueUpdateInput(
 		Title:              optionalString(request.Title),
 		Description:        optionalString(description),
 		AssigneeID:         optionalString(request.AssigneeID),
+		DelegateID:         delegateUpdateJSON(request),
 		LabelIDs:           request.LabelIDs,
 		DueDate:            dueDateUpdateJSON(request),
 		Estimate:           estimateUpdateJSON(request),
@@ -554,7 +563,7 @@ func (guard *guardedClient) startIssue(ctx context.Context, issueID string) (Iss
 
 	input := LinearIssueUpdateInput{StateID: stringPtr(stateID)}
 	if guard.target.Viewer.App {
-		input.DelegateID = stringPtr(guard.target.Viewer.ID)
+		input.DelegateID = json.RawMessage(strconv.Quote(guard.target.Viewer.ID))
 	} else {
 		input.AssigneeID = stringPtr(guard.target.Viewer.ID)
 	}
@@ -804,6 +813,17 @@ func estimateUpdateJSON(request IssueUpdateRequest) json.RawMessage {
 
 // projectMilestoneUpdateJSON renders the issueUpdate projectMilestoneId field: an
 // explicit null to clear it, a quoted id to set it, or nil to leave it untouched.
+func delegateUpdateJSON(request IssueUpdateRequest) json.RawMessage {
+	if request.ClearDelegate {
+		return json.RawMessage("null")
+	}
+	if request.DelegateID == "" {
+		return nil
+	}
+
+	return json.RawMessage(strconv.Quote(request.DelegateID))
+}
+
 func projectMilestoneUpdateJSON(request IssueUpdateRequest) json.RawMessage {
 	if request.ClearMilestone {
 		return json.RawMessage("null")

@@ -25,6 +25,10 @@ fragment IssueSummaryFields on Issue {
     id
     name
   }
+  delegate {
+    id
+  }
+  updatedAt
 }
 
 fragment CustomerNeedMetadataFields on CustomerNeed {
