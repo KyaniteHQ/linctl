@@ -1,6 +1,6 @@
 # Linear API coverage ledger
 
-Generated from current local sources and upstream Linear SDK commit `716871f`.
+Generated from current local sources and upstream Linear SDK commit `23f11eb`.
 
 Sources (paths relative to the upstream Linear SDK checkout):
 
@@ -16,8 +16,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 
 | Surface | Total | Covered/exposed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods with generated local operations | 473 | 164 | 473 |
-| Upstream Query root fields used by generated local operations | 171 | 116 | 171 |
+| Upstream SDK root methods with generated local operations | 474 | 164 | 474 |
+| Upstream Query root fields used by generated local operations | 173 | 116 | 173 |
 | Upstream Mutation root fields used by generated local operations | 375 | 50 | 375 |
 | Local generated Go operations declared in GraphQL files | 318 | 318 | 318 |
 | Public CLI commands from command inventory | 443 | 333 | 443 |
@@ -492,6 +492,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `userSettings` | getter | generated_operation | local GraphQL operation uses this root |
 | `userSettingsFlagsReset` | method | intentionally_excluded | user settings flag reset is internal preference administration outside the ordinary agent CLI surface |
 | `userUnlinkFromIdentityProvider` | method | intentionally_excluded | identity-provider unlinking is auth administration outside the ordinary agent CLI surface |
+| `userViewPreferences` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `users` | method | generated_operation | local GraphQL operation uses this root |
 | `verifyGitHubEnterpriseServerInstallation` | method | intentionally_excluded | GitHub Enterprise installation verification is integration administration outside the CLI surface |
 | `viewer` | getter | generated_operation | local GraphQL operation uses this root |
@@ -510,6 +511,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `agentActivity` | `AgentActivity!` | generated_operation | root field used by local GraphQL operation |
 | `agentSession` | `AgentSession!` | generated_operation | root field used by local GraphQL operation |
 | `agentSessionSandbox` | `CodingAgentSandboxPayload` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
+| `agentSessionSshAddress` | `String` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSessions` | `AgentSessionConnection!` | generated_operation | root field used by local GraphQL operation |
 | `agentSkill` | `AgentSkill!` | generated_operation | root field used by local GraphQL operation |
 | `agentSkills` | `AgentSkillConnection!` | generated_operation | root field used by local GraphQL operation |
@@ -668,6 +670,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `user` | `User!` | generated_operation | root field used by local GraphQL operation |
 | `userSessions` | `[AuthenticationSessionResponse!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `userSettings` | `UserSettings!` | generated_operation | root field used by local GraphQL operation |
+| `userViewPreferences` | `ViewPreferences` | accepted_gap | repo-planned or likely useful CLI domain |
 | `users` | `UserConnection!` | generated_operation | root field used by local GraphQL operation |
 | `verifyGitHubEnterpriseServerInstallation` | `GitHubEnterpriseServerInstallVerificationPayload!` | intentionally_excluded | GitHub Enterprise installation verification is integration administration outside the CLI surface |
 | `viewer` | `User!` | generated_operation | root field used by local GraphQL operation |
