@@ -4,15 +4,9 @@ import (
 	"context"
 	"strings"
 	"testing"
-	"time"
 
-	"github.com/Khan/genqlient/graphql"
 	"github.com/stretchr/testify/require"
 )
-
-func init() {
-	stateReadbackDelays = []time.Duration{0, 0, 0}
-}
 
 func Test_UpdateIssue_sets_state_and_delegate_in_one_write(t *testing.T) {
 	before := issueFixture{
@@ -101,7 +95,7 @@ func Test_issueSummaryFromFields_carries_delegate_and_updated_at(t *testing.T) {
 	require.Equal(t, "2026-09-16T14:26:12.000Z", detail.Summary.UpdatedAt)
 }
 
-func Test_UpdateIssue_rereads_a_state_readback_that_trails_the_write(t *testing.T) {
+func Test_UpdateIssue_trusts_the_mutation_state_when_the_read_trails_the_write(t *testing.T) {
 	before := issueFixture{
 		Identifier: "LIT-1", Title: "job", ProjectID: "project-id", Project: "fixture",
 		StateID: "todo-state", State: "Todo", StateType: "unstarted",
@@ -117,7 +111,6 @@ func Test_UpdateIssue_rereads_a_state_readback_that_trails_the_write(t *testing.
 	sequenced.payloads["issue"] = []string{
 		`{"issue":` + issueJSON(before) + `}`,
 		`{"issue":` + issueJSON(before) + `}`,
-		`{"issue":` + issueJSON(after) + `}`,
 	}
 
 	issue, err := UpdateIssue(
@@ -127,49 +120,24 @@ func Test_UpdateIssue_rereads_a_state_readback_that_trails_the_write(t *testing.
 
 	require.NoError(t, err)
 	require.Equal(t, "in-review-state", issue.StateID)
-	require.Equal(t, 3, sequenced.calls["issue"])
+	require.Equal(t, 2, sequenced.calls["issue"])
 }
 
-func Test_UpdateIssue_stops_rereading_when_the_context_ends(t *testing.T) {
+func Test_UpdateIssue_reports_a_mismatch_when_the_mutation_state_differs(t *testing.T) {
 	before := issueFixture{
 		Identifier: "LIT-1", Title: "job", ProjectID: "project-id", Project: "fixture",
 		StateID: "todo-state", State: "Todo", StateType: "unstarted",
 	}
-	stateReadbackDelays = []time.Duration{time.Hour}
-	t.Cleanup(func() { stateReadbackDelays = []time.Duration{0, 0, 0} })
-	ctx, cancel := context.WithCancel(context.Background())
-	inner := issueWriteFakeClient(map[string]string{
+	graphqlClient := issueWriteFakeClient(map[string]string{
 		"issue":                `{"issue":` + issueJSON(before) + `}`,
 		"WorkflowStatesByTeam": multipleStartedStatesJSON(),
 		"IssueUpdate":          `{"issueUpdate":{"success":true,"issue":` + issueJSON(before) + `}}`,
 	})
-	cancelling := &cancelAfterWriteClient{inner: inner, cancel: cancel}
 
-	_, err := UpdateIssue(ctx, cancelling, matchingTarget(), IssueUpdateRequest{ID: "LIT-1", StateSelector: "In Review"})
+	_, err := UpdateIssue(
+		context.Background(), graphqlClient, matchingTarget(),
+		IssueUpdateRequest{ID: "LIT-1", StateSelector: "In Review"},
+	)
 
 	require.ErrorIs(t, err, ErrStateMismatch)
-}
-
-// cancelAfterWriteClient cancels the caller's context after the first issue
-// read that follows the issue update.
-type cancelAfterWriteClient struct {
-	inner  graphql.Client
-	cancel context.CancelFunc
-	wrote  bool
-}
-
-func (client *cancelAfterWriteClient) MakeRequest(
-	ctx context.Context,
-	request *graphql.Request,
-	response *graphql.Response,
-) error {
-	err := client.inner.MakeRequest(ctx, request, response)
-	switch {
-	case request.OpName == "IssueUpdate":
-		client.wrote = true
-	case request.OpName == "issue" && client.wrote:
-		client.cancel()
-	}
-
-	return err
 }

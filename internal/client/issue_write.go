@@ -192,7 +192,7 @@ func (guard *guardedClient) finishIssueCreate(
 		return guard.reconcileMissingCreate(ctx, request, writeErr, stateID, stateSet)
 	}
 	if stateSet {
-		return guard.finishStateWrite(ctx, issueID, stateID, writeErr)
+		return guard.finishStateWrite(ctx, issueID, stateID, &created.IssueCreate.Issue.IssueSummaryFields, writeErr)
 	}
 	if writeErr != nil {
 		return applyMutationRetryClass(IssueStateWriteRetryClass(), IssueSummary{}, false, writeErr)
@@ -219,7 +219,7 @@ func (guard *guardedClient) reconcileMissingCreate(
 		return applyMutationRetryClass(IssueStateWriteRetryClass(), IssueSummary{}, false, writeErr)
 	}
 	if stateSet {
-		return guard.finishStateWrite(ctx, found.ID, stateID, writeErr)
+		return guard.finishStateWrite(ctx, found.ID, stateID, nil, writeErr)
 	}
 
 	return applyMutationRetryClass(IssueStateWriteRetryClass(), found, true, writeErr)
@@ -435,14 +435,18 @@ func (guard *guardedClient) applyIssueUpdate(
 	} else if !updated.IssueUpdate.Success || updated.IssueUpdate.Issue == nil {
 		writeErr = fmt.Errorf("%w: issueUpdate returned no issue", ErrMutationFailed)
 	}
+	var written *gql.IssueSummaryFields
+	if writeErr == nil {
+		written = &updated.IssueUpdate.Issue.IssueSummaryFields
+	}
 	if stateSet {
-		return guard.finishStateWrite(ctx, request.ID, stateID, writeErr)
+		return guard.finishStateWrite(ctx, request.ID, stateID, written, writeErr)
 	}
 	if writeErr != nil {
 		return IssueSummary{}, writeErr
 	}
 
-	return issueSummaryFromFields(updated.IssueUpdate.Issue.IssueSummaryFields), nil
+	return issueSummaryFromFields(*written), nil
 }
 
 func validateIssueUpdateRequest(request IssueUpdateRequest) error {
@@ -575,8 +579,12 @@ func (guard *guardedClient) startIssue(ctx context.Context, issueID string) (Iss
 	} else if !started.IssueUpdate.Success || started.IssueUpdate.Issue == nil {
 		writeErr = fmt.Errorf("%w: issue start returned no issue", ErrMutationFailed)
 	}
+	var written *gql.IssueSummaryFields
+	if writeErr == nil {
+		written = &started.IssueUpdate.Issue.IssueSummaryFields
+	}
 
-	return guard.finishStateWrite(ctx, issueID, stateID, writeErr)
+	return guard.finishStateWrite(ctx, issueID, stateID, written, writeErr)
 }
 
 // CommentOnIssue adds a comment after resolving and comparing the pinned write target.
@@ -695,8 +703,12 @@ func (guard *guardedClient) closeIssue(ctx context.Context, issueID string) (Iss
 	} else if !closed.IssueUpdate.Success || closed.IssueUpdate.Issue == nil {
 		writeErr = fmt.Errorf("%w: issue close returned no issue", ErrMutationFailed)
 	}
+	var written *gql.IssueSummaryFields
+	if writeErr == nil {
+		written = &closed.IssueUpdate.Issue.IssueSummaryFields
+	}
 
-	return guard.finishStateWrite(ctx, issueID, stateID, writeErr)
+	return guard.finishStateWrite(ctx, issueID, stateID, written, writeErr)
 }
 
 func parsePriority(raw string) (*int, error) {
@@ -811,8 +823,8 @@ func estimateUpdateJSON(request IssueUpdateRequest) json.RawMessage {
 	return json.RawMessage(strconv.Itoa(*request.Estimate))
 }
 
-// projectMilestoneUpdateJSON renders the issueUpdate projectMilestoneId field: an
-// explicit null to clear it, a quoted id to set it, or nil to leave it untouched.
+// delegateUpdateJSON renders the issueUpdate delegateId field: an explicit null to
+// clear it, a quoted id to set it, or nil to leave it untouched.
 func delegateUpdateJSON(request IssueUpdateRequest) json.RawMessage {
 	if request.ClearDelegate {
 		return json.RawMessage("null")
@@ -824,6 +836,8 @@ func delegateUpdateJSON(request IssueUpdateRequest) json.RawMessage {
 	return json.RawMessage(strconv.Quote(request.DelegateID))
 }
 
+// projectMilestoneUpdateJSON renders the issueUpdate projectMilestoneId field: an
+// explicit null to clear it, a quoted id to set it, or nil to leave it untouched.
 func projectMilestoneUpdateJSON(request IssueUpdateRequest) json.RawMessage {
 	if request.ClearMilestone {
 		return json.RawMessage("null")

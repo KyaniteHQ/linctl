@@ -137,8 +137,6 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "issue update", args: []string{"issue", "update", "LIT-1", "--title", "Updated issue"}, contains: "LIT-1 Updated issue [Todo]", fake: commandFlowFakeClient{expectedUpdateTitle: "Updated issue"}},
 		{name: "issue update with state alias", args: []string{"issue", "update", "LIT-1", "--state", "done"}, contains: "LIT-1 Updated issue [Done]"},
 		{name: "issue update with priority alias", args: []string{"issue", "update", "LIT-1", "--priority", "2"}, contains: "LIT-1 Updated issue [Todo]"},
-		{name: "issue update delegate", args: []string{"issue", "update", "LIT-1", "--delegate", "agent-user-id"}, contains: "LIT-1 Updated issue [Todo]"},
-		{name: "issue update clear delegate", args: []string{"issue", "update", "LIT-1", "--clear-delegate"}, contains: "LIT-1 Updated issue [Todo]"},
 		{name: "issue update with status alias", args: []string{"issue", "update", "LIT-1", "--status", "started"}, contains: "LIT-1 Updated issue [Started]"},
 		{name: "issue update append", args: []string{"issue", "update", "LIT-1", "--append", "Progress note"}, contains: "LIT-1 Updated issue [Todo]", fake: commandFlowFakeClient{expectedUpdateDescription: "Existing description\n\nProgress note"}},
 		{name: "issue update with estimate", args: []string{"issue", "update", "LIT-1", "--estimate", "5"}, contains: "LIT-1 Updated issue [Todo]"},

@@ -3,14 +3,9 @@ package client
 import (
 	"context"
 	"fmt"
-	"time"
-)
 
-// stateReadbackDelays are the waits before each re-read of a state write that
-// still shows the old state. Linear's read path can trail an accepted
-// issueUpdate: a live move from Triage to Needs Plan read back Triage while the
-// data change webhook already carried Needs Plan.
-var stateReadbackDelays = []time.Duration{500 * time.Millisecond, time.Second, 2 * time.Second}
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
+)
 
 func (guard *guardedClient) resolveNamedOrTypedState(
 	ctx context.Context,
@@ -32,13 +27,21 @@ func (guard *guardedClient) resolveNamedOrTypedState(
 	return "", false, nil
 }
 
+// finishStateWrite confirms a state write with one read. written is the issue the
+// mutation returned, or nil when it returned none. Linear's read path can trail an
+// accepted write: a live move from Triage to Needs Plan read back Triage while the
+// mutation and the data change webhook already carried Needs Plan. A successful
+// write whose own payload shows the wanted state is therefore confirmed by that
+// payload when the read still shows another state.
 func (guard *guardedClient) finishStateWrite(
 	ctx context.Context,
 	issueID string,
 	wantStateID string,
+	written *gql.IssueSummaryFields,
 	writeErr error,
 ) (IssueSummary, error) {
-	observed, err := guard.readBackState(ctx, issueID, wantStateID)
+	landed := writeErr == nil && written != nil && written.State.Id == wantStateID
+	observed, err := GetIssueDetail(ctx, guard.graphqlClient, issueID)
 	if err != nil {
 		if writeErr != nil {
 			return IssueSummary{}, writeErr
@@ -55,6 +58,9 @@ func (guard *guardedClient) finishStateWrite(
 
 		return observed.Summary, nil
 	}
+	if landed {
+		return issueSummaryFromFields(*written), nil
+	}
 
 	mismatch := fmt.Errorf(
 		"%w: expected state_id=%s resolved state_id=%s name=%q",
@@ -68,27 +74,4 @@ func (guard *guardedClient) finishStateWrite(
 	}
 
 	return IssueSummary{}, mismatch
-}
-
-// readBackState reads the issue, and re-reads it after each delay while the
-// state is not the wanted one yet.
-func (guard *guardedClient) readBackState(
-	ctx context.Context,
-	issueID string,
-	wantStateID string,
-) (IssueDetail, error) {
-	observed, err := GetIssueDetail(ctx, guard.graphqlClient, issueID)
-	for _, delay := range stateReadbackDelays {
-		if err != nil || observed.Summary.StateID == wantStateID {
-			break
-		}
-		select {
-		case <-ctx.Done():
-			return observed, nil
-		case <-time.After(delay):
-		}
-		observed, err = GetIssueDetail(ctx, guard.graphqlClient, issueID)
-	}
-
-	return observed, err
 }
