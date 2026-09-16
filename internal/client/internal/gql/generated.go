@@ -791,7 +791,7 @@ type AgentSessionSummaryFields struct {
 	SlugId string `json:"slugId"`
 	// The current status of the agent session, such as pending, active, awaiting input, complete, error, or stale.
 	Status AgentSessionStatus `json:"status"`
-	// A human-readable summary of the work performed in this session. Null if no summary has been generated yet.
+	// The session title, generated automatically or set by the owning OAuth application. Null if no title is set.
 	Summary *string `json:"summary"`
 	// The URL to the agent session page in the Linear app. Null when no issue is associated.
 	Url *string `json:"url"`
