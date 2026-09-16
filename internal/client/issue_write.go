@@ -50,6 +50,8 @@ type IssueUpdateRequest struct {
 	StateType          string
 	Priority           string
 	AssigneeID         string
+	DelegateID         string
+	ClearDelegate      bool
 	LabelIDs           []string
 	DueDate            string
 	ClearDueDate       bool
@@ -190,7 +192,7 @@ func (guard *guardedClient) finishIssueCreate(
 		return guard.reconcileMissingCreate(ctx, request, writeErr, stateID, stateSet)
 	}
 	if stateSet {
-		return guard.finishStateWrite(ctx, issueID, stateID, writeErr)
+		return guard.finishStateWrite(ctx, issueID, stateID, &created.IssueCreate.Issue.IssueSummaryFields, writeErr)
 	}
 	if writeErr != nil {
 		return applyMutationRetryClass(IssueStateWriteRetryClass(), IssueSummary{}, false, writeErr)
@@ -217,7 +219,7 @@ func (guard *guardedClient) reconcileMissingCreate(
 		return applyMutationRetryClass(IssueStateWriteRetryClass(), IssueSummary{}, false, writeErr)
 	}
 	if stateSet {
-		return guard.finishStateWrite(ctx, found.ID, stateID, writeErr)
+		return guard.finishStateWrite(ctx, found.ID, stateID, nil, writeErr)
 	}
 
 	return applyMutationRetryClass(IssueStateWriteRetryClass(), found, true, writeErr)
@@ -433,14 +435,18 @@ func (guard *guardedClient) applyIssueUpdate(
 	} else if !updated.IssueUpdate.Success || updated.IssueUpdate.Issue == nil {
 		writeErr = fmt.Errorf("%w: issueUpdate returned no issue", ErrMutationFailed)
 	}
+	var written *gql.IssueSummaryFields
+	if writeErr == nil {
+		written = &updated.IssueUpdate.Issue.IssueSummaryFields
+	}
 	if stateSet {
-		return guard.finishStateWrite(ctx, request.ID, stateID, writeErr)
+		return guard.finishStateWrite(ctx, request.ID, stateID, written, writeErr)
 	}
 	if writeErr != nil {
 		return IssueSummary{}, writeErr
 	}
 
-	return issueSummaryFromFields(updated.IssueUpdate.Issue.IssueSummaryFields), nil
+	return issueSummaryFromFields(*written), nil
 }
 
 func validateIssueUpdateRequest(request IssueUpdateRequest) error {
@@ -448,7 +454,9 @@ func validateIssueUpdateRequest(request IssueUpdateRequest) error {
 		return requiredFieldError("issue id")
 	}
 	if issueUpdateHasNoFields(request) {
-		return requiredFieldError("title, description, state, priority, assignee, label, due date, or estimate")
+		return requiredFieldError(
+			"title, description, state, priority, assignee, delegate, label, due date, or estimate",
+		)
 	}
 	if request.Description != "" && request.Append != "" {
 		return fmt.Errorf("%w: description and append are mutually exclusive", ErrWriteInvalid)
@@ -462,6 +470,9 @@ func validateIssueUpdateRequest(request IssueUpdateRequest) error {
 	if request.ProjectMilestoneID != "" && request.ClearMilestone {
 		return fmt.Errorf("%w: milestone and clear-milestone are mutually exclusive", ErrWriteInvalid)
 	}
+	if request.DelegateID != "" && request.ClearDelegate {
+		return fmt.Errorf("%w: delegate and clear-delegate are mutually exclusive", ErrWriteInvalid)
+	}
 
 	return validateDueDate(request.DueDate)
 }
@@ -469,6 +480,7 @@ func validateIssueUpdateRequest(request IssueUpdateRequest) error {
 func issueUpdateNonStateFieldsEmpty(request IssueUpdateRequest) bool {
 	return request.Title == "" && request.Description == "" && request.Append == "" &&
 		request.Priority == "" && request.AssigneeID == "" &&
+		request.DelegateID == "" && !request.ClearDelegate &&
 		len(request.LabelIDs) == 0 && request.DueDate == "" && !request.ClearDueDate &&
 		request.Estimate == nil && !request.ClearEstimate &&
 		request.ProjectMilestoneID == "" && !request.ClearMilestone
@@ -493,6 +505,7 @@ func (guard *guardedClient) buildIssueUpdateInput(
 		Title:              optionalString(request.Title),
 		Description:        optionalString(description),
 		AssigneeID:         optionalString(request.AssigneeID),
+		DelegateID:         delegateUpdateJSON(request),
 		LabelIDs:           request.LabelIDs,
 		DueDate:            dueDateUpdateJSON(request),
 		Estimate:           estimateUpdateJSON(request),
@@ -554,7 +567,7 @@ func (guard *guardedClient) startIssue(ctx context.Context, issueID string) (Iss
 
 	input := LinearIssueUpdateInput{StateID: stringPtr(stateID)}
 	if guard.target.Viewer.App {
-		input.DelegateID = stringPtr(guard.target.Viewer.ID)
+		input.DelegateID = json.RawMessage(strconv.Quote(guard.target.Viewer.ID))
 	} else {
 		input.AssigneeID = stringPtr(guard.target.Viewer.ID)
 	}
@@ -566,8 +579,12 @@ func (guard *guardedClient) startIssue(ctx context.Context, issueID string) (Iss
 	} else if !started.IssueUpdate.Success || started.IssueUpdate.Issue == nil {
 		writeErr = fmt.Errorf("%w: issue start returned no issue", ErrMutationFailed)
 	}
+	var written *gql.IssueSummaryFields
+	if writeErr == nil {
+		written = &started.IssueUpdate.Issue.IssueSummaryFields
+	}
 
-	return guard.finishStateWrite(ctx, issueID, stateID, writeErr)
+	return guard.finishStateWrite(ctx, issueID, stateID, written, writeErr)
 }
 
 // CommentOnIssue adds a comment after resolving and comparing the pinned write target.
@@ -686,8 +703,12 @@ func (guard *guardedClient) closeIssue(ctx context.Context, issueID string) (Iss
 	} else if !closed.IssueUpdate.Success || closed.IssueUpdate.Issue == nil {
 		writeErr = fmt.Errorf("%w: issue close returned no issue", ErrMutationFailed)
 	}
+	var written *gql.IssueSummaryFields
+	if writeErr == nil {
+		written = &closed.IssueUpdate.Issue.IssueSummaryFields
+	}
 
-	return guard.finishStateWrite(ctx, issueID, stateID, writeErr)
+	return guard.finishStateWrite(ctx, issueID, stateID, written, writeErr)
 }
 
 func parsePriority(raw string) (*int, error) {
@@ -800,6 +821,19 @@ func estimateUpdateJSON(request IssueUpdateRequest) json.RawMessage {
 	}
 
 	return json.RawMessage(strconv.Itoa(*request.Estimate))
+}
+
+// delegateUpdateJSON renders the issueUpdate delegateId field: an explicit null to
+// clear it, a quoted id to set it, or nil to leave it untouched.
+func delegateUpdateJSON(request IssueUpdateRequest) json.RawMessage {
+	if request.ClearDelegate {
+		return json.RawMessage("null")
+	}
+	if request.DelegateID == "" {
+		return nil
+	}
+
+	return json.RawMessage(strconv.Quote(request.DelegateID))
 }
 
 // projectMilestoneUpdateJSON renders the issueUpdate projectMilestoneId field: an

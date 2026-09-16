@@ -28,6 +28,8 @@ type IssueSummary struct {
 	Assignee      string  `json:"assignee,omitempty"`
 	ProjectID     string  `json:"project_id,omitempty"`
 	Project       string  `json:"project,omitempty"`
+	DelegateID    string  `json:"delegate_id,omitempty"`
+	UpdatedAt     string  `json:"updated_at,omitempty"`
 	CreatedAt     string  `json:"created_at,omitempty"`
 	UnblocksCount int     `json:"unblocks_count,omitempty"`
 }
@@ -355,6 +357,10 @@ func issueSummaryFromFields(issue gql.IssueSummaryFields) IssueSummary {
 		projectID = issue.Project.Id
 		project = issue.Project.Name
 	}
+	delegateID := ""
+	if issue.Delegate != nil {
+		delegateID = issue.Delegate.Id
+	}
 
 	return IssueSummary{
 		ID:            issue.Id,
@@ -372,5 +378,7 @@ func issueSummaryFromFields(issue gql.IssueSummaryFields) IssueSummary {
 		Assignee:      assignee,
 		ProjectID:     projectID,
 		Project:       project,
+		DelegateID:    delegateID,
+		UpdatedAt:     issue.UpdatedAt,
 	}
 }

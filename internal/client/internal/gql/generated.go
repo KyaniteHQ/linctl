@@ -3296,6 +3296,16 @@ func (v *CycleReportCycleIssuesIssueConnectionNodesIssue) GetProject() *IssueSum
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns CycleReportCycleIssuesIssueConnectionNodesIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *CycleReportCycleIssuesIssueConnectionNodesIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns CycleReportCycleIssuesIssueConnectionNodesIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *CycleReportCycleIssuesIssueConnectionNodesIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *CycleReportCycleIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -3343,6 +3353,10 @@ type __premarshalCycleReportCycleIssuesIssueConnectionNodesIssue struct {
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *CycleReportCycleIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
@@ -3367,6 +3381,8 @@ func (v *CycleReportCycleIssuesIssueConnectionNodesIssue) __premarshalJSON() (*_
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -6033,6 +6049,16 @@ func (v *IssueAddLabelIssueAddLabelIssuePayloadIssue) GetProject() *IssueSummary
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns IssueAddLabelIssueAddLabelIssuePayloadIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *IssueAddLabelIssueAddLabelIssuePayloadIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns IssueAddLabelIssueAddLabelIssuePayloadIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *IssueAddLabelIssueAddLabelIssuePayloadIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *IssueAddLabelIssueAddLabelIssuePayloadIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -6080,6 +6106,10 @@ type __premarshalIssueAddLabelIssueAddLabelIssuePayloadIssue struct {
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *IssueAddLabelIssueAddLabelIssuePayloadIssue) MarshalJSON() ([]byte, error) {
@@ -6104,6 +6134,8 @@ func (v *IssueAddLabelIssueAddLabelIssuePayloadIssue) __premarshalJSON() (*__pre
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -6200,6 +6232,16 @@ func (v *IssueArchiveIssueArchiveIssueArchivePayloadEntityIssue) GetProject() *I
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns IssueArchiveIssueArchiveIssueArchivePayloadEntityIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *IssueArchiveIssueArchiveIssueArchivePayloadEntityIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns IssueArchiveIssueArchiveIssueArchivePayloadEntityIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *IssueArchiveIssueArchiveIssueArchivePayloadEntityIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *IssueArchiveIssueArchiveIssueArchivePayloadEntityIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -6247,6 +6289,10 @@ type __premarshalIssueArchiveIssueArchiveIssueArchivePayloadEntityIssue struct {
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *IssueArchiveIssueArchiveIssueArchivePayloadEntityIssue) MarshalJSON() ([]byte, error) {
@@ -6271,6 +6317,8 @@ func (v *IssueArchiveIssueArchiveIssueArchivePayloadEntityIssue) __premarshalJSO
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -6553,6 +6601,16 @@ func (v *IssueBlockedIssuesIssueRelationsIssueRelationConnectionNodesIssueRelati
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns IssueBlockedIssuesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *IssueBlockedIssuesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns IssueBlockedIssuesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *IssueBlockedIssuesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *IssueBlockedIssuesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -6600,6 +6658,10 @@ type __premarshalIssueBlockedIssuesIssueRelationsIssueRelationConnectionNodesIss
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *IssueBlockedIssuesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue) MarshalJSON() ([]byte, error) {
@@ -6624,6 +6686,8 @@ func (v *IssueBlockedIssuesIssueRelationsIssueRelationConnectionNodesIssueRelati
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -6861,6 +6925,16 @@ func (v *IssueChildrenProjectionChildrenIssueConnectionNodesIssue) GetProject() 
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns IssueChildrenProjectionChildrenIssueConnectionNodesIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *IssueChildrenProjectionChildrenIssueConnectionNodesIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns IssueChildrenProjectionChildrenIssueConnectionNodesIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *IssueChildrenProjectionChildrenIssueConnectionNodesIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *IssueChildrenProjectionChildrenIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -6908,6 +6982,10 @@ type __premarshalIssueChildrenProjectionChildrenIssueConnectionNodesIssue struct
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *IssueChildrenProjectionChildrenIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
@@ -6932,6 +7010,8 @@ func (v *IssueChildrenProjectionChildrenIssueConnectionNodesIssue) __premarshalJ
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -7029,6 +7109,16 @@ func (v *IssueCloseIssueUpdateIssuePayloadIssue) GetProject() *IssueSummaryField
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns IssueCloseIssueUpdateIssuePayloadIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *IssueCloseIssueUpdateIssuePayloadIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns IssueCloseIssueUpdateIssuePayloadIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *IssueCloseIssueUpdateIssuePayloadIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *IssueCloseIssueUpdateIssuePayloadIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -7076,6 +7166,10 @@ type __premarshalIssueCloseIssueUpdateIssuePayloadIssue struct {
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *IssueCloseIssueUpdateIssuePayloadIssue) MarshalJSON() ([]byte, error) {
@@ -7100,6 +7194,8 @@ func (v *IssueCloseIssueUpdateIssuePayloadIssue) __premarshalJSON() (*__premarsh
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -7223,6 +7319,16 @@ func (v *IssueCommentCreateCommentCreateCommentPayloadCommentIssue) GetProject()
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns IssueCommentCreateCommentCreateCommentPayloadCommentIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *IssueCommentCreateCommentCreateCommentPayloadCommentIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns IssueCommentCreateCommentCreateCommentPayloadCommentIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *IssueCommentCreateCommentCreateCommentPayloadCommentIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *IssueCommentCreateCommentCreateCommentPayloadCommentIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -7270,6 +7376,10 @@ type __premarshalIssueCommentCreateCommentCreateCommentPayloadCommentIssue struc
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *IssueCommentCreateCommentCreateCommentPayloadCommentIssue) MarshalJSON() ([]byte, error) {
@@ -7294,6 +7404,8 @@ func (v *IssueCommentCreateCommentCreateCommentPayloadCommentIssue) __premarshal
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -7605,6 +7717,16 @@ func (v *IssueCreateIssueCreateIssuePayloadIssue) GetProject() *IssueSummaryFiel
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns IssueCreateIssueCreateIssuePayloadIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *IssueCreateIssueCreateIssuePayloadIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns IssueCreateIssueCreateIssuePayloadIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *IssueCreateIssueCreateIssuePayloadIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *IssueCreateIssueCreateIssuePayloadIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -7652,6 +7774,10 @@ type __premarshalIssueCreateIssueCreateIssuePayloadIssue struct {
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *IssueCreateIssueCreateIssuePayloadIssue) MarshalJSON() ([]byte, error) {
@@ -7676,6 +7802,8 @@ func (v *IssueCreateIssueCreateIssuePayloadIssue) __premarshalJSON() (*__premars
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -7812,6 +7940,16 @@ func (v *IssueDependenciesIssueChildrenIssueConnectionNodesIssue) GetProject() *
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns IssueDependenciesIssueChildrenIssueConnectionNodesIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *IssueDependenciesIssueChildrenIssueConnectionNodesIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns IssueDependenciesIssueChildrenIssueConnectionNodesIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *IssueDependenciesIssueChildrenIssueConnectionNodesIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *IssueDependenciesIssueChildrenIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -7859,6 +7997,10 @@ type __premarshalIssueDependenciesIssueChildrenIssueConnectionNodesIssue struct 
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *IssueDependenciesIssueChildrenIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
@@ -7883,6 +8025,8 @@ func (v *IssueDependenciesIssueChildrenIssueConnectionNodesIssue) __premarshalJS
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -8011,6 +8155,16 @@ func (v *IssueDependenciesIssueInverseRelationsIssueRelationConnectionNodesIssue
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns IssueDependenciesIssueInverseRelationsIssueRelationConnectionNodesIssueRelationIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *IssueDependenciesIssueInverseRelationsIssueRelationConnectionNodesIssueRelationIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns IssueDependenciesIssueInverseRelationsIssueRelationConnectionNodesIssueRelationIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *IssueDependenciesIssueInverseRelationsIssueRelationConnectionNodesIssueRelationIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *IssueDependenciesIssueInverseRelationsIssueRelationConnectionNodesIssueRelationIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -8058,6 +8212,10 @@ type __premarshalIssueDependenciesIssueInverseRelationsIssueRelationConnectionNo
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *IssueDependenciesIssueInverseRelationsIssueRelationConnectionNodesIssueRelationIssue) MarshalJSON() ([]byte, error) {
@@ -8082,6 +8240,8 @@ func (v *IssueDependenciesIssueInverseRelationsIssueRelationConnectionNodesIssue
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -8160,6 +8320,16 @@ func (v *IssueDependenciesIssueParentIssue) GetProject() *IssueSummaryFieldsProj
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns IssueDependenciesIssueParentIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *IssueDependenciesIssueParentIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns IssueDependenciesIssueParentIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *IssueDependenciesIssueParentIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *IssueDependenciesIssueParentIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -8207,6 +8377,10 @@ type __premarshalIssueDependenciesIssueParentIssue struct {
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *IssueDependenciesIssueParentIssue) MarshalJSON() ([]byte, error) {
@@ -8231,6 +8405,8 @@ func (v *IssueDependenciesIssueParentIssue) __premarshalJSON() (*__premarshalIss
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -8341,6 +8517,16 @@ func (v *IssueDependenciesIssueRelationsIssueRelationConnectionNodesIssueRelatio
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns IssueDependenciesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *IssueDependenciesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns IssueDependenciesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *IssueDependenciesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *IssueDependenciesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -8388,6 +8574,10 @@ type __premarshalIssueDependenciesIssueRelationsIssueRelationConnectionNodesIssu
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *IssueDependenciesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue) MarshalJSON() ([]byte, error) {
@@ -8412,6 +8602,8 @@ func (v *IssueDependenciesIssueRelationsIssueRelationConnectionNodesIssueRelatio
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -10986,6 +11178,16 @@ func (v *IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue) GetProject() *IssueS
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -11033,6 +11235,10 @@ type __premarshalIssueRemoveLabelIssueRemoveLabelIssuePayloadIssue struct {
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue) MarshalJSON() ([]byte, error) {
@@ -11057,6 +11263,8 @@ func (v *IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue) __premarshalJSON() (
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -11532,6 +11740,11 @@ type IssueSummaryFields struct {
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 	// The project that the issue is associated with. Null if the issue is not part of any project.
 	Project *IssueSummaryFieldsProject `json:"project"`
+	// The agent user that is delegated to work on this issue. Set when an AI agent has been assigned to perform work on this issue. Null if no agent is working on the issue.
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+	// been updated after creation.
+	UpdatedAt string `json:"updatedAt"`
 }
 
 // GetId returns IssueSummaryFields.Id, and is useful for accessing the field via an interface.
@@ -11567,6 +11780,12 @@ func (v *IssueSummaryFields) GetAssignee() *IssueSummaryFieldsAssigneeUser { ret
 // GetProject returns IssueSummaryFields.Project, and is useful for accessing the field via an interface.
 func (v *IssueSummaryFields) GetProject() *IssueSummaryFieldsProject { return v.Project }
 
+// GetDelegate returns IssueSummaryFields.Delegate, and is useful for accessing the field via an interface.
+func (v *IssueSummaryFields) GetDelegate() *IssueSummaryFieldsDelegateUser { return v.Delegate }
+
+// GetUpdatedAt returns IssueSummaryFields.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *IssueSummaryFields) GetUpdatedAt() string { return v.UpdatedAt }
+
 // IssueSummaryFieldsAssigneeUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
@@ -11588,6 +11807,18 @@ func (v *IssueSummaryFieldsAssigneeUser) GetName() string { return v.Name }
 
 // GetDisplayName returns IssueSummaryFieldsAssigneeUser.DisplayName, and is useful for accessing the field via an interface.
 func (v *IssueSummaryFieldsAssigneeUser) GetDisplayName() string { return v.DisplayName }
+
+// IssueSummaryFieldsDelegateUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
+type IssueSummaryFieldsDelegateUser struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns IssueSummaryFieldsDelegateUser.Id, and is useful for accessing the field via an interface.
+func (v *IssueSummaryFieldsDelegateUser) GetId() string { return v.Id }
 
 // IssueSummaryFieldsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
@@ -11792,6 +12023,16 @@ func (v *IssueUpdateIssueUpdateIssuePayloadIssue) GetProject() *IssueSummaryFiel
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns IssueUpdateIssueUpdateIssuePayloadIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *IssueUpdateIssueUpdateIssuePayloadIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns IssueUpdateIssueUpdateIssuePayloadIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *IssueUpdateIssueUpdateIssuePayloadIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *IssueUpdateIssueUpdateIssuePayloadIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -11839,6 +12080,10 @@ type __premarshalIssueUpdateIssueUpdateIssuePayloadIssue struct {
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *IssueUpdateIssueUpdateIssuePayloadIssue) MarshalJSON() ([]byte, error) {
@@ -11863,6 +12108,8 @@ func (v *IssueUpdateIssueUpdateIssuePayloadIssue) __premarshalJSON() (*__premars
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -11956,6 +12203,16 @@ func (v *IssuesByTeamFilteredIssuesIssueConnectionNodesIssue) GetProject() *Issu
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns IssuesByTeamFilteredIssuesIssueConnectionNodesIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *IssuesByTeamFilteredIssuesIssueConnectionNodesIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns IssuesByTeamFilteredIssuesIssueConnectionNodesIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *IssuesByTeamFilteredIssuesIssueConnectionNodesIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *IssuesByTeamFilteredIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -12003,6 +12260,10 @@ type __premarshalIssuesByTeamFilteredIssuesIssueConnectionNodesIssue struct {
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *IssuesByTeamFilteredIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
@@ -12027,6 +12288,8 @@ func (v *IssuesByTeamFilteredIssuesIssueConnectionNodesIssue) __premarshalJSON()
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -12150,6 +12413,16 @@ func (v *NextIssuesByTeamIssuesIssueConnectionNodesIssue) GetProject() *IssueSum
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns NextIssuesByTeamIssuesIssueConnectionNodesIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *NextIssuesByTeamIssuesIssueConnectionNodesIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns NextIssuesByTeamIssuesIssueConnectionNodesIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *NextIssuesByTeamIssuesIssueConnectionNodesIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *NextIssuesByTeamIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -12201,6 +12474,10 @@ type __premarshalNextIssuesByTeamIssuesIssueConnectionNodesIssue struct {
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *NextIssuesByTeamIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
@@ -12227,6 +12504,8 @@ func (v *NextIssuesByTeamIssuesIssueConnectionNodesIssue) __premarshalJSON() (*_
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -36365,6 +36644,14 @@ func (v *attachmentIssueAttachmentIssue) GetProject() *IssueSummaryFieldsProject
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns attachmentIssueAttachmentIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *attachmentIssueAttachmentIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns attachmentIssueAttachmentIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssueAttachmentIssue) GetUpdatedAt() string { return v.IssueSummaryFields.UpdatedAt }
+
 func (v *attachmentIssueAttachmentIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -36412,6 +36699,10 @@ type __premarshalattachmentIssueAttachmentIssue struct {
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *attachmentIssueAttachmentIssue) MarshalJSON() ([]byte, error) {
@@ -36436,6 +36727,8 @@ func (v *attachmentIssueAttachmentIssue) __premarshalJSON() (*__premarshalattach
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -38529,6 +38822,16 @@ func (v *comment_createdIssuesCommentCreatedIssuesIssueConnectionNodesIssue) Get
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns comment_createdIssuesCommentCreatedIssuesIssueConnectionNodesIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *comment_createdIssuesCommentCreatedIssuesIssueConnectionNodesIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns comment_createdIssuesCommentCreatedIssuesIssueConnectionNodesIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *comment_createdIssuesCommentCreatedIssuesIssueConnectionNodesIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *comment_createdIssuesCommentCreatedIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -38576,6 +38879,10 @@ type __premarshalcomment_createdIssuesCommentCreatedIssuesIssueConnectionNodesIs
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *comment_createdIssuesCommentCreatedIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
@@ -38600,6 +38907,8 @@ func (v *comment_createdIssuesCommentCreatedIssuesIssueConnectionNodesIssue) __p
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -39236,6 +39545,16 @@ func (v *customView_issuesCustomViewIssuesIssueConnectionNodesIssue) GetProject(
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns customView_issuesCustomViewIssuesIssueConnectionNodesIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *customView_issuesCustomViewIssuesIssueConnectionNodesIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns customView_issuesCustomViewIssuesIssueConnectionNodesIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *customView_issuesCustomViewIssuesIssueConnectionNodesIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *customView_issuesCustomViewIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -39283,6 +39602,10 @@ type __premarshalcustomView_issuesCustomViewIssuesIssueConnectionNodesIssue stru
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *customView_issuesCustomViewIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
@@ -39307,6 +39630,8 @@ func (v *customView_issuesCustomViewIssuesIssueConnectionNodesIssue) __premarsha
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -42232,6 +42557,16 @@ func (v *cycle_issuesCycleIssuesIssueConnectionNodesIssue) GetProject() *IssueSu
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns cycle_issuesCycleIssuesIssueConnectionNodesIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycleIssuesIssueConnectionNodesIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns cycle_issuesCycleIssuesIssueConnectionNodesIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycleIssuesIssueConnectionNodesIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *cycle_issuesCycleIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -42279,6 +42614,10 @@ type __premarshalcycle_issuesCycleIssuesIssueConnectionNodesIssue struct {
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *cycle_issuesCycleIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
@@ -42303,6 +42642,8 @@ func (v *cycle_issuesCycleIssuesIssueConnectionNodesIssue) __premarshalJSON() (*
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -42535,6 +42876,16 @@ func (v *cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueCon
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -42582,6 +42933,10 @@ type __premarshalcycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponClose
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
@@ -42606,6 +42961,8 @@ func (v *cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueCon
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -47025,6 +47382,16 @@ func (v *issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -47072,6 +47439,10 @@ type __premarshalissueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNo
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
@@ -47096,6 +47467,8 @@ func (v *issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -47217,6 +47590,14 @@ func (v *issueIssue) GetAssignee() *IssueSummaryFieldsAssigneeUser {
 // GetProject returns issueIssue.Project, and is useful for accessing the field via an interface.
 func (v *issueIssue) GetProject() *IssueSummaryFieldsProject { return v.IssueSummaryFields.Project }
 
+// GetDelegate returns issueIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *issueIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns issueIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *issueIssue) GetUpdatedAt() string { return v.IssueSummaryFields.UpdatedAt }
+
 func (v *issueIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -47268,6 +47649,10 @@ type __premarshalissueIssue struct {
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *issueIssue) MarshalJSON() ([]byte, error) {
@@ -47294,6 +47679,8 @@ func (v *issueIssue) __premarshalJSON() (*__premarshalissueIssue, error) {
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -47703,6 +48090,16 @@ func (v *issueLabel_issuesIssueLabelIssuesIssueConnectionNodesIssue) GetProject(
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns issueLabel_issuesIssueLabelIssuesIssueConnectionNodesIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *issueLabel_issuesIssueLabelIssuesIssueConnectionNodesIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns issueLabel_issuesIssueLabelIssuesIssueConnectionNodesIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *issueLabel_issuesIssueLabelIssuesIssueConnectionNodesIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *issueLabel_issuesIssueLabelIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -47750,6 +48147,10 @@ type __premarshalissueLabel_issuesIssueLabelIssuesIssueConnectionNodesIssue stru
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *issueLabel_issuesIssueLabelIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
@@ -47774,6 +48175,8 @@ func (v *issueLabel_issuesIssueLabelIssuesIssueConnectionNodesIssue) __premarsha
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -48182,6 +48585,16 @@ func (v *issueSearchIssueSearchIssueConnectionNodesIssue) GetProject() *IssueSum
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns issueSearchIssueSearchIssueConnectionNodesIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *issueSearchIssueSearchIssueConnectionNodesIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns issueSearchIssueSearchIssueConnectionNodesIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *issueSearchIssueSearchIssueConnectionNodesIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *issueSearchIssueSearchIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -48229,6 +48642,10 @@ type __premarshalissueSearchIssueSearchIssueConnectionNodesIssue struct {
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *issueSearchIssueSearchIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
@@ -48253,6 +48670,8 @@ func (v *issueSearchIssueSearchIssueConnectionNodesIssue) __premarshalJSON() (*_
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -48624,6 +49043,16 @@ func (v *issueVcsBranchSearchIssueVcsBranchSearchIssue) GetProject() *IssueSumma
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns issueVcsBranchSearchIssueVcsBranchSearchIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearchIssueVcsBranchSearchIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns issueVcsBranchSearchIssueVcsBranchSearchIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearchIssueVcsBranchSearchIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *issueVcsBranchSearchIssueVcsBranchSearchIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -48671,6 +49100,10 @@ type __premarshalissueVcsBranchSearchIssueVcsBranchSearchIssue struct {
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *issueVcsBranchSearchIssueVcsBranchSearchIssue) MarshalJSON() ([]byte, error) {
@@ -48695,6 +49128,8 @@ func (v *issueVcsBranchSearchIssueVcsBranchSearchIssue) __premarshalJSON() (*__p
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -51142,6 +51577,16 @@ func (v *issuesIssuesIssueConnectionNodesIssue) GetProject() *IssueSummaryFields
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns issuesIssuesIssueConnectionNodesIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *issuesIssuesIssueConnectionNodesIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns issuesIssuesIssueConnectionNodesIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *issuesIssuesIssueConnectionNodesIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *issuesIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -51189,6 +51634,10 @@ type __premarshalissuesIssuesIssueConnectionNodesIssue struct {
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *issuesIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
@@ -51213,6 +51662,8 @@ func (v *issuesIssuesIssueConnectionNodesIssue) __premarshalJSON() (*__premarsha
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -62690,6 +63141,16 @@ func (v *projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue)
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -62737,6 +63198,10 @@ type __premarshalprojectMilestone_issuesProjectMilestoneIssuesIssueConnectionNod
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
@@ -62761,6 +63226,8 @@ func (v *projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue)
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -65848,6 +66315,16 @@ func (v *project_issuesProjectIssuesIssueConnectionNodesIssue) GetProject() *Iss
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns project_issuesProjectIssuesIssueConnectionNodesIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *project_issuesProjectIssuesIssueConnectionNodesIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns project_issuesProjectIssuesIssueConnectionNodesIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *project_issuesProjectIssuesIssueConnectionNodesIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *project_issuesProjectIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -65895,6 +66372,10 @@ type __premarshalproject_issuesProjectIssuesIssueConnectionNodesIssue struct {
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *project_issuesProjectIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
@@ -65919,6 +66400,8 @@ func (v *project_issuesProjectIssuesIssueConnectionNodesIssue) __premarshalJSON(
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -70195,6 +70678,16 @@ func (v *release_issuesReleaseIssuesIssueConnectionNodesIssue) GetProject() *Iss
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns release_issuesReleaseIssuesIssueConnectionNodesIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *release_issuesReleaseIssuesIssueConnectionNodesIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns release_issuesReleaseIssuesIssueConnectionNodesIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *release_issuesReleaseIssuesIssueConnectionNodesIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *release_issuesReleaseIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -70242,6 +70735,10 @@ type __premarshalrelease_issuesReleaseIssuesIssueConnectionNodesIssue struct {
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *release_issuesReleaseIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
@@ -70266,6 +70763,8 @@ func (v *release_issuesReleaseIssuesIssueConnectionNodesIssue) __premarshalJSON(
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -73136,6 +73635,16 @@ func (v *team_issuesTeamIssuesIssueConnectionNodesIssue) GetProject() *IssueSumm
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns team_issuesTeamIssuesIssueConnectionNodesIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *team_issuesTeamIssuesIssueConnectionNodesIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns team_issuesTeamIssuesIssueConnectionNodesIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *team_issuesTeamIssuesIssueConnectionNodesIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *team_issuesTeamIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -73183,6 +73692,10 @@ type __premarshalteam_issuesTeamIssuesIssueConnectionNodesIssue struct {
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *team_issuesTeamIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
@@ -73207,6 +73720,8 @@ func (v *team_issuesTeamIssuesIssueConnectionNodesIssue) __premarshalJSON() (*__
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -77189,6 +77704,16 @@ func (v *user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue) GetProj
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -77236,6 +77761,10 @@ type __premarshaluser_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue 
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
@@ -77260,6 +77789,8 @@ func (v *user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue) __prema
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -77383,6 +77914,16 @@ func (v *user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue) GetProjec
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -77430,6 +77971,10 @@ type __premarshaluser_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue st
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
@@ -77454,6 +77999,8 @@ func (v *user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue) __premars
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -77577,6 +78124,16 @@ func (v *user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue) GetPr
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -77624,6 +78181,10 @@ type __premarshaluser_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssu
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
@@ -77648,6 +78209,8 @@ func (v *user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue) __pre
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -78329,6 +78892,16 @@ func (v *viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue)
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -78376,6 +78949,10 @@ type __premarshalviewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNod
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
@@ -78400,6 +78977,8 @@ func (v *viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue)
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -78523,6 +79102,16 @@ func (v *viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue) G
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -78570,6 +79159,10 @@ type __premarshalviewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodes
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
@@ -78594,6 +79187,8 @@ func (v *viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue) _
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -78719,6 +79314,16 @@ func (v *viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssu
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -78766,6 +79371,10 @@ type __premarshalviewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionN
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
@@ -78790,6 +79399,8 @@ func (v *viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssu
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -79573,6 +80184,16 @@ func (v *workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue) GetPr
 	return v.IssueSummaryFields.Project
 }
 
+// GetDelegate returns workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue.Delegate, and is useful for accessing the field via an interface.
+func (v *workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue) GetDelegate() *IssueSummaryFieldsDelegateUser {
+	return v.IssueSummaryFields.Delegate
+}
+
+// GetUpdatedAt returns workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue) GetUpdatedAt() string {
+	return v.IssueSummaryFields.UpdatedAt
+}
+
 func (v *workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -79620,6 +80241,10 @@ type __premarshalworkflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssu
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
 
 	Project *IssueSummaryFieldsProject `json:"project"`
+
+	Delegate *IssueSummaryFieldsDelegateUser `json:"delegate"`
+
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (v *workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
@@ -79644,6 +80269,8 @@ func (v *workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue) __pre
 	retval.State = v.IssueSummaryFields.State
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
+	retval.Delegate = v.IssueSummaryFields.Delegate
+	retval.UpdatedAt = v.IssueSummaryFields.UpdatedAt
 	return &retval, nil
 }
 
@@ -80316,6 +80943,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -80856,6 +81487,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -80923,6 +81558,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -81001,6 +81640,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -81072,6 +81715,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -81144,6 +81791,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -81209,6 +81860,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -81310,6 +81965,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -81728,6 +82387,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -81795,6 +82458,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -81865,6 +82532,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -81951,6 +82622,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -84107,6 +84782,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -84286,6 +84965,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -85542,6 +86225,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -85823,6 +86510,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -86891,6 +87582,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -86983,6 +87678,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -88731,6 +89430,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -88799,6 +89502,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -89024,6 +89731,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -89241,6 +89952,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -89448,6 +90163,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -89627,6 +90346,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -90681,6 +91404,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -91610,6 +92337,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -92816,6 +93547,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -93945,6 +94680,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -95534,6 +96273,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -96741,6 +97484,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -98498,6 +99245,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -98574,6 +99325,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -98650,6 +99405,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -98958,6 +99717,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -99032,6 +99795,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -99106,6 +99873,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 
@@ -99445,6 +100216,10 @@ fragment IssueSummaryFields on Issue {
 		id
 		name
 	}
+	delegate {
+		id
+	}
+	updatedAt
 }
 `
 

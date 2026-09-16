@@ -3,6 +3,7 @@ package cli
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -18,6 +19,7 @@ type expectedIssueWriteNumber struct {
 type issueWriteCaptureClient struct {
 	directWriteCaptureClient
 	numbers []expectedIssueWriteNumber
+	nulls   [][]string
 }
 
 func (client *issueWriteCaptureClient) MakeRequest(
@@ -35,9 +37,41 @@ func (client *issueWriteCaptureClient) MakeRequest(
 				return fmt.Errorf("%v = %v", number.path, actual)
 			}
 		}
+		for _, path := range client.nulls {
+			if err := requireNullRequestVariable(request, path); err != nil {
+				return err
+			}
+		}
 	}
 
 	return client.directWriteCaptureClient.MakeRequest(ctx, request, response)
+}
+
+// requireNullRequestVariable fails unless the variable at path is present and
+// JSON null.
+func requireNullRequestVariable(request *graphql.Request, path []string) error {
+	payload, err := json.Marshal(request.Variables)
+	if err != nil {
+		return err
+	}
+	var current any
+	if err := json.Unmarshal(payload, &current); err != nil {
+		return err
+	}
+	for _, key := range path {
+		object, ok := current.(map[string]any)
+		if !ok {
+			return fmt.Errorf("%v: not an object", path)
+		}
+		if current, ok = object[key]; !ok {
+			return fmt.Errorf("%v: missing", path)
+		}
+	}
+	if current != nil {
+		return fmt.Errorf("%v = %v, want null", path, current)
+	}
+
+	return nil
 }
 
 func Test_IssueDirectWriteCommandFlows_forward_mutation_variables(t *testing.T) {
@@ -47,6 +81,7 @@ func Test_IssueDirectWriteCommandFlows_forward_mutation_variables(t *testing.T) 
 		operation string
 		variables []expectedWriteVariable
 		numbers   []expectedIssueWriteNumber
+		nulls     [][]string
 	}{
 		{
 			name:      "create",
@@ -73,6 +108,22 @@ func Test_IssueDirectWriteCommandFlows_forward_mutation_variables(t *testing.T) 
 				{path: []string{"input", "priority"}, value: 1},
 				{path: []string{"input", "estimate"}, value: 8},
 			},
+		},
+		{
+			name:      "update delegate",
+			args:      []string{"issue", "update", "LIT-1", "--delegate", "agent-user-id"},
+			operation: "IssueUpdate",
+			variables: []expectedWriteVariable{
+				{path: []string{"id"}, value: "LIT-1"},
+				{path: []string{"input", "delegateId"}, value: "agent-user-id"},
+			},
+		},
+		{
+			name:      "update clear delegate",
+			args:      []string{"issue", "update", "LIT-1", "--clear-delegate"},
+			operation: "IssueUpdate",
+			variables: []expectedWriteVariable{{path: []string{"id"}, value: "LIT-1"}},
+			nulls:     [][]string{{"input", "delegateId"}},
 		},
 		{
 			name:      "start",
@@ -170,6 +221,7 @@ func Test_IssueDirectWriteCommandFlows_forward_mutation_variables(t *testing.T) 
 					delegate:  commandFlowFakeClient{},
 				},
 				numbers: test.numbers,
+				nulls:   test.nulls,
 			}
 			restore := useCommandRuntime(t, fake)
 			defer restore()

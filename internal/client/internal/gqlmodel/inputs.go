@@ -149,13 +149,13 @@ type LinearIssueRelationCreateInput struct {
 }
 
 // LinearIssueUpdateInput is the sparse Linear issueUpdate payload linctl supports.
-// DueDate and Estimate use RawMessage so explicit null clears the value while
-// an absent value leaves it untouched.
+// DelegateID, DueDate, Estimate, and ProjectMilestoneID use RawMessage so an
+// explicit null clears the value while an absent value leaves it untouched.
 type LinearIssueUpdateInput struct {
 	Title              *string         `json:"title,omitempty"`
 	Description        *string         `json:"description,omitempty"`
 	AssigneeID         *string         `json:"assigneeId,omitempty"`
-	DelegateID         *string         `json:"delegateId,omitempty"`
+	DelegateID         json.RawMessage `json:"delegateId,omitempty"`
 	StateID            *string         `json:"stateId,omitempty"`
 	Priority           *int            `json:"priority,omitempty"`
 	LabelIDs           []string        `json:"labelIds,omitempty"`

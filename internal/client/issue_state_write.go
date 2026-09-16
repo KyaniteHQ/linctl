@@ -3,6 +3,8 @@ package client
 import (
 	"context"
 	"fmt"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 func (guard *guardedClient) resolveNamedOrTypedState(
@@ -25,12 +27,20 @@ func (guard *guardedClient) resolveNamedOrTypedState(
 	return "", false, nil
 }
 
+// finishStateWrite confirms a state write with one read. written is the issue the
+// mutation returned, or nil when it returned none. Linear's read path can trail an
+// accepted write: a live move from Triage to Needs Plan read back Triage while the
+// mutation and the data change webhook already carried Needs Plan. A successful
+// write whose own payload shows the wanted state is therefore confirmed by that
+// payload when the read still shows another state.
 func (guard *guardedClient) finishStateWrite(
 	ctx context.Context,
 	issueID string,
 	wantStateID string,
+	written *gql.IssueSummaryFields,
 	writeErr error,
 ) (IssueSummary, error) {
+	landed := writeErr == nil && written != nil && written.State.Id == wantStateID
 	observed, err := GetIssueDetail(ctx, guard.graphqlClient, issueID)
 	if err != nil {
 		if writeErr != nil {
@@ -47,6 +57,9 @@ func (guard *guardedClient) finishStateWrite(
 		}
 
 		return observed.Summary, nil
+	}
+	if landed {
+		return issueSummaryFromFields(*written), nil
 	}
 
 	mismatch := fmt.Errorf(
