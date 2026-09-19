@@ -162,6 +162,14 @@ Read Linear attachments
 linctl attachment
 ```
 
+### linctl attachment delete
+
+Delete an attachment after pinned-target comparison, which linctl cannot undo
+
+```
+linctl attachment delete ATTACHMENT_ID
+```
+
 ### linctl attachment get
 
 Get one attachment by id

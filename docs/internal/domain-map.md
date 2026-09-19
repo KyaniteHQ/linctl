@@ -1199,6 +1199,6 @@ Planned commands:
 | `attachment issue subscribers` | `Issue.subscribers` via `Query.attachmentIssue` | Read-only |
 | `attachment create` | `Mutation.attachmentCreate` | Blocked: attachment create must resolve and compare the owning issue's team before mutation |
 | `attachment update` | `Mutation.attachmentUpdate` | Blocked: update must resolve and compare the owning issue before mutation |
-| `attachment delete` | `Mutation.attachmentDelete` | Blocked: destructive command needs explicit safety semantics |
+| `attachment delete` | `Mutation.attachmentDelete` | Resource-Scoped Write through the attachment's issue: `GetAttachmentIssue` then `requireIssue`. Irreversible. Single ID, no bulk, no `--force`. |
 
-Only read-only attachment commands are implemented in the current CLI. Attachment writes are deferred until the owning-issue guard model is explicit.
+`linctl attachment delete` is the approved hard delete for issue attachments. Create and update stay blocked.

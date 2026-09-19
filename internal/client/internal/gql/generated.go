@@ -1069,6 +1069,34 @@ func (v *ApplicationInfoFields) GetDeveloperUrl() string { return v.DeveloperUrl
 // GetImageUrl returns ApplicationInfoFields.ImageUrl, and is useful for accessing the field via an interface.
 func (v *ApplicationInfoFields) GetImageUrl() *string { return v.ImageUrl }
 
+// AttachmentDeleteAttachmentDeleteDeletePayload includes the requested fields of the GraphQL type DeletePayload.
+// The GraphQL type's documentation follows.
+//
+// A generic payload return from entity deletion mutations.
+type AttachmentDeleteAttachmentDeleteDeletePayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The identifier of the deleted entity.
+	EntityId string `json:"entityId"`
+}
+
+// GetSuccess returns AttachmentDeleteAttachmentDeleteDeletePayload.Success, and is useful for accessing the field via an interface.
+func (v *AttachmentDeleteAttachmentDeleteDeletePayload) GetSuccess() bool { return v.Success }
+
+// GetEntityId returns AttachmentDeleteAttachmentDeleteDeletePayload.EntityId, and is useful for accessing the field via an interface.
+func (v *AttachmentDeleteAttachmentDeleteDeletePayload) GetEntityId() string { return v.EntityId }
+
+// AttachmentDeleteResponse is returned by AttachmentDelete on success.
+type AttachmentDeleteResponse struct {
+	// Deletes an issue attachment.
+	AttachmentDelete AttachmentDeleteAttachmentDeleteDeletePayload `json:"attachmentDelete"`
+}
+
+// GetAttachmentDelete returns AttachmentDeleteResponse.AttachmentDelete, and is useful for accessing the field via an interface.
+func (v *AttachmentDeleteResponse) GetAttachmentDelete() AttachmentDeleteAttachmentDeleteDeletePayload {
+	return v.AttachmentDelete
+}
+
 // AttachmentLinkURLAttachmentCreateAttachmentPayload includes the requested fields of the GraphQL type AttachmentPayload.
 // The GraphQL type's documentation follows.
 //
@@ -30715,6 +30743,14 @@ type __AgentActivityCreateInput struct {
 func (v *__AgentActivityCreateInput) GetInput() gqlmodel.LinearAgentActivityCreateInput {
 	return v.Input
 }
+
+// __AttachmentDeleteInput is used internally by genqlient
+type __AttachmentDeleteInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __AttachmentDeleteInput.Id, and is useful for accessing the field via an interface.
+func (v *__AttachmentDeleteInput) GetId() string { return v.Id }
 
 // __AttachmentLinkURLInput is used internally by genqlient
 type __AttachmentLinkURLInput struct {
@@ -80515,6 +80551,41 @@ func AgentActivityCreate(
 	}
 
 	data_ = &AgentActivityCreateResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by AttachmentDelete.
+const AttachmentDelete_Operation = `
+mutation AttachmentDelete ($id: String!) {
+	attachmentDelete(id: $id) {
+		success
+		entityId
+	}
+}
+`
+
+func AttachmentDelete(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *AttachmentDeleteResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "AttachmentDelete",
+		Query:  AttachmentDelete_Operation,
+		Variables: &__AttachmentDeleteInput{
+			Id: id,
+		},
+	}
+
+	data_ = &AttachmentDeleteResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

@@ -150,6 +150,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "comment get", args: []string{"comment", "get", "comment-id"}, contains: "comment-id Omer First comment"},
 		{name: "comment update", args: []string{"comment", "update", "comment-id", "--body", "New body"}, contains: "comment-id Omer First comment"},
 		{name: "comment delete", args: []string{"comment", "delete", "comment-id"}, contains: "comment-id deleted"},
+		{name: "attachment delete", args: []string{"attachment", "delete", "attachment-id"}, contains: "hard deleted attachment attachment-id: cannot be undone via linctl"},
 		{name: "comment resolve", args: []string{"comment", "resolve", "comment-id"}, contains: "comment-id Omer First comment"},
 		{name: "comment unresolve", args: []string{"comment", "unresolve", "comment-id"}, contains: "comment-id Omer First comment"},
 		{name: "comment bot actor", args: []string{"comment", "bot-actor", "comment-id"}, contains: "comment-id bot bot-actor-id GitHub [github]"},
