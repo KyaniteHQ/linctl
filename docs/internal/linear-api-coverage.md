@@ -16,11 +16,11 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 
 | Surface | Total | Covered/exposed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods with generated local operations | 474 | 164 | 474 |
+| Upstream SDK root methods with generated local operations | 474 | 165 | 474 |
 | Upstream Query root fields used by generated local operations | 173 | 116 | 173 |
-| Upstream Mutation root fields used by generated local operations | 375 | 50 | 375 |
-| Local generated Go operations declared in GraphQL files | 318 | 318 | 318 |
-| Public CLI commands from command inventory | 443 | 333 | 443 |
+| Upstream Mutation root fields used by generated local operations | 375 | 51 | 375 |
+| Local generated Go operations declared in GraphQL files | 319 | 319 | 319 |
+| Public CLI commands from command inventory | 443 | 334 | 443 |
 
 ## Upstream SDK Root Methods
 
@@ -157,7 +157,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `cycleStartUpcomingCycleToday` | method | blocked_needs_design | starting an upcoming Cycle changes team planning state and needs target-pinned guard semantics |
 | `cycles` | method | generated_operation | local GraphQL operation uses this root |
 | `deleteAgentSkill` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `deleteAttachment` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
+| `deleteAttachment` | method | generated_operation | local GraphQL operation uses this root |
 | `deleteComment` | method | generated_operation | local GraphQL operation uses this root |
 | `deleteCustomView` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteCustomer` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
@@ -698,7 +698,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `agentSkillUpdate` | `AgentSkillPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `airbyteIntegrationConnect` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `attachmentCreate` | `AttachmentPayload!` | generated_operation | root field used by local GraphQL operation |
-| `attachmentDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
+| `attachmentDelete` | `DeletePayload!` | generated_operation | root field used by local GraphQL operation |
 | `attachmentLinkDiscord` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `attachmentLinkFront` | `FrontAttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `attachmentLinkGitHubIssue` | `AttachmentPayload!` | blocked_needs_design | attachment-to-GitHub linking mutates third-party integration state; needs explicit integration guard semantics |
@@ -1064,6 +1064,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Operation | Kind | Root fields | Status | Evidence |
 | --- | --- | --- | --- | --- |
 | `AgentActivityCreate` | mutation | `agentActivityCreate` | generated | `internal/client/internal/gql/generated.go` |
+| `AttachmentDelete` | mutation | `attachmentDelete` | generated | `internal/client/internal/gql/generated.go` |
 | `AttachmentLinkURL` | mutation | `attachmentCreate` | generated | `internal/client/internal/gql/generated.go` |
 | `CommentDelete` | mutation | `commentDelete` | generated | `internal/client/internal/gql/generated.go` |
 | `CommentResolve` | mutation | `commentResolve` | generated | `internal/client/internal/gql/generated.go` |
@@ -1828,4 +1829,4 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Attachment | `attachment issue subscribers` | `Issue.subscribers` via `Query.attachmentIssue` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Attachment | `attachment create` | `Mutation.attachmentCreate` | Blocked: attachment create must resolve and compare the owning issue's team before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
 | Attachment | `attachment update` | `Mutation.attachmentUpdate` | Blocked: update must resolve and compare the owning issue before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
-| Attachment | `attachment delete` | `Mutation.attachmentDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
+| Attachment | `attachment delete` | `Mutation.attachmentDelete` | Resource-Scoped Write through the attachment's issue: `GetAttachmentIssue` then `requireIssue`. Irreversible. Single ID, no bulk, no `--force`. | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |

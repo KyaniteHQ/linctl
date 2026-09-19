@@ -27,6 +27,27 @@ func addAttachmentCommand(ctx context.Context, root *cobra.Command, options *roo
 	)
 	addAttachmentURLCommand(ctx, attachmentCommand, options)
 	addAttachmentIssueCommand(ctx, attachmentCommand, options)
+	addAttachmentDeleteCommand(ctx, attachmentCommand, options)
+}
+
+func addAttachmentDeleteCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[string]{
+		Use:          "delete ATTACHMENT_ID",
+		Short:        "Delete an attachment after pinned-target comparison, which linctl cannot undo",
+		Args:         cobra.ExactArgs(1),
+		Irreversible: true,
+		Run: func(ctx context.Context, _ *cobra.Command, runtime commandRuntime, args []string) (string, error) {
+			return client.DeleteAttachment(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
+		},
+		Write: writeAttachmentDeletion,
+	})
+}
+
+func writeAttachmentDeletion(command *cobra.Command, options *rootOptions, id string) error {
+	return writeDeletionMessage(
+		command, options, id,
+		"hard deleted attachment "+id+": cannot be undone via linctl",
+	)
 }
 
 func addAttachmentURLCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {

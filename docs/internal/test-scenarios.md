@@ -1237,6 +1237,11 @@ Success is pass/fail:
      `Test_CreateWorkflowState_allows_team_owned_write_with_valid_project_pin`,
      `Test_CreateWorkflowState_allows_team_only_pin`.
 
+229. Attachment delete
+   - Success: `linctl attachment delete ATTACHMENT_ID` hard deletes an issue attachment only after resolving the attachment's issue and comparing the pinned target. The command takes exactly one attachment id with no bulk form, `--force`, or confirmation prompt. A missing issue or a mismatched issue team sends no mutation. Human output states the deletion cannot be undone via linctl.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/attachment_delete`, `Test_DirectWriteCommandFlows_forward_request_variables/attachment_delete_id`;
+     `go test ./internal/client`, `Test_DeleteAttachment_removes_attachment_when_target_matches`, `Test_DeleteAttachment_refuses_attachment_without_an_issue_without_mutating`, `Test_DeleteAttachment_refuses_when_issue_team_differs_without_mutating`.
+
 ## Current Outcome
 
 All local scenarios pass under the method above. The complete product suite also passes with

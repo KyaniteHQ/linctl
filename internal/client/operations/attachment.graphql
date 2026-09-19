@@ -28,6 +28,13 @@ query attachment($id: String!) {
   }
 }
 
+mutation AttachmentDelete($id: String!) {
+  attachmentDelete(id: $id) {
+    success
+    entityId
+  }
+}
+
 query attachmentIssue($id: String!) {
   attachmentIssue(id: $id) {
     ...IssueSummaryFields

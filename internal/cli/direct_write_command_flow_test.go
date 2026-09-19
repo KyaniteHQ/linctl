@@ -64,6 +64,12 @@ func Test_DirectWriteCommandFlows_forward_request_variables(t *testing.T) {
 			variables: []expectedWriteVariable{{path: []string{"id"}, value: "comment-id"}},
 		},
 		{
+			name:      "attachment delete id",
+			args:      []string{"attachment", "delete", "attachment-id"},
+			operation: "AttachmentDelete",
+			variables: []expectedWriteVariable{{path: []string{"id"}, value: "attachment-id"}},
+		},
+		{
 			name:      "comment resolve id",
 			args:      []string{"comment", "resolve", "comment-id"},
 			operation: "CommentResolve",
