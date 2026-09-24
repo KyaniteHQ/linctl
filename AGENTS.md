@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to coding agents (Claude Code, Codex, and others) when working with code in this repository.
 
 linctl is a schema-aligned Go CLI (cobra, Go 1.26, module `github.com/KyaniteHQ/linctl`) — a Linear control surface for agent-safe coordination: free reads, target-pinned guarded writes.
 
