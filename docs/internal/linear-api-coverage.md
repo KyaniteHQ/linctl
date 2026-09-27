@@ -1,6 +1,6 @@
 # Linear API coverage ledger
 
-Generated from current local sources and upstream Linear SDK commit `23f11eb`.
+Generated from current local sources and upstream Linear SDK commit `689ccc1`.
 
 Sources (paths relative to the upstream Linear SDK checkout):
 
@@ -16,9 +16,9 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 
 | Surface | Total | Covered/exposed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods with generated local operations | 474 | 165 | 474 |
-| Upstream Query root fields used by generated local operations | 173 | 116 | 173 |
-| Upstream Mutation root fields used by generated local operations | 375 | 51 | 375 |
+| Upstream SDK root methods with generated local operations | 478 | 165 | 478 |
+| Upstream Query root fields used by generated local operations | 174 | 116 | 174 |
+| Upstream Mutation root fields used by generated local operations | 380 | 51 | 380 |
 | Local generated Go operations declared in GraphQL files | 319 | 319 | 319 |
 | Public CLI commands from command inventory | 443 | 334 | 443 |
 
@@ -209,6 +209,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `deleteTriageResponsibility` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteViewPreferences` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteWebhook` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
+| `dependencyPackageMetadata` | method | safe_candidate | read operation may fit future CLI coverage |
 | `document` | method | generated_operation | local GraphQL operation uses this root |
 | `documentContentHistory` | method | blocked_needs_design | content, thread, and archive payload reads can expose body/blob data; needs explicit opt-in projection before CLI exposure |
 | `documents` | method | generated_operation | local GraphQL operation uses this root |
@@ -257,7 +258,10 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `integrationGithubImportRefresh` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationGithubRemoveCodeAccess` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `integrationGitlabConnect` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
+| `integrationGitlabRotate` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationGitlabTestConnection` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
+| `integrationGitlabUpdateRotationSettings` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
+| `integrationGitlabUpdateToken` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationGong` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationGoogleSheets` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationHasScopes` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -544,6 +548,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `customers` | `CustomerConnection!` | generated_operation | root field used by local GraphQL operation |
 | `cycle` | `Cycle!` | generated_operation | root field used by local GraphQL operation |
 | `cycles` | `CycleConnection!` | generated_operation | root field used by local GraphQL operation |
+| `dependencyPackageMetadata` | `[DependencyPackageMetadataResult!]!` | safe_candidate | read operation may fit future CLI coverage |
 | `diff` | `Diff!` | safe_candidate | read operation may fit future CLI coverage |
 | `document` | `Document!` | generated_operation | root field used by local GraphQL operation |
 | `documentContentHistory` | `DocumentContentHistoryPayload!` | blocked_needs_design | content, thread, and archive payload reads can expose body/blob data; needs explicit opt-in projection before CLI exposure |
@@ -807,6 +812,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `integrationArchive` | `DeletePayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationAsksConnectChannel` | `AsksChannelConnectPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationCustomerDataAttributesRefresh` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
+| `integrationDatadogConnect` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
+| `integrationDatadogEnvironments` | `IntegrationDatadogEnvironmentsPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `integrationDiscord` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationFigma` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -819,7 +826,10 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `integrationGithubImportRefresh` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationGithubRemoveCodeAccess` | `IntegrationGithubRemoveCodeAccessPayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `integrationGitlabConnect` | `GitLabIntegrationCreatePayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
+| `integrationGitlabRotate` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationGitlabTestConnection` | `GitLabTestConnectionPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
+| `integrationGitlabUpdateRotationSettings` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
+| `integrationGitlabUpdateToken` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationGong` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationGoogleCalendarPersonalConnect` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationGoogleSheets` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
