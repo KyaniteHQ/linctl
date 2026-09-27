@@ -769,6 +769,7 @@ const (
 	AgentSessionStatusError         AgentSessionStatus = "error"
 	AgentSessionStatusPending       AgentSessionStatus = "pending"
 	AgentSessionStatusStale         AgentSessionStatus = "stale"
+	AgentSessionStatusStopping      AgentSessionStatus = "stopping"
 )
 
 var AllAgentSessionStatus = []AgentSessionStatus{
@@ -778,6 +779,7 @@ var AllAgentSessionStatus = []AgentSessionStatus{
 	AgentSessionStatusError,
 	AgentSessionStatusPending,
 	AgentSessionStatusStale,
+	AgentSessionStatusStopping,
 }
 
 // AgentSessionSummaryFields includes the GraphQL fields of AgentSession requested by the fragment AgentSessionSummaryFields.
@@ -789,7 +791,7 @@ type AgentSessionSummaryFields struct {
 	Id string `json:"id"`
 	// The agent session's unique URL slug.
 	SlugId string `json:"slugId"`
-	// The current status of the agent session, such as pending, active, awaiting input, complete, error, or stale.
+	// The current status of the agent session, such as pending, active, stopping, awaiting input, complete, error, or stale.
 	Status AgentSessionStatus `json:"status"`
 	// The session title, generated automatically or set by the owning OAuth application. Null if no title is set.
 	Summary *string `json:"summary"`
@@ -13702,6 +13704,7 @@ func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityI
 // NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityUsageAlertNotification
 // NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWelcomeMessageNotification
 // NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkflowDefinitionNotification
+// NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification
 // The GraphQL type's documentation follows.
 //
 // A notification delivered to a user's inbox. Notifications are created in response to activity in the workspace such as issue assignments, comments, mentions, and status changes. Each notification has a specific type that determines the associated entity (issue, project, document, etc.) and the nature of the event. Notifications can be read, snoozed, or archived by the user.
@@ -13737,6 +13740,8 @@ func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityU
 func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWelcomeMessageNotification) implementsGraphQLInterfaceNotificationArchiveNotificationArchiveNotificationArchivePayloadEntityNotification() {
 }
 func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkflowDefinitionNotification) implementsGraphQLInterfaceNotificationArchiveNotificationArchiveNotificationArchivePayloadEntityNotification() {
+}
+func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification) implementsGraphQLInterfaceNotificationArchiveNotificationArchiveNotificationArchivePayloadEntityNotification() {
 }
 
 func __unmarshalNotificationArchiveNotificationArchiveNotificationArchivePayloadEntityNotification(b []byte, v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityNotification) error {
@@ -13791,6 +13796,9 @@ func __unmarshalNotificationArchiveNotificationArchiveNotificationArchivePayload
 		return json.Unmarshal(b, *v)
 	case "WorkflowDefinitionNotification":
 		*v = new(NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkflowDefinitionNotification)
+		return json.Unmarshal(b, *v)
+	case "WorkspaceAnnouncementNotification":
+		*v = new(NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification)
 		return json.Unmarshal(b, *v)
 	case "":
 		return fmt.Errorf(
@@ -13959,6 +13967,18 @@ func __marshalNotificationArchiveNotificationArchiveNotificationArchivePayloadEn
 		result := struct {
 			TypeName string `json:"__typename"`
 			*__premarshalNotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkflowDefinitionNotification
+		}{typename, premarshaled}
+		return json.Marshal(result)
+	case *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification:
+		typename = "WorkspaceAnnouncementNotification"
+
+		premarshaled, err := v.__premarshalJSON()
+		if err != nil {
+			return nil, err
+		}
+		result := struct {
+			TypeName string `json:"__typename"`
+			*__premarshalNotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification
 		}{typename, premarshaled}
 		return json.Marshal(result)
 	case nil:
@@ -15518,6 +15538,200 @@ func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityW
 	retval.User = v.NotificationSummaryFieldsWorkflowDefinitionNotification.User
 	retval.Actor = v.NotificationSummaryFieldsWorkflowDefinitionNotification.Actor
 	retval.ExternalUserActor = v.NotificationSummaryFieldsWorkflowDefinitionNotification.ExternalUserActor
+	return &retval, nil
+}
+
+// NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification includes the requested fields of the GraphQL type WorkspaceAnnouncementNotification.
+// The GraphQL type's documentation follows.
+//
+// A workspace announcement delivered to a member's inbox.
+type NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification struct {
+	Typename                                                   *string `json:"__typename"`
+	NotificationSummaryFieldsWorkspaceAnnouncementNotification `json:"-"`
+}
+
+// GetTypename returns NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification.Typename, and is useful for accessing the field via an interface.
+func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification) GetTypename() *string {
+	return v.Typename
+}
+
+// GetId returns NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification.Id, and is useful for accessing the field via an interface.
+func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification) GetId() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Id
+}
+
+// GetType returns NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification.Type, and is useful for accessing the field via an interface.
+func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification) GetType() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Type
+}
+
+// GetCategory returns NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification.Category, and is useful for accessing the field via an interface.
+func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification) GetCategory() NotificationCategory {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Category
+}
+
+// GetTitle returns NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification.Title, and is useful for accessing the field via an interface.
+func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification) GetTitle() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Title
+}
+
+// GetSubtitle returns NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification.Subtitle, and is useful for accessing the field via an interface.
+func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification) GetSubtitle() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Subtitle
+}
+
+// GetUrl returns NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification.Url, and is useful for accessing the field via an interface.
+func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification) GetUrl() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Url
+}
+
+// GetInboxUrl returns NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification.InboxUrl, and is useful for accessing the field via an interface.
+func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification) GetInboxUrl() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.InboxUrl
+}
+
+// GetCreatedAt returns NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification.CreatedAt, and is useful for accessing the field via an interface.
+func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification) GetCreatedAt() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.CreatedAt
+}
+
+// GetUpdatedAt returns NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification) GetUpdatedAt() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.UpdatedAt
+}
+
+// GetArchivedAt returns NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification) GetArchivedAt() *string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.ArchivedAt
+}
+
+// GetReadAt returns NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification.ReadAt, and is useful for accessing the field via an interface.
+func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification) GetReadAt() *string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.ReadAt
+}
+
+// GetEmailedAt returns NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification.EmailedAt, and is useful for accessing the field via an interface.
+func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification) GetEmailedAt() *string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.EmailedAt
+}
+
+// GetSnoozedUntilAt returns NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification.SnoozedUntilAt, and is useful for accessing the field via an interface.
+func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification) GetSnoozedUntilAt() *string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.SnoozedUntilAt
+}
+
+// GetUnsnoozedAt returns NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification.UnsnoozedAt, and is useful for accessing the field via an interface.
+func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification) GetUnsnoozedAt() *string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.UnsnoozedAt
+}
+
+// GetUser returns NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification.User, and is useful for accessing the field via an interface.
+func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification) GetUser() NotificationSummaryFieldsUser {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.User
+}
+
+// GetActor returns NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification.Actor, and is useful for accessing the field via an interface.
+func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification) GetActor() *NotificationSummaryFieldsActorUser {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Actor
+}
+
+// GetExternalUserActor returns NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification.ExternalUserActor, and is useful for accessing the field via an interface.
+func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification) GetExternalUserActor() *NotificationSummaryFieldsExternalUserActorExternalUser {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.ExternalUserActor
+}
+
+func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationSummaryFieldsWorkspaceAnnouncementNotification)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification struct {
+	Typename *string `json:"__typename"`
+
+	Id string `json:"id"`
+
+	Type string `json:"type"`
+
+	Category NotificationCategory `json:"category"`
+
+	Title string `json:"title"`
+
+	Subtitle string `json:"subtitle"`
+
+	Url string `json:"url"`
+
+	InboxUrl string `json:"inboxUrl"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	ReadAt *string `json:"readAt"`
+
+	EmailedAt *string `json:"emailedAt"`
+
+	SnoozedUntilAt *string `json:"snoozedUntilAt"`
+
+	UnsnoozedAt *string `json:"unsnoozedAt"`
+
+	User NotificationSummaryFieldsUser `json:"user"`
+
+	Actor *NotificationSummaryFieldsActorUser `json:"actor"`
+
+	ExternalUserActor *NotificationSummaryFieldsExternalUserActorExternalUser `json:"externalUserActor"`
+}
+
+func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification) __premarshalJSON() (*__premarshalNotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification, error) {
+	var retval __premarshalNotificationArchiveNotificationArchiveNotificationArchivePayloadEntityWorkspaceAnnouncementNotification
+
+	retval.Typename = v.Typename
+	retval.Id = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Id
+	retval.Type = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Type
+	retval.Category = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Category
+	retval.Title = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Title
+	retval.Subtitle = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Subtitle
+	retval.Url = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Url
+	retval.InboxUrl = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.InboxUrl
+	retval.CreatedAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.CreatedAt
+	retval.UpdatedAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.UpdatedAt
+	retval.ArchivedAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.ArchivedAt
+	retval.ReadAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.ReadAt
+	retval.EmailedAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.EmailedAt
+	retval.SnoozedUntilAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.SnoozedUntilAt
+	retval.UnsnoozedAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.UnsnoozedAt
+	retval.User = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.User
+	retval.Actor = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Actor
+	retval.ExternalUserActor = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.ExternalUserActor
 	return &retval, nil
 }
 
@@ -19141,6 +19355,7 @@ func (v *NotificationSubscriptionSummaryFieldsUserNotificationSubscription) GetU
 // NotificationSummaryFieldsUsageAlertNotification
 // NotificationSummaryFieldsWelcomeMessageNotification
 // NotificationSummaryFieldsWorkflowDefinitionNotification
+// NotificationSummaryFieldsWorkspaceAnnouncementNotification
 type NotificationSummaryFields interface {
 	implementsGraphQLInterfaceNotificationSummaryFields()
 	// GetId returns the interface-field "id" from its implementation.
@@ -19257,6 +19472,8 @@ func (v *NotificationSummaryFieldsWelcomeMessageNotification) implementsGraphQLI
 }
 func (v *NotificationSummaryFieldsWorkflowDefinitionNotification) implementsGraphQLInterfaceNotificationSummaryFields() {
 }
+func (v *NotificationSummaryFieldsWorkspaceAnnouncementNotification) implementsGraphQLInterfaceNotificationSummaryFields() {
+}
 
 func __unmarshalNotificationSummaryFields(b []byte, v *NotificationSummaryFields) error {
 	if string(b) == "null" {
@@ -19310,6 +19527,9 @@ func __unmarshalNotificationSummaryFields(b []byte, v *NotificationSummaryFields
 		return json.Unmarshal(b, *v)
 	case "WorkflowDefinitionNotification":
 		*v = new(NotificationSummaryFieldsWorkflowDefinitionNotification)
+		return json.Unmarshal(b, *v)
+	case "WorkspaceAnnouncementNotification":
+		*v = new(NotificationSummaryFieldsWorkspaceAnnouncementNotification)
 		return json.Unmarshal(b, *v)
 	case "":
 		return fmt.Errorf(
@@ -19426,6 +19646,14 @@ func __marshalNotificationSummaryFields(v *NotificationSummaryFields) ([]byte, e
 		result := struct {
 			TypeName string `json:"__typename"`
 			*NotificationSummaryFieldsWorkflowDefinitionNotification
+		}{typename, v}
+		return json.Marshal(result)
+	case *NotificationSummaryFieldsWorkspaceAnnouncementNotification:
+		typename = "WorkspaceAnnouncementNotification"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*NotificationSummaryFieldsWorkspaceAnnouncementNotification
 		}{typename, v}
 		return json.Marshal(result)
 	case nil:
@@ -20901,6 +21129,127 @@ func (v *NotificationSummaryFieldsWorkflowDefinitionNotification) GetExternalUse
 	return v.ExternalUserActor
 }
 
+// NotificationSummaryFields includes the GraphQL fields of WorkspaceAnnouncementNotification requested by the fragment NotificationSummaryFields.
+// The GraphQL type's documentation follows.
+//
+// A notification delivered to a user's inbox. Notifications are created in response to activity in the workspace such as issue assignments, comments, mentions, and status changes. Each notification has a specific type that determines the associated entity (issue, project, document, etc.) and the nature of the event. Notifications can be read, snoozed, or archived by the user.
+type NotificationSummaryFieldsWorkspaceAnnouncementNotification struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Notification type. Determines the kind of event that triggered this notification and which associated entity fields will be populated.
+	Type string `json:"type"`
+	// The category of the notification.
+	Category NotificationCategory `json:"category"`
+	// [Internal] Notification title.
+	Title string `json:"title"`
+	// [Internal] Notification subtitle.
+	Subtitle string `json:"subtitle"`
+	// [Internal] URL to the target of the notification.
+	Url string `json:"url"`
+	// [Internal] Inbox URL for the notification.
+	InboxUrl string `json:"inboxUrl"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+	// been updated after creation.
+	UpdatedAt string `json:"updatedAt"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
+	// The time at which the user marked the notification as read. Null if the notification is unread.
+	ReadAt *string `json:"readAt"`
+	// The time at which an email reminder for this notification was sent to the user. Null if no email reminder has been sent.
+	EmailedAt *string `json:"emailedAt"`
+	// The time until which a notification is snoozed. After this time, the notification reappears in the user's inbox. Null if the notification is not currently snoozed.
+	SnoozedUntilAt *string `json:"snoozedUntilAt"`
+	// The time at which a notification was unsnoozed. Null if the notification has not been unsnoozed.
+	UnsnoozedAt *string `json:"unsnoozedAt"`
+	// The recipient user of this notification.
+	User NotificationSummaryFieldsUser `json:"user"`
+	// The user that caused the notification. Null if the notification was triggered by a non-user actor such as an integration, external user, or system event.
+	Actor *NotificationSummaryFieldsActorUser `json:"actor"`
+	// The external user that caused the notification. Populated when the notification was triggered by an external user (e.g., a commenter from a connected integration like Slack or GitHub) rather than a Linear workspace member.
+	ExternalUserActor *NotificationSummaryFieldsExternalUserActorExternalUser `json:"externalUserActor"`
+}
+
+// GetId returns NotificationSummaryFieldsWorkspaceAnnouncementNotification.Id, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkspaceAnnouncementNotification) GetId() string { return v.Id }
+
+// GetType returns NotificationSummaryFieldsWorkspaceAnnouncementNotification.Type, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkspaceAnnouncementNotification) GetType() string { return v.Type }
+
+// GetCategory returns NotificationSummaryFieldsWorkspaceAnnouncementNotification.Category, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkspaceAnnouncementNotification) GetCategory() NotificationCategory {
+	return v.Category
+}
+
+// GetTitle returns NotificationSummaryFieldsWorkspaceAnnouncementNotification.Title, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkspaceAnnouncementNotification) GetTitle() string {
+	return v.Title
+}
+
+// GetSubtitle returns NotificationSummaryFieldsWorkspaceAnnouncementNotification.Subtitle, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkspaceAnnouncementNotification) GetSubtitle() string {
+	return v.Subtitle
+}
+
+// GetUrl returns NotificationSummaryFieldsWorkspaceAnnouncementNotification.Url, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkspaceAnnouncementNotification) GetUrl() string { return v.Url }
+
+// GetInboxUrl returns NotificationSummaryFieldsWorkspaceAnnouncementNotification.InboxUrl, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkspaceAnnouncementNotification) GetInboxUrl() string {
+	return v.InboxUrl
+}
+
+// GetCreatedAt returns NotificationSummaryFieldsWorkspaceAnnouncementNotification.CreatedAt, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkspaceAnnouncementNotification) GetCreatedAt() string {
+	return v.CreatedAt
+}
+
+// GetUpdatedAt returns NotificationSummaryFieldsWorkspaceAnnouncementNotification.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkspaceAnnouncementNotification) GetUpdatedAt() string {
+	return v.UpdatedAt
+}
+
+// GetArchivedAt returns NotificationSummaryFieldsWorkspaceAnnouncementNotification.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkspaceAnnouncementNotification) GetArchivedAt() *string {
+	return v.ArchivedAt
+}
+
+// GetReadAt returns NotificationSummaryFieldsWorkspaceAnnouncementNotification.ReadAt, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkspaceAnnouncementNotification) GetReadAt() *string {
+	return v.ReadAt
+}
+
+// GetEmailedAt returns NotificationSummaryFieldsWorkspaceAnnouncementNotification.EmailedAt, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkspaceAnnouncementNotification) GetEmailedAt() *string {
+	return v.EmailedAt
+}
+
+// GetSnoozedUntilAt returns NotificationSummaryFieldsWorkspaceAnnouncementNotification.SnoozedUntilAt, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkspaceAnnouncementNotification) GetSnoozedUntilAt() *string {
+	return v.SnoozedUntilAt
+}
+
+// GetUnsnoozedAt returns NotificationSummaryFieldsWorkspaceAnnouncementNotification.UnsnoozedAt, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkspaceAnnouncementNotification) GetUnsnoozedAt() *string {
+	return v.UnsnoozedAt
+}
+
+// GetUser returns NotificationSummaryFieldsWorkspaceAnnouncementNotification.User, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkspaceAnnouncementNotification) GetUser() NotificationSummaryFieldsUser {
+	return v.User
+}
+
+// GetActor returns NotificationSummaryFieldsWorkspaceAnnouncementNotification.Actor, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkspaceAnnouncementNotification) GetActor() *NotificationSummaryFieldsActorUser {
+	return v.Actor
+}
+
+// GetExternalUserActor returns NotificationSummaryFieldsWorkspaceAnnouncementNotification.ExternalUserActor, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkspaceAnnouncementNotification) GetExternalUserActor() *NotificationSummaryFieldsExternalUserActorExternalUser {
+	return v.ExternalUserActor
+}
+
 // NotificationUpdateNotificationUpdateNotificationPayload includes the requested fields of the GraphQL type NotificationPayload.
 // The GraphQL type's documentation follows.
 //
@@ -21002,6 +21351,7 @@ func (v *NotificationUpdateNotificationUpdateNotificationPayload) __premarshalJS
 // NotificationUpdateNotificationUpdateNotificationPayloadNotificationUsageAlertNotification
 // NotificationUpdateNotificationUpdateNotificationPayloadNotificationWelcomeMessageNotification
 // NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkflowDefinitionNotification
+// NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification
 // The GraphQL type's documentation follows.
 //
 // A notification delivered to a user's inbox. Notifications are created in response to activity in the workspace such as issue assignments, comments, mentions, and status changes. Each notification has a specific type that determines the associated entity (issue, project, document, etc.) and the nature of the event. Notifications can be read, snoozed, or archived by the user.
@@ -21037,6 +21387,8 @@ func (v *NotificationUpdateNotificationUpdateNotificationPayloadNotificationUsag
 func (v *NotificationUpdateNotificationUpdateNotificationPayloadNotificationWelcomeMessageNotification) implementsGraphQLInterfaceNotificationUpdateNotificationUpdateNotificationPayloadNotification() {
 }
 func (v *NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkflowDefinitionNotification) implementsGraphQLInterfaceNotificationUpdateNotificationUpdateNotificationPayloadNotification() {
+}
+func (v *NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification) implementsGraphQLInterfaceNotificationUpdateNotificationUpdateNotificationPayloadNotification() {
 }
 
 func __unmarshalNotificationUpdateNotificationUpdateNotificationPayloadNotification(b []byte, v *NotificationUpdateNotificationUpdateNotificationPayloadNotification) error {
@@ -21091,6 +21443,9 @@ func __unmarshalNotificationUpdateNotificationUpdateNotificationPayloadNotificat
 		return json.Unmarshal(b, *v)
 	case "WorkflowDefinitionNotification":
 		*v = new(NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkflowDefinitionNotification)
+		return json.Unmarshal(b, *v)
+	case "WorkspaceAnnouncementNotification":
+		*v = new(NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification)
 		return json.Unmarshal(b, *v)
 	case "":
 		return fmt.Errorf(
@@ -21259,6 +21614,18 @@ func __marshalNotificationUpdateNotificationUpdateNotificationPayloadNotificatio
 		result := struct {
 			TypeName string `json:"__typename"`
 			*__premarshalNotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkflowDefinitionNotification
+		}{typename, premarshaled}
+		return json.Marshal(result)
+	case *NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification:
+		typename = "WorkspaceAnnouncementNotification"
+
+		premarshaled, err := v.__premarshalJSON()
+		if err != nil {
+			return nil, err
+		}
+		result := struct {
+			TypeName string `json:"__typename"`
+			*__premarshalNotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification
 		}{typename, premarshaled}
 		return json.Marshal(result)
 	case nil:
@@ -23791,6 +24158,200 @@ func (v *NotificationUpdateNotificationUpdateNotificationPayloadNotificationWork
 	return &retval, nil
 }
 
+// NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification includes the requested fields of the GraphQL type WorkspaceAnnouncementNotification.
+// The GraphQL type's documentation follows.
+//
+// A workspace announcement delivered to a member's inbox.
+type NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification struct {
+	Typename                                                   *string `json:"__typename"`
+	NotificationSummaryFieldsWorkspaceAnnouncementNotification `json:"-"`
+}
+
+// GetTypename returns NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification.Typename, and is useful for accessing the field via an interface.
+func (v *NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification) GetTypename() *string {
+	return v.Typename
+}
+
+// GetId returns NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification.Id, and is useful for accessing the field via an interface.
+func (v *NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification) GetId() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Id
+}
+
+// GetType returns NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification.Type, and is useful for accessing the field via an interface.
+func (v *NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification) GetType() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Type
+}
+
+// GetCategory returns NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification.Category, and is useful for accessing the field via an interface.
+func (v *NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification) GetCategory() NotificationCategory {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Category
+}
+
+// GetTitle returns NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification.Title, and is useful for accessing the field via an interface.
+func (v *NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification) GetTitle() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Title
+}
+
+// GetSubtitle returns NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification.Subtitle, and is useful for accessing the field via an interface.
+func (v *NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification) GetSubtitle() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Subtitle
+}
+
+// GetUrl returns NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification.Url, and is useful for accessing the field via an interface.
+func (v *NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification) GetUrl() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Url
+}
+
+// GetInboxUrl returns NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification.InboxUrl, and is useful for accessing the field via an interface.
+func (v *NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification) GetInboxUrl() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.InboxUrl
+}
+
+// GetCreatedAt returns NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification.CreatedAt, and is useful for accessing the field via an interface.
+func (v *NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification) GetCreatedAt() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.CreatedAt
+}
+
+// GetUpdatedAt returns NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification) GetUpdatedAt() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.UpdatedAt
+}
+
+// GetArchivedAt returns NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification) GetArchivedAt() *string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.ArchivedAt
+}
+
+// GetReadAt returns NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification.ReadAt, and is useful for accessing the field via an interface.
+func (v *NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification) GetReadAt() *string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.ReadAt
+}
+
+// GetEmailedAt returns NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification.EmailedAt, and is useful for accessing the field via an interface.
+func (v *NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification) GetEmailedAt() *string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.EmailedAt
+}
+
+// GetSnoozedUntilAt returns NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification.SnoozedUntilAt, and is useful for accessing the field via an interface.
+func (v *NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification) GetSnoozedUntilAt() *string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.SnoozedUntilAt
+}
+
+// GetUnsnoozedAt returns NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification.UnsnoozedAt, and is useful for accessing the field via an interface.
+func (v *NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification) GetUnsnoozedAt() *string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.UnsnoozedAt
+}
+
+// GetUser returns NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification.User, and is useful for accessing the field via an interface.
+func (v *NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification) GetUser() NotificationSummaryFieldsUser {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.User
+}
+
+// GetActor returns NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification.Actor, and is useful for accessing the field via an interface.
+func (v *NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification) GetActor() *NotificationSummaryFieldsActorUser {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Actor
+}
+
+// GetExternalUserActor returns NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification.ExternalUserActor, and is useful for accessing the field via an interface.
+func (v *NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification) GetExternalUserActor() *NotificationSummaryFieldsExternalUserActorExternalUser {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.ExternalUserActor
+}
+
+func (v *NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationSummaryFieldsWorkspaceAnnouncementNotification)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification struct {
+	Typename *string `json:"__typename"`
+
+	Id string `json:"id"`
+
+	Type string `json:"type"`
+
+	Category NotificationCategory `json:"category"`
+
+	Title string `json:"title"`
+
+	Subtitle string `json:"subtitle"`
+
+	Url string `json:"url"`
+
+	InboxUrl string `json:"inboxUrl"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	ReadAt *string `json:"readAt"`
+
+	EmailedAt *string `json:"emailedAt"`
+
+	SnoozedUntilAt *string `json:"snoozedUntilAt"`
+
+	UnsnoozedAt *string `json:"unsnoozedAt"`
+
+	User NotificationSummaryFieldsUser `json:"user"`
+
+	Actor *NotificationSummaryFieldsActorUser `json:"actor"`
+
+	ExternalUserActor *NotificationSummaryFieldsExternalUserActorExternalUser `json:"externalUserActor"`
+}
+
+func (v *NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification) __premarshalJSON() (*__premarshalNotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification, error) {
+	var retval __premarshalNotificationUpdateNotificationUpdateNotificationPayloadNotificationWorkspaceAnnouncementNotification
+
+	retval.Typename = v.Typename
+	retval.Id = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Id
+	retval.Type = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Type
+	retval.Category = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Category
+	retval.Title = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Title
+	retval.Subtitle = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Subtitle
+	retval.Url = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Url
+	retval.InboxUrl = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.InboxUrl
+	retval.CreatedAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.CreatedAt
+	retval.UpdatedAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.UpdatedAt
+	retval.ArchivedAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.ArchivedAt
+	retval.ReadAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.ReadAt
+	retval.EmailedAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.EmailedAt
+	retval.SnoozedUntilAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.SnoozedUntilAt
+	retval.UnsnoozedAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.UnsnoozedAt
+	retval.User = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.User
+	retval.Actor = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Actor
+	retval.ExternalUserActor = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.ExternalUserActor
+	return &retval, nil
+}
+
 // NotificationUpdateResponse is returned by NotificationUpdate on success.
 type NotificationUpdateResponse struct {
 	// Updates a notification.
@@ -24416,7 +24977,7 @@ func (v *ProjectLabelCreateProjectLabelCreateProjectLabelPayload) GetProjectLabe
 // ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
 // The GraphQL type's documentation follows.
 //
-// A label that can be applied to projects for categorization. Project labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects.
+// A label that can be applied to projects for categorization. Project labels can be workspace-level (available to all teams) or team-scoped, and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects. Team-scoped labels may be inherited from parent teams to sub-teams.
 type ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel struct {
 	ProjectLabelSummaryFields `json:"-"`
 }
@@ -24593,7 +25154,7 @@ func (v *ProjectLabelRestoreProjectLabelRestoreProjectLabelPayload) GetProjectLa
 // ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
 // The GraphQL type's documentation follows.
 //
-// A label that can be applied to projects for categorization. Project labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects.
+// A label that can be applied to projects for categorization. Project labels can be workspace-level (available to all teams) or team-scoped, and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects. Team-scoped labels may be inherited from parent teams to sub-teams.
 type ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel struct {
 	ProjectLabelSummaryFields `json:"-"`
 }
@@ -24768,7 +25329,7 @@ func (v *ProjectLabelRetireProjectLabelRetireProjectLabelPayload) GetProjectLabe
 // ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
 // The GraphQL type's documentation follows.
 //
-// A label that can be applied to projects for categorization. Project labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects.
+// A label that can be applied to projects for categorization. Project labels can be workspace-level (available to all teams) or team-scoped, and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects. Team-scoped labels may be inherited from parent teams to sub-teams.
 type ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel struct {
 	ProjectLabelSummaryFields `json:"-"`
 }
@@ -24924,7 +25485,7 @@ func (v *ProjectLabelRetireResponse) GetProjectLabelRetire() ProjectLabelRetireP
 // ProjectLabelSummaryFields includes the GraphQL fields of ProjectLabel requested by the fragment ProjectLabelSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A label that can be applied to projects for categorization. Project labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects.
+// A label that can be applied to projects for categorization. Project labels can be workspace-level (available to all teams) or team-scoped, and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects. Team-scoped labels may be inherited from parent teams to sub-teams.
 type ProjectLabelSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -25008,7 +25569,7 @@ func (v *ProjectLabelSummaryFieldsOrganization) GetId() string { return v.Id }
 // ProjectLabelSummaryFieldsParentProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
 // The GraphQL type's documentation follows.
 //
-// A label that can be applied to projects for categorization. Project labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects.
+// A label that can be applied to projects for categorization. Project labels can be workspace-level (available to all teams) or team-scoped, and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects. Team-scoped labels may be inherited from parent teams to sub-teams.
 type ProjectLabelSummaryFieldsParentProjectLabel struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -25049,7 +25610,7 @@ func (v *ProjectLabelUpdateProjectLabelUpdateProjectLabelPayload) GetProjectLabe
 // ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
 // The GraphQL type's documentation follows.
 //
-// A label that can be applied to projects for categorization. Project labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects.
+// A label that can be applied to projects for categorization. Project labels can be workspace-level (available to all teams) or team-scoped, and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects. Team-scoped labels may be inherited from parent teams to sub-teams.
 type ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel struct {
 	ProjectLabelSummaryFields `json:"-"`
 }
@@ -29350,9 +29911,9 @@ type TimeScheduleSummaryFieldsEntriesTimeScheduleEntry struct {
 	StartsAt string `json:"startsAt"`
 	// The end time of the schedule entry in ISO 8601 date-time format.
 	EndsAt string `json:"endsAt"`
-	// The Linear user id of the user on schedule. If the user cannot be mapped to a Linear user then `userEmail` can be used as a reference.
+	// The Linear user id of the referenced user. If the reference cannot be mapped to a Linear user then `userEmail` can be used instead.
 	UserId *string `json:"userId"`
-	// The email, name or reference to the user on schedule. This is used in case the external user could not be mapped to a Linear user id.
+	// The external email, name or reference text for the user when the reference cannot be mapped to a Linear user id.
 	UserEmail *string `json:"userEmail"`
 }
 
@@ -30498,7 +31059,7 @@ type ViewerViewerUser struct {
 	Email string `json:"email"`
 	// Whether the user is an app.
 	App bool `json:"app"`
-	// Whether the user can be assigned to issues. Regular users are always assignable; app users are assignable only if they have the app:assignable scope. The Linear agent also requires coding sessions to be enabled.
+	// Whether the user can be assigned to issues. Active app users require the assignments capability. The Linear agent also requires coding sessions to be enabled.
 	IsAssignable bool `json:"isAssignable"`
 	// The workspace that the user belongs to.
 	Organization ViewerViewerUserOrganization `json:"organization"`
@@ -51742,6 +52303,7 @@ func (v *issuesResponse) GetIssues() issuesIssuesIssueConnection { return v.Issu
 // notificationNotificationUsageAlertNotification
 // notificationNotificationWelcomeMessageNotification
 // notificationNotificationWorkflowDefinitionNotification
+// notificationNotificationWorkspaceAnnouncementNotification
 // The GraphQL type's documentation follows.
 //
 // A notification delivered to a user's inbox. Notifications are created in response to activity in the workspace such as issue assignments, comments, mentions, and status changes. Each notification has a specific type that determines the associated entity (issue, project, document, etc.) and the nature of the event. Notifications can be read, snoozed, or archived by the user.
@@ -51777,6 +52339,8 @@ func (v *notificationNotificationUsageAlertNotification) implementsGraphQLInterf
 func (v *notificationNotificationWelcomeMessageNotification) implementsGraphQLInterfacenotificationNotification() {
 }
 func (v *notificationNotificationWorkflowDefinitionNotification) implementsGraphQLInterfacenotificationNotification() {
+}
+func (v *notificationNotificationWorkspaceAnnouncementNotification) implementsGraphQLInterfacenotificationNotification() {
 }
 
 func __unmarshalnotificationNotification(b []byte, v *notificationNotification) error {
@@ -51831,6 +52395,9 @@ func __unmarshalnotificationNotification(b []byte, v *notificationNotification) 
 		return json.Unmarshal(b, *v)
 	case "WorkflowDefinitionNotification":
 		*v = new(notificationNotificationWorkflowDefinitionNotification)
+		return json.Unmarshal(b, *v)
+	case "WorkspaceAnnouncementNotification":
+		*v = new(notificationNotificationWorkspaceAnnouncementNotification)
 		return json.Unmarshal(b, *v)
 	case "":
 		return fmt.Errorf(
@@ -51999,6 +52566,18 @@ func __marshalnotificationNotification(v *notificationNotification) ([]byte, err
 		result := struct {
 			TypeName string `json:"__typename"`
 			*__premarshalnotificationNotificationWorkflowDefinitionNotification
+		}{typename, premarshaled}
+		return json.Marshal(result)
+	case *notificationNotificationWorkspaceAnnouncementNotification:
+		typename = "WorkspaceAnnouncementNotification"
+
+		premarshaled, err := v.__premarshalJSON()
+		if err != nil {
+			return nil, err
+		}
+		result := struct {
+			TypeName string `json:"__typename"`
+			*__premarshalnotificationNotificationWorkspaceAnnouncementNotification
 		}{typename, premarshaled}
 		return json.Marshal(result)
 	case nil:
@@ -54508,6 +55087,200 @@ func (v *notificationNotificationWorkflowDefinitionNotification) __premarshalJSO
 	retval.User = v.NotificationSummaryFieldsWorkflowDefinitionNotification.User
 	retval.Actor = v.NotificationSummaryFieldsWorkflowDefinitionNotification.Actor
 	retval.ExternalUserActor = v.NotificationSummaryFieldsWorkflowDefinitionNotification.ExternalUserActor
+	return &retval, nil
+}
+
+// notificationNotificationWorkspaceAnnouncementNotification includes the requested fields of the GraphQL type WorkspaceAnnouncementNotification.
+// The GraphQL type's documentation follows.
+//
+// A workspace announcement delivered to a member's inbox.
+type notificationNotificationWorkspaceAnnouncementNotification struct {
+	Typename                                                   *string `json:"__typename"`
+	NotificationSummaryFieldsWorkspaceAnnouncementNotification `json:"-"`
+}
+
+// GetTypename returns notificationNotificationWorkspaceAnnouncementNotification.Typename, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkspaceAnnouncementNotification) GetTypename() *string {
+	return v.Typename
+}
+
+// GetId returns notificationNotificationWorkspaceAnnouncementNotification.Id, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkspaceAnnouncementNotification) GetId() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Id
+}
+
+// GetType returns notificationNotificationWorkspaceAnnouncementNotification.Type, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkspaceAnnouncementNotification) GetType() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Type
+}
+
+// GetCategory returns notificationNotificationWorkspaceAnnouncementNotification.Category, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkspaceAnnouncementNotification) GetCategory() NotificationCategory {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Category
+}
+
+// GetTitle returns notificationNotificationWorkspaceAnnouncementNotification.Title, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkspaceAnnouncementNotification) GetTitle() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Title
+}
+
+// GetSubtitle returns notificationNotificationWorkspaceAnnouncementNotification.Subtitle, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkspaceAnnouncementNotification) GetSubtitle() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Subtitle
+}
+
+// GetUrl returns notificationNotificationWorkspaceAnnouncementNotification.Url, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkspaceAnnouncementNotification) GetUrl() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Url
+}
+
+// GetInboxUrl returns notificationNotificationWorkspaceAnnouncementNotification.InboxUrl, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkspaceAnnouncementNotification) GetInboxUrl() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.InboxUrl
+}
+
+// GetCreatedAt returns notificationNotificationWorkspaceAnnouncementNotification.CreatedAt, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkspaceAnnouncementNotification) GetCreatedAt() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.CreatedAt
+}
+
+// GetUpdatedAt returns notificationNotificationWorkspaceAnnouncementNotification.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkspaceAnnouncementNotification) GetUpdatedAt() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.UpdatedAt
+}
+
+// GetArchivedAt returns notificationNotificationWorkspaceAnnouncementNotification.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkspaceAnnouncementNotification) GetArchivedAt() *string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.ArchivedAt
+}
+
+// GetReadAt returns notificationNotificationWorkspaceAnnouncementNotification.ReadAt, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkspaceAnnouncementNotification) GetReadAt() *string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.ReadAt
+}
+
+// GetEmailedAt returns notificationNotificationWorkspaceAnnouncementNotification.EmailedAt, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkspaceAnnouncementNotification) GetEmailedAt() *string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.EmailedAt
+}
+
+// GetSnoozedUntilAt returns notificationNotificationWorkspaceAnnouncementNotification.SnoozedUntilAt, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkspaceAnnouncementNotification) GetSnoozedUntilAt() *string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.SnoozedUntilAt
+}
+
+// GetUnsnoozedAt returns notificationNotificationWorkspaceAnnouncementNotification.UnsnoozedAt, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkspaceAnnouncementNotification) GetUnsnoozedAt() *string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.UnsnoozedAt
+}
+
+// GetUser returns notificationNotificationWorkspaceAnnouncementNotification.User, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkspaceAnnouncementNotification) GetUser() NotificationSummaryFieldsUser {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.User
+}
+
+// GetActor returns notificationNotificationWorkspaceAnnouncementNotification.Actor, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkspaceAnnouncementNotification) GetActor() *NotificationSummaryFieldsActorUser {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Actor
+}
+
+// GetExternalUserActor returns notificationNotificationWorkspaceAnnouncementNotification.ExternalUserActor, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkspaceAnnouncementNotification) GetExternalUserActor() *NotificationSummaryFieldsExternalUserActorExternalUser {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.ExternalUserActor
+}
+
+func (v *notificationNotificationWorkspaceAnnouncementNotification) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*notificationNotificationWorkspaceAnnouncementNotification
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.notificationNotificationWorkspaceAnnouncementNotification = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationSummaryFieldsWorkspaceAnnouncementNotification)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalnotificationNotificationWorkspaceAnnouncementNotification struct {
+	Typename *string `json:"__typename"`
+
+	Id string `json:"id"`
+
+	Type string `json:"type"`
+
+	Category NotificationCategory `json:"category"`
+
+	Title string `json:"title"`
+
+	Subtitle string `json:"subtitle"`
+
+	Url string `json:"url"`
+
+	InboxUrl string `json:"inboxUrl"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	ReadAt *string `json:"readAt"`
+
+	EmailedAt *string `json:"emailedAt"`
+
+	SnoozedUntilAt *string `json:"snoozedUntilAt"`
+
+	UnsnoozedAt *string `json:"unsnoozedAt"`
+
+	User NotificationSummaryFieldsUser `json:"user"`
+
+	Actor *NotificationSummaryFieldsActorUser `json:"actor"`
+
+	ExternalUserActor *NotificationSummaryFieldsExternalUserActorExternalUser `json:"externalUserActor"`
+}
+
+func (v *notificationNotificationWorkspaceAnnouncementNotification) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *notificationNotificationWorkspaceAnnouncementNotification) __premarshalJSON() (*__premarshalnotificationNotificationWorkspaceAnnouncementNotification, error) {
+	var retval __premarshalnotificationNotificationWorkspaceAnnouncementNotification
+
+	retval.Typename = v.Typename
+	retval.Id = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Id
+	retval.Type = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Type
+	retval.Category = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Category
+	retval.Title = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Title
+	retval.Subtitle = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Subtitle
+	retval.Url = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Url
+	retval.InboxUrl = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.InboxUrl
+	retval.CreatedAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.CreatedAt
+	retval.UpdatedAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.UpdatedAt
+	retval.ArchivedAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.ArchivedAt
+	retval.ReadAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.ReadAt
+	retval.EmailedAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.EmailedAt
+	retval.SnoozedUntilAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.SnoozedUntilAt
+	retval.UnsnoozedAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.UnsnoozedAt
+	retval.User = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.User
+	retval.Actor = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Actor
+	retval.ExternalUserActor = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.ExternalUserActor
 	return &retval, nil
 }
 
@@ -59222,6 +59995,7 @@ func (v *notificationsNotificationsNotificationConnectionNodesIssueNotification)
 // notificationsNotificationsNotificationConnectionNodesUsageAlertNotification
 // notificationsNotificationsNotificationConnectionNodesWelcomeMessageNotification
 // notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification
+// notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification
 // The GraphQL type's documentation follows.
 //
 // A notification delivered to a user's inbox. Notifications are created in response to activity in the workspace such as issue assignments, comments, mentions, and status changes. Each notification has a specific type that determines the associated entity (issue, project, document, etc.) and the nature of the event. Notifications can be read, snoozed, or archived by the user.
@@ -59257,6 +60031,8 @@ func (v *notificationsNotificationsNotificationConnectionNodesUsageAlertNotifica
 func (v *notificationsNotificationsNotificationConnectionNodesWelcomeMessageNotification) implementsGraphQLInterfacenotificationsNotificationsNotificationConnectionNodesNotification() {
 }
 func (v *notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification) implementsGraphQLInterfacenotificationsNotificationsNotificationConnectionNodesNotification() {
+}
+func (v *notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification) implementsGraphQLInterfacenotificationsNotificationsNotificationConnectionNodesNotification() {
 }
 
 func __unmarshalnotificationsNotificationsNotificationConnectionNodesNotification(b []byte, v *notificationsNotificationsNotificationConnectionNodesNotification) error {
@@ -59311,6 +60087,9 @@ func __unmarshalnotificationsNotificationsNotificationConnectionNodesNotificatio
 		return json.Unmarshal(b, *v)
 	case "WorkflowDefinitionNotification":
 		*v = new(notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification)
+		return json.Unmarshal(b, *v)
+	case "WorkspaceAnnouncementNotification":
+		*v = new(notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification)
 		return json.Unmarshal(b, *v)
 	case "":
 		return fmt.Errorf(
@@ -59479,6 +60258,18 @@ func __marshalnotificationsNotificationsNotificationConnectionNodesNotification(
 		result := struct {
 			TypeName string `json:"__typename"`
 			*__premarshalnotificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification
+		}{typename, premarshaled}
+		return json.Marshal(result)
+	case *notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification:
+		typename = "WorkspaceAnnouncementNotification"
+
+		premarshaled, err := v.__premarshalJSON()
+		if err != nil {
+			return nil, err
+		}
+		result := struct {
+			TypeName string `json:"__typename"`
+			*__premarshalnotificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification
 		}{typename, premarshaled}
 		return json.Marshal(result)
 	case nil:
@@ -61041,6 +61832,200 @@ func (v *notificationsNotificationsNotificationConnectionNodesWorkflowDefinition
 	return &retval, nil
 }
 
+// notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification includes the requested fields of the GraphQL type WorkspaceAnnouncementNotification.
+// The GraphQL type's documentation follows.
+//
+// A workspace announcement delivered to a member's inbox.
+type notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification struct {
+	Typename                                                   *string `json:"__typename"`
+	NotificationSummaryFieldsWorkspaceAnnouncementNotification `json:"-"`
+}
+
+// GetTypename returns notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification.Typename, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification) GetTypename() *string {
+	return v.Typename
+}
+
+// GetId returns notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification.Id, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification) GetId() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Id
+}
+
+// GetType returns notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification.Type, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification) GetType() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Type
+}
+
+// GetCategory returns notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification.Category, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification) GetCategory() NotificationCategory {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Category
+}
+
+// GetTitle returns notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification.Title, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification) GetTitle() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Title
+}
+
+// GetSubtitle returns notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification.Subtitle, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification) GetSubtitle() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Subtitle
+}
+
+// GetUrl returns notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification.Url, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification) GetUrl() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Url
+}
+
+// GetInboxUrl returns notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification.InboxUrl, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification) GetInboxUrl() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.InboxUrl
+}
+
+// GetCreatedAt returns notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification.CreatedAt, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification) GetCreatedAt() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.CreatedAt
+}
+
+// GetUpdatedAt returns notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification) GetUpdatedAt() string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.UpdatedAt
+}
+
+// GetArchivedAt returns notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification) GetArchivedAt() *string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.ArchivedAt
+}
+
+// GetReadAt returns notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification.ReadAt, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification) GetReadAt() *string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.ReadAt
+}
+
+// GetEmailedAt returns notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification.EmailedAt, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification) GetEmailedAt() *string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.EmailedAt
+}
+
+// GetSnoozedUntilAt returns notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification.SnoozedUntilAt, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification) GetSnoozedUntilAt() *string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.SnoozedUntilAt
+}
+
+// GetUnsnoozedAt returns notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification.UnsnoozedAt, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification) GetUnsnoozedAt() *string {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.UnsnoozedAt
+}
+
+// GetUser returns notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification.User, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification) GetUser() NotificationSummaryFieldsUser {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.User
+}
+
+// GetActor returns notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification.Actor, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification) GetActor() *NotificationSummaryFieldsActorUser {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Actor
+}
+
+// GetExternalUserActor returns notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification.ExternalUserActor, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification) GetExternalUserActor() *NotificationSummaryFieldsExternalUserActorExternalUser {
+	return v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.ExternalUserActor
+}
+
+func (v *notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationSummaryFieldsWorkspaceAnnouncementNotification)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalnotificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification struct {
+	Typename *string `json:"__typename"`
+
+	Id string `json:"id"`
+
+	Type string `json:"type"`
+
+	Category NotificationCategory `json:"category"`
+
+	Title string `json:"title"`
+
+	Subtitle string `json:"subtitle"`
+
+	Url string `json:"url"`
+
+	InboxUrl string `json:"inboxUrl"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	ReadAt *string `json:"readAt"`
+
+	EmailedAt *string `json:"emailedAt"`
+
+	SnoozedUntilAt *string `json:"snoozedUntilAt"`
+
+	UnsnoozedAt *string `json:"unsnoozedAt"`
+
+	User NotificationSummaryFieldsUser `json:"user"`
+
+	Actor *NotificationSummaryFieldsActorUser `json:"actor"`
+
+	ExternalUserActor *NotificationSummaryFieldsExternalUserActorExternalUser `json:"externalUserActor"`
+}
+
+func (v *notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *notificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification) __premarshalJSON() (*__premarshalnotificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification, error) {
+	var retval __premarshalnotificationsNotificationsNotificationConnectionNodesWorkspaceAnnouncementNotification
+
+	retval.Typename = v.Typename
+	retval.Id = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Id
+	retval.Type = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Type
+	retval.Category = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Category
+	retval.Title = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Title
+	retval.Subtitle = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Subtitle
+	retval.Url = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Url
+	retval.InboxUrl = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.InboxUrl
+	retval.CreatedAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.CreatedAt
+	retval.UpdatedAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.UpdatedAt
+	retval.ArchivedAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.ArchivedAt
+	retval.ReadAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.ReadAt
+	retval.EmailedAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.EmailedAt
+	retval.SnoozedUntilAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.SnoozedUntilAt
+	retval.UnsnoozedAt = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.UnsnoozedAt
+	retval.User = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.User
+	retval.Actor = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.Actor
+	retval.ExternalUserActor = v.NotificationSummaryFieldsWorkspaceAnnouncementNotification.ExternalUserActor
+	return &retval, nil
+}
+
 // notificationsNotificationsNotificationConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
 type notificationsNotificationsNotificationConnectionPageInfo struct {
 	// Indicates if there are more results when paginating forward.
@@ -61302,7 +62287,7 @@ func (v *organization_projectLabelsOrganizationProjectLabelsProjectLabelConnecti
 // organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
 // The GraphQL type's documentation follows.
 //
-// A label that can be applied to projects for categorization. Project labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects.
+// A label that can be applied to projects for categorization. Project labels can be workspace-level (available to all teams) or team-scoped, and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects. Team-scoped labels may be inherited from parent teams to sub-teams.
 type organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel struct {
 	ProjectLabelSummaryFields `json:"-"`
 }
@@ -62080,7 +63065,7 @@ func (v *projectFilterSuggestionResponse) GetProjectFilterSuggestion() projectFi
 // projectLabelProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
 // The GraphQL type's documentation follows.
 //
-// A label that can be applied to projects for categorization. Project labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects.
+// A label that can be applied to projects for categorization. Project labels can be workspace-level (available to all teams) or team-scoped, and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects. Team-scoped labels may be inherited from parent teams to sub-teams.
 type projectLabelProjectLabel struct {
 	ProjectLabelSummaryFields `json:"-"`
 }
@@ -62226,7 +63211,7 @@ func (v *projectLabelResponse) GetProjectLabel() projectLabelProjectLabel { retu
 // projectLabel_childrenProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
 // The GraphQL type's documentation follows.
 //
-// A label that can be applied to projects for categorization. Project labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects.
+// A label that can be applied to projects for categorization. Project labels can be workspace-level (available to all teams) or team-scoped, and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects. Team-scoped labels may be inherited from parent teams to sub-teams.
 type projectLabel_childrenProjectLabel struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -62266,7 +63251,7 @@ func (v *projectLabel_childrenProjectLabelChildrenProjectLabelConnection) GetPag
 // projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
 // The GraphQL type's documentation follows.
 //
-// A label that can be applied to projects for categorization. Project labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects.
+// A label that can be applied to projects for categorization. Project labels can be workspace-level (available to all teams) or team-scoped, and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects. Team-scoped labels may be inherited from parent teams to sub-teams.
 type projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel struct {
 	ProjectLabelSummaryFields `json:"-"`
 }
@@ -62440,7 +63425,7 @@ func (v *projectLabel_childrenResponse) GetProjectLabel() projectLabel_childrenP
 // projectLabel_projectsProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
 // The GraphQL type's documentation follows.
 //
-// A label that can be applied to projects for categorization. Project labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects.
+// A label that can be applied to projects for categorization. Project labels can be workspace-level (available to all teams) or team-scoped, and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects. Team-scoped labels may be inherited from parent teams to sub-teams.
 type projectLabel_projectsProjectLabel struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -62654,7 +63639,7 @@ func (v *projectLabelsProjectLabelsProjectLabelConnection) GetPageInfo() project
 // projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
 // The GraphQL type's documentation follows.
 //
-// A label that can be applied to projects for categorization. Project labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects.
+// A label that can be applied to projects for categorization. Project labels can be workspace-level (available to all teams) or team-scoped, and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects. Team-scoped labels may be inherited from parent teams to sub-teams.
 type projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel struct {
 	ProjectLabelSummaryFields `json:"-"`
 }
@@ -62816,7 +63801,7 @@ func (v *projectLabelsProjectLabelsProjectLabelConnectionPageInfo) GetEndCursor(
 
 // projectLabelsResponse is returned by projectLabels on success.
 type projectLabelsResponse struct {
-	// Returns all project labels in the workspace, with optional filtering.
+	// All project labels. Returns a paginated list of labels visible to the authenticated user, including both workspace-level and team-scoped labels, with optional filtering.
 	ProjectLabels projectLabelsProjectLabelsProjectLabelConnection `json:"projectLabels"`
 }
 
@@ -66511,7 +67496,7 @@ func (v *project_labelsProjectLabelsProjectLabelConnection) GetPageInfo() projec
 // project_labelsProjectLabelsProjectLabelConnectionNodesProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
 // The GraphQL type's documentation follows.
 //
-// A label that can be applied to projects for categorization. Project labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects.
+// A label that can be applied to projects for categorization. Project labels can be workspace-level (available to all teams) or team-scoped, and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects. Team-scoped labels may be inherited from parent teams to sub-teams.
 type project_labelsProjectLabelsProjectLabelConnectionNodesProjectLabel struct {
 	ProjectLabelSummaryFields `json:"-"`
 }
