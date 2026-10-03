@@ -158,7 +158,9 @@ needs it.
 ## Releases
 
 A push of a `v*` tag starts a release. The release workflow requires a successful `ci.yml` run
-on that SHA on `master`, runs `go tool task goreleaser-check`, then runs GoReleaser. GoReleaser
+on that SHA on `master`, runs `go tool task goreleaser-check`, then runs GoReleaser. When a
+push to `master` created no `ci.yml` run, start one by hand with
+`gh workflow run ci.yml --ref master`; a manual run on the same SHA satisfies the gate. GoReleaser
 publishes the GitHub artifacts (archives, SBOMs, `checksums.txt`, and a keyless cosign sigstore
 bundle) and updates the `KyaniteHQ/homebrew-linctl` tap cask. The tap token must be
 `HOMEBREW_TAP_GITHUB_TOKEN`.
