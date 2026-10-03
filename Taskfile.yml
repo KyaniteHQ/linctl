@@ -5,6 +5,12 @@ vars:
   PKG: ./cmd/linctl
   GOLANGCI_LINT: github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.14.0
   GORELEASER: github.com/goreleaser/goreleaser/v2@v2.16.0
+  # go.mod's toolchain line is the single source of the Go version. CI installs it
+  # through .github/actions/go-setup; the env block below pins it for every task, so a
+  # newer host Go builds the pinned tools exactly as CI does.
+  GO_MOD:
+    sh: cat "{{.TASKFILE_DIR}}/go.mod"
+  GO_TOOLCHAIN: '{{regexFind "toolchain go[0-9.]+(rc[0-9]+)?" .GO_MOD | trimPrefix "toolchain "}}'
   # Single source of the upstream Linear SDK pin. CI reads the same file, so a
   # refresh bumps one place instead of two.
   LINEAR_SDK_REF:
@@ -18,6 +24,9 @@ vars:
       if [ -n "${INFISICAL_PROJECT_ID:-}" ]; then
         printf '%s %s' --projectId "$INFISICAL_PROJECT_ID"
       fi
+
+env:
+  GOTOOLCHAIN: "{{.GO_TOOLCHAIN}}"
 
 tasks:
   default:
