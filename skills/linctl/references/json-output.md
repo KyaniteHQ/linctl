@@ -37,7 +37,7 @@ when the value is empty.
 | `project_id` | string | *optional* |
 | `project` | string | *optional*: the project name |
 
-`issue get` adds `description` (string, the Markdown body, empty when the issue has none) to the IssueSummary keys, so `--fields description` reads a body without an export.
+`issue get` adds `description` (string, the Markdown body, empty when the issue has none) to the IssueSummary keys since v0.25.0, so `--fields description` reads a body without an export. An older binary reports the field as not present.
 
 `issue list` → **IssueList**:
 `{ "issues": [IssueSummary], "has_next_page": bool, "end_cursor": string|absent }`
