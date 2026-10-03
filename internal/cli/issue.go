@@ -405,14 +405,30 @@ func addIssueGetCommand(ctx context.Context, root *cobra.Command, options *rootO
 			if err != nil {
 				return err
 			}
-			issue, err := client.GetIssueByID(ctx, runtime.graphqlClient, args[0])
+			issue, err := client.GetIssueDetail(ctx, runtime.graphqlClient, args[0])
 			if err != nil {
 				return err
 			}
 
-			return writeIssue(command, options, issue)
+			return writeIssueDetail(command, options, issue)
 		},
 	})
+}
+
+// issueGetOutput is the `issue get` payload: the summary keys plus the description body.
+type issueGetOutput struct {
+	client.IssueSummary
+	Description string `json:"description"`
+}
+
+func writeIssueDetail(command *cobra.Command, options *rootOptions, issue client.IssueDetail) error {
+	output := issueGetOutput{IssueSummary: issue.Summary, Description: issue.Description}
+
+	return writeItem(command, options, output, issue.Summary.ID, issueDetailHumanLine)
+}
+
+func issueDetailHumanLine(command *cobra.Command, options *rootOptions, issue issueGetOutput) error {
+	return issueHumanLine(command, options, issue.IssueSummary)
 }
 
 func issueChildCommandBundleForIssue() issueChildCommandBundle {
