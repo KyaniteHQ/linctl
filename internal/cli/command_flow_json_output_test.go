@@ -349,3 +349,48 @@ func Test_CommandFlows_suppress_success_output_when_quiet_flag_is_set(t *testing
 		})
 	}
 }
+
+func Test_CommandFlows_issue_get_json_carries_the_description(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, commandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"--json", "issue", "get", "LIT-1"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	envelope := requireJSONOutputObject(t, output.String(), "id", "identifier", "description")
+	require.Equal(t, "Existing description", envelope["description"])
+	require.Equal(t, "LIT-1", envelope["identifier"])
+}
+
+func Test_CommandFlows_issue_get_fields_flag_selects_the_description_alone(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, commandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"--json", "--fields", "description", "issue", "get", "LIT-1"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	envelope := requireJSONOutputObject(t, output.String(), "description")
+	require.Len(t, envelope, 1)
+}
+
+func Test_CommandFlows_issue_get_human_line_keeps_the_summary_shape(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, commandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"issue", "get", "LIT-1"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Equal(t, "LIT-1 Detail issue [Todo]\n", output.String())
+}
