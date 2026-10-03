@@ -3,7 +3,7 @@ version: "3"
 vars:
   BINARY: linctl
   PKG: ./cmd/linctl
-  GOLANGCI_LINT: github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2
+  GOLANGCI_LINT: github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.14.0
   GORELEASER: github.com/goreleaser/goreleaser/v2@v2.16.0
   # Single source of the upstream Linear SDK pin. CI reads the same file, so a
   # refresh bumps one place instead of two.
