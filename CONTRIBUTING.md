@@ -18,6 +18,11 @@ the tidy state. `generate-check` verifies the generated GraphQL client, the gene
 references, and the upstream schema and coverage-ledger checks. None of these steps modifies a
 source file.
 
+Every task runs under the Go toolchain that the `toolchain` line of `go.mod` names. The
+Taskfile sets `GOTOOLCHAIN` from that line, so a host with a newer Go builds the pinned
+golangci-lint and GoReleaser the same way CI does. The go command downloads that toolchain
+once if the host lacks it.
+
 `go tool task coverage` is separate from `ci`, and it enforces 100% statement coverage on
 hand-written code. Run it on its own after a change to product code.
 
