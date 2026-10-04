@@ -328,3 +328,104 @@ team_id = "repo-team"
 	require.NoError(t, err)
 	require.Empty(t, resolved.Target.Transitions)
 }
+
+func Test_Load_reads_the_close_state_from_the_repo_config(t *testing.T) {
+	root := t.TempDir()
+	repoPath := filepath.Join(root, "repo.toml")
+	require.NoError(t, os.WriteFile(repoPath, []byte(`
+[target]
+org_id = "repo-org"
+team_key = "REPO"
+team_id = "repo-team"
+
+[states]
+close = "Done"
+`), 0o600))
+
+	resolved, err := Load(context.Background(), LoadRequest{RepoPath: repoPath})
+
+	require.NoError(t, err)
+	require.Equal(t, States{Close: "Done"}, resolved.Target.States)
+}
+
+func Test_Load_lets_a_profile_close_state_replace_the_file_close_state(t *testing.T) {
+	root := t.TempDir()
+	globalPath := filepath.Join(root, "global.toml")
+	repoPath := filepath.Join(root, "repo.toml")
+	require.NoError(t, os.WriteFile(globalPath, []byte(`
+[states]
+close = "Merged"
+`), 0o600))
+	require.NoError(t, os.WriteFile(repoPath, []byte(`
+profile = "reviewer"
+
+[target]
+org_id = "repo-org"
+team_key = "REPO"
+team_id = "repo-team"
+
+[states]
+close = "Complete"
+
+[profiles.reviewer.states]
+close = "Done"
+`), 0o600))
+
+	resolved, err := Load(context.Background(), LoadRequest{GlobalPath: globalPath, RepoPath: repoPath})
+
+	require.NoError(t, err)
+	require.Equal(t, "Done", resolved.Target.States.Close)
+}
+
+func Test_Load_keeps_the_base_close_state_when_the_overlay_sets_none(t *testing.T) {
+	root := t.TempDir()
+	globalPath := filepath.Join(root, "global.toml")
+	repoPath := filepath.Join(root, "repo.toml")
+	require.NoError(t, os.WriteFile(globalPath, []byte(`
+[states]
+close = "Done"
+
+[profiles.reviewer.states]
+close = "Complete"
+`), 0o600))
+	require.NoError(t, os.WriteFile(repoPath, []byte(`
+profile = "other"
+
+[target]
+org_id = "repo-org"
+team_key = "REPO"
+team_id = "repo-team"
+
+[states]
+
+[profiles.other.states]
+
+[profiles.reviewer.states]
+`), 0o600))
+
+	resolved, err := Load(context.Background(), LoadRequest{GlobalPath: globalPath, RepoPath: repoPath})
+	require.NoError(t, err)
+	require.Equal(t, "Done", resolved.Target.States.Close)
+
+	resolved, err = Load(context.Background(), LoadRequest{
+		GlobalPath: globalPath, RepoPath: repoPath, ProfileOverride: "reviewer",
+	})
+	require.NoError(t, err)
+	require.Equal(t, "Complete", resolved.Target.States.Close)
+}
+
+func Test_Load_leaves_the_close_state_empty_when_no_config_sets_it(t *testing.T) {
+	root := t.TempDir()
+	repoPath := filepath.Join(root, "repo.toml")
+	require.NoError(t, os.WriteFile(repoPath, []byte(`
+[target]
+org_id = "repo-org"
+team_key = "REPO"
+team_id = "repo-team"
+`), 0o600))
+
+	resolved, err := Load(context.Background(), LoadRequest{RepoPath: repoPath})
+
+	require.NoError(t, err)
+	require.Empty(t, resolved.Target.States.Close)
+}

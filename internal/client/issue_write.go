@@ -666,7 +666,8 @@ func (guard *guardedClient) requireParentCommentOnIssue(
 	return nil
 }
 
-// CloseIssue moves an issue to the team's completed workflow state after target comparison.
+// CloseIssue moves an issue to the completed workflow state after target comparison:
+// the one the [states] close setting names, else the team's lowest-position one.
 func CloseIssue(
 	ctx context.Context,
 	graphqlClient graphql.Client,
@@ -686,7 +687,7 @@ func (guard *guardedClient) closeIssue(ctx context.Context, issueID string) (Iss
 	if err != nil {
 		return IssueSummary{}, err
 	}
-	stateID, err := guard.resolveStateTypeID(ctx, issue.TeamID, "completed")
+	stateID, err := guard.resolveCloseStateID(ctx, issue.TeamID)
 	if err != nil {
 		return IssueSummary{}, err
 	}

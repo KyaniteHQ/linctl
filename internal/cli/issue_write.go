@@ -395,11 +395,18 @@ func addIssueReplyCommand(ctx context.Context, root *cobra.Command, options *roo
 	})
 }
 
+// closeStateHelp is the help sentence shared by `issue close` and `done`.
+const closeStateHelp = "The state is the team's lowest-position completed state unless close under " +
+	"[states] in .linctl.toml names another completed state."
+
 func addIssueCloseCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.IssueSummary]{
 		Use:   "close ISSUE_ID",
 		Short: "Move an issue to the completed workflow state",
 		Args:  cobra.ExactArgs(1),
+		Configure: func(command *cobra.Command) {
+			command.Long = "Move an issue to a completed workflow state. " + closeStateHelp
+		},
 		Run: func(
 			ctx context.Context, _ *cobra.Command, runtime commandRuntime, args []string,
 		) (client.IssueSummary, error) {

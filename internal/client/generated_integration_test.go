@@ -97,6 +97,50 @@ func Test_Integration_issueWriteRoundTrip_whenTargetPinned(t *testing.T) {
 	require.Equal(t, "completed", closed.StateType)
 }
 
+func Test_Integration_issueClose_whenCloseStateConfigured(t *testing.T) {
+	// Given
+	requireLiveWriteIntegration(t)
+	fixture := readLiveIntegrationConfig(t)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	transport := newLiveIntegrationTransport(t, 10*time.Second)
+	states, listErr := listTeamWorkflowStates(ctx, transport, fixture.TeamID)
+	require.NoError(t, listErr)
+	var want *workflowStateCandidate
+	for index := range states {
+		// The highest-position completed state is never the one a bare close picks
+		// when the team has several, so the configured name has to win.
+		if states[index].Type == "completed" && (want == nil || states[index].Position > want.Position) {
+			want = &states[index]
+		}
+	}
+	require.NotNil(t, want, "the team has no completed workflow state")
+	target := config.Target{
+		OrgID:     fixture.OrgID,
+		TeamKey:   fixture.TeamKey,
+		TeamID:    fixture.TeamID,
+		ProjectID: fixture.ProjectID,
+		States:    config.States{Close: want.Name},
+	}
+
+	// When
+	created, createErr := CreateIssue(ctx, transport, target, IssueCreateRequest{
+		Title:       "linctl-it-" + time.Now().UTC().Format("20060102T150405"),
+		Description: "created by linctl integration test",
+	})
+	require.NoError(t, createErr)
+	defer func() {
+		_, err := archiveIntegrationIssue(context.Background(), transport, created.ID)
+		require.NoError(t, err)
+	}()
+	closed, closeErr := CloseIssue(ctx, transport, target, created.Identifier)
+
+	// Then
+	require.NoError(t, closeErr)
+	require.Equal(t, want.ID, closed.StateID)
+	require.Equal(t, "completed", closed.StateType)
+}
+
 func Test_Integration_projectWriteRoundTrip_whenTargetPinned(t *testing.T) {
 	// Given
 	requireLiveWriteIntegration(t)
