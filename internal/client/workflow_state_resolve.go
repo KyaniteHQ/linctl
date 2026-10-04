@@ -79,6 +79,32 @@ func (guard *guardedClient) resolveStateTypeID(
 	return firstStateIDOfCandidates(states, teamID, stateType)
 }
 
+// resolveCloseStateID returns the completed state `close` moves an issue to:
+// the state the [states] close setting names, or the team's lowest-position
+// completed state when the setting is empty. A configured name that is absent
+// from the team or is not a completed state fails closed.
+func (guard *guardedClient) resolveCloseStateID(ctx context.Context, teamID string) (string, error) {
+	name := guard.target.Expected.States.Close
+	if name == "" {
+		return guard.resolveStateTypeID(ctx, teamID, "completed")
+	}
+	states, err := guard.teamWorkflowStates(ctx, teamID)
+	if err != nil {
+		return "", err
+	}
+	state, err := selectWorkflowState(states, name)
+	if err != nil {
+		return "", fmt.Errorf("[states] close: %w", err)
+	}
+	if state.Type != "completed" {
+		return "", fmt.Errorf(
+			"%w: [states] close %q is a %s state, not completed", ErrWriteInvalid, name, state.Type,
+		)
+	}
+
+	return state.ID, nil
+}
+
 func (guard *guardedClient) teamWorkflowStates(
 	ctx context.Context,
 	teamID string,
@@ -133,21 +159,30 @@ func selectWorkflowStateID(
 	states []workflowStateCandidate,
 	selector string,
 ) (string, error) {
-	id, ok, err := uniqueStateNameID(states, selector)
-	if err != nil {
-		return "", err
-	}
-	if !ok {
-		return "", fmt.Errorf("%w: unknown workflow state %q", ErrWriteInvalid, selector)
-	}
+	state, err := selectWorkflowState(states, selector)
 
-	return id, nil
+	return state.ID, err
 }
 
-func uniqueStateNameID(
+func selectWorkflowState(
 	states []workflowStateCandidate,
 	selector string,
-) (string, bool, error) {
+) (workflowStateCandidate, error) {
+	state, ok, err := uniqueStateByName(states, selector)
+	if err != nil {
+		return workflowStateCandidate{}, err
+	}
+	if !ok {
+		return workflowStateCandidate{}, fmt.Errorf("%w: unknown workflow state %q", ErrWriteInvalid, selector)
+	}
+
+	return state, nil
+}
+
+func uniqueStateByName(
+	states []workflowStateCandidate,
+	selector string,
+) (workflowStateCandidate, bool, error) {
 	want := strings.ToLower(selector)
 	var matches []workflowStateCandidate
 	for _, state := range states {
@@ -156,17 +191,17 @@ func uniqueStateNameID(
 		}
 	}
 	if len(matches) == 0 {
-		return "", false, nil
+		return workflowStateCandidate{}, false, nil
 	}
 	if len(matches) > 1 {
-		return "", false, fmt.Errorf(
+		return workflowStateCandidate{}, false, fmt.Errorf(
 			"%w: workflow state name %q is ambiguous",
 			ErrWriteInvalid,
 			selector,
 		)
 	}
 
-	return matches[0].ID, true, nil
+	return matches[0], true, nil
 }
 
 func firstStateIDOfCandidates(

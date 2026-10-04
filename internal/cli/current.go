@@ -53,6 +53,7 @@ func addDoneCommand(ctx context.Context, root *cobra.Command, options *rootOptio
 	addWriteCommand(root, WriteEffectGuarded, &cobra.Command{
 		Use:   "done",
 		Short: "Close the current checkout issue",
+		Long:  "Close the current checkout issue. " + closeStateHelp,
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
 			issueID, err := gitctx.CurrentIssueIdentifierForTeam(ctx, ".", pinnedTeamKeyHint(ctx, options))

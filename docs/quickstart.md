@@ -111,6 +111,13 @@ team_id  = "your-linear-team-id"
 # [transitions]
 # "Todo" = ["In Progress"]
 # "In Progress" = ["In Review", "Todo"]
+
+# Optional. The completed state that `issue close` and `done` move an issue to.
+# Without it they pick the team's lowest-position completed state. The name
+# must match a completed state of the pinned team, or the close fails before
+# any change.
+# [states]
+# close = "Done"
 ```
 
 </details>
