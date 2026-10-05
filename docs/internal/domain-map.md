@@ -226,7 +226,7 @@ Planned commands:
 | Command | Operation backing | Write scope |
 | --- | --- | --- |
 | `issue list` | `Query.issues` with one composed `IssueFilter`: `Issue.team.id` plus any combination of `Issue.state.type` (`--state`, with `--status` as an alias; human state names are normalized to the schema state type before filtering), `Issue.project.id`, `Issue.assignee.id`, `Issue.labels.some.id`, `Issue.cycle.id`, `Issue.createdAt.gte` (`--created-after` / `--created-since`), `Issue.createdAt.lte`, `Issue.updatedAt.gte` (`--updated-after`), `Issue.updatedAt.lte` (`--updated-before`), `Issue.hasBlockedByRelations.eq`, and `Issue.hasBlockingRelations.eq`; `--blocked-by ISSUE` traverses `Issue.relations` with `IssueRelation.type == "blocks"` and returns matching `IssueRelation.relatedIssue`, and combines only with `--limit`; `--all-teams` omits the filter entirely | Read-only |
-| `issue search` | `Query.issues`, filtered by `Issue.searchableContent` | Read-only |
+| `issue search` | `Query.issues`, filtered by `Issue.team.id` and a case-insensitive `contains` on `Issue.title` or `Issue.description` | Read-only |
 | `issue figma-file-key-search` | `Query.issueFigmaFileKeySearch`; returns compact issue summaries for a Figma file key | Read-only |
 | `issue priority-values` | `Query.issuePriorityValues` | Read-only |
 | `issue filter-suggestion` | `Query.issueFilterSuggestion`; returns the suggested filter JSON plus log id only | Read-only |

@@ -152,7 +152,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "issue list blocked by filter", args: []string{"issue", "list", "--blocked-by", "LIT-1"}, operation: "IssueBlockedIssues", contains: "list issues"},
 		{name: "issue list all teams", args: []string{"issue", "list", "--all-teams"}, operation: "issues", contains: "list issues"},
 		{name: "issue search target resolve", args: []string{"issue", "search", "needle"}, operation: "Teams", contains: "resolve teams"},
-		{name: "issue search", args: []string{"issue", "search", "needle"}, operation: "issueSearch", contains: "search issues"},
+		{name: "issue search", args: []string{"issue", "search", "needle"}, operation: "teamIssueSearch", contains: "search issues"},
 		{name: "issue figma file key search", args: []string{"issue", "figma-file-key-search", "figma-key"}, operation: "issueFigmaFileKeySearch", contains: "search issues by Figma file key"},
 		{name: "issue priority values", args: []string{"issue", "priority-values"}, operation: "issuePriorityValues", contains: "list issue priority values"},
 		{name: "issue filter suggestion", args: []string{"issue", "filter-suggestion", "started issues"}, operation: "issueFilterSuggestion", contains: "get issue filter suggestion"},

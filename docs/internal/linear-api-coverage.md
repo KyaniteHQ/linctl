@@ -16,8 +16,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 
 | Surface | Total | Covered/exposed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods with generated local operations | 478 | 165 | 478 |
-| Upstream Query root fields used by generated local operations | 174 | 116 | 174 |
+| Upstream SDK root methods with generated local operations | 478 | 164 | 478 |
+| Upstream Query root fields used by generated local operations | 174 | 115 | 174 |
 | Upstream Mutation root fields used by generated local operations | 380 | 51 | 380 |
 | Local generated Go operations declared in GraphQL files | 319 | 319 | 319 |
 | Public CLI commands from command inventory | 443 | 334 | 443 |
@@ -312,7 +312,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `issueReminder` | method | blocked_needs_design | issue reminder mutation changes notification state and needs target-pinned guard semantics |
 | `issueRemoveLabel` | method | generated_operation | local GraphQL operation uses this root |
 | `issueRepositorySuggestions` | method | intentionally_excluded | repository suggestion reads expose VCS integration metadata outside the default Linear work CLI surface |
-| `issueSearch` | method | generated_operation | local GraphQL operation uses this root |
+| `issueSearch` | method | public_command | public CLI command exposes this operation |
 | `issueShare` | method | blocked_needs_design | issue sharing changes access state and needs target-pinned guard semantics |
 | `issueSubscribe` | method | blocked_needs_design | issue subscription changes notification state and needs target-pinned guard semantics |
 | `issueTitleSuggestionFromCustomerRequest` | method | generated_operation | local GraphQL operation uses this root |
@@ -596,7 +596,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `issueRelation` | `IssueRelation!` | generated_operation | root field used by local GraphQL operation |
 | `issueRelations` | `IssueRelationConnection!` | generated_operation | root field used by local GraphQL operation |
 | `issueRepositorySuggestions` | `RepositorySuggestionsPayload!` | intentionally_excluded | repository suggestion reads expose VCS integration metadata outside the default Linear work CLI surface |
-| `issueSearch` | `IssueConnection!` | generated_operation | root field used by local GraphQL operation |
+| `issueSearch` | `IssueConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueTitleSuggestionFromCustomerRequest` | `IssueTitleSuggestionFromCustomerRequestPayload!` | generated_operation | root field used by local GraphQL operation |
 | `issueToRelease` | `IssueToRelease!` | generated_operation | root field used by local GraphQL operation |
 | `issueToReleases` | `IssueToReleaseConnection!` | generated_operation | root field used by local GraphQL operation |
@@ -1232,7 +1232,6 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `issuePriorityValues` | query | `issuePriorityValues` | generated | `internal/client/internal/gql/generated.go` |
 | `issueRelation` | query | `issueRelation` | generated | `internal/client/internal/gql/generated.go` |
 | `issueRelations` | query | `issueRelations` | generated | `internal/client/internal/gql/generated.go` |
-| `issueSearch` | query | `issueSearch` | generated | `internal/client/internal/gql/generated.go` |
 | `issueTitleSuggestionFromCustomerRequest` | query | `issueTitleSuggestionFromCustomerRequest` | generated | `internal/client/internal/gql/generated.go` |
 | `issueToRelease` | query | `issueToRelease` | generated | `internal/client/internal/gql/generated.go` |
 | `issueToReleases` | query | `issueToReleases` | generated | `internal/client/internal/gql/generated.go` |
@@ -1345,6 +1344,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `slaConfigurations` | query | `slaConfigurations` | generated | `internal/client/internal/gql/generated.go` |
 | `team` | query | `team` | generated | `internal/client/internal/gql/generated.go` |
 | `teamEstimateConfig` | query | `team` | generated | `internal/client/internal/gql/generated.go` |
+| `teamIssueSearch` | query | `issues` | generated | `internal/client/internal/gql/generated.go` |
 | `teamMembership` | query | `teamMembership` | generated | `internal/client/internal/gql/generated.go` |
 | `teamMemberships` | query | `teamMemberships` | generated | `internal/client/internal/gql/generated.go` |
 | `team_cycles` | query | `team` | generated | `internal/client/internal/gql/generated.go` |
@@ -1486,7 +1486,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Release | `issue-to-release update` | `Mutation.issueToReleaseUpdate` | Blocked: association update must compare issue and release scope before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
 | Release | `issue-to-release delete` | `Mutation.issueToReleaseDelete` | Blocked: destructive association command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Issue | `issue list` | `Query.issues` with one composed `IssueFilter`: `Issue.team.id` plus any combination of `Issue.state.type` (`--state`, with `--status` as an alias; human state names are normalized to the schema state type before filtering), `Issue.project.id`, `Issue.assignee.id`, `Issue.labels.some.id`, `Issue.cycle.id`, `Issue.createdAt.gte` (`--created-after` / `--created-since`), `Issue.createdAt.lte`, `Issue.updatedAt.gte` (`--updated-after`), `Issue.updatedAt.lte` (`--updated-before`), `Issue.hasBlockedByRelations.eq`, and `Issue.hasBlockingRelations.eq`; `--blocked-by ISSUE` traverses `Issue.relations` with `IssueRelation.type == "blocks"` and returns matching `IssueRelation.relatedIssue`, and combines only with `--limit`; `--all-teams` omits the filter entirely | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
-| Issue | `issue search` | `Query.issues`, filtered by `Issue.searchableContent` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
+| Issue | `issue search` | `Query.issues`, filtered by `Issue.team.id` and a case-insensitive `contains` on `Issue.title` or `Issue.description` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Issue | `issue figma-file-key-search` | `Query.issueFigmaFileKeySearch`; returns compact issue summaries for a Figma file key | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Issue | `issue priority-values` | `Query.issuePriorityValues` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Issue | `issue filter-suggestion` | `Query.issueFilterSuggestion`; returns the suggested filter JSON plus log id only | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
