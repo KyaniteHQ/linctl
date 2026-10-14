@@ -1,6 +1,6 @@
 # Linear API coverage ledger
 
-Generated from current local sources and upstream Linear SDK commit `689ccc1`.
+Generated from current local sources and upstream Linear SDK commit `6f99687`.
 
 Sources (paths relative to the upstream Linear SDK checkout):
 
@@ -16,9 +16,9 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 
 | Surface | Total | Covered/exposed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods with generated local operations | 478 | 164 | 478 |
-| Upstream Query root fields used by generated local operations | 174 | 115 | 174 |
-| Upstream Mutation root fields used by generated local operations | 380 | 51 | 380 |
+| Upstream SDK root methods with generated local operations | 479 | 164 | 479 |
+| Upstream Query root fields used by generated local operations | 178 | 115 | 178 |
+| Upstream Mutation root fields used by generated local operations | 383 | 51 | 383 |
 | Local generated Go operations declared in GraphQL files | 319 | 319 | 319 |
 | Public CLI commands from command inventory | 443 | 334 | 443 |
 
@@ -363,6 +363,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `projectUpdates` | method | generated_operation | local GraphQL operation uses this root |
 | `projects` | method | generated_operation | local GraphQL operation uses this root |
 | `pushSubscriptionTest` | method | intentionally_excluded | push subscription diagnostics are notification-device integration plumbing outside the CLI surface |
+| `quotas` | method | safe_candidate | read operation may fit future CLI coverage |
 | `rateLimitStatus` | getter | generated_operation | local GraphQL operation uses this root |
 | `recentReleasesByAccessKey` | method | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the auth-scoped agent CLI |
 | `refreshGoogleSheetsData` | method | blocked_needs_design | mutation needs product and safety design |
@@ -618,6 +619,9 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `organizationInviteDetails` | `OrganizationInviteDetailsPayload!` | intentionally_excluded | organization invite reads can expose invitee and admin metadata outside an agent-safe CLI surface |
 | `organizationInvites` | `OrganizationInviteConnection!` | intentionally_excluded | organization invite reads can expose invitee and admin metadata outside an agent-safe CLI surface |
 | `organizationMeta` | `OrganizationMeta` | safe_candidate | read operation may fit future CLI coverage |
+| `originInstallUrl` | `OriginInstallUrlPayload!` | safe_candidate | read operation may fit future CLI coverage |
+| `originInstallation` | `OriginInstallationDetails!` | safe_candidate | read operation may fit future CLI coverage |
+| `originPendingInstallations` | `[OriginInstallationDetails!]!` | safe_candidate | read operation may fit future CLI coverage |
 | `partnerOfferDetails` | `PartnerOfferDetailsPayload` | safe_candidate | read operation may fit future CLI coverage |
 | `partnerOfferWorkspaces` | `PartnerOfferWorkspacesPayload` | safe_candidate | read operation may fit future CLI coverage |
 | `partnerProgramPartners` | `[PartnerProgramPartnerPayload!]!` | safe_candidate | read operation may fit future CLI coverage |
@@ -636,6 +640,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `projectUpdates` | `ProjectUpdateConnection!` | generated_operation | root field used by local GraphQL operation |
 | `projects` | `ProjectConnection!` | generated_operation | root field used by local GraphQL operation |
 | `pushSubscriptionTest` | `PushSubscriptionTestPayload!` | intentionally_excluded | push subscription diagnostics are notification-device integration plumbing outside the CLI surface |
+| `quotas` | `OrganizationQuotaConnection!` | safe_candidate | read operation may fit future CLI coverage |
 | `rateLimitStatus` | `RateLimitPayload!` | generated_operation | root field used by local GraphQL operation |
 | `recentReleasesByAccessKey` | `[AccessKeyRelease!]!` | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the auth-scoped agent CLI |
 | `release` | `Release!` | generated_operation | root field used by local GraphQL operation |
@@ -849,6 +854,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `integrationMicrosoftTeamsProjectPost` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationOpsgenieConnect` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationOpsgenieRefreshScheduleMappings` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
+| `integrationOriginConnect` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
+| `integrationOriginConnectInstallation` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationPagerDutyConnect` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationPagerDutyRefreshScheduleMappings` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationRequest` | `IntegrationRequestPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -949,6 +956,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `organizationStartTrial` | `OrganizationStartTrialPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `organizationStartTrialForPlan` | `OrganizationStartTrialPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `organizationUpdate` | `OrganizationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `originInstallationCancel` | `OriginInstallationCancelPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `partnerApplicationCreate` | `ContactPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `partnerOfferRedeem` | `PartnerOfferRedeemPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `passkeyLoginFinish` | `AuthResolverResponse!` | blocked_needs_design | mutation needs product and safety design |
