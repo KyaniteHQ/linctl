@@ -210,6 +210,11 @@ func addIssueUpdateCommand(ctx context.Context, root *cobra.Command, options *ro
 				"assign to a project milestone id, which needs a pinned project",
 			)
 			command.Flags().BoolVar(&request.ClearMilestone, "clear-milestone", false, "clear the milestone")
+			command.Flags().StringVar(
+				&request.IfUpdatedAt, "if-updated-at", "",
+				"refuse the write when the issue changed since this RFC 3339 updated_at; "+
+					"the check is a read before the write, not atomic",
+			)
 			registerStateCompletion(ctx, command, options, workflowStateNameCandidates)
 		},
 		Run: func(
