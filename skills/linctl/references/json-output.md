@@ -211,7 +211,7 @@ agent can then branch on a stable code instead of a parse of the prose.
 - `CROSS_ORGANIZATION_RELATION`: a relation would cross Linear organizations. This is a hard stop.
 - `STATE_MISMATCH`: a state write's readback did not match the selected workflow state.
 - `TRANSITION_DENIED`: the state change is not in the `[transitions]` allowlist of `.linctl.toml`. This is a hard stop. Do not retry with another state or flag.
-- `CONFLICT`: a guarded write's stable-id readback exists but does not match the requested fields. Do not replay.
+- `CONFLICT`: a guarded write's stable-id readback exists but does not match the requested fields, or `issue update --if-updated-at` found that the issue changed since that time (the message names both timestamps). Do not replay; read the issue again first.
 - `TARGET_NOT_CONFIGURED`: there is no pinned target. Set `org_id`, `team_key`, and `team_id` in `.linctl.toml`.
 - `RATE_LIMITED`: Linear returned a rate-limit response. Wait, then retry.
 - `MUTATION_FAILED`: the mutation ran, but Linear reported no success and no entity.
