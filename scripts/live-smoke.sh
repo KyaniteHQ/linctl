@@ -386,6 +386,7 @@ PY
   "$binary" semantic-search linear --json --limit 1 >/dev/null
   "$binary" search documents linear --json --limit 1 >/dev/null
   "$binary" search issues linear --json --limit 1 >/dev/null
+  "$binary" issue search linear --json --limit 1 >/dev/null
   "$binary" search projects linear --json --limit 1 >/dev/null
   release_pipeline_json="$("$binary" release-pipeline list --json --limit 5)"
   release_pipeline_id="$(first_item_field release_pipelines <<<"$release_pipeline_json")"

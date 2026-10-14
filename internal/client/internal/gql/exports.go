@@ -478,12 +478,6 @@ func XIssueRelations(ctx_ context.Context, client_ graphql.Client, first *int, a
 
 type XIssueRelationsIssueRelationsIssueRelationConnectionNodesIssueRelation = issueRelationsIssueRelationsIssueRelationConnectionNodesIssueRelation
 
-func XIssueSearch(ctx_ context.Context, client_ graphql.Client, teamId string, query string, first *int, after *string, includeArchived *bool) (data_ *issueSearchResponse, err_ error) {
-	return issueSearch(ctx_, client_, teamId, query, first, after, includeArchived)
-}
-
-type XIssueSearchIssueSearchIssueConnectionNodesIssue = issueSearchIssueSearchIssueConnectionNodesIssue
-
 func XIssueTitleSuggestionFromCustomerRequest(ctx_ context.Context, client_ graphql.Client, request string) (data_ *issueTitleSuggestionFromCustomerRequestResponse, err_ error) {
 	return issueTitleSuggestionFromCustomerRequest(ctx_, client_, request)
 }
@@ -1045,6 +1039,12 @@ func XTeam(ctx_ context.Context, client_ graphql.Client, id string) (data_ *team
 func XTeamEstimateConfig(ctx_ context.Context, client_ graphql.Client, id string) (data_ *teamEstimateConfigResponse, err_ error) {
 	return teamEstimateConfig(ctx_, client_, id)
 }
+
+func XTeamIssueSearch(ctx_ context.Context, client_ graphql.Client, teamId string, term string, first *int, after *string, includeArchived *bool) (data_ *teamIssueSearchResponse, err_ error) {
+	return teamIssueSearch(ctx_, client_, teamId, term, first, after, includeArchived)
+}
+
+type XTeamIssueSearchIssuesIssueConnectionNodesIssue = teamIssueSearchIssuesIssueConnectionNodesIssue
 
 func XTeamMembership(ctx_ context.Context, client_ graphql.Client, id string) (data_ *teamMembershipResponse, err_ error) {
 	return teamMembership(ctx_, client_, id)

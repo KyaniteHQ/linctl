@@ -160,7 +160,10 @@ needs it.
 A push of a `v*` tag starts a release. The release workflow requires a successful `ci.yml` run
 on that SHA on `master`, runs `go tool task goreleaser-check`, then runs GoReleaser. When a
 push to `master` created no `ci.yml` run, start one by hand with
-`gh workflow run ci.yml --ref master`; a manual run on the same SHA satisfies the gate. GoReleaser
+`gh workflow run ci.yml --ref master` while that commit is still the tip of `master`. A
+manual run on the same SHA satisfies the gate. A dispatch always runs the latest commit of
+the ref you name, and a run started with the tag as `--ref` counts as a tag run, which the
+gate ignores. Once a later commit has landed, tag that later commit instead. GoReleaser
 publishes the GitHub artifacts (archives, SBOMs, `checksums.txt`, and a keyless cosign sigstore
 bundle) and updates the `KyaniteHQ/homebrew-linctl` tap cask. The tap token must be
 `HOMEBREW_TAP_GITHUB_TOKEN`.

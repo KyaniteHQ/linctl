@@ -18,18 +18,18 @@ func SearchIssuesByTeam(
 	query string,
 	limit int,
 ) (IssueList, error) {
-	issues, err := gql.XIssueSearch(ctx, graphqlClient, teamID, query, &limit, nil, boolPtr(true))
+	issues, err := gql.XTeamIssueSearch(ctx, graphqlClient, teamID, query, &limit, nil, boolPtr(true))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("search issues: %w", err)
 	}
 
-	summaries := mapNodes(issues.IssueSearch.Nodes, searchIssueSummary)
+	summaries := mapNodes(issues.Issues.Nodes, searchIssueSummary)
 
 	return IssueList{
 		Issues: summaries,
 		Page: Page{
-			HasNextPage: issues.IssueSearch.PageInfo.HasNextPage,
-			EndCursor:   issues.IssueSearch.PageInfo.EndCursor,
+			HasNextPage: issues.Issues.PageInfo.HasNextPage,
+			EndCursor:   issues.Issues.PageInfo.EndCursor,
 		},
 	}, nil
 }
@@ -104,7 +104,7 @@ func GetIssueTitleSuggestionFromCustomerRequest(
 	}, nil
 }
 
-func searchIssueSummary(issue gql.XIssueSearchIssueSearchIssueConnectionNodesIssue) IssueSummary {
+func searchIssueSummary(issue gql.XTeamIssueSearchIssuesIssueConnectionNodesIssue) IssueSummary {
 	return issueSummaryFromFields(issue.IssueSummaryFields)
 }
 

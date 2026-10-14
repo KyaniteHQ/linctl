@@ -2174,6 +2174,7 @@ Flags:
       --description-file string   read new issue description from file
       --due-date string           set the due date in YYYY-MM-DD format
       --estimate int              set the estimate, which linctl validates against the team configuration
+      --if-updated-at string      refuse the write when the issue changed since this RFC 3339 updated_at; the check is a read before the write, not atomic
       --label stringArray         replace the labels with these ids, and repeat the flag for more labels
       --milestone string          assign to a project milestone id, which needs a pinned project
       --priority string           set the priority to urgent, high, medium, low, none, or a number from 0 to 4

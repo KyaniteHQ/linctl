@@ -59,6 +59,9 @@ type IssueUpdateRequest struct {
 	ClearEstimate      bool
 	ProjectMilestoneID string
 	ClearMilestone     bool
+	// IfUpdatedAt, when set, is the RFC 3339 updated_at the caller last read; the
+	// update is refused when the issue's current updated_at is a different instant.
+	IfUpdatedAt string
 }
 
 // IssueCommentRequest describes a guarded issue comment.
@@ -382,6 +385,9 @@ func (guard *guardedClient) updateIssue(ctx context.Context, request IssueUpdate
 	if err != nil {
 		return IssueSummary{}, err
 	}
+	if err = requireIssueUnchanged(request, issue.Summary); err != nil {
+		return IssueSummary{}, err
+	}
 	if err = guard.validateEstimate(ctx, issue.Summary.TeamID, request.Estimate); err != nil {
 		return IssueSummary{}, err
 	}
@@ -474,7 +480,37 @@ func validateIssueUpdateRequest(request IssueUpdateRequest) error {
 		return fmt.Errorf("%w: delegate and clear-delegate are mutually exclusive", ErrWriteInvalid)
 	}
 
+	if request.IfUpdatedAt != "" {
+		if _, err := time.Parse(time.RFC3339Nano, request.IfUpdatedAt); err != nil {
+			return fmt.Errorf("%w: if-updated-at must be an RFC 3339 timestamp: %w", ErrWriteInvalid, err)
+		}
+	}
+
 	return validateDueDate(request.DueDate)
+}
+
+// requireIssueUnchanged refuses an update whose IfUpdatedAt names a different
+// instant than the issue's current updated_at. It compares instants, so the
+// same time at another precision or UTC offset matches. A current updated_at
+// that is missing or unparseable cannot prove the issue is unchanged, so it
+// also refuses. The check is a read before the write, not atomic.
+func requireIssueUnchanged(request IssueUpdateRequest, current IssueSummary) error {
+	if request.IfUpdatedAt == "" || sameInstant(request.IfUpdatedAt, current.UpdatedAt) {
+		return nil
+	}
+
+	return fmt.Errorf(
+		"%w: issue %s updated_at is %q, not the expected %q",
+		ErrWriteConflict, request.ID, current.UpdatedAt, request.IfUpdatedAt,
+	)
+}
+
+// sameInstant reports whether both values are RFC 3339 timestamps for one instant.
+func sameInstant(left string, right string) bool {
+	leftTime, leftErr := time.Parse(time.RFC3339Nano, left)
+	rightTime, rightErr := time.Parse(time.RFC3339Nano, right)
+
+	return leftErr == nil && rightErr == nil && leftTime.Equal(rightTime)
 }
 
 func issueUpdateNonStateFieldsEmpty(request IssueUpdateRequest) bool {
@@ -666,7 +702,8 @@ func (guard *guardedClient) requireParentCommentOnIssue(
 	return nil
 }
 
-// CloseIssue moves an issue to the team's completed workflow state after target comparison.
+// CloseIssue moves an issue to the completed workflow state after target comparison:
+// the one the [states] close setting names, else the team's lowest-position one.
 func CloseIssue(
 	ctx context.Context,
 	graphqlClient graphql.Client,
@@ -686,7 +723,7 @@ func (guard *guardedClient) closeIssue(ctx context.Context, issueID string) (Iss
 	if err != nil {
 		return IssueSummary{}, err
 	}
-	stateID, err := guard.resolveStateTypeID(ctx, issue.TeamID, "completed")
+	stateID, err := guard.resolveCloseStateID(ctx, issue.TeamID)
 	if err != nil {
 		return IssueSummary{}, err
 	}

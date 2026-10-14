@@ -25,6 +25,16 @@ type Target struct {
 	// from the top-level [transitions] table, never from [target], so it carries
 	// no toml tag of its own.
 	Transitions Transitions `toml:"-" json:"-"`
+	// States names workflow states that guarded commands move an issue to. It is
+	// read from the top-level [states] table, never from [target].
+	States States `toml:"-" json:"-"`
+}
+
+// States holds optional state names that replace a command's default pick.
+// Close names the completed state `issue close` and `done` move an issue to;
+// empty means the team's lowest-position completed state.
+type States struct {
+	Close string `toml:"close"`
 }
 
 // Transitions is a workflow transition allowlist keyed by the current state
@@ -51,12 +61,14 @@ type fileConfig struct {
 	Profile     string                   `toml:"profile"`
 	Target      Target                   `toml:"target"`
 	Transitions Transitions              `toml:"transitions"`
+	States      States                   `toml:"states"`
 	Profiles    map[string]profileConfig `toml:"profiles"`
 }
 
 type profileConfig struct {
 	Target      Target      `toml:"target"`
 	Transitions Transitions `toml:"transitions"`
+	States      States      `toml:"states"`
 }
 
 // Load resolves config with repo config overriding global config, then explicit overrides.
@@ -82,6 +94,7 @@ func Load(ctx context.Context, request LoadRequest) (Resolved, error) {
 	}
 	target := mergeTarget(mergeTarget(mergedConfig.Target, profile.Target), request.TargetOverride)
 	target.Transitions = mergeTransitions(mergedConfig.Transitions, profile.Transitions)
+	target.States = mergeStates(mergedConfig.States, profile.States)
 	override := request.TargetOverride
 	if override.OrgID != "" || override.TeamKey != "" || override.TeamID != "" {
 		// An explicit org or team override invalidates a pinned team id: the id
@@ -136,6 +149,7 @@ func mergeConfig(base fileConfig, overlay fileConfig) fileConfig {
 		Profile:     cmp.Or(overlay.Profile, base.Profile),
 		Target:      mergeTarget(base.Target, overlay.Target),
 		Transitions: mergeTransitions(base.Transitions, overlay.Transitions),
+		States:      mergeStates(base.States, overlay.States),
 		Profiles:    map[string]profileConfig{},
 	}
 	for name, profile := range base.Profiles {
@@ -146,6 +160,7 @@ func mergeConfig(base fileConfig, overlay fileConfig) fileConfig {
 		merged.Profiles[name] = profileConfig{
 			Target:      mergeTarget(baseProfile.Target, profile.Target),
 			Transitions: mergeTransitions(baseProfile.Transitions, profile.Transitions),
+			States:      mergeStates(baseProfile.States, profile.States),
 		}
 	}
 
@@ -159,6 +174,7 @@ func mergeTarget(base Target, overlay Target) Target {
 		TeamID:      cmp.Or(overlay.TeamID, base.TeamID),
 		ProjectID:   cmp.Or(overlay.ProjectID, base.ProjectID),
 		Transitions: mergeTransitions(base.Transitions, overlay.Transitions),
+		States:      mergeStates(base.States, overlay.States),
 	}
 }
 
@@ -171,4 +187,10 @@ func mergeTransitions(base Transitions, overlay Transitions) Transitions {
 	}
 
 	return base
+}
+
+// mergeStates lets an overlay that names a state replace the base one; an
+// overlay that names none keeps the base.
+func mergeStates(base States, overlay States) States {
+	return States{Close: cmp.Or(overlay.Close, base.Close)}
 }

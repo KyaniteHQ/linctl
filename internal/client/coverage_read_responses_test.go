@@ -64,7 +64,7 @@ func readScenarioGraphQLClient(endCursor string) fakeGraphQLClient {
 			StateType:  "unstarted",
 		}) + `}],"pageInfo":{"hasNextPage":false,"endCursor":null}}
 		}}`,
-		"issueSearch": `{"issueSearch":{"nodes":[` + issueJSON(issueFixture{
+		"teamIssueSearch": `{"issues":{"nodes":[` + issueJSON(issueFixture{
 			Identifier: "LIT-13",
 			Title:      "search result",
 			StateID:    "todo",

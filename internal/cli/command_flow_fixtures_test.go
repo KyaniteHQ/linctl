@@ -431,8 +431,8 @@ func (client commandFlowFakeClient) requireExpectedWriteVariables(request *graph
 }
 
 func (client commandFlowFakeClient) requireExpectedSearchVariables(request *graphql.Request) error {
-	if client.expectedSearchQuery != "" && request.OpName == "issueSearch" {
-		return requireRequestVariable(request, []string{"query"}, client.expectedSearchQuery, "search query")
+	if client.expectedSearchQuery != "" && request.OpName == "teamIssueSearch" {
+		return requireRequestVariable(request, []string{"term"}, client.expectedSearchQuery, "search query")
 	}
 	if err := client.requireExpectedIssueUtilityVariables(request); err != nil {
 		return err

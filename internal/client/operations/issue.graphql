@@ -125,10 +125,12 @@ query IssueDependencies($id: String!, $first: Int, $after: String, $includeArchi
   }
 }
 
-query issueSearch($teamId: ID!, $query: String!, $first: Int, $after: String, $includeArchived: Boolean) {
-  issueSearch(
-    filter: { team: { id: { eq: $teamId } }, searchableContent: { contains: $query } }
-    query: $query
+query teamIssueSearch($teamId: ID!, $term: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issues(
+    filter: {
+      team: { id: { eq: $teamId } }
+      or: [{ title: { containsIgnoreCase: $term } }, { description: { containsIgnoreCase: $term } }]
+    }
     first: $first
     after: $after
     includeArchived: $includeArchived

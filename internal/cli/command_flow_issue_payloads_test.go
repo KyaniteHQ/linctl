@@ -206,11 +206,11 @@ func commandFlowIssueReadPayload(operation string, fake commandFlowFakeClient) (
 	}
 
 	switch operation {
-	case "issueSearch":
+	case "teamIssueSearch":
 		if fake.emptyIssueSearch {
-			return `{"issueSearch":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+			return `{"issues":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 		}
-		return `{"issueSearch":{"nodes":[` + commandIssueJSON("LIT-3", "Search result", "todo-state", "Todo", "unstarted") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+		return `{"issues":{"nodes":[` + commandIssueJSON("LIT-3", "Search result", "todo-state", "Todo", "unstarted") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "NextIssuesByTeam":
 		if fake.emptyNextIssues {
 			return emptyCommandIssuesPayload(), true

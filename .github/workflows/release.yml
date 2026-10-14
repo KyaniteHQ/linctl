@@ -42,7 +42,8 @@ jobs:
           if [[ -z "$ci_url" ]]; then
             echo "No successful ci.yml branch run found for tagged commit $TAG_SHA."
             echo "Push the commit to master and wait for the full CI matrix before tagging a release."
-            echo "If the push created no run, start one with: gh workflow run ci.yml --ref master"
+            echo "If the push created no run and the commit is still the tip of master, start one with: gh workflow run ci.yml --ref master"
+            echo "Otherwise tag the next commit on master instead; a run on a later commit or on the tag ref does not count."
             exit 1
           fi
           echo "Found successful branch CI: $ci_url"

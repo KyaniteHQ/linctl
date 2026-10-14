@@ -1152,7 +1152,7 @@ Success is pass/fail:
      `go test ./internal/client`, `Test_ClientReadIssueAndProjectScenarios_return_compact_lists_details_and_members`.
 
 218. Exact workflow-state name
-   - Success: `linctl issue update ISSUE --state "In Review"` selects that started state when the team has several started states, then reads the issue back. `--state started` does not fall back to a type. `issue import` uses the same exact name. `issue start` and `issue close` still pick the lowest-position state of that type.
+   - Success: `linctl issue update ISSUE --state "In Review"` selects that started state when the team has several started states, then reads the issue back. `--state started` does not fall back to a type. `issue import` uses the same exact name. `issue start` and `issue close` pick the lowest-position state of that type, except that `[states] close` names the state `issue close` uses (scenario 230).
    - Evidence: `go test ./internal/client`, `Test_UpdateIssue_selects_exact_started_state_name`,
      `Test_UpdateIssue_refuses_when_readback_state_does_not_match`,
      `Test_UpdateIssue_returns_state_mismatch_when_write_fails_and_readback_is_wrong`,
@@ -1241,6 +1241,19 @@ Success is pass/fail:
    - Success: `linctl attachment delete ATTACHMENT_ID` hard deletes an issue attachment only after resolving the attachment's issue and comparing the pinned target. The command takes exactly one attachment id with no bulk form, `--force`, or confirmation prompt. A missing issue or a mismatched issue team sends no mutation. Human output states the deletion cannot be undone via linctl.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/attachment_delete`, `Test_DirectWriteCommandFlows_forward_request_variables/attachment_delete_id`;
      `go test ./internal/client`, `Test_DeleteAttachment_removes_attachment_when_target_matches`, `Test_DeleteAttachment_refuses_attachment_without_an_issue_without_mutating`, `Test_DeleteAttachment_refuses_when_issue_team_differs_without_mutating`.
+
+230. Configured close state
+   - Success: with `close = "Done"` under `[states]`, `linctl issue close ISSUE` and `linctl done` move the issue to the team's completed state named `Done` even when a completed state with a lower position exists, and a `[transitions]` allowlist still applies to that state. Without the setting, close picks the lowest-position completed state. A profile's `[profiles.NAME.states]` replaces the file-level value, and an empty overlay keeps the base. A name missing from the team, or naming a state that is not completed, fails with `ErrWriteInvalid` before any mutation.
+   - Evidence: `go test ./internal/config`, `Test_Load_reads_the_close_state_from_the_repo_config`,
+     `Test_Load_lets_a_profile_close_state_replace_the_file_close_state`,
+     `Test_Load_keeps_the_base_close_state_when_the_overlay_sets_none`,
+     `Test_Load_leaves_the_close_state_empty_when_no_config_sets_it`;
+     `go test ./internal/client`, `Test_CloseIssue_moves_to_the_configured_state_over_a_lower_position_completed_state`,
+     `Test_CloseIssue_picks_the_lowest_position_completed_state_when_no_close_state_is_set`,
+     `Test_CloseIssue_refuses_a_configured_state_missing_from_the_team`,
+     `Test_CloseIssue_refuses_a_configured_state_that_is_not_completed`,
+     `Test_CloseIssue_applies_the_transitions_allowlist_to_the_configured_state`;
+     `go test -tags=integration ./internal/client` (compile check only locally), `Test_Integration_issueClose_whenCloseStateConfigured`.
 
 ## Current Outcome
 
