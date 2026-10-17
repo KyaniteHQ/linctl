@@ -1,6 +1,6 @@
 # Linear API coverage ledger
 
-Generated from current local sources and upstream Linear SDK commit `6f99687`.
+Generated from current local sources and upstream Linear SDK commit `9dd2ed8`.
 
 Sources (paths relative to the upstream Linear SDK checkout):
 
@@ -18,7 +18,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | --- | ---: | ---: | ---: |
 | Upstream SDK root methods with generated local operations | 479 | 164 | 479 |
 | Upstream Query root fields used by generated local operations | 178 | 115 | 178 |
-| Upstream Mutation root fields used by generated local operations | 383 | 51 | 383 |
+| Upstream Mutation root fields used by generated local operations | 386 | 51 | 386 |
 | Local generated Go operations declared in GraphQL files | 319 | 319 | 319 |
 | Public CLI commands from command inventory | 443 | 334 | 443 |
 
@@ -761,7 +761,9 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `cycleUpdate` | `CyclePayload!` | generated_operation | root field used by local GraphQL operation |
 | `documentCreate` | `DocumentPayload!` | generated_operation | root field used by local GraphQL operation |
 | `documentDelete` | `DocumentArchivePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
+| `documentShare` | `DocumentPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `documentUnarchive` | `DocumentArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `documentUnshare` | `DocumentPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `documentUpdate` | `DocumentPayload!` | generated_operation | root field used by local GraphQL operation |
 | `emailIntakeAddressCreate` | `EmailIntakeAddressPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `emailIntakeAddressDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
@@ -909,6 +911,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `issueRelationUpdate` | `IssueRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `issueReminder` | `IssuePayload!` | blocked_needs_design | issue reminder mutation changes notification state and needs target-pinned guard semantics |
 | `issueRemoveLabel` | `IssuePayload!` | generated_operation | root field used by local GraphQL operation |
+| `issueRequestSolubilityPrediction` | `SuccessPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueShare` | `IssuePayload!` | blocked_needs_design | issue sharing changes access state and needs target-pinned guard semantics |
 | `issueSubscribe` | `IssuePayload!` | blocked_needs_design | issue subscription changes notification state and needs target-pinned guard semantics |
 | `issueToReleaseCreate` | `IssueToReleasePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
