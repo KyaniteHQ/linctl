@@ -1,6 +1,6 @@
 # Linear API coverage ledger
 
-Generated from current local sources and upstream Linear SDK commit `6f99687`.
+Generated from current local sources and upstream Linear SDK commit `618a737`.
 
 Sources (paths relative to the upstream Linear SDK checkout):
 
@@ -16,9 +16,9 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 
 | Surface | Total | Covered/exposed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods with generated local operations | 479 | 164 | 479 |
-| Upstream Query root fields used by generated local operations | 178 | 115 | 178 |
-| Upstream Mutation root fields used by generated local operations | 383 | 51 | 383 |
+| Upstream SDK root methods with generated local operations | 480 | 164 | 480 |
+| Upstream Query root fields used by generated local operations | 180 | 115 | 180 |
+| Upstream Mutation root fields used by generated local operations | 388 | 51 | 388 |
 | Local generated Go operations declared in GraphQL files | 319 | 319 | 319 |
 | Public CLI commands from command inventory | 443 | 334 | 443 |
 
@@ -337,6 +337,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `notificationSubscriptions` | method | generated_operation | local GraphQL operation uses this root |
 | `notificationUnsnoozeAll` | method | blocked_needs_design | mutation needs product and safety design |
 | `notifications` | method | generated_operation | local GraphQL operation uses this root |
+| `oauthApplicationCodingSessionTrustedSource` | getter | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `organization` | getter | generated_operation | local GraphQL operation uses this root |
 | `organizationDeleteChallenge` | getter | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `organizationExists` | method | generated_operation | local GraphQL operation uses this root |
@@ -581,6 +582,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `integration` | `Integration!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationHasScopes` | `IntegrationHasScopesPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationJiraProjectStatuses` | `JiraProjectStatusesPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
+| `integrationSyncResourceIds` | `[String!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationTemplate` | `IntegrationTemplate!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationTemplates` | `IntegrationTemplateConnection!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrations` | `IntegrationConnection!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -611,6 +613,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `notifications` | `NotificationConnection!` | generated_operation | root field used by local GraphQL operation |
 | `notificationsUnreadCount` | `Int!` | generated_operation | root field used by local GraphQL operation |
 | `oauthApplication` | `OAuthApplication!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
+| `oauthApplicationCodingSessionTrustedSource` | `OAuthApplicationCodingSessionTrustedSource!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `oauthApplications` | `[OAuthApplication!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `organization` | `Organization!` | generated_operation | root field used by local GraphQL operation |
 | `organizationDomainClaimRequest` | `OrganizationDomainClaimPayload!` | intentionally_excluded | organization domain claim requests expose org-admin domain-verification metadata outside the ordinary agent CLI surface |
@@ -761,8 +764,12 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `cycleUpdate` | `CyclePayload!` | generated_operation | root field used by local GraphQL operation |
 | `documentCreate` | `DocumentPayload!` | generated_operation | root field used by local GraphQL operation |
 | `documentDelete` | `DocumentArchivePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
+| `documentShare` | `DocumentPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `documentUnarchive` | `DocumentArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `documentUnshare` | `DocumentPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `documentUpdate` | `DocumentPayload!` | generated_operation | root field used by local GraphQL operation |
+| `documentUpdateCollaboratorRole` | `DocumentPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `documentUpdateGeneralAccess` | `DocumentPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `emailIntakeAddressCreate` | `EmailIntakeAddressPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `emailIntakeAddressDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `emailIntakeAddressRefreshSesDomainStatus` | `EmailIntakeAddressRefreshSesDomainStatusPayload!` | blocked_needs_design | mutation needs product and safety design |
@@ -909,6 +916,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `issueRelationUpdate` | `IssueRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `issueReminder` | `IssuePayload!` | blocked_needs_design | issue reminder mutation changes notification state and needs target-pinned guard semantics |
 | `issueRemoveLabel` | `IssuePayload!` | generated_operation | root field used by local GraphQL operation |
+| `issueRequestSolubilityPrediction` | `SuccessPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueShare` | `IssuePayload!` | blocked_needs_design | issue sharing changes access state and needs target-pinned guard semantics |
 | `issueSubscribe` | `IssuePayload!` | blocked_needs_design | issue subscription changes notification state and needs target-pinned guard semantics |
 | `issueToReleaseCreate` | `IssueToReleasePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
