@@ -3,8 +3,8 @@ version: "3"
 vars:
   BINARY: linctl
   PKG: ./cmd/linctl
-  GOLANGCI_LINT: github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.14.0
-  GORELEASER: github.com/goreleaser/goreleaser/v2@v2.16.0
+  GOLANGCI_LINT: github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.15.0
+  GORELEASER: github.com/goreleaser/goreleaser/v2@v2.20.0
   # go.mod's toolchain line is the single source of the Go version. CI installs it
   # through .github/actions/go-setup; the env block below pins it for every task, so a
   # newer host Go builds the pinned tools exactly as CI does.
