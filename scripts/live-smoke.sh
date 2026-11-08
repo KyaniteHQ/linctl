@@ -425,7 +425,7 @@ PY
     "$binary" template get "$template_id" --json >/dev/null
     "$binary" issue create --template "$template_id" --section "Live smoke=verified" --dry-run --quiet
   fi
-  initiative_json="$(capture_allow_forbidden initiative-list "$binary" initiative list --json --limit 5)"
+  initiative_json="$("$binary" initiative list --json --limit 5)"
   initiative_id="$(first_item_field initiatives <<<"$initiative_json")"
   if [[ -n "$initiative_id" ]]; then
     "$binary" initiative history "$initiative_id" --json --limit 5 >/dev/null
@@ -435,9 +435,9 @@ PY
     "$binary" initiative documents "$initiative_id" --json --limit 5 >/dev/null
     "$binary" initiative projects "$initiative_id" --json --limit 5 >/dev/null
   fi
-  run_allow_forbidden initiative-relation-list "$binary" initiative-relation list --json --limit 5
-  run_allow_forbidden initiative-to-project-list "$binary" initiative-to-project list --json --limit 5
-  initiative_update_json="$(capture_allow_forbidden initiative-update-list "$binary" initiative-update list --json --limit 5)"
+  "$binary" initiative-relation list --json --limit 5 >/dev/null
+  "$binary" initiative-to-project list --json --limit 5 >/dev/null
+  initiative_update_json="$("$binary" initiative-update list --json --limit 5)"
   initiative_update_id="$(first_item_field updates <<<"$initiative_update_json")"
   if [[ -n "$initiative_update_id" ]]; then
     "$binary" initiative-update comments "$initiative_update_id" --json --limit 5 >/dev/null

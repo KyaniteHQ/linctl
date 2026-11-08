@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -74,6 +75,44 @@ func Test_AuthLogin_builds_authorization_url_with_user_actor(t *testing.T) {
 	require.NoError(t, err)
 	query := authLoginAuthorizeURL(t, decodeAuthLoginStartReport(t, stdout.Bytes()).AuthorizeURL).Query()
 	require.Equal(t, "user", query.Get("actor"))
+}
+
+func Test_AuthLogin_requests_initiative_scopes_only_for_the_app_actor_by_default(t *testing.T) {
+	tests := []struct {
+		actor                 string
+		wantsInitiativeScopes bool
+	}{
+		{actor: "app", wantsInitiativeScopes: true},
+		{actor: "user", wantsInitiativeScopes: false},
+	}
+	for _, test := range tests {
+		t.Run(test.actor, func(t *testing.T) {
+			paths := cliAuthTestPaths(t)
+			require.NoError(t, auth.NewStore(paths).SaveAppConfig(context.Background(), "", auth.AppConfig{
+				ClientID:    "client-id",
+				RedirectURI: "http://127.0.0.1:8484/callback",
+			}))
+			restorePaths := useAuthPaths(t, paths)
+			defer restorePaths()
+			restoreLogin := useAuthLoginGeneratedValues(t)
+			defer restoreLogin()
+			var stdout bytes.Buffer
+
+			err := execute(context.Background(), BuildInfo{}, nil, &stdout, &bytes.Buffer{}, []string{
+				"--json",
+				"auth",
+				"login",
+				"--actor", test.actor,
+			})
+
+			require.NoError(t, err)
+			query := authLoginAuthorizeURL(t, decodeAuthLoginStartReport(t, stdout.Bytes()).AuthorizeURL).Query()
+			scopes := strings.Split(query.Get("scope"), ",")
+			require.Contains(t, scopes, "read")
+			require.Equal(t, test.wantsInitiativeScopes, slices.Contains(scopes, "initiative:read"))
+			require.Equal(t, test.wantsInitiativeScopes, slices.Contains(scopes, "initiative:write"))
+		})
+	}
 }
 
 func Test_AuthLogin_quiet_start_prints_nothing(t *testing.T) {

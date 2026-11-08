@@ -83,6 +83,8 @@ The default OAuth scope set is:
 read,write,issues:create,comments:create
 ```
 
+The app actor's default set adds `initiative:read,initiative:write`, because Linear refuses Initiative reads and writes by an app actor without them. A saved or overridden scope list replaces the default set for both actors.
+
 `admin` is not requested by default. Commands that need more permission fail with `MISSING_SCOPE` and tell the user how to reauthorize.
 
 OAuth failures use stable structured codes:

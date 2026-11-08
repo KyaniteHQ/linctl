@@ -84,7 +84,7 @@ func runAuthLogin(
 	if err != nil {
 		return err
 	}
-	scopes := requiredScopes(app)
+	scopes := requiredScopes(app, actor)
 	report := newAuthLoginStartReport(app, actor, scopes, state, pkce)
 	callback, err := authLoginCallback(command, options, strings.TrimSpace(flags.callback), report)
 	if err != nil {

@@ -402,7 +402,7 @@ func (recovering *recoveringGraphQLClient) refreshAuthorizationCode(
 		recovering.oauthClient,
 		recovering.app,
 		token,
-		requiredScopes(recovering.app),
+		requiredScopes(recovering.app, token.Actor),
 	)
 }
 

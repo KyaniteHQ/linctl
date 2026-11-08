@@ -44,11 +44,16 @@ export LINCTL_OAUTH_CLIENT_ID=<your-client-id>
 
 linctl auth configure \
   --client-id "$LINCTL_OAUTH_CLIENT_ID" \
-  --redirect-uri "http://127.0.0.1:8765/callback" \
-  --scopes read,write,issues:create,comments:create
+  --redirect-uri "http://127.0.0.1:8765/callback"
 ```
 
 If your application has a secret, add `--client-secret "$LINCTL_OAUTH_CLIENT_SECRET"`.
+
+Leave out `--scopes` unless you need a different set. linctl then requests
+`read,write,issues:create,comments:create`, and the app actor also gets `initiative:read,initiative:write`,
+because Linear refuses Initiative reads and writes by an app actor without them. A saved `--scopes` list
+replaces these defaults, so a login configured with an older list keeps it: run `linctl auth configure`
+again without `--scopes`, then log in again.
 
 Now log in. This command opens a browser.
 
@@ -225,8 +230,7 @@ of a user actor, so Linear attributes each change to the application.
 
 ```bash
 linctl auth configure --client-id "$LINCTL_OAUTH_CLIENT_ID" \
-                      --client-secret "$LINCTL_OAUTH_CLIENT_SECRET" \
-                      --scopes read,write,issues:create,comments:create
+                      --client-secret "$LINCTL_OAUTH_CLIENT_SECRET"
 linctl auth app
 ```
 
@@ -239,7 +243,7 @@ linctl never writes them to disk. That makes them the correct fit for a CI secre
 | `LINCTL_OAUTH_CLIENT_ID` | the client id of the OAuth application |
 | `LINCTL_OAUTH_CLIENT_SECRET` | the client secret of the OAuth application |
 | `LINCTL_OAUTH_REDIRECT_URI` | the redirect URI |
-| `LINCTL_OAUTH_SCOPES` | the requested scopes |
+| `LINCTL_OAUTH_SCOPES` | the requested scopes, in place of the defaults |
 
 These overrides are not persistent. They do not change your saved auth state, so a CI run cannot
 quietly rewrite the login of your laptop.

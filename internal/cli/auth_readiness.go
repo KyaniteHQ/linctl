@@ -171,12 +171,15 @@ func missingScopes(actual []string, required []string) []string {
 	return missing
 }
 
-func requiredScopes(app auth.AppConfig) []string {
+func requiredScopes(app auth.AppConfig, actor string) []string {
 	if len(app.Scopes) > 0 {
 		return slices.Clone(app.Scopes)
 	}
+	if actor == userActor {
+		return slices.Clone(defaultOAuthScopes)
+	}
 
-	return slices.Clone(defaultOAuthScopes)
+	return slices.Concat(defaultOAuthScopes, appActorInitiativeScopes)
 }
 
 func normalizedScopes(scopes []string) []string {
