@@ -186,6 +186,8 @@ func classifyLoose(name string, kind string) (string, string) {
 		return "blocked_needs_design", "write operation needs guarded target semantics before exposure"
 	case strings.Contains(lower, "resolve"):
 		return "blocked_needs_design", "state-changing operation needs guarded target semantics before exposure"
+	case kind == "mutation":
+		return "blocked_needs_design", "mutation needs product and safety design"
 	case strings.Contains(lower, "issue"),
 		strings.Contains(lower, "project"),
 		strings.Contains(lower, "cycle"),
@@ -196,9 +198,6 @@ func classifyLoose(name string, kind string) (string, string) {
 		strings.Contains(lower, "comment"):
 		return "accepted_gap", "repo-planned or likely useful CLI domain"
 	default:
-		if kind == "mutation" {
-			return "blocked_needs_design", "mutation needs product and safety design"
-		}
 		return "safe_candidate", "read operation may fit future CLI coverage"
 	}
 }
@@ -217,6 +216,14 @@ var explicitRiskClassifications = map[string]riskClassification{
 	"emailintakeaddress": {
 		status:    "intentionally_excluded",
 		rationale: "email intake administration sits outside the ordinary agent CLI read surface",
+	},
+	"emailintakeaddresses": {
+		status:    "intentionally_excluded",
+		rationale: "email intake administration sits outside the ordinary agent CLI read surface",
+	},
+	"organizationcodinginferencekeys": {
+		status:    "intentionally_excluded",
+		rationale: "workspace inference credential configuration sits outside the ordinary agent CLI read surface",
 	},
 	"emailintakeaddress_sesdomainidentity": {
 		status:    "intentionally_excluded",
@@ -328,6 +335,14 @@ var explicitRiskClassifications = map[string]riskClassification{
 		status: "blocked_needs_design",
 		rationale: "Linear v2 issue import creation starts import workflow state and needs explicit " +
 			"import guard semantics",
+	},
+	"documentshare": {
+		status:    "blocked_needs_design",
+		rationale: "document sharing changes access state and needs target-pinned guard semantics",
+	},
+	"documentunshare": {
+		status:    "blocked_needs_design",
+		rationale: "document unsharing changes access state and needs target-pinned guard semantics",
 	},
 	"issueshare": {
 		status:    "blocked_needs_design",

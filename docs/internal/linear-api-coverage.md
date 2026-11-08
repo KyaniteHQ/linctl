@@ -966,7 +966,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `projectCreate` | `ProjectPayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectCreateSlackChannel` | `ProjectPayload!` | blocked_needs_design | project Slack channel creation mutates chat integration state and needs explicit integration guard semantics |
 | `projectDelete` | `ProjectArchivePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `projectDismissSlackChannelCreationFailure` | `ProjectPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `projectDismissSlackChannelCreationFailure` | `ProjectPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `projectExternalSyncDisable` | `ProjectPayload!` | blocked_needs_design | project external-sync disable changes integration state and needs explicit integration guard semantics |
 | `projectLabelCreate` | `ProjectLabelPayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectLabelDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |

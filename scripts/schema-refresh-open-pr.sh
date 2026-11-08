@@ -71,22 +71,19 @@ Automated refresh of the vendored Linear GraphQL schema against \`linear/linear\
 - genqlient client regenerated
 - \`docs/internal/linear-api-coverage.md\` regenerated
 
-${warning}## Drift report (before refresh)
+${warning}
+
+## Drift report (before refresh)
 
 \`\`\`
 ${DRIFT_REPORT}
 \`\`\`
 
-## Safety
-
-- [x] Reads stay free; no write-path changes in this refresh
-- [x] Operations remain schema-aligned (client regenerated from the new snapshot)
-- [x] No token value is printed or logged
-
-## Checks
+## Review
 
 - [ ] \`task ci\` green on this PR
-- [ ] Human review of removals / type changes if called out above
+- [ ] Removals and type changes called out above checked against \`internal/client/operations\`
+- [ ] New interface cases and changed types in \`generated.go\` checked against the commands that read them
 
 Opened by the \`schema-refresh\` workflow. Merge closes the nightly schema-drift failure loop.
 EOF
