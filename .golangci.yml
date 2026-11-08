@@ -61,7 +61,7 @@ linters:
       default-signifies-exhaustive: false
       check:
         - switch
-        - map
+        - mapliteral
     gosec:
       excludes:
         - G104
