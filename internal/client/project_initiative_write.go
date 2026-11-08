@@ -54,11 +54,12 @@ func (guard *guardedClient) linkProjectInitiative(
 		return existing, nil
 	}
 
-	created, err := gql.InitiativeToProjectCreate(ctx, guard.graphqlClient, gqlmodel.LinearInitiativeToProjectCreateInput{
+	input := gqlmodel.LinearInitiativeToProjectCreateInput{
 		InitiativeID: request.InitiativeID,
 		ProjectID:    request.ProjectID,
 		SortOrder:    request.SortOrder,
-	})
+	}
+	created, err := gql.InitiativeToProjectCreate(ctx, guard.graphqlClient, input)
 	if err != nil {
 		return InitiativeToProjectSummary{}, fmt.Errorf(
 			"link project %s to initiative %s: %w", request.ProjectID, request.InitiativeID, err,
