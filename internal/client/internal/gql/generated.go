@@ -5633,6 +5633,168 @@ type InitiativeSummaryFieldsOrganization struct {
 // GetId returns InitiativeSummaryFieldsOrganization.Id, and is useful for accessing the field via an interface.
 func (v *InitiativeSummaryFieldsOrganization) GetId() string { return v.Id }
 
+// InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayload includes the requested fields of the GraphQL type InitiativeToProjectPayload.
+// The GraphQL type's documentation follows.
+//
+// The result of an initiative-to-project mutation.
+type InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The initiative-to-project association that was created or updated.
+	InitiativeToProject InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayloadInitiativeToProject `json:"initiativeToProject"`
+}
+
+// GetSuccess returns InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayload.Success, and is useful for accessing the field via an interface.
+func (v *InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayload) GetSuccess() bool {
+	return v.Success
+}
+
+// GetInitiativeToProject returns InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayload.InitiativeToProject, and is useful for accessing the field via an interface.
+func (v *InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayload) GetInitiativeToProject() InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayloadInitiativeToProject {
+	return v.InitiativeToProject
+}
+
+// InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayloadInitiativeToProject includes the requested fields of the GraphQL type InitiativeToProject.
+// The GraphQL type's documentation follows.
+//
+// The join entity linking a project to an initiative. A project can only appear once in an initiative hierarchy -- it cannot be on both an initiative and one of its ancestor or descendant initiatives.
+type InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayloadInitiativeToProject struct {
+	InitiativeToProjectSummaryFields `json:"-"`
+}
+
+// GetId returns InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayloadInitiativeToProject.Id, and is useful for accessing the field via an interface.
+func (v *InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayloadInitiativeToProject) GetId() string {
+	return v.InitiativeToProjectSummaryFields.Id
+}
+
+// GetSortOrder returns InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayloadInitiativeToProject.SortOrder, and is useful for accessing the field via an interface.
+func (v *InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayloadInitiativeToProject) GetSortOrder() string {
+	return v.InitiativeToProjectSummaryFields.SortOrder
+}
+
+// GetCreatedAt returns InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayloadInitiativeToProject.CreatedAt, and is useful for accessing the field via an interface.
+func (v *InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayloadInitiativeToProject) GetCreatedAt() string {
+	return v.InitiativeToProjectSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayloadInitiativeToProject.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayloadInitiativeToProject) GetUpdatedAt() string {
+	return v.InitiativeToProjectSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayloadInitiativeToProject.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayloadInitiativeToProject) GetArchivedAt() *string {
+	return v.InitiativeToProjectSummaryFields.ArchivedAt
+}
+
+// GetInitiative returns InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayloadInitiativeToProject.Initiative, and is useful for accessing the field via an interface.
+func (v *InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayloadInitiativeToProject) GetInitiative() InitiativeToProjectSummaryFieldsInitiative {
+	return v.InitiativeToProjectSummaryFields.Initiative
+}
+
+// GetProject returns InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayloadInitiativeToProject.Project, and is useful for accessing the field via an interface.
+func (v *InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayloadInitiativeToProject) GetProject() InitiativeToProjectSummaryFieldsProject {
+	return v.InitiativeToProjectSummaryFields.Project
+}
+
+func (v *InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayloadInitiativeToProject) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayloadInitiativeToProject
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayloadInitiativeToProject = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.InitiativeToProjectSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalInitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayloadInitiativeToProject struct {
+	Id string `json:"id"`
+
+	SortOrder string `json:"sortOrder"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Initiative InitiativeToProjectSummaryFieldsInitiative `json:"initiative"`
+
+	Project InitiativeToProjectSummaryFieldsProject `json:"project"`
+}
+
+func (v *InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayloadInitiativeToProject) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayloadInitiativeToProject) __premarshalJSON() (*__premarshalInitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayloadInitiativeToProject, error) {
+	var retval __premarshalInitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayloadInitiativeToProject
+
+	retval.Id = v.InitiativeToProjectSummaryFields.Id
+	retval.SortOrder = v.InitiativeToProjectSummaryFields.SortOrder
+	retval.CreatedAt = v.InitiativeToProjectSummaryFields.CreatedAt
+	retval.UpdatedAt = v.InitiativeToProjectSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.InitiativeToProjectSummaryFields.ArchivedAt
+	retval.Initiative = v.InitiativeToProjectSummaryFields.Initiative
+	retval.Project = v.InitiativeToProjectSummaryFields.Project
+	return &retval, nil
+}
+
+// InitiativeToProjectCreateResponse is returned by InitiativeToProjectCreate on success.
+type InitiativeToProjectCreateResponse struct {
+	// Associates a project with an initiative. A project can only appear once in an initiative hierarchy.
+	InitiativeToProjectCreate InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayload `json:"initiativeToProjectCreate"`
+}
+
+// GetInitiativeToProjectCreate returns InitiativeToProjectCreateResponse.InitiativeToProjectCreate, and is useful for accessing the field via an interface.
+func (v *InitiativeToProjectCreateResponse) GetInitiativeToProjectCreate() InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPayload {
+	return v.InitiativeToProjectCreate
+}
+
+// InitiativeToProjectDeleteInitiativeToProjectDeleteDeletePayload includes the requested fields of the GraphQL type DeletePayload.
+// The GraphQL type's documentation follows.
+//
+// A generic payload return from entity deletion mutations.
+type InitiativeToProjectDeleteInitiativeToProjectDeleteDeletePayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+}
+
+// GetSuccess returns InitiativeToProjectDeleteInitiativeToProjectDeleteDeletePayload.Success, and is useful for accessing the field via an interface.
+func (v *InitiativeToProjectDeleteInitiativeToProjectDeleteDeletePayload) GetSuccess() bool {
+	return v.Success
+}
+
+// InitiativeToProjectDeleteResponse is returned by InitiativeToProjectDelete on success.
+type InitiativeToProjectDeleteResponse struct {
+	// Removes a project from an initiative.
+	InitiativeToProjectDelete InitiativeToProjectDeleteInitiativeToProjectDeleteDeletePayload `json:"initiativeToProjectDelete"`
+}
+
+// GetInitiativeToProjectDelete returns InitiativeToProjectDeleteResponse.InitiativeToProjectDelete, and is useful for accessing the field via an interface.
+func (v *InitiativeToProjectDeleteResponse) GetInitiativeToProjectDelete() InitiativeToProjectDeleteInitiativeToProjectDeleteDeletePayload {
+	return v.InitiativeToProjectDelete
+}
+
 // InitiativeToProjectSummaryFields includes the GraphQL fields of InitiativeToProject requested by the fragment InitiativeToProjectSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -32011,6 +32173,24 @@ type __InitiativeLabelRetireInput struct {
 
 // GetId returns __InitiativeLabelRetireInput.Id, and is useful for accessing the field via an interface.
 func (v *__InitiativeLabelRetireInput) GetId() string { return v.Id }
+
+// __InitiativeToProjectCreateInput is used internally by genqlient
+type __InitiativeToProjectCreateInput struct {
+	Input gqlmodel.LinearInitiativeToProjectCreateInput `json:"input"`
+}
+
+// GetInput returns __InitiativeToProjectCreateInput.Input, and is useful for accessing the field via an interface.
+func (v *__InitiativeToProjectCreateInput) GetInput() gqlmodel.LinearInitiativeToProjectCreateInput {
+	return v.Input
+}
+
+// __InitiativeToProjectDeleteInput is used internally by genqlient
+type __InitiativeToProjectDeleteInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __InitiativeToProjectDeleteInput.Id, and is useful for accessing the field via an interface.
+func (v *__InitiativeToProjectDeleteInput) GetId() string { return v.Id }
 
 // __InitiativeUpdateCreateInput is used internally by genqlient
 type __InitiativeUpdateCreateInput struct {
@@ -83406,6 +83586,94 @@ func InitiativeLabelRetire(
 	}
 
 	data_ = &InitiativeLabelRetireResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by InitiativeToProjectCreate.
+const InitiativeToProjectCreate_Operation = `
+mutation InitiativeToProjectCreate ($input: InitiativeToProjectCreateInput!) {
+	initiativeToProjectCreate(input: $input) {
+		success
+		initiativeToProject {
+			... InitiativeToProjectSummaryFields
+		}
+	}
+}
+fragment InitiativeToProjectSummaryFields on InitiativeToProject {
+	id
+	sortOrder
+	createdAt
+	updatedAt
+	archivedAt
+	initiative {
+		id
+		name
+	}
+	project {
+		id
+		name
+		slugId
+		url
+	}
+}
+`
+
+func InitiativeToProjectCreate(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	input gqlmodel.LinearInitiativeToProjectCreateInput,
+) (data_ *InitiativeToProjectCreateResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "InitiativeToProjectCreate",
+		Query:  InitiativeToProjectCreate_Operation,
+		Variables: &__InitiativeToProjectCreateInput{
+			Input: input,
+		},
+	}
+
+	data_ = &InitiativeToProjectCreateResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by InitiativeToProjectDelete.
+const InitiativeToProjectDelete_Operation = `
+mutation InitiativeToProjectDelete ($id: String!) {
+	initiativeToProjectDelete(id: $id) {
+		success
+	}
+}
+`
+
+func InitiativeToProjectDelete(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *InitiativeToProjectDeleteResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "InitiativeToProjectDelete",
+		Query:  InitiativeToProjectDelete_Operation,
+		Variables: &__InitiativeToProjectDeleteInput{
+			Id: id,
+		},
+	}
+
+	data_ = &InitiativeToProjectDeleteResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
