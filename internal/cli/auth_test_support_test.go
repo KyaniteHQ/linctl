@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"slices"
 	"testing"
 	"time"
 
@@ -149,6 +151,7 @@ type fakeAuthReadinessChecker struct {
 	tokenScopes    []string
 	expectedActor  string
 	requiredScopes []string
+	rejectedTokens []string
 	beforeReturn   func()
 }
 
@@ -166,6 +169,9 @@ func (checker *fakeAuthReadinessChecker) check(
 	}
 	if checker.err != nil {
 		return authReadinessReport{}, checker.err
+	}
+	if slices.Contains(checker.rejectedTokens, request.AccessToken) {
+		return authReadinessReport{}, fmt.Errorf("resolve viewer: %w: graphql http status 401", client.ErrAuthFailed)
 	}
 
 	return checker.report, nil

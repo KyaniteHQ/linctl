@@ -454,106 +454,115 @@ func Test_AuthApp_reports_missing_scope_without_saving_token(t *testing.T) {
 	require.Empty(t, got.Token)
 }
 
-func Test_AuthStatus_reacquires_expired_client_credentials_token_and_checks_readiness(t *testing.T) {
-	paths := cliAuthTestPaths(t)
+func Test_AuthStatus_recovers_an_unusable_token_once_and_reports_the_new_token(t *testing.T) {
 	expiredAt := time.Now().Add(-time.Hour).UTC().Truncate(time.Second)
-	require.NoError(t, auth.NewStore(paths).Save(context.Background(), auth.State{
-		App: auth.AppConfig{
-			ClientID:     "client-id",
-			ClientSecret: "client-secret",
-			Scopes:       []string{"read"},
+	storedExpiresAt := time.Now().Add(time.Hour).UTC().Truncate(time.Second)
+	freshExpiresAt := time.Now().Add(2 * time.Hour).UTC().Truncate(time.Second)
+	clientCredentials := auth.TokenState{
+		AccessToken: "stored-access-token",
+		TokenType:   "Bearer",
+		Scopes:      []string{"read", "write"},
+		Actor:       "app",
+		GrantType:   authGrantClientCredentials,
+	}
+	authorizationCode := clientCredentials
+	authorizationCode.RefreshToken = "stored-refresh-token"
+	authorizationCode.GrantType = authGrantAuthorizationCode
+	tests := []struct {
+		name                       string
+		stored                     auth.TokenState
+		expiresAt                  *time.Time
+		rejectedTokens             []string
+		wantClientCredentialsCalls int
+		wantRefreshedWith          string
+		wantRefreshToken           string
+	}{
+		{
+			name:                       "expired client credentials token is reacquired",
+			stored:                     clientCredentials,
+			expiresAt:                  &expiredAt,
+			wantClientCredentialsCalls: 1,
 		},
-		Token: auth.TokenState{
-			AccessToken: "expired-access-token",
-			TokenType:   "Bearer",
-			Scopes:      []string{"read"},
-			ExpiresAt:   &expiredAt,
-			Actor:       "app",
-			GrantType:   "client_credentials",
+		{
+			name:              "expired authorization code token is refreshed",
+			stored:            authorizationCode,
+			expiresAt:         &expiredAt,
+			wantRefreshedWith: "stored-refresh-token",
+			wantRefreshToken:  "fresh-refresh-token",
 		},
-	}))
-	expiresAt := time.Now().Add(time.Hour).UTC().Truncate(time.Second)
-	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
-		"fresh-access-token",
-		"",
-		"Bearer",
-		expiresAt,
-		[]string{"read"},
-	)}
-	fakeReadiness := &fakeAuthReadinessChecker{report: readyAuthReport("app")}
-	restore := useAuthCommandHooks(t, paths, fakeOAuth, fakeReadiness)
-	defer restore()
-	var stdout bytes.Buffer
-
-	err := execute(context.Background(), BuildInfo{}, nil, &stdout, &bytes.Buffer{}, []string{
-		"--json",
-		"--org", "org-id",
-		"--team", "LIT",
-		"--team-id", "team-id",
-		"auth",
-		"status",
-	})
-
-	require.NoError(t, err)
-	require.Equal(t, 1, fakeOAuth.clientCredentialsCalls)
-	require.Equal(t, "fresh-access-token", fakeReadiness.accessToken)
-	require.NotContains(t, stdout.String(), "fresh-access-token")
-	got, err := auth.NewStore(paths).Load(context.Background())
-	require.NoError(t, err)
-	require.Equal(t, "fresh-access-token", got.Token.AccessToken)
-}
-
-func Test_AuthStatus_refreshes_expired_authorization_code_token_and_checks_readiness(t *testing.T) {
-	paths := cliAuthTestPaths(t)
-	expiredAt := time.Now().Add(-time.Hour).UTC().Truncate(time.Second)
-	freshExpiresAt := time.Now().Add(time.Hour).UTC().Truncate(time.Second)
-	require.NoError(t, auth.NewStore(paths).Save(context.Background(), auth.State{
-		App: auth.AppConfig{
-			ClientID: "client-id",
-			Scopes:   []string{"read", "write"},
+		{
+			name:                       "rejected client credentials token is reacquired",
+			stored:                     clientCredentials,
+			expiresAt:                  &storedExpiresAt,
+			rejectedTokens:             []string{"stored-access-token"},
+			wantClientCredentialsCalls: 1,
 		},
-		Token: auth.TokenState{
-			AccessToken:  "expired-access-token",
-			RefreshToken: "old-refresh-token",
-			TokenType:    "Bearer",
-			Scopes:       []string{"read", "write"},
-			ExpiresAt:    &expiredAt,
-			Actor:        "app",
-			GrantType:    authGrantAuthorizationCode,
+		{
+			name:              "rejected authorization code token is refreshed",
+			stored:            authorizationCode,
+			expiresAt:         &storedExpiresAt,
+			rejectedTokens:    []string{"stored-access-token"},
+			wantRefreshedWith: "stored-refresh-token",
+			wantRefreshToken:  "fresh-refresh-token",
 		},
-	}))
-	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
-		"fresh-access-token",
-		"fresh-refresh-token",
-		"Bearer",
-		freshExpiresAt,
-		[]string{"read", "write"},
-	)}
-	fakeReadiness := &fakeAuthReadinessChecker{report: readyAuthReport("app")}
-	restore := useAuthCommandHooks(t, paths, fakeOAuth, fakeReadiness)
-	defer restore()
-	var stdout bytes.Buffer
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			paths := cliAuthTestPaths(t)
+			stored := test.stored
+			stored.ExpiresAt = test.expiresAt
+			require.NoError(t, auth.NewStore(paths).Save(context.Background(), auth.State{
+				App: auth.AppConfig{
+					ClientID:     "client-id",
+					ClientSecret: "client-secret",
+					Scopes:       []string{"read", "write"},
+				},
+				Token: stored,
+			}))
+			fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
+				"fresh-access-token",
+				test.wantRefreshToken,
+				"Bearer",
+				freshExpiresAt,
+				[]string{"write", "read"},
+			)}
+			fakeReadiness := &fakeAuthReadinessChecker{
+				report:         readyAuthReport("app"),
+				rejectedTokens: test.rejectedTokens,
+			}
+			restore := useAuthCommandHooks(t, paths, fakeOAuth, fakeReadiness)
+			defer restore()
+			var stdout bytes.Buffer
 
-	err := execute(context.Background(), BuildInfo{}, nil, &stdout, &bytes.Buffer{}, []string{
-		"--json",
-		"--org", "org-id",
-		"--team", "LIT",
-		"--team-id", "team-id",
-		"auth",
-		"status",
-	})
+			err := execute(context.Background(), BuildInfo{}, nil, &stdout, &bytes.Buffer{}, []string{
+				"--json",
+				"--org", "org-id",
+				"--team", "LIT",
+				"--team-id", "team-id",
+				"auth",
+				"status",
+			})
 
-	require.NoError(t, err)
-	require.Equal(t, 1, fakeOAuth.refreshTokenCalls)
-	require.Equal(t, "old-refresh-token", fakeOAuth.refreshTokenRequest.RefreshToken)
-	require.Equal(t, "fresh-access-token", fakeReadiness.accessToken)
-	require.NotContains(t, stdout.String(), "fresh-access-token")
-	require.NotContains(t, stdout.String(), "fresh-refresh-token")
-	got, err := auth.NewStore(paths).Load(context.Background())
-	require.NoError(t, err)
-	require.Equal(t, "fresh-access-token", got.Token.AccessToken)
-	require.Equal(t, "fresh-refresh-token", got.Token.RefreshToken)
-	require.Equal(t, authGrantAuthorizationCode, got.Token.GrantType)
+			require.NoError(t, err)
+			require.Equal(t, test.wantClientCredentialsCalls, fakeOAuth.clientCredentialsCalls)
+			require.Equal(t, test.wantRefreshedWith, fakeOAuth.refreshTokenRequest.RefreshToken)
+			require.Equal(t, "fresh-access-token", fakeReadiness.accessToken)
+			require.NotContains(t, stdout.String(), "fresh-access-token")
+			require.NotContains(t, stdout.String(), "fresh-refresh-token")
+			var report authStatusReport
+			require.NoError(t, json.Unmarshal(stdout.Bytes(), &report))
+			require.Equal(t, "app", report.Actor)
+			require.Equal(t, "ready", report.Target.Status)
+			require.NotNil(t, report.ExpiresAt)
+			require.True(t, freshExpiresAt.Equal(*report.ExpiresAt))
+			require.Equal(t, []string{"write", "read"}, report.Scopes)
+			got, err := auth.NewStore(paths).Load(context.Background())
+			require.NoError(t, err)
+			require.Equal(t, "fresh-access-token", got.Token.AccessToken)
+			require.Equal(t, test.wantRefreshToken, got.Token.RefreshToken)
+			require.Equal(t, test.stored.GrantType, got.Token.GrantType)
+		})
+	}
 }
 
 func Test_AuthStatus_logout_wins_after_token_transaction_commits(t *testing.T) {
@@ -873,4 +882,67 @@ func Test_AuthLogout_forgets_app_and_clears_state_when_revocation_fails(t *testi
 	require.NoError(t, err)
 	require.Empty(t, got.App)
 	require.Empty(t, got.Token)
+}
+
+func Test_AuthStatus_reports_reauth_required_when_linear_keeps_rejecting_the_token(t *testing.T) {
+	expiresAt := time.Now().Add(time.Hour).UTC().Truncate(time.Second)
+	tests := []struct {
+		name          string
+		injectedToken string
+		wantOAuthCall int
+	}{
+		{name: "recovered token is rejected too", wantOAuthCall: 1},
+		{name: "injected token cannot be recovered", injectedToken: "rejected-access-token"},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			if test.injectedToken != "" {
+				t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", test.injectedToken)
+			}
+			paths := cliAuthTestPaths(t)
+			require.NoError(t, auth.NewStore(paths).Save(context.Background(), auth.State{
+				App: auth.AppConfig{
+					ClientID:     "client-id",
+					ClientSecret: "client-secret",
+					Scopes:       []string{"read"},
+				},
+				Token: auth.TokenState{
+					AccessToken: "rejected-access-token",
+					TokenType:   "Bearer",
+					Scopes:      []string{"read"},
+					ExpiresAt:   &expiresAt,
+					Actor:       "app",
+					GrantType:   authGrantClientCredentials,
+				},
+			}))
+			fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
+				"fresh-access-token",
+				"",
+				"Bearer",
+				expiresAt,
+				[]string{"read"},
+			)}
+			fakeReadiness := &fakeAuthReadinessChecker{
+				report:         readyAuthReport("app"),
+				rejectedTokens: []string{"rejected-access-token", "fresh-access-token"},
+			}
+			restore := useAuthCommandHooks(t, paths, fakeOAuth, fakeReadiness)
+			defer restore()
+			var stderr bytes.Buffer
+
+			err := execute(context.Background(), BuildInfo{}, nil, &bytes.Buffer{}, &stderr, []string{
+				"--json",
+				"auth",
+				"status",
+			})
+
+			require.Error(t, err)
+			require.Contains(t, stderr.String(), `"error_code":"AUTH_REAUTH_REQUIRED"`)
+			require.NotContains(t, stderr.String(), "rejected-access-token")
+			require.Equal(t, test.wantOAuthCall, fakeOAuth.clientCredentialsCalls)
+			got, err := auth.NewStore(paths).Load(context.Background())
+			require.NoError(t, err)
+			require.Equal(t, "rejected-access-token", got.Token.AccessToken)
+		})
+	}
 }

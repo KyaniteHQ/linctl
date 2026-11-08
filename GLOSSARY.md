@@ -73,7 +73,7 @@ The `linctl auth` command family for configuring OAuth app settings, authorizing
 _Avoid_: Token command, API-key setup, credential helper
 
 **Live Auth Status**:
-The auth status behavior that refreshes expired OAuth tokens when possible and verifies saved or overridden OAuth state against Linear before reporting readiness.
+The auth status behavior that refreshes expired OAuth tokens, and saved tokens Linear rejects, once when possible and verifies saved or overridden OAuth state against Linear before reporting readiness.
 _Avoid_: Local-only status, cached readiness
 
 **Auth Readiness**:
