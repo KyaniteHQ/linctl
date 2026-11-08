@@ -2965,6 +2965,20 @@ Flags:
       --limit int   maximum history entries to return (default 50)
 ```
 
+### linctl project initiative-link
+
+Add a project to an Initiative after pinned-target comparison
+
+```
+linctl project initiative-link PROJECT_ID INITIATIVE_ID [flags]
+```
+
+Flags:
+
+```
+      --sort-order float   position of the project within the Initiative; Linear picks one when unset
+```
+
 ### linctl project initiative-links
 
 List project initiative associations
@@ -2977,6 +2991,14 @@ Flags:
 
 ```
       --limit int   maximum initiative associations to return (default 50)
+```
+
+### linctl project initiative-unlink
+
+Remove a project from an Initiative after pinned-target comparison
+
+```
+linctl project initiative-unlink PROJECT_ID INITIATIVE_ID
 ```
 
 ### linctl project initiatives

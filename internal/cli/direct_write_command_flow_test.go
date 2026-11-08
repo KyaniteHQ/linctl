@@ -179,6 +179,21 @@ func Test_DirectWriteCommandFlows_forward_request_variables(t *testing.T) {
 			variables: []expectedWriteVariable{{path: []string{"id"}, value: "project-id"}, {path: []string{"labelId"}, value: "project-label-id"}},
 		},
 		{
+			name:      "project initiative-link ids",
+			args:      []string{"project", "initiative-link", "project-id", "roadmap-initiative-id"},
+			operation: "InitiativeToProjectCreate",
+			variables: []expectedWriteVariable{
+				{path: []string{"input", "projectId"}, value: "project-id"},
+				{path: []string{"input", "initiativeId"}, value: "roadmap-initiative-id"},
+			},
+		},
+		{
+			name:      "project initiative-unlink resolves the link id",
+			args:      []string{"project", "initiative-unlink", "project-id", "initiative-id"},
+			operation: "InitiativeToProjectDelete",
+			variables: []expectedWriteVariable{{path: []string{"id"}, value: "initiative-to-project-id"}},
+		},
+		{
 			name:      "project update body from stdin and canonical health",
 			args:      []string{"project-update", "create", "project-id", "--health", "at-risk", "--body", "-"},
 			stdin:     "project update from stdin",
@@ -228,7 +243,7 @@ func Test_DirectWriteCommandFlows_forward_request_variables(t *testing.T) {
 	}
 }
 
-func Test_DirectProjectLabelCommandFlows_propagate_client_errors(t *testing.T) {
+func Test_DirectProjectAssociationCommandFlows_propagate_client_errors(t *testing.T) {
 	tests := []struct {
 		name      string
 		args      []string
@@ -246,6 +261,18 @@ func Test_DirectProjectLabelCommandFlows_propagate_client_errors(t *testing.T) {
 			args:      []string{"project", "remove-label", "project-id", "project-label-id"},
 			operation: "ProjectRemoveLabel",
 			message:   "remove label from project project-id",
+		},
+		{
+			name:      "initiative link",
+			args:      []string{"project", "initiative-link", "project-id", "roadmap-initiative-id"},
+			operation: "InitiativeToProjectCreate",
+			message:   "link project project-id to initiative roadmap-initiative-id",
+		},
+		{
+			name:      "initiative unlink",
+			args:      []string{"project", "initiative-unlink", "project-id", "initiative-id"},
+			operation: "InitiativeToProjectDelete",
+			message:   "unlink project project-id from initiative initiative-id",
 		},
 	}
 

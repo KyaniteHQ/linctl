@@ -37,6 +37,8 @@ func addProjectCommand(ctx context.Context, root *cobra.Command, options *rootOp
 	addProjectAddTeamCommand(ctx, projectCommand, options)
 	addProjectAddLabelCommand(ctx, projectCommand, options)
 	addProjectRemoveLabelCommand(ctx, projectCommand, options)
+	addProjectInitiativeLinkCommand(ctx, projectCommand, options)
+	addProjectInitiativeUnlinkCommand(ctx, projectCommand, options)
 	addProjectOpenCommand(ctx, projectCommand, options)
 	addDomainUsageCommand(projectCommand, options, "project")
 	root.AddCommand(projectCommand)

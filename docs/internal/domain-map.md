@@ -376,6 +376,8 @@ Planned commands:
 | `project archive` | `Mutation.projectArchive` | Resource-scoped, compare `project_id` |
 | `project add-label` | `Mutation.projectAddLabel` | Resource-scoped: resolve the project through `requireProject`; the ProjectLabel must belong to the resolved organization |
 | `project remove-label` | `Mutation.projectRemoveLabel` | Resource-scoped, same resolution and comparison as `project add-label` |
+| `project initiative-link` | `Mutation.initiativeToProjectCreate` with `InitiativeToProjectCreateInput`; reads `Project.initiativeToProjects` first and returns an existing live link instead of creating a second one | Resource-scoped: resolve the project through `requireProject`; the Initiative must belong to the resolved organization (`requireInitiative`) |
+| `project initiative-unlink` | `Mutation.initiativeToProjectDelete`, with the link id found through `Project.initiativeToProjects`; refuses when the project has no live link to the Initiative | Resource-scoped, same resolution and comparison as `project initiative-link`; deletes only the association |
 | `project members` | `Project.members` plus `Mutation.projectUpdate` with `ProjectUpdateInput.memberIds` | Read-only for list, resource-scoped for writes |
 | `project needs` | `Project.needs` | Read-only |
 | `project relations` | `Project.relations` | Read-only |

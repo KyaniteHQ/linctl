@@ -270,7 +270,7 @@ These are the writes that you use most.
 | --- | --- |
 | `issue` | `create`, `update`, `start`, `close`, `comment`, `reply`, `link`, `add-label`, `remove-label`, `import` |
 | `comment` | `update`, `delete`, `resolve`, `unresolve` |
-| `project` | `create`, `update`, `archive`, `add-team`, `add-label`, `remove-label` |
+| `project` | `create`, `update`, `archive`, `add-team`, `add-label`, `remove-label`, `initiative-link`, `initiative-unlink` |
 | `project-milestone` | `create`, `update`, **`delete`** |
 | `cycle` | `create`, `update`, `archive` |
 | `document` | `create`, `update` |

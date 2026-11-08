@@ -202,6 +202,76 @@ func Test_Integration_projectWriteRoundTrip_whenTargetPinned(t *testing.T) {
 	require.Equal(t, created.ID, members.ProjectID)
 }
 
+func Test_Integration_projectInitiativeLinkRoundTrip_whenTargetPinned(t *testing.T) {
+	// Given
+	requireLiveWriteIntegration(t)
+	fixture := readLiveIntegrationConfig(t)
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+	transport := newLiveIntegrationTransport(t, 10*time.Second)
+	teamTarget := config.Target{OrgID: fixture.OrgID, TeamKey: fixture.TeamKey, TeamID: fixture.TeamID}
+	initiatives, initiativesErr := ListInitiatives(ctx, transport, 1)
+	require.NoError(t, initiativesErr)
+	if len(initiatives.Initiatives) == 0 {
+		t.Skip("the test organization has no Initiative to link")
+	}
+	initiativeID := initiatives.Initiatives[0].ID
+	listed, listErr := ListProjectsByTeam(ctx, transport, fixture.TeamID, 100)
+	require.NoError(t, listErr)
+	require.NotEmpty(t, listed.Projects)
+	wrongProjectID := listed.Projects[0].ID
+	created, createErr := CreateProject(ctx, transport, teamTarget, ProjectCreateRequest{
+		Name:        "linctl-it-" + time.Now().UTC().Format("20060102T150405"),
+		Description: "created by linctl integration test",
+	})
+	require.NoError(t, createErr)
+	projectTarget := teamTarget
+	projectTarget.ProjectID = created.ID
+	request := ProjectInitiativeLinkRequest{ProjectID: created.ID, InitiativeID: initiativeID}
+	defer func() {
+		_, err := ArchiveProject(context.Background(), transport, projectTarget, created.ID)
+		require.NoError(t, err)
+	}()
+	defer func() {
+		_, _ = UnlinkProjectInitiative(context.Background(), transport, projectTarget, request)
+	}()
+
+	// When
+	linked, linkErr := LinkProjectInitiative(ctx, transport, projectTarget, request)
+	relinked, relinkErr := LinkProjectInitiative(ctx, transport, projectTarget, request)
+	afterLink, afterLinkErr := ListProjectInitiatives(ctx, transport, created.ID, 10)
+	wrongTarget := teamTarget
+	wrongTarget.ProjectID = wrongProjectID
+	_, wrongProjectErr := UnlinkProjectInitiative(ctx, transport, wrongTarget, request)
+	unlinked, unlinkErr := UnlinkProjectInitiative(ctx, transport, projectTarget, request)
+	afterUnlink, afterUnlinkErr := ListProjectInitiatives(ctx, transport, created.ID, 10)
+	_, secondUnlinkErr := UnlinkProjectInitiative(ctx, transport, projectTarget, request)
+
+	// Then
+	require.NoError(t, linkErr)
+	require.NoError(t, relinkErr)
+	require.NoError(t, afterLinkErr)
+	require.NoError(t, unlinkErr)
+	require.NoError(t, afterUnlinkErr)
+	require.ErrorIs(t, wrongProjectErr, ErrTargetMismatch)
+	require.ErrorIs(t, secondUnlinkErr, ErrWriteInvalid)
+	require.Equal(t, initiativeID, linked.InitiativeID)
+	require.Equal(t, created.ID, linked.ProjectID)
+	require.Equal(t, linked.ID, relinked.ID)
+	require.Equal(t, linked.ID, unlinked.ID)
+	require.Contains(t, initiativeIDs(afterLink.Initiatives), initiativeID)
+	require.NotContains(t, initiativeIDs(afterUnlink.Initiatives), initiativeID)
+}
+
+func initiativeIDs(initiatives []InitiativeSummary) []string {
+	ids := make([]string, 0, len(initiatives))
+	for _, initiative := range initiatives {
+		ids = append(ids, initiative.ID)
+	}
+
+	return ids
+}
+
 func Test_Integration_issueCoordinationWriteRoundTrip_whenTargetPinned(t *testing.T) {
 	// Given
 	requireLiveWriteIntegration(t)

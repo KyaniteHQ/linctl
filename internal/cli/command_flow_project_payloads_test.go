@@ -225,6 +225,11 @@ func commandFlowProjectWritePayload(operation string) (string, bool) {
 		return `{"projectArchive":{"success":true,"entity":` + commandProjectJSON("Archived project", "Canceled", "canceled") + `}}`, true
 	case "ProjectAddLabel":
 		return `{"projectAddLabel":{"success":true,"project":` + commandProjectJSON("Labeled project", "Backlog", "backlog") + `}}`, true
+	case "InitiativeToProjectCreate":
+		return `{"initiativeToProjectCreate":{"success":true,"initiativeToProject":` +
+			strings.Replace(commandInitiativeToProjectJSON(), `"id":"initiative-id"`, `"id":"roadmap-initiative-id"`, 1) + `}}`, true
+	case "InitiativeToProjectDelete":
+		return `{"initiativeToProjectDelete":{"success":true}}`, true
 	case "ProjectRemoveLabel":
 		return `{"projectRemoveLabel":{"success":true,"project":` + commandProjectJSON("Unlabeled project", "Backlog", "backlog") + `}}`, true
 	case "ProjectLabelCreate":

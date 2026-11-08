@@ -1255,6 +1255,12 @@ Success is pass/fail:
      `Test_CloseIssue_applies_the_transitions_allowlist_to_the_configured_state`;
      `go test -tags=integration ./internal/client` (compile check only locally), `Test_Integration_issueClose_whenCloseStateConfigured`.
 
+231. Project Initiative link and unlink
+   - Success: `linctl project initiative-link PROJECT_ID INITIATIVE_ID [--sort-order N]` adds the project to the Initiative and `linctl project initiative-unlink PROJECT_ID INITIATIVE_ID` removes it, each only after resolving the project through `requireProject` (pinned project, or pinned team when no project is pinned) and the Initiative through `requireInitiative` (organization). A link that already exists comes back unchanged without a second create; `--sort-order` is sent only when given; unlink finds the live link through `Project.initiativeToProjects`, skips archived links, refuses with a write-invalid error when the project is not linked or has more links than one page, and deletes only the association. Every refusal sends no mutation, and both commands print the link.
+   - Evidence: `go test ./internal/client`, `Test_LinkProjectInitiative_creates_link_with_sort_order`, `Test_LinkProjectInitiative_returns_existing_link_without_creating`, `Test_UnlinkProjectInitiative_deletes_the_live_link`, `Test_ProjectInitiativeWrites_refuse_before_any_mutation`, `Test_UnlinkProjectInitiative_refuses_when_project_is_not_linked`, `Test_ProjectInitiativeWrites_report_mutation_failures`, `Test_ProjectInitiativeWrites_wrap_transport_errors`, `Test_LinkProjectInitiative_refuses_when_pinned_team_does_not_resolve`;
+     `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_initiative-link`, `Test_DirectWriteCommandFlows_forward_request_variables/project_initiative-link_ids`, `Test_DirectProjectAssociationCommandFlows_propagate_client_errors/initiative_link`, `Test_ProjectInitiativeLinkCommand_sends_sort_order_only_when_given`;
+     `go test -tags=integration ./internal/client` with `LINCTL_TEST_ENABLE_WRITES=1`, `Test_Integration_projectInitiativeLinkRoundTrip_whenTargetPinned`.
+
 ## Current Outcome
 
 All local scenarios pass under the method above. The complete product suite also passes with

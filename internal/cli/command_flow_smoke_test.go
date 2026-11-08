@@ -222,6 +222,16 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 			contains: "project-id Unlabeled project [Backlog]",
 		},
 		{
+			name:     "project initiative-link",
+			args:     []string{"project", "initiative-link", "project-id", "roadmap-initiative-id"},
+			contains: "initiative-to-project-id Platform -> Pinned project order 1",
+		},
+		{
+			name:     "project initiative-unlink",
+			args:     []string{"project", "initiative-unlink", "project-id", "initiative-id"},
+			contains: "initiative-to-project-id Platform -> Pinned project order 1",
+		},
+		{
 			name:     "project label create",
 			args:     []string{"project-label", "create", "--name", "Created project label", "--org-wide"},
 			contains: "project-label-id Created project label #f2c94c",

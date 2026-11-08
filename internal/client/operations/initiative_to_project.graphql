@@ -33,3 +33,18 @@ fragment InitiativeToProjectSummaryFields on InitiativeToProject {
     url
   }
 }
+
+mutation InitiativeToProjectCreate($input: InitiativeToProjectCreateInput!) {
+  initiativeToProjectCreate(input: $input) {
+    success
+    initiativeToProject {
+      ...InitiativeToProjectSummaryFields
+    }
+  }
+}
+
+mutation InitiativeToProjectDelete($id: String!) {
+  initiativeToProjectDelete(id: $id) {
+    success
+  }
+}
