@@ -16,11 +16,11 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 
 | Surface | Total | Covered/exposed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods with generated local operations | 481 | 164 | 481 |
+| Upstream SDK root methods with generated local operations | 481 | 166 | 481 |
 | Upstream Query root fields used by generated local operations | 183 | 115 | 183 |
-| Upstream Mutation root fields used by generated local operations | 391 | 51 | 391 |
-| Local generated Go operations declared in GraphQL files | 319 | 319 | 319 |
-| Public CLI commands from command inventory | 443 | 334 | 443 |
+| Upstream Mutation root fields used by generated local operations | 391 | 53 | 391 |
+| Local generated Go operations declared in GraphQL files | 321 | 321 | 321 |
+| Public CLI commands from command inventory | 445 | 338 | 445 |
 
 ## Upstream SDK Root Methods
 
@@ -101,7 +101,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `createInitiative` | method | generated_operation | local GraphQL operation uses this root |
 | `createInitiativeLabel` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createInitiativeRelation` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `createInitiativeToProject` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `createInitiativeToProject` | method | generated_operation | local GraphQL operation uses this root |
 | `createInitiativeUpdate` | method | generated_operation | local GraphQL operation uses this root |
 | `createInitiativeUpdateReminder` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createIntegrationGithubCommit` | getter | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -174,7 +174,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `deleteInitiative` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteInitiativeLabel` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteInitiativeRelation` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `deleteInitiativeToProject` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
+| `deleteInitiativeToProject` | method | generated_operation | local GraphQL operation uses this root |
 | `deleteIntegration` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteIntegrationIntercom` | getter | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteIntegrationTemplate` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
@@ -816,8 +816,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `initiativeRelationDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `initiativeRelationUpdate` | `InitiativeRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `initiativeRemoveLabel` | `InitiativePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `initiativeToProjectCreate` | `InitiativeToProjectPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `initiativeToProjectDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
+| `initiativeToProjectCreate` | `InitiativeToProjectPayload!` | generated_operation | root field used by local GraphQL operation |
+| `initiativeToProjectDelete` | `DeletePayload!` | generated_operation | root field used by local GraphQL operation |
 | `initiativeToProjectUpdate` | `InitiativeToProjectPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `initiativeUnarchive` | `InitiativeArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `initiativeUpdate` | `InitiativePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -1113,6 +1113,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `InitiativeCreate` | mutation | `initiativeCreate` | generated | `internal/client/internal/gql/generated.go` |
 | `InitiativeLabelRestore` | mutation | `initiativeLabelRestore` | generated | `internal/client/internal/gql/generated.go` |
 | `InitiativeLabelRetire` | mutation | `initiativeLabelRetire` | generated | `internal/client/internal/gql/generated.go` |
+| `InitiativeToProjectCreate` | mutation | `initiativeToProjectCreate` | generated | `internal/client/internal/gql/generated.go` |
+| `InitiativeToProjectDelete` | mutation | `initiativeToProjectDelete` | generated | `internal/client/internal/gql/generated.go` |
 | `InitiativeUpdateCreate` | mutation | `initiativeUpdateCreate` | generated | `internal/client/internal/gql/generated.go` |
 | `IssueAddLabel` | mutation | `issueAddLabel` | generated | `internal/client/internal/gql/generated.go` |
 | `IssueArchive` | mutation | `issueArchive` | generated | `internal/client/internal/gql/generated.go` |
@@ -1606,6 +1608,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Project | `project archive` | `Mutation.projectArchive` | Resource-scoped, compare `project_id` | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Project | `project add-label` | `Mutation.projectAddLabel` | Resource-scoped: resolve the project through `requireProject`; the ProjectLabel must belong to the resolved organization | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Project | `project remove-label` | `Mutation.projectRemoveLabel` | Resource-scoped, same resolution and comparison as `project add-label` | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
+| Project | `project initiative-link` | `Mutation.initiativeToProjectCreate` with `InitiativeToProjectCreateInput`; reads `Project.initiativeToProjects` first and returns an existing live link instead of creating a second one, refusing a `--sort-order` that differs from it | Resource-scoped: resolve the project through `requireProject`; the Initiative must belong to the resolved organization (`requireInitiative`) | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
+| Project | `project initiative-unlink` | `Mutation.initiativeToProjectDelete`, with the link id found through `Project.initiativeToProjects`; refuses when the project has no live link to the Initiative | Resource-scoped, same resolution and comparison as `project initiative-link`; deletes only the association | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Project | `project members` | `Project.members` plus `Mutation.projectUpdate` with `ProjectUpdateInput.memberIds` | Read-only for list, resource-scoped for writes | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Project | `project needs` | `Project.needs` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
 | Project | `project relations` | `Project.relations` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
@@ -1770,9 +1774,9 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | InitiativeRelation | `initiative-relation delete` | `Mutation.initiativeRelationDelete` | Blocked: destructive command needs explicit hierarchy safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | InitiativeToProject | `initiative-to-project list` | `Query.initiativeToProjects` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | InitiativeToProject | `initiative-to-project get` | `Query.initiativeToProject` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
-| InitiativeToProject | `initiative-to-project create` | `Mutation.initiativeToProjectCreate` | Blocked: create must resolve and compare both Initiative and Project endpoints before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
+| InitiativeToProject | `project initiative-link` | `Mutation.initiativeToProjectCreate` | Resource-scoped on the project; the Initiative is compared organization-only (see Project) | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
+| InitiativeToProject | `project initiative-unlink` | `Mutation.initiativeToProjectDelete` | Resource-scoped on the project; the Initiative is compared organization-only (see Project) | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | InitiativeToProject | `initiative-to-project update` | `Mutation.initiativeToProjectUpdate` | Blocked: update must resolve and compare both Initiative and Project endpoints before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
-| InitiativeToProject | `initiative-to-project delete` | `Mutation.initiativeToProjectDelete` | Blocked: destructive command needs explicit association safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | RoadmapToProject | `roadmap-to-project list` | `Query.roadmapToProjects` | Legacy read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | RoadmapToProject | `roadmap-to-project get` | `Query.roadmapToProject` | Legacy read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | RoadmapToProject | `roadmap-to-project create` | `Mutation.roadmapToProjectCreate` | Blocked: deprecated create must resolve and compare both Roadmap and Project endpoints before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
