@@ -3,6 +3,7 @@ package cli
 import (
 	"cmp"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -227,31 +228,47 @@ func addAuthStatusCommand(ctx context.Context, root *cobra.Command, options *roo
 
 				return writeAuthStatus(command, options, newAuthStatusReport(app, refreshed, readiness))
 			}
-			expectedActor := cmp.Or(token.Actor, appActor)
-			requiredTokenScopes := requiredScopes(app, expectedActor)
-			if authContext.credentialKind == auth.CredentialKindInjectedAccessToken {
-				expectedActor = ""
-				requiredTokenScopes = nil
-			}
-
-			readiness, err := requireLoggedAuthReadiness(ctx, authContext.log(), authReadinessRequest{
-				AccessToken:    token.AccessToken,
-				TokenActor:     token.Actor,
-				TokenScopes:    token.Scopes,
-				ExpectedTarget: authContext.target,
-				ExpectedActor:  expectedActor,
-				RequiredScopes: requiredTokenScopes,
-				Timeout:        options.timeout,
-			})
+			checked, readiness, err := currentAuthTokenReadiness(ctx, authContext, app, token, options.timeout)
 			if err != nil {
 				return err
 			}
 
-			return writeAuthStatus(command, options, newAuthStatusReport(app, token, readiness))
+			return writeAuthStatus(command, options, newAuthStatusReport(app, checked, readiness))
 		},
 	}
 	annotateCommand(command, commandSafetyAnnotation, string(CommandSafetyLocal))
 	root.AddCommand(command)
+}
+
+func currentAuthTokenReadiness(
+	ctx context.Context,
+	authContext authCommandContext,
+	app auth.AppConfig,
+	token auth.TokenState,
+	timeout time.Duration,
+) (auth.TokenState, authReadinessReport, error) {
+	expectedActor := cmp.Or(token.Actor, appActor)
+	requiredTokenScopes := requiredScopes(app, expectedActor)
+	if authContext.credentialKind == auth.CredentialKindInjectedAccessToken {
+		expectedActor = ""
+		requiredTokenScopes = nil
+	}
+
+	readiness, err := requireLoggedAuthReadiness(ctx, authContext.log(), authReadinessRequest{
+		AccessToken:    token.AccessToken,
+		TokenActor:     token.Actor,
+		TokenScopes:    token.Scopes,
+		ExpectedTarget: authContext.target,
+		ExpectedActor:  expectedActor,
+		RequiredScopes: requiredTokenScopes,
+		Timeout:        timeout,
+	})
+	if errors.Is(err, client.ErrAuthFailed) && authContext.credentialKind.Recoverable() {
+		authContext.localToken = token
+		return refreshPersistedAuthToken(ctx, authContext, app, timeout)
+	}
+
+	return token, readiness, err
 }
 
 func addAuthRefreshCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {

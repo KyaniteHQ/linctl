@@ -88,4 +88,38 @@ validate_auth_json "$app_output" "$LINCTL_OAUTH_EXPECTED_ACTOR" app
 "$binary" auth status --json >"$status_output"
 validate_auth_json "$status_output" "$LINCTL_OAUTH_EXPECTED_ACTOR" status
 
+if [[ "${LINCTL_LIVE_OAUTH_RECOVERY:-}" == "1" ]]; then
+  other_state="$(mktemp -d -t linctl-live-oauth-other.XXXXXX)"
+  recovered_output="$(mktemp -t linctl-live-oauth-recovered.XXXXXX)"
+  injected_error="$(mktemp -t linctl-live-oauth-injected.XXXXXX)"
+  trap 'rm -f "$app_output" "$status_output" "$recovered_output" "$injected_error"; rm -rf "${other_state:?}"' EXIT
+
+  env -u LINCTL_OAUTH_SCOPES XDG_CONFIG_HOME="$other_state/config" XDG_STATE_HOME="$other_state/state" \
+    "$binary" auth app --scopes read --quiet
+  "$binary" auth status --json >"$recovered_output"
+  validate_auth_json "$recovered_output" "$LINCTL_OAUTH_EXPECTED_ACTOR" status
+  python3 - "$status_output" "$recovered_output" <<'PY'
+import json
+import sys
+
+with open(sys.argv[1], "r", encoding="utf-8") as before_file:
+    before = json.load(before_file)
+with open(sys.argv[2], "r", encoding="utf-8") as after_file:
+    after = json.load(after_file)
+if before.get("expires_at") == after.get("expires_at"):
+    sys.stderr.write("live OAuth status did not replace the token Linear rejected\n")
+    sys.exit(1)
+PY
+
+  if LINCTL_OAUTH_ACCESS_TOKEN=lin_oauth_linctl_live_rejected "$binary" auth status --json >/dev/null 2>"$injected_error"; then
+    printf 'live OAuth status accepted an invalid injected token\n' >&2
+    exit 1
+  fi
+  if ! grep -q '"error_code":"AUTH_REAUTH_REQUIRED"' "$injected_error"; then
+    printf 'live OAuth status did not report AUTH_REAUTH_REQUIRED for an invalid injected token\n' >&2
+    exit 1
+  fi
+  printf 'live OAuth recovery ok: rejected token replaced, invalid injected token refused\n'
+fi
+
 printf 'live OAuth ok: actor=app target=ready token=set scopes=set\n'

@@ -125,6 +125,12 @@ func mapAuthReadinessError(err error) error {
 		return err
 	case errors.As(err, &tokenErr):
 		return err
+	case errors.Is(err, client.ErrAuthFailed):
+		return auth.WrapError(
+			auth.ErrorCodeReauthRequired,
+			"Linear rejected the OAuth access token: run linctl auth login or linctl auth app",
+			err,
+		)
 	case errors.Is(err, client.ErrTargetNotConfigured):
 		return auth.WrapError(
 			auth.ErrorCodeTargetNotConfigured,
