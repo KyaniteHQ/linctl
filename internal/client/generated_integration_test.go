@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"os"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -25,7 +26,10 @@ type liveIntegrationConfig struct {
 	ProjectID string `json:"project_id"`
 }
 
-const liveWriteIntegrationEnv = "LINCTL_TEST_ENABLE_WRITES"
+const (
+	liveWriteIntegrationEnv  = "LINCTL_TEST_ENABLE_WRITES"
+	liveInitiativeFixtureEnv = "LINCTL_TEST_INITIATIVE_ID"
+)
 
 func Test_Integration_generatedViewerOrganizationTeams_whenTokenConfigured(t *testing.T) {
 	// Given
@@ -203,19 +207,16 @@ func Test_Integration_projectWriteRoundTrip_whenTargetPinned(t *testing.T) {
 }
 
 func Test_Integration_projectInitiativeLinkRoundTrip_whenTargetPinned(t *testing.T) {
-	// Given
 	requireLiveWriteIntegration(t)
 	fixture := readLiveIntegrationConfig(t)
-	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	initiativeID := os.Getenv(liveInitiativeFixtureEnv)
+	if initiativeID == "" {
+		t.Skip(liveInitiativeFixtureEnv + " must name the test organization's fixture Initiative")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
 	defer cancel()
 	transport := newLiveIntegrationTransport(t, 10*time.Second)
 	teamTarget := config.Target{OrgID: fixture.OrgID, TeamKey: fixture.TeamKey, TeamID: fixture.TeamID}
-	initiatives, initiativesErr := ListInitiatives(ctx, transport, 1)
-	require.NoError(t, initiativesErr)
-	if len(initiatives.Initiatives) == 0 {
-		t.Skip("the test organization has no Initiative to link")
-	}
-	initiativeID := initiatives.Initiatives[0].ID
 	listed, listErr := ListProjectsByTeam(ctx, transport, fixture.TeamID, 100)
 	require.NoError(t, listErr)
 	require.NotEmpty(t, listed.Projects)
@@ -228,16 +229,21 @@ func Test_Integration_projectInitiativeLinkRoundTrip_whenTargetPinned(t *testing
 	projectTarget := teamTarget
 	projectTarget.ProjectID = created.ID
 	request := ProjectInitiativeLinkRequest{ProjectID: created.ID, InitiativeID: initiativeID}
-	defer func() {
+	t.Cleanup(func() {
 		_, err := ArchiveProject(context.Background(), transport, projectTarget, created.ID)
 		require.NoError(t, err)
-	}()
-	defer func() {
-		_, _ = UnlinkProjectInitiative(context.Background(), transport, projectTarget, request)
-	}()
+	})
+	t.Cleanup(func() {
+		_, err := UnlinkProjectInitiative(context.Background(), transport, projectTarget, request)
+		if !errors.Is(err, ErrWriteInvalid) {
+			require.NoError(t, err)
+		}
+	})
+	sortOrder := 7.0
+	sorted := request
+	sorted.SortOrder = &sortOrder
 
-	// When
-	linked, linkErr := LinkProjectInitiative(ctx, transport, projectTarget, request)
+	linked, linkErr := LinkProjectInitiative(ctx, transport, projectTarget, sorted)
 	relinked, relinkErr := LinkProjectInitiative(ctx, transport, projectTarget, request)
 	afterLink, afterLinkErr := ListProjectInitiatives(ctx, transport, created.ID, 10)
 	wrongTarget := teamTarget
@@ -246,19 +252,27 @@ func Test_Integration_projectInitiativeLinkRoundTrip_whenTargetPinned(t *testing
 	unlinked, unlinkErr := UnlinkProjectInitiative(ctx, transport, projectTarget, request)
 	afterUnlink, afterUnlinkErr := ListProjectInitiatives(ctx, transport, created.ID, 10)
 	_, secondUnlinkErr := UnlinkProjectInitiative(ctx, transport, projectTarget, request)
+	linkedAgain, linkAgainErr := LinkProjectInitiative(ctx, transport, projectTarget, request)
+	unlinkedAgain, unlinkAgainErr := UnlinkProjectInitiative(ctx, transport, projectTarget, request)
 
-	// Then
 	require.NoError(t, linkErr)
 	require.NoError(t, relinkErr)
 	require.NoError(t, afterLinkErr)
 	require.NoError(t, unlinkErr)
 	require.NoError(t, afterUnlinkErr)
+	require.NoError(t, linkAgainErr)
+	require.NoError(t, unlinkAgainErr)
 	require.ErrorIs(t, wrongProjectErr, ErrTargetMismatch)
 	require.ErrorIs(t, secondUnlinkErr, ErrWriteInvalid)
 	require.Equal(t, initiativeID, linked.InitiativeID)
 	require.Equal(t, created.ID, linked.ProjectID)
+	linkedOrder, parseErr := strconv.ParseFloat(linked.SortOrder, 64)
+	require.NoError(t, parseErr)
+	require.InDelta(t, sortOrder, linkedOrder, 0)
 	require.Equal(t, linked.ID, relinked.ID)
 	require.Equal(t, linked.ID, unlinked.ID)
+	require.NotEqual(t, linked.ID, linkedAgain.ID)
+	require.Equal(t, linkedAgain.ID, unlinkedAgain.ID)
 	require.Contains(t, initiativeIDs(afterLink.Initiatives), initiativeID)
 	require.NotContains(t, initiativeIDs(afterUnlink.Initiatives), initiativeID)
 }

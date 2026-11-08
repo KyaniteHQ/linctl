@@ -16,7 +16,8 @@ func addProjectInitiativeLinkCommand(ctx context.Context, root *cobra.Command, o
 		Args:  cobra.ExactArgs(2),
 		Configure: func(command *cobra.Command) {
 			command.Flags().Float64Var(
-				&sortOrder, "sort-order", 0, "position of the project within the Initiative; Linear picks one when unset",
+				&sortOrder, "sort-order", 0,
+				"position of the project within the Initiative; Linear picks one when unset",
 			)
 		},
 		Run: func(

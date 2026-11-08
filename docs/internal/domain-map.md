@@ -376,7 +376,7 @@ Planned commands:
 | `project archive` | `Mutation.projectArchive` | Resource-scoped, compare `project_id` |
 | `project add-label` | `Mutation.projectAddLabel` | Resource-scoped: resolve the project through `requireProject`; the ProjectLabel must belong to the resolved organization |
 | `project remove-label` | `Mutation.projectRemoveLabel` | Resource-scoped, same resolution and comparison as `project add-label` |
-| `project initiative-link` | `Mutation.initiativeToProjectCreate` with `InitiativeToProjectCreateInput`; reads `Project.initiativeToProjects` first and returns an existing live link instead of creating a second one | Resource-scoped: resolve the project through `requireProject`; the Initiative must belong to the resolved organization (`requireInitiative`) |
+| `project initiative-link` | `Mutation.initiativeToProjectCreate` with `InitiativeToProjectCreateInput`; reads `Project.initiativeToProjects` first and returns an existing live link instead of creating a second one, refusing a `--sort-order` that differs from it | Resource-scoped: resolve the project through `requireProject`; the Initiative must belong to the resolved organization (`requireInitiative`) |
 | `project initiative-unlink` | `Mutation.initiativeToProjectDelete`, with the link id found through `Project.initiativeToProjects`; refuses when the project has no live link to the Initiative | Resource-scoped, same resolution and comparison as `project initiative-link`; deletes only the association |
 | `project members` | `Project.members` plus `Mutation.projectUpdate` with `ProjectUpdateInput.memberIds` | Read-only for list, resource-scoped for writes |
 | `project needs` | `Project.needs` | Read-only |
@@ -938,11 +938,11 @@ Command status:
 | --- | --- | --- |
 | `initiative-to-project list` | `Query.initiativeToProjects` | Read-only |
 | `initiative-to-project get` | `Query.initiativeToProject` | Read-only |
-| `initiative-to-project create` | `Mutation.initiativeToProjectCreate` | Blocked: create must resolve and compare both Initiative and Project endpoints before mutation |
+| `project initiative-link` | `Mutation.initiativeToProjectCreate` | Resource-scoped on the project; the Initiative is compared organization-only (see Project) |
+| `project initiative-unlink` | `Mutation.initiativeToProjectDelete` | Resource-scoped on the project; the Initiative is compared organization-only (see Project) |
 | `initiative-to-project update` | `Mutation.initiativeToProjectUpdate` | Blocked: update must resolve and compare both Initiative and Project endpoints before mutation |
-| `initiative-to-project delete` | `Mutation.initiativeToProjectDelete` | Blocked: destructive command needs explicit association safety semantics |
 
-Only `initiative-to-project list` and `initiative-to-project get` are implemented in the current CLI. InitiativeToProject writes are deferred until their endpoint guard model is explicit.
+`initiative-to-project list` and `get` read associations. Creating and deleting an association go through `project initiative-link` and `project initiative-unlink`, which resolve and compare the project and the Initiative before the mutation. Changing the sort order of an existing link stays blocked until `initiativeToProjectUpdate` has a guard model; `project initiative-link` refuses a `--sort-order` that differs from the existing link.
 
 ## RoadmapToProject
 

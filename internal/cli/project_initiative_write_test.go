@@ -31,10 +31,13 @@ func Test_ProjectInitiativeLinkCommand_sends_sort_order_only_when_given(t *testi
 	tests := []struct {
 		name      string
 		extraArgs []string
-		sortOrder *float64
+		input     string
 	}{
-		{name: "given", extraArgs: []string{"--sort-order", "3.5"}, sortOrder: new(3.5)},
-		{name: "omitted", sortOrder: nil},
+		{
+			name: "given", extraArgs: []string{"--sort-order", "3.5"},
+			input: `{"initiativeId":"roadmap-initiative-id","projectId":"project-id","sortOrder":3.5}`,
+		},
+		{name: "omitted", input: `{"initiativeId":"roadmap-initiative-id","projectId":"project-id"}`},
 	}
 
 	for _, test := range tests {
@@ -55,12 +58,10 @@ func Test_ProjectInitiativeLinkCommand_sends_sort_order_only_when_given(t *testi
 			payload, marshalErr := json.Marshal(capture.create.Variables)
 			require.NoError(t, marshalErr)
 			var sent struct {
-				Input struct {
-					SortOrder *float64 `json:"sortOrder"`
-				} `json:"input"`
+				Input json.RawMessage `json:"input"`
 			}
 			require.NoError(t, json.Unmarshal(payload, &sent))
-			require.Equal(t, test.sortOrder, sent.Input.SortOrder)
+			require.JSONEq(t, test.input, string(sent.Input))
 		})
 	}
 }

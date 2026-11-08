@@ -5759,30 +5759,6 @@ func (v *InitiativeToProjectCreateInitiativeToProjectCreateInitiativeToProjectPa
 	return &retval, nil
 }
 
-// The properties of the initiativeToProject to create.
-type InitiativeToProjectCreateInput struct {
-	// The identifier in UUID v4 format. If none is provided, the backend will generate one.
-	Id *string `json:"id"`
-	// The identifier of the initiative.
-	InitiativeId string `json:"initiativeId"`
-	// The identifier of the project.
-	ProjectId string `json:"projectId"`
-	// The sort order for the project within the initiative.
-	SortOrder *float64 `json:"sortOrder"`
-}
-
-// GetId returns InitiativeToProjectCreateInput.Id, and is useful for accessing the field via an interface.
-func (v *InitiativeToProjectCreateInput) GetId() *string { return v.Id }
-
-// GetInitiativeId returns InitiativeToProjectCreateInput.InitiativeId, and is useful for accessing the field via an interface.
-func (v *InitiativeToProjectCreateInput) GetInitiativeId() string { return v.InitiativeId }
-
-// GetProjectId returns InitiativeToProjectCreateInput.ProjectId, and is useful for accessing the field via an interface.
-func (v *InitiativeToProjectCreateInput) GetProjectId() string { return v.ProjectId }
-
-// GetSortOrder returns InitiativeToProjectCreateInput.SortOrder, and is useful for accessing the field via an interface.
-func (v *InitiativeToProjectCreateInput) GetSortOrder() *float64 { return v.SortOrder }
-
 // InitiativeToProjectCreateResponse is returned by InitiativeToProjectCreate on success.
 type InitiativeToProjectCreateResponse struct {
 	// Associates a project with an initiative. A project can only appear once in an initiative hierarchy.
@@ -32200,11 +32176,13 @@ func (v *__InitiativeLabelRetireInput) GetId() string { return v.Id }
 
 // __InitiativeToProjectCreateInput is used internally by genqlient
 type __InitiativeToProjectCreateInput struct {
-	Input InitiativeToProjectCreateInput `json:"input"`
+	Input gqlmodel.LinearInitiativeToProjectCreateInput `json:"input"`
 }
 
 // GetInput returns __InitiativeToProjectCreateInput.Input, and is useful for accessing the field via an interface.
-func (v *__InitiativeToProjectCreateInput) GetInput() InitiativeToProjectCreateInput { return v.Input }
+func (v *__InitiativeToProjectCreateInput) GetInput() gqlmodel.LinearInitiativeToProjectCreateInput {
+	return v.Input
+}
 
 // __InitiativeToProjectDeleteInput is used internally by genqlient
 type __InitiativeToProjectDeleteInput struct {
@@ -83651,7 +83629,7 @@ fragment InitiativeToProjectSummaryFields on InitiativeToProject {
 func InitiativeToProjectCreate(
 	ctx_ context.Context,
 	client_ graphql.Client,
-	input InitiativeToProjectCreateInput,
+	input gqlmodel.LinearInitiativeToProjectCreateInput,
 ) (data_ *InitiativeToProjectCreateResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "InitiativeToProjectCreate",

@@ -7,6 +7,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
 const projectInitiativeLinkJSON = `{
@@ -20,20 +22,9 @@ const projectInitiativeLinkJSON = `{
 }`
 
 func projectInitiativeLinksPayload(hasNextPage bool, links ...string) string {
-	nodes := ""
-	for index, link := range links {
-		if index > 0 {
-			nodes += ","
-		}
-		nodes += link
-	}
-	next := "false"
-	if hasNextPage {
-		next = "true"
-	}
-
-	return `{"project":{"id":"project-id","name":"fixture","initiativeToProjects":{"nodes":[` + nodes +
-		`],"pageInfo":{"hasNextPage":` + next + `,"endCursor":"cursor-1"}}}}`
+	return `{"project":{"id":"project-id","name":"fixture","initiativeToProjects":{"nodes":[` +
+		strings.Join(links, ",") +
+		`],"pageInfo":{"hasNextPage":` + strconv.FormatBool(hasNextPage) + `,"endCursor":"cursor-1"}}}}`
 }
 
 func otherInitiativeLinks(count int) []string {
@@ -58,37 +49,62 @@ func linkRequest() ProjectInitiativeLinkRequest {
 	return ProjectInitiativeLinkRequest{ProjectID: "project-id", InitiativeID: "created-initiative-id"}
 }
 
-func Test_LinkProjectInitiative_creates_link_with_sort_order(t *testing.T) {
-	responses := projectInitiativeResponses("org-id", projectInitiativeLinksPayload(false))
-	responses["InitiativeToProjectCreate"] = `{"initiativeToProjectCreate":{"success":true,"initiativeToProject":` +
-		projectInitiativeLinkJSON + `}}`
-	recorder := &recordingGraphQLClient{inner: projectWriteFakeClient(responses)}
-	sortOrder := 2.5
+func linkRequestWithSortOrder(sortOrder float64) ProjectInitiativeLinkRequest {
 	request := linkRequest()
 	request.SortOrder = &sortOrder
 
-	link, err := LinkProjectInitiative(context.Background(), recorder, matchingTarget(), request)
+	return request
+}
 
-	require.NoError(t, err)
-	require.Equal(t, "link-id", link.ID)
-	require.Equal(t, "created-initiative-id", link.InitiativeID)
-	require.JSONEq(
-		t,
-		`{"input":{"id":null,"initiativeId":"created-initiative-id","projectId":"project-id","sortOrder":2.5}}`,
-		string(recorder.variablesFor(t, "InitiativeToProjectCreate")),
-	)
+func Test_LinkProjectInitiative_creates_link_sending_only_given_fields(t *testing.T) {
+	cases := map[string]struct {
+		request ProjectInitiativeLinkRequest
+		input   string
+	}{
+		"with sort order": {
+			request: linkRequestWithSortOrder(2.5),
+			input:   `{"input":{"initiativeId":"created-initiative-id","projectId":"project-id","sortOrder":2.5}}`,
+		},
+		"without sort order": {
+			request: linkRequest(),
+			input:   `{"input":{"initiativeId":"created-initiative-id","projectId":"project-id"}}`,
+		},
+	}
+	for name, testCase := range cases {
+		t.Run(name, func(t *testing.T) {
+			responses := projectInitiativeResponses("org-id", projectInitiativeLinksPayload(false))
+			responses["InitiativeToProjectCreate"] = `{"initiativeToProjectCreate":{"success":true,"initiativeToProject":` +
+				projectInitiativeLinkJSON + `}}`
+			recorder := &recordingGraphQLClient{inner: projectWriteFakeClient(responses)}
+
+			link, err := LinkProjectInitiative(context.Background(), recorder, matchingTarget(), testCase.request)
+
+			require.NoError(t, err)
+			require.Equal(t, "link-id", link.ID)
+			require.Equal(t, "created-initiative-id", link.InitiativeID)
+			require.JSONEq(t, testCase.input, string(recorder.variablesFor(t, "InitiativeToProjectCreate")))
+		})
+	}
 }
 
 func Test_LinkProjectInitiative_returns_existing_link_without_creating(t *testing.T) {
-	recorder := &recordingGraphQLClient{inner: projectWriteFakeClient(
-		projectInitiativeResponses("org-id", projectInitiativeLinksPayload(false, projectInitiativeLinkJSON)),
-	)}
+	cases := map[string]ProjectInitiativeLinkRequest{
+		"no sort order":       linkRequest(),
+		"matching sort order": linkRequestWithSortOrder(2.5),
+	}
+	for name, request := range cases {
+		t.Run(name, func(t *testing.T) {
+			recorder := &recordingGraphQLClient{inner: projectWriteFakeClient(
+				projectInitiativeResponses("org-id", projectInitiativeLinksPayload(false, projectInitiativeLinkJSON)),
+			)}
 
-	link, err := LinkProjectInitiative(context.Background(), recorder, matchingTarget(), linkRequest())
+			link, err := LinkProjectInitiative(context.Background(), recorder, matchingTarget(), request)
 
-	require.NoError(t, err)
-	require.Equal(t, "link-id", link.ID)
-	require.Zero(t, recorder.countOf("InitiativeToProjectCreate"))
+			require.NoError(t, err)
+			require.Equal(t, "link-id", link.ID)
+			require.Zero(t, recorder.countOf("InitiativeToProjectCreate"))
+		})
+	}
 }
 
 func Test_UnlinkProjectInitiative_deletes_the_live_link(t *testing.T) {
@@ -109,21 +125,49 @@ func Test_UnlinkProjectInitiative_deletes_the_live_link(t *testing.T) {
 	require.JSONEq(t, `{"id":"link-id"}`, string(recorder.variablesFor(t, "InitiativeToProjectDelete")))
 }
 
+type projectInitiativeWrite func(context.Context, *recordingGraphQLClient, config.Target, ProjectInitiativeLinkRequest) error
+
+func linkWrite(
+	ctx context.Context, recorder *recordingGraphQLClient, target config.Target, request ProjectInitiativeLinkRequest,
+) error {
+	_, err := LinkProjectInitiative(ctx, recorder, target, request)
+	return err
+}
+
+func unlinkWrite(
+	ctx context.Context, recorder *recordingGraphQLClient, target config.Target, request ProjectInitiativeLinkRequest,
+) error {
+	_, err := UnlinkProjectInitiative(ctx, recorder, target, request)
+	return err
+}
+
 func Test_ProjectInitiativeWrites_refuse_before_any_mutation(t *testing.T) {
 	otherProject := map[string]string{
 		"project": `{"project":` + projectJSON(projectFixture{ID: "other-project", Name: "other", Status: "Backlog"}) + `}`,
 	}
+	unresolvedTeam := matchingTarget()
+	unresolvedTeam.TeamKey, unresolvedTeam.TeamID = "WRONG", "wrong-id"
 	cases := []struct {
 		name      string
 		responses map[string]string
+		target    *config.Target
 		request   ProjectInitiativeLinkRequest
 		want      error
+		contains  string
 	}{
 		{
 			name:      "missing initiative id",
 			responses: map[string]string{},
 			request:   ProjectInitiativeLinkRequest{ProjectID: "project-id"},
 			want:      ErrWriteInvalid,
+			contains:  "project id and initiative id are required",
+		},
+		{
+			name:      "pinned team does not resolve",
+			responses: projectInitiativeResponses("org-id", projectInitiativeLinksPayload(false)),
+			target:    &unresolvedTeam,
+			request:   linkRequest(),
+			want:      ErrTargetMismatch,
 		},
 		{
 			name:      "project outside the pinned project",
@@ -138,35 +182,46 @@ func Test_ProjectInitiativeWrites_refuse_before_any_mutation(t *testing.T) {
 			want:      ErrTargetMismatch,
 		},
 		{
-			name:      "more links than one page without a match",
-			responses: projectInitiativeResponses("org-id", projectInitiativeLinksPayload(true, otherInitiativeLinks(defaultListPageSize)...)),
-			request:   linkRequest(),
-			want:      ErrWriteInvalid,
+			name: "more links than one page without a match",
+			responses: projectInitiativeResponses(
+				"org-id", projectInitiativeLinksPayload(true, otherInitiativeLinks(defaultListPageSize)...),
+			),
+			request:  linkRequest(),
+			want:     ErrWriteInvalid,
+			contains: "more than 250 initiative links",
 		},
 	}
-	writes := map[string]func(ProjectInitiativeLinkRequest, *recordingGraphQLClient) error{
-		"link": func(request ProjectInitiativeLinkRequest, recorder *recordingGraphQLClient) error {
-			_, err := LinkProjectInitiative(context.Background(), recorder, matchingTarget(), request)
-			return err
-		},
-		"unlink": func(request ProjectInitiativeLinkRequest, recorder *recordingGraphQLClient) error {
-			_, err := UnlinkProjectInitiative(context.Background(), recorder, matchingTarget(), request)
-			return err
-		},
-	}
+	writes := map[string]projectInitiativeWrite{"link": linkWrite, "unlink": unlinkWrite}
 	for _, testCase := range cases {
 		for writeName, write := range writes {
 			t.Run(writeName+" "+testCase.name, func(t *testing.T) {
 				recorder := &recordingGraphQLClient{inner: projectWriteFakeClient(testCase.responses)}
+				target := matchingTarget()
+				if testCase.target != nil {
+					target = *testCase.target
+				}
 
-				err := write(testCase.request, recorder)
+				err := write(context.Background(), recorder, target, testCase.request)
 
 				require.ErrorIs(t, err, testCase.want)
+				require.ErrorContains(t, err, testCase.contains)
 				require.Zero(t, recorder.countOf("InitiativeToProjectCreate"))
 				require.Zero(t, recorder.countOf("InitiativeToProjectDelete"))
 			})
 		}
 	}
+}
+
+func Test_LinkProjectInitiative_refuses_another_sort_order_for_an_existing_link(t *testing.T) {
+	recorder := &recordingGraphQLClient{inner: projectWriteFakeClient(
+		projectInitiativeResponses("org-id", projectInitiativeLinksPayload(false, projectInitiativeLinkJSON)),
+	)}
+
+	_, err := LinkProjectInitiative(context.Background(), recorder, matchingTarget(), linkRequestWithSortOrder(5))
+
+	require.ErrorIs(t, err, ErrWriteInvalid)
+	require.ErrorContains(t, err, "already linked to initiative created-initiative-id with sort order 2.5")
+	require.Zero(t, recorder.countOf("InitiativeToProjectCreate"))
 }
 
 func Test_UnlinkProjectInitiative_refuses_when_project_is_not_linked(t *testing.T) {
@@ -182,39 +237,35 @@ func Test_UnlinkProjectInitiative_refuses_when_project_is_not_linked(t *testing.
 }
 
 func Test_ProjectInitiativeWrites_report_mutation_failures(t *testing.T) {
-	cases := []struct {
-		name     string
+	cases := map[string]struct {
+		links    string
 		mutation map[string]string
-		write    func(*recordingGraphQLClient) error
-		want     error
+		write    projectInitiativeWrite
 	}{
-		{
-			name:     "link reports no success",
-			mutation: map[string]string{"InitiativeToProjectCreate": `{"initiativeToProjectCreate":{"success":false,"initiativeToProject":null}}`},
-			write:    linkWith,
-			want:     ErrMutationFailed,
+		"link reports no success": {
+			links: projectInitiativeLinksPayload(false),
+			mutation: map[string]string{
+				"InitiativeToProjectCreate": `{"initiativeToProjectCreate":{"success":false,"initiativeToProject":null}}`,
+			},
+			write: linkWrite,
 		},
-		{
-			name:     "unlink reports no success",
+		"unlink reports no success": {
+			links:    projectInitiativeLinksPayload(false, projectInitiativeLinkJSON),
 			mutation: map[string]string{"InitiativeToProjectDelete": `{"initiativeToProjectDelete":{"success":false}}`},
-			write:    unlinkWith,
-			want:     ErrMutationFailed,
+			write:    unlinkWrite,
 		},
 	}
-	for _, testCase := range cases {
-		t.Run(testCase.name, func(t *testing.T) {
-			links := projectInitiativeLinksPayload(false)
-			if testCase.name == "unlink reports no success" {
-				links = projectInitiativeLinksPayload(false, projectInitiativeLinkJSON)
-			}
-			responses := projectInitiativeResponses("org-id", links)
+	for name, testCase := range cases {
+		t.Run(name, func(t *testing.T) {
+			responses := projectInitiativeResponses("org-id", testCase.links)
 			for operation, payload := range testCase.mutation {
 				responses[operation] = payload
 			}
+			recorder := &recordingGraphQLClient{inner: projectWriteFakeClient(responses)}
 
-			err := testCase.write(&recordingGraphQLClient{inner: projectWriteFakeClient(responses)})
+			err := testCase.write(context.Background(), recorder, matchingTarget(), linkRequest())
 
-			require.ErrorIs(t, err, testCase.want)
+			require.ErrorIs(t, err, ErrMutationFailed)
 		})
 	}
 }
@@ -222,17 +273,17 @@ func Test_ProjectInitiativeWrites_report_mutation_failures(t *testing.T) {
 func Test_ProjectInitiativeWrites_wrap_transport_errors(t *testing.T) {
 	cases := map[string]struct {
 		responses map[string]string
-		write     func(*recordingGraphQLClient) error
+		write     projectInitiativeWrite
 		contains  string
 	}{
 		"link create fails": {
 			responses: projectInitiativeResponses("org-id", projectInitiativeLinksPayload(false)),
-			write:     linkWith,
+			write:     linkWrite,
 			contains:  "link project project-id to initiative created-initiative-id",
 		},
 		"unlink delete fails": {
 			responses: projectInitiativeResponses("org-id", projectInitiativeLinksPayload(false, projectInitiativeLinkJSON)),
-			write:     unlinkWith,
+			write:     unlinkWrite,
 			contains:  "unlink project project-id from initiative created-initiative-id",
 		},
 		"link lookup fails": {
@@ -240,46 +291,25 @@ func Test_ProjectInitiativeWrites_wrap_transport_errors(t *testing.T) {
 				"project":    `{"project":` + projectJSON(projectFixture{ID: "project-id", Name: "fixture", Status: "Backlog"}) + `}`,
 				"initiative": `{"initiative":` + initiativeJSON("org-id") + `}`,
 			},
-			write:    unlinkWith,
+			write:    unlinkWrite,
 			contains: "list project initiative associations project-id",
 		},
 		"initiative lookup fails": {
 			responses: map[string]string{
 				"project": `{"project":` + projectJSON(projectFixture{ID: "project-id", Name: "fixture", Status: "Backlog"}) + `}`,
 			},
-			write:    linkWith,
+			write:    linkWrite,
 			contains: "get initiative created-initiative-id",
 		},
 	}
 	for name, testCase := range cases {
 		t.Run(name, func(t *testing.T) {
-			err := testCase.write(&recordingGraphQLClient{inner: projectWriteFakeClient(testCase.responses)})
+			recorder := &recordingGraphQLClient{inner: projectWriteFakeClient(testCase.responses)}
+
+			err := testCase.write(context.Background(), recorder, matchingTarget(), linkRequest())
 
 			require.ErrorContains(t, err, testCase.contains)
 			require.NotErrorIs(t, err, ErrTargetMismatch)
 		})
 	}
-}
-
-func linkWith(recorder *recordingGraphQLClient) error {
-	_, err := LinkProjectInitiative(context.Background(), recorder, matchingTarget(), linkRequest())
-	return err
-}
-
-func unlinkWith(recorder *recordingGraphQLClient) error {
-	_, err := UnlinkProjectInitiative(context.Background(), recorder, matchingTarget(), linkRequest())
-	return err
-}
-
-func Test_LinkProjectInitiative_refuses_when_pinned_team_does_not_resolve(t *testing.T) {
-	recorder := &recordingGraphQLClient{inner: projectWriteFakeClient(
-		projectInitiativeResponses("org-id", projectInitiativeLinksPayload(false)),
-	)}
-	target := matchingTarget()
-	target.TeamKey, target.TeamID = "WRONG", "wrong-id"
-
-	_, err := LinkProjectInitiative(context.Background(), recorder, target, linkRequest())
-
-	require.ErrorIs(t, err, ErrTargetMismatch)
-	require.Zero(t, recorder.countOf("project"))
 }

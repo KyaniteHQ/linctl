@@ -3,15 +3,17 @@ package client
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/Khan/genqlient/graphql"
 
 	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel"
 	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
 // ProjectInitiativeLinkRequest names the project and Initiative of one
-// Initiative-to-Project association. SortOrder only applies to a new link.
+// Initiative-to-Project association and the optional sort order of the link.
 type ProjectInitiativeLinkRequest struct {
 	ProjectID    string
 	InitiativeID string
@@ -21,7 +23,7 @@ type ProjectInitiativeLinkRequest struct {
 // LinkProjectInitiative adds a project to an Initiative after comparing the
 // project against the pinned target and the Initiative against the pinned
 // organization. A project already linked to the Initiative returns the
-// existing link unchanged.
+// existing link unchanged, and refuses when SortOrder asks for another order.
 func LinkProjectInitiative(
 	ctx context.Context,
 	graphqlClient graphql.Client,
@@ -41,13 +43,20 @@ func (guard *guardedClient) linkProjectInitiative(
 	request ProjectInitiativeLinkRequest,
 ) (InitiativeToProjectSummary, error) {
 	existing, found, err := guard.projectInitiativeLink(ctx, request)
-	if err != nil || found {
-		return existing, err
+	if err != nil {
+		return InitiativeToProjectSummary{}, err
+	}
+	if found {
+		if err := requireLinkSortOrder(existing, request.SortOrder); err != nil {
+			return InitiativeToProjectSummary{}, err
+		}
+
+		return existing, nil
 	}
 
-	created, err := gql.InitiativeToProjectCreate(ctx, guard.graphqlClient, gql.InitiativeToProjectCreateInput{
-		InitiativeId: request.InitiativeID,
-		ProjectId:    request.ProjectID,
+	created, err := gql.InitiativeToProjectCreate(ctx, guard.graphqlClient, gqlmodel.LinearInitiativeToProjectCreateInput{
+		InitiativeID: request.InitiativeID,
+		ProjectID:    request.ProjectID,
 		SortOrder:    request.SortOrder,
 	})
 	if err != nil {
@@ -132,9 +141,21 @@ func newProjectInitiativeGuard(
 	return guard, nil
 }
 
-// projectInitiativeLink finds the live association between the project and
-// the Initiative. It refuses to guess when the project has more links than
-// one page holds.
+func requireLinkSortOrder(link InitiativeToProjectSummary, sortOrder *float64) error {
+	if sortOrder == nil {
+		return nil
+	}
+	current, err := strconv.ParseFloat(link.SortOrder, 64)
+	if err == nil && current == *sortOrder {
+		return nil
+	}
+
+	return fmt.Errorf(
+		"%w: project %s is already linked to initiative %s with sort order %s",
+		ErrWriteInvalid, link.ProjectID, link.InitiativeID, link.SortOrder,
+	)
+}
+
 func (guard *guardedClient) projectInitiativeLink(
 	ctx context.Context,
 	request ProjectInitiativeLinkRequest,

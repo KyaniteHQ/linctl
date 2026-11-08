@@ -237,6 +237,13 @@ type LinearInitiativeCreateInput struct {
 	Status      *string `json:"status,omitempty"`
 }
 
+// LinearInitiativeToProjectCreateInput is the sparse Linear initiativeToProjectCreate payload linctl supports.
+type LinearInitiativeToProjectCreateInput struct {
+	InitiativeID string   `json:"initiativeId"`
+	ProjectID    string   `json:"projectId"`
+	SortOrder    *float64 `json:"sortOrder,omitempty"`
+}
+
 // LinearAgentActivityCreateInput is the sparse Linear agentActivityCreate payload linctl supports.
 type LinearAgentActivityCreateInput struct {
 	AgentSessionID string          `json:"agentSessionId"`
