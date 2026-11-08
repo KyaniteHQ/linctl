@@ -44,7 +44,7 @@ Success is pass/fail:
 
 5. Production-record classification boundary
    - Success: no repo-owned production-record dataset or classification logic is present; generated Linear schema references are external API surface, not linctl-owned production records.
-   - Evidence: `rg -n "production records|classification|classify|record|allowed definition|production" README.md CONTEXT.md docs internal scripts test -S`.
+   - Evidence: `rg -n "production records|classification|classify|record|allowed definition|production" README.md GLOSSARY.md docs internal scripts test -S`.
 
 6. Machine-readable CLI output controls
    - Success: CLI-level commands support compact JSON, JSON field projection, id-only output, quiet success output, fail-on-empty list behavior, deterministic sort/order, and minimal human format.

@@ -158,7 +158,7 @@ OAuth live coverage uses a pre-created Linear OAuth app fixture supplied by envi
 
 ## Code Alignment
 
-- Domain language: `CONTEXT.md`.
+- Domain language: `GLOSSARY.md`.
 - Config and profiles: `internal/config/load.go`.
 - Target resolution and guarded writes: `internal/client/target.go`, `internal/client/write_guard.go`.
 - Transport, retries, and auth failure sentinel: `internal/client/transport.go`.

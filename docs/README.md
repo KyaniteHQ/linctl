@@ -7,7 +7,7 @@
 | [Quickstart](quickstart.md) | Install linctl, authenticate, pin a target, and land a write. About five minutes. |
 | [linctl and the Linear MCP server](why-not-mcp.md) | The token cost, the write boundary, and what MCP does better. |
 | [`../README.md`](../README.md) | What linctl is, the command surface, and the output flags. |
-| [`../CONTEXT.md`](../CONTEXT.md) | The vocabulary. Read this before you name anything in the codebase. |
+| [`../GLOSSARY.md`](../GLOSSARY.md) | The vocabulary. Read this before you name anything in the codebase. |
 
 ## Reference
 

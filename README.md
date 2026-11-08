@@ -317,7 +317,7 @@ genqlient generates `internal/client/internal/gql/generated.go` from
 the result each time that you change an operation.
 
 Contributor workflow and releases: [`CONTRIBUTING.md`](CONTRIBUTING.md).
-Domain vocabulary: [`CONTEXT.md`](CONTEXT.md).
+Domain vocabulary: [`GLOSSARY.md`](GLOSSARY.md).
 All documentation: [`docs/`](docs/README.md).
 How to report a vulnerability: [`SECURITY.md`](SECURITY.md).
 Community expectations: [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).
