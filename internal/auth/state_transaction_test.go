@@ -243,7 +243,8 @@ func Test_withAuthFileLock_cancels_while_waiting_for_process_lock_without_leakin
 	<-started
 	require.Never(t, func() bool {
 		select {
-		case <-result:
+		case err := <-result:
+			result <- err
 			return true
 		default:
 			return false

@@ -18,8 +18,9 @@ the tidy state. `generate-check` verifies the generated GraphQL client, the gene
 references, and the upstream schema and coverage-ledger checks. None of these steps modifies a
 source file.
 
-Every task runs under the Go toolchain that the `toolchain` line of `go.mod` names. The
-Taskfile sets `GOTOOLCHAIN` from that line, so a host with a newer Go builds the pinned
+Every task runs under the Go toolchain that `go.mod` names: its `toolchain` line, or its
+`go` line when `go mod tidy` drops a `toolchain` line equal to it. The Taskfile sets
+`GOTOOLCHAIN` from that version, so a host with a newer Go builds the pinned
 golangci-lint and GoReleaser the same way CI does. The go command downloads that toolchain
 once if the host lacks it.
 

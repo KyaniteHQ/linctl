@@ -5,12 +5,15 @@ vars:
   PKG: ./cmd/linctl
   GOLANGCI_LINT: github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.15.0
   GORELEASER: github.com/goreleaser/goreleaser/v2@v2.20.0
-  # go.mod's toolchain line is the single source of the Go version. CI installs it
+  # go.mod is the single source of the Go version: its toolchain line, or its go line
+  # when go mod tidy drops a toolchain line equal to it. CI installs the same version
   # through .github/actions/go-setup; the env block below pins it for every task, so a
   # newer host Go builds the pinned tools exactly as CI does.
   GO_MOD:
     sh: cat "{{.TASKFILE_DIR}}/go.mod"
-  GO_TOOLCHAIN: '{{regexFind "toolchain go[0-9.]+(rc[0-9]+)?" .GO_MOD | trimPrefix "toolchain "}}'
+  GO_TOOLCHAIN: >-
+    {{regexFind "(?m)^toolchain go[0-9.]+(rc[0-9]+)?" .GO_MOD | trimPrefix "toolchain "
+    | default (regexFind "(?m)^go [0-9.]+(rc[0-9]+)?" .GO_MOD | replace "go " "go")}}
   # Single source of the upstream Linear SDK pin. CI reads the same file, so a
   # refresh bumps one place instead of two.
   LINEAR_SDK_REF:
@@ -300,9 +303,14 @@ tasks:
       - task: goreleaser-check
 
   release-snapshot:
-    desc: Optionally build a local GoReleaser snapshot without publishing
+    desc: Build a GoReleaser snapshot without publishing; pass extra flags after --
     cmds:
-      - go run {{.GORELEASER}} release --snapshot --clean
+      - go run {{.GORELEASER}} release --snapshot --clean {{.CLI_ARGS}}
+
+  release:
+    desc: Publish a GoReleaser release for the current tag (release workflow only)
+    cmds:
+      - go run {{.GORELEASER}} release --clean
 
   ci:
     desc: Run the local CI gate
