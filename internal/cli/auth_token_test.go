@@ -25,7 +25,7 @@ func Test_refreshAuthorizationCodeToken_preserves_refresh_token_when_endpoint_om
 	app := auth.AppConfig{ClientID: "client-id", Scopes: []string{"read"}}
 	previous := auth.TokenState{RefreshToken: "old-refresh-token", Actor: "user"}
 
-	token, err := refreshAuthorizationCodeToken(context.Background(), fakeOAuth, app, previous, requiredScopes(app))
+	token, err := refreshAuthorizationCodeToken(context.Background(), fakeOAuth, app, previous, requiredScopes(app, previous.Actor))
 
 	require.NoError(t, err)
 	require.Equal(t, "old-refresh-token", token.RefreshToken)

@@ -89,7 +89,7 @@ The runtime behavior that reuses a client-credentials access token until expiry 
 _Avoid_: Refresh token, per-command token fetch, endless retry
 
 **Default OAuth Scope Set**:
-The OAuth scopes linctl requests for ordinary read commands and guarded writes without asking for admin-level access.
+The OAuth scopes linctl requests for ordinary read commands and guarded writes without asking for admin-level access. The App Actor's set adds the Initiative scopes Linear requires of an app actor; the User Actor's set does not.
 _Avoid_: Admin scope, all scopes, per-command prompt
 
 **Scope Escalation**:

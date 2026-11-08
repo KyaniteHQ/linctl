@@ -28,6 +28,7 @@ const (
 
 var (
 	defaultOAuthScopes            = []string{"read", "write", "issues:create", "comments:create"}
+	appActorInitiativeScopes      = []string{"initiative:read", "initiative:write"}
 	authDefaultPaths              = auth.DefaultPaths
 	authNow                       = time.Now
 	checkAuthReadiness            = defaultCheckAuthReadiness
@@ -227,7 +228,7 @@ func addAuthStatusCommand(ctx context.Context, root *cobra.Command, options *roo
 				return writeAuthStatus(command, options, newAuthStatusReport(app, refreshed, readiness))
 			}
 			expectedActor := cmp.Or(token.Actor, appActor)
-			requiredTokenScopes := requiredScopes(app)
+			requiredTokenScopes := requiredScopes(app, expectedActor)
 			if authContext.credentialKind == auth.CredentialKindInjectedAccessToken {
 				expectedActor = ""
 				requiredTokenScopes = nil

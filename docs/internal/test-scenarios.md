@@ -1332,8 +1332,8 @@ go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke-infisical 
 The task builds a temp `linctl` binary when `LINCTL_BINARY` is unset, writes an
 isolated `.linctl.toml` from `LINCTL_TEST_*` or `test/integration-config.json`,
 configures OAuth app material from `LINCTL_OAUTH_CLIENT_ID`,
-`LINCTL_OAUTH_REDIRECT_URI`, optional `LINCTL_OAUTH_CLIENT_SECRET`, and
-`LINCTL_OAUTH_SCOPES`, starts a one-shot localhost callback listener from
+`LINCTL_OAUTH_REDIRECT_URI`, and optional `LINCTL_OAUTH_CLIENT_SECRET` without
+saved scopes, so the login requests linctl's default scope set for the actor, starts a one-shot localhost callback listener from
 `LINCTL_OAUTH_REDIRECT_URI`, then runs `linctl auth login --callback -` in that
 temp auth state. The task defaults to user-actor login because that is the
 repeatable authorization-code callback path for an already-installed fixture.

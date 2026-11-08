@@ -152,7 +152,7 @@ func acquireClientCredentialsToken(
 	app auth.AppConfig,
 	timeout time.Duration,
 ) (auth.TokenState, authReadinessReport, error) {
-	scopes := requiredScopes(app)
+	scopes := requiredScopes(app, appActor)
 	token, err := exchangeClientCredentialsToken(ctx, newAuthOAuthClient(timeout), app)
 	if err != nil {
 		return auth.TokenState{}, authReadinessReport{}, err
@@ -258,7 +258,7 @@ func refreshAuthToken(
 		)
 	}
 
-	scopes := requiredScopes(app)
+	scopes := requiredScopes(app, token.Actor)
 	refreshed, err := refreshAuthorizationCodeToken(ctx, newAuthOAuthClient(timeout), app, token, scopes)
 	if err != nil {
 		return auth.TokenState{}, err
@@ -275,13 +275,14 @@ func refreshedAuthReadiness(
 	expectedActor string,
 	timeout time.Duration,
 ) (authReadinessReport, error) {
+	actor := cmp.Or(expectedActor, appActor)
 	return requireLoggedAuthReadiness(ctx, authContext.log(), authReadinessRequest{
 		AccessToken:    token.AccessToken,
 		TokenActor:     token.Actor,
 		TokenScopes:    token.Scopes,
 		ExpectedTarget: authContext.target,
-		ExpectedActor:  cmp.Or(expectedActor, appActor),
-		RequiredScopes: requiredScopes(app),
+		ExpectedActor:  actor,
+		RequiredScopes: requiredScopes(app, actor),
 		Timeout:        timeout,
 	})
 }
@@ -372,7 +373,7 @@ func exchangeClientCredentialsToken(
 	oauthClient authOAuthClient,
 	app auth.AppConfig,
 ) (auth.TokenState, error) {
-	scopes := requiredScopes(app)
+	scopes := requiredScopes(app, appActor)
 	token, err := oauthClient.ClientCredentials(ctx, oauth.ClientCredentialsRequest{
 		ClientID:     app.ClientID,
 		ClientSecret: app.ClientSecret,

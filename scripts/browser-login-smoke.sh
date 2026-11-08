@@ -406,7 +406,6 @@ if ((${#missing[@]} > 0)); then
   exit 2
 fi
 
-scopes="${LINCTL_OAUTH_SCOPES:-read,write,issues:create,comments:create}"
 callback_timeout="${LINCTL_BROWSER_LOGIN_CALLBACK_TIMEOUT:-300}"
 if ! [[ "$callback_timeout" =~ ^[0-9]+$ ]] || ((callback_timeout < 1)); then
   printf 'LINCTL_BROWSER_LOGIN_CALLBACK_TIMEOUT must be a positive integer number of seconds\n' >&2
@@ -572,7 +571,6 @@ read_manual_callback() {
     auth configure
     --client-id "$LINCTL_OAUTH_CLIENT_ID"
     --redirect-uri "$LINCTL_OAUTH_REDIRECT_URI"
-    --scopes "$scopes"
     --quiet
   )
   if [[ -n "${LINCTL_OAUTH_CLIENT_SECRET:-}" ]]; then
