@@ -52,13 +52,8 @@ title="Refresh vendored Linear schema (${SHORT_SHA})"
 
 warning=""
 if [[ "$BREAKING" == "true" ]]; then
-  warning="$(cat <<'EOF'
-## Review carefully
-
-This drift includes removals or field type changes. Additive-only refreshes are usually safe; this one may need operation updates before merge.
-
-EOF
-)"
+  printf -v warning '%s\n\n%s\n\n' "## Review carefully" \
+    "This drift includes removals or field type changes. Additive-only refreshes are usually safe; this one may need operation updates before merge."
 fi
 
 body="$(cat <<EOF
@@ -71,9 +66,7 @@ Automated refresh of the vendored Linear GraphQL schema against \`linear/linear\
 - genqlient client regenerated
 - \`docs/internal/linear-api-coverage.md\` regenerated
 
-${warning}
-
-## Drift report (before refresh)
+${warning}## Drift report (before refresh)
 
 \`\`\`
 ${DRIFT_REPORT}
@@ -81,7 +74,7 @@ ${DRIFT_REPORT}
 
 ## Review
 
-- [ ] \`task ci\` green on this PR
+- [ ] \`go tool task ci\` green on this PR
 - [ ] Removals and type changes called out above checked against \`internal/client/operations\`
 - [ ] New interface cases and changed types in \`generated.go\` checked against the commands that read them
 

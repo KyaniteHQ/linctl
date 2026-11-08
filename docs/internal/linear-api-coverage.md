@@ -56,18 +56,18 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `archivedIntegrations` | getter | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `attachment` | method | generated_operation | local GraphQL operation uses this root |
 | `attachmentIssue` | method | generated_operation | local GraphQL operation uses this root |
-| `attachmentLinkDiscord` | method | blocked_needs_design | mutation needs product and safety design |
-| `attachmentLinkFront` | method | blocked_needs_design | mutation needs product and safety design |
+| `attachmentLinkDiscord` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `attachmentLinkFront` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `attachmentLinkGitHubIssue` | method | blocked_needs_design | attachment-to-GitHub linking mutates third-party integration state; needs explicit integration guard semantics |
-| `attachmentLinkGitHubPR` | method | blocked_needs_design | mutation needs product and safety design |
-| `attachmentLinkGitLabMR` | method | blocked_needs_design | mutation needs product and safety design |
-| `attachmentLinkIntercom` | method | blocked_needs_design | mutation needs product and safety design |
+| `attachmentLinkGitHubPR` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `attachmentLinkGitLabMR` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `attachmentLinkIntercom` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `attachmentLinkJiraIssue` | method | blocked_needs_design | attachment-to-Jira linking mutates third-party integration state; needs explicit integration guard semantics |
-| `attachmentLinkSalesforce` | method | blocked_needs_design | mutation needs product and safety design |
-| `attachmentLinkSlack` | method | blocked_needs_design | mutation needs product and safety design |
-| `attachmentLinkURL` | method | blocked_needs_design | mutation needs product and safety design |
-| `attachmentLinkZendesk` | method | blocked_needs_design | mutation needs product and safety design |
-| `attachmentSyncToSlack` | method | blocked_needs_design | mutation needs product and safety design |
+| `attachmentLinkSalesforce` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `attachmentLinkSlack` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `attachmentLinkURL` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `attachmentLinkZendesk` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `attachmentSyncToSlack` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `attachments` | method | generated_operation | local GraphQL operation uses this root |
 | `attachmentsForURL` | method | generated_operation | local GraphQL operation uses this root |
 | `auditEntries` | method | blocked_needs_design | audit logs can expose actor, IP, country, and request metadata; needs explicit admin/security output model |
@@ -141,16 +141,16 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `customViewHasSubscribers` | method | generated_operation | local GraphQL operation uses this root |
 | `customViews` | method | generated_operation | local GraphQL operation uses this root |
 | `customer` | method | generated_operation | local GraphQL operation uses this root |
-| `customerMerge` | method | blocked_needs_design | mutation needs product and safety design |
+| `customerMerge` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `customerNeed` | method | generated_operation | local GraphQL operation uses this root |
-| `customerNeedCreateFromAttachment` | method | blocked_needs_design | mutation needs product and safety design |
+| `customerNeedCreateFromAttachment` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `customerNeeds` | method | generated_operation | local GraphQL operation uses this root |
 | `customerStatus` | method | generated_operation | local GraphQL operation uses this root |
 | `customerStatuses` | method | generated_operation | local GraphQL operation uses this root |
 | `customerTier` | method | generated_operation | local GraphQL operation uses this root |
 | `customerTiers` | method | generated_operation | local GraphQL operation uses this root |
-| `customerUnsync` | method | blocked_needs_design | mutation needs product and safety design |
-| `customerUpsert` | method | blocked_needs_design | mutation needs product and safety design |
+| `customerUnsync` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `customerUpsert` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `customers` | method | generated_operation | local GraphQL operation uses this root |
 | `cycle` | method | generated_operation | local GraphQL operation uses this root |
 | `cycleShiftAll` | method | blocked_needs_design | bulk Cycle date shifting is a state-changing organization operation that needs target-pinned guard semantics |
@@ -214,10 +214,10 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `documentContentHistory` | method | blocked_needs_design | content, thread, and archive payload reads can expose body/blob data; needs explicit opt-in projection before CLI exposure |
 | `documents` | method | generated_operation | local GraphQL operation uses this root |
 | `emailIntakeAddress` | method | intentionally_excluded | email intake administration sits outside the ordinary agent CLI read surface |
-| `emailIntakeAddressRefreshSesDomainStatus` | method | blocked_needs_design | mutation needs product and safety design |
+| `emailIntakeAddressRefreshSesDomainStatus` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `emailIntakeAddressRotate` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `emailTokenUserAccountAuth` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `emailUnsubscribe` | method | blocked_needs_design | mutation needs product and safety design |
+| `emailUnsubscribe` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `emailUserAccountAuthChallenge` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `emoji` | method | generated_operation | local GraphQL operation uses this root |
 | `emojis` | method | generated_operation | local GraphQL operation uses this root |
@@ -228,8 +228,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `favorites` | method | generated_operation | local GraphQL operation uses this root |
 | `fileUpload` | method | generated_operation | local GraphQL operation uses this root |
 | `googleUserAccountAuth` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `imageUploadFromUrl` | method | blocked_needs_design | mutation needs product and safety design |
-| `importFileUpload` | method | blocked_needs_design | mutation needs product and safety design |
+| `imageUploadFromUrl` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `importFileUpload` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `inboxNotifications` | method | safe_candidate | read operation may fit future CLI coverage |
 | `initiative` | method | generated_operation | local GraphQL operation uses this root |
 | `initiativeAddLabel` | method | blocked_needs_design | initiative label mutation needs initiative target pinning and target-mismatch tests |
@@ -324,26 +324,26 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `issueVcsBranchSearch` | method | generated_operation | local GraphQL operation uses this root |
 | `issues` | method | generated_operation | local GraphQL operation uses this root |
 | `latestReleaseByAccessKey` | getter | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the auth-scoped agent CLI |
-| `logout` | method | blocked_needs_design | mutation needs product and safety design |
+| `logout` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `logoutAllSessions` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `logoutOtherSessions` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `logoutSession` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `notification` | method | generated_operation | local GraphQL operation uses this root |
-| `notificationArchiveAll` | method | blocked_needs_design | mutation needs product and safety design |
-| `notificationMarkReadAll` | method | blocked_needs_design | mutation needs product and safety design |
-| `notificationMarkUnreadAll` | method | blocked_needs_design | mutation needs product and safety design |
-| `notificationSnoozeAll` | method | blocked_needs_design | mutation needs product and safety design |
+| `notificationArchiveAll` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `notificationMarkReadAll` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `notificationMarkUnreadAll` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `notificationSnoozeAll` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `notificationSubscription` | method | generated_operation | local GraphQL operation uses this root |
 | `notificationSubscriptions` | method | generated_operation | local GraphQL operation uses this root |
-| `notificationUnsnoozeAll` | method | blocked_needs_design | mutation needs product and safety design |
+| `notificationUnsnoozeAll` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `notifications` | method | generated_operation | local GraphQL operation uses this root |
 | `organization` | getter | generated_operation | local GraphQL operation uses this root |
 | `organizationDeleteChallenge` | getter | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `organizationExists` | method | generated_operation | local GraphQL operation uses this root |
 | `organizationInvite` | method | intentionally_excluded | organization invite reads can expose invitee and admin metadata outside an agent-safe CLI surface |
 | `organizationInvites` | method | intentionally_excluded | organization invite reads can expose invitee and admin metadata outside an agent-safe CLI surface |
-| `organizationStartTrial` | getter | blocked_needs_design | mutation needs product and safety design |
-| `organizationStartTrialForPlan` | method | blocked_needs_design | mutation needs product and safety design |
+| `organizationStartTrial` | getter | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `organizationStartTrialForPlan` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `project` | method | generated_operation | local GraphQL operation uses this root |
 | `projectAddLabel` | method | generated_operation | local GraphQL operation uses this root |
 | `projectExternalSyncDisable` | method | blocked_needs_design | project external-sync disable changes integration state and needs explicit integration guard semantics |
@@ -366,10 +366,10 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `quotas` | method | safe_candidate | read operation may fit future CLI coverage |
 | `rateLimitStatus` | getter | generated_operation | local GraphQL operation uses this root |
 | `recentReleasesByAccessKey` | method | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the auth-scoped agent CLI |
-| `refreshGoogleSheetsData` | method | blocked_needs_design | mutation needs product and safety design |
+| `refreshGoogleSheetsData` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `release` | method | generated_operation | local GraphQL operation uses this root |
-| `releaseComplete` | method | blocked_needs_design | mutation needs product and safety design |
-| `releaseCompleteByAccessKey` | method | blocked_needs_design | mutation needs product and safety design |
+| `releaseComplete` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `releaseCompleteByAccessKey` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `releaseNote` | method | generated_operation | local GraphQL operation uses this root |
 | `releaseNotes` | method | generated_operation | local GraphQL operation uses this root |
 | `releasePipeline` | method | generated_operation | local GraphQL operation uses this root |
@@ -378,13 +378,13 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `releaseSearch` | method | generated_operation | local GraphQL operation uses this root |
 | `releaseStage` | method | generated_operation | local GraphQL operation uses this root |
 | `releaseStages` | method | generated_operation | local GraphQL operation uses this root |
-| `releaseSync` | method | blocked_needs_design | mutation needs product and safety design |
-| `releaseSyncByAccessKey` | method | blocked_needs_design | mutation needs product and safety design |
-| `releaseUpdateByPipeline` | method | blocked_needs_design | mutation needs product and safety design |
-| `releaseUpdateByPipelineByAccessKey` | method | blocked_needs_design | mutation needs product and safety design |
+| `releaseSync` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `releaseSyncByAccessKey` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `releaseUpdateByPipeline` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `releaseUpdateByPipelineByAccessKey` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `releases` | method | generated_operation | local GraphQL operation uses this root |
-| `resendOrganizationInvite` | method | blocked_needs_design | mutation needs product and safety design |
-| `resendOrganizationInviteByEmail` | method | blocked_needs_design | mutation needs product and safety design |
+| `resendOrganizationInvite` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `resendOrganizationInviteByEmail` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `roadmap` | method | generated_operation | local GraphQL operation uses this root |
 | `roadmapToProject` | method | generated_operation | local GraphQL operation uses this root |
 | `roadmapToProjects` | method | generated_operation | local GraphQL operation uses this root |
@@ -408,9 +408,9 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `templatesForIntegration` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `timeSchedule` | method | generated_operation | local GraphQL operation uses this root |
 | `timeScheduleRefreshIntegrationSchedule` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `timeScheduleUpsertExternal` | method | blocked_needs_design | mutation needs product and safety design |
+| `timeScheduleUpsertExternal` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `timeSchedules` | method | generated_operation | local GraphQL operation uses this root |
-| `trackAnonymousEvent` | method | blocked_needs_design | mutation needs product and safety design |
+| `trackAnonymousEvent` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `triageResponsibilities` | method | generated_operation | local GraphQL operation uses this root |
 | `triageResponsibility` | method | generated_operation | local GraphQL operation uses this root |
 | `unarchiveCustomerNeed` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -522,7 +522,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `agentSkills` | `AgentSkillConnection!` | generated_operation | root field used by local GraphQL operation |
 | `applicationInfo` | `Application!` | generated_operation | root field used by local GraphQL operation |
 | `archivedIntegrations` | `[ArchivedIntegrationPayload!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `archivedTeams` | `[Team!]!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `archivedTeams` | `[Team!]!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `attachment` | `Attachment!` | generated_operation | root field used by local GraphQL operation |
 | `attachmentIssue` | `Issue!` | generated_operation | root field used by local GraphQL operation |
 | `attachmentSources` | `AttachmentSourcesPayload!` | safe_candidate | read operation may fit future CLI coverage |
@@ -694,9 +694,9 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Field | Return type | Status | Evidence |
 | --- | --- | --- | --- |
 | `agentActivityCreate` | `AgentActivityPayload!` | generated_operation | root field used by local GraphQL operation |
-| `agentActivityCreatePrompt` | `AgentActivityPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `agentActivityCreatePrompt` | `AgentActivityPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `agentActivityDeleteQueued` | `AgentActivityPayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `agentActivitySendQueued` | `AgentActivityPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `agentActivitySendQueued` | `AgentActivityPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `agentSessionCreate` | `AgentSessionPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSessionCreateOnComment` | `AgentSessionPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSessionCreateOnIssue` | `AgentSessionPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -709,18 +709,18 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `airbyteIntegrationConnect` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `attachmentCreate` | `AttachmentPayload!` | generated_operation | root field used by local GraphQL operation |
 | `attachmentDelete` | `DeletePayload!` | generated_operation | root field used by local GraphQL operation |
-| `attachmentLinkDiscord` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `attachmentLinkFront` | `FrontAttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `attachmentLinkDiscord` | `AttachmentPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `attachmentLinkFront` | `FrontAttachmentPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `attachmentLinkGitHubIssue` | `AttachmentPayload!` | blocked_needs_design | attachment-to-GitHub linking mutates third-party integration state; needs explicit integration guard semantics |
-| `attachmentLinkGitHubPR` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `attachmentLinkGitLabMR` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `attachmentLinkIntercom` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `attachmentLinkGitHubPR` | `AttachmentPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `attachmentLinkGitLabMR` | `AttachmentPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `attachmentLinkIntercom` | `AttachmentPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `attachmentLinkJiraIssue` | `AttachmentPayload!` | blocked_needs_design | attachment-to-Jira linking mutates third-party integration state; needs explicit integration guard semantics |
-| `attachmentLinkSalesforce` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `attachmentLinkSlack` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `attachmentLinkURL` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `attachmentLinkZendesk` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `attachmentSyncToSlack` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `attachmentLinkSalesforce` | `AttachmentPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `attachmentLinkSlack` | `AttachmentPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `attachmentLinkURL` | `AttachmentPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `attachmentLinkZendesk` | `AttachmentPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `attachmentSyncToSlack` | `AttachmentPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `attachmentUpdate` | `AttachmentPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `commentCreate` | `CommentPayload!` | generated_operation | root field used by local GraphQL operation |
 | `commentDelete` | `DeletePayload!` | generated_operation | root field used by local GraphQL operation |
@@ -738,10 +738,10 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `customViewUpdate` | `CustomViewPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `customerCreate` | `CustomerPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `customerDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `customerMerge` | `CustomerPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `customerMerge` | `CustomerPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `customerNeedArchive` | `CustomerNeedArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `customerNeedCreate` | `CustomerNeedPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `customerNeedCreateFromAttachment` | `CustomerNeedPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `customerNeedCreateFromAttachment` | `CustomerNeedPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `customerNeedDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `customerNeedUnarchive` | `CustomerNeedArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `customerNeedUpdate` | `CustomerNeedUpdatePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -751,9 +751,9 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `customerTierCreate` | `CustomerTierPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `customerTierDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `customerTierUpdate` | `CustomerTierPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `customerUnsync` | `CustomerPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `customerUnsync` | `CustomerPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `customerUpdate` | `CustomerPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `customerUpsert` | `CustomerPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `customerUpsert` | `CustomerPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `cycleArchive` | `CycleArchivePayload!` | generated_operation | root field used by local GraphQL operation |
 | `cycleCreate` | `CyclePayload!` | generated_operation | root field used by local GraphQL operation |
 | `cycleShiftAll` | `CyclePayload!` | blocked_needs_design | bulk Cycle date shifting is a state-changing organization operation that needs target-pinned guard semantics |
@@ -765,11 +765,11 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `documentUpdate` | `DocumentPayload!` | generated_operation | root field used by local GraphQL operation |
 | `emailIntakeAddressCreate` | `EmailIntakeAddressPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `emailIntakeAddressDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `emailIntakeAddressRefreshSesDomainStatus` | `EmailIntakeAddressRefreshSesDomainStatusPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `emailIntakeAddressRefreshSesDomainStatus` | `EmailIntakeAddressRefreshSesDomainStatusPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `emailIntakeAddressRotate` | `EmailIntakeAddressPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `emailIntakeAddressUpdate` | `EmailIntakeAddressPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `emailTokenUserAccountAuth` | `AuthResolverResponse!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `emailUnsubscribe` | `EmailUnsubscribePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `emailUnsubscribe` | `EmailUnsubscribePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `emailUserAccountAuthChallenge` | `EmailUserAccountAuthChallengeResponse!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `emojiCreate` | `EmojiPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `emojiDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
@@ -788,8 +788,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `gitAutomationTargetBranchDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `gitAutomationTargetBranchUpdate` | `GitAutomationTargetBranchPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `googleUserAccountAuth` | `AuthResolverResponse!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `imageUploadFromUrl` | `ImageUploadFromUrlPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `importFileUpload` | `UploadPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `imageUploadFromUrl` | `ImageUploadFromUrlPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `importFileUpload` | `UploadPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `inboxNotificationUpdate` | `InboxNotificationUpdatePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `initiativeAddLabel` | `InitiativePayload!` | blocked_needs_design | initiative label mutation needs initiative target pinning and target-mismatch tests |
 | `initiativeArchive` | `InitiativeArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -919,23 +919,23 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `issueUnsubscribe` | `IssuePayload!` | blocked_needs_design | issue unsubscribe changes notification state and needs target-pinned guard semantics |
 | `issueUpdate` | `IssuePayload!` | generated_operation | root field used by local GraphQL operation |
 | `jiraIntegrationConnect` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `joinOrganizationFromOnboarding` | `CreateOrJoinOrganizationResponse!` | blocked_needs_design | mutation needs product and safety design |
-| `leaveOrganization` | `CreateOrJoinOrganizationResponse!` | blocked_needs_design | mutation needs product and safety design |
-| `logout` | `LogoutResponse!` | blocked_needs_design | mutation needs product and safety design |
+| `joinOrganizationFromOnboarding` | `CreateOrJoinOrganizationResponse!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `leaveOrganization` | `CreateOrJoinOrganizationResponse!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `logout` | `LogoutResponse!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `logoutAllSessions` | `LogoutResponse!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `logoutOtherSessions` | `LogoutResponse!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `logoutSession` | `LogoutResponse!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `notificationArchive` | `NotificationArchivePayload!` | generated_operation | root field used by local GraphQL operation |
-| `notificationArchiveAll` | `NotificationBatchActionPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `notificationArchiveAll` | `NotificationBatchActionPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `notificationCategoryChannelSubscriptionUpdate` | `UserSettingsPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `notificationMarkReadAll` | `NotificationBatchActionPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `notificationMarkUnreadAll` | `NotificationBatchActionPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `notificationSnoozeAll` | `NotificationBatchActionPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `notificationMarkReadAll` | `NotificationBatchActionPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `notificationMarkUnreadAll` | `NotificationBatchActionPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `notificationSnoozeAll` | `NotificationBatchActionPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `notificationSubscriptionCreate` | `NotificationSubscriptionPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `notificationSubscriptionDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `notificationSubscriptionUpdate` | `NotificationSubscriptionPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `notificationUnarchive` | `NotificationArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `notificationUnsnoozeAll` | `NotificationBatchActionPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `notificationUnsnoozeAll` | `NotificationBatchActionPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `notificationUpdate` | `NotificationPayload!` | generated_operation | root field used by local GraphQL operation |
 | `oauthApplicationArchive` | `OAuthApplicationArchivePayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `oauthApplicationCreate` | `OAuthApplicationCreatePayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -945,28 +945,28 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `organizationCancelDelete` | `OrganizationCancelDeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `organizationDelete` | `OrganizationDeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `organizationDeleteChallenge` | `OrganizationDeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `organizationDomainClaim` | `OrganizationDomainSimplePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `organizationDomainClaim` | `OrganizationDomainSimplePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `organizationDomainCreate` | `OrganizationDomainPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `organizationDomainDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `organizationDomainUpdate` | `OrganizationDomainPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `organizationDomainVerify` | `OrganizationDomainPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `organizationDomainVerify` | `OrganizationDomainPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `organizationInviteCreate` | `OrganizationInvitePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `organizationInviteDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `organizationInviteUpdate` | `OrganizationInvitePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `organizationStartTrial` | `OrganizationStartTrialPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `organizationStartTrialForPlan` | `OrganizationStartTrialPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `organizationStartTrial` | `OrganizationStartTrialPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `organizationStartTrialForPlan` | `OrganizationStartTrialPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `organizationUpdate` | `OrganizationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `originInstallationCancel` | `OriginInstallationCancelPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `partnerApplicationCreate` | `ContactPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `partnerOfferRedeem` | `PartnerOfferRedeemPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `passkeyLoginFinish` | `AuthResolverResponse!` | blocked_needs_design | mutation needs product and safety design |
-| `passkeyLoginStart` | `PasskeyLoginStartResponse!` | blocked_needs_design | mutation needs product and safety design |
+| `partnerOfferRedeem` | `PartnerOfferRedeemPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `passkeyLoginFinish` | `AuthResolverResponse!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `passkeyLoginStart` | `PasskeyLoginStartResponse!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectAddLabel` | `ProjectPayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectArchive` | `ProjectArchivePayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectCreate` | `ProjectPayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectCreateSlackChannel` | `ProjectPayload!` | blocked_needs_design | project Slack channel creation mutates chat integration state and needs explicit integration guard semantics |
 | `projectDelete` | `ProjectArchivePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `projectDismissSlackChannelCreationFailure` | `ProjectPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `projectDismissSlackChannelCreationFailure` | `ProjectPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectExternalSyncDisable` | `ProjectPayload!` | blocked_needs_design | project external-sync disable changes integration state and needs explicit integration guard semantics |
 | `projectLabelCreate` | `ProjectLabelPayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectLabelDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
@@ -997,10 +997,10 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `pushSubscriptionDelete` | `PushSubscriptionPayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `reactionCreate` | `ReactionPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `reactionDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `refreshGoogleSheetsData` | `IntegrationPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `refreshGoogleSheetsData` | `IntegrationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `releaseArchive` | `ReleaseArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `releaseComplete` | `ReleasePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `releaseCompleteByAccessKey` | `AccessKeyReleasePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `releaseComplete` | `ReleasePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `releaseCompleteByAccessKey` | `AccessKeyReleasePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `releaseCreate` | `ReleasePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `releaseDelete` | `ReleaseArchivePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `releaseNoteCreate` | `ReleaseNotePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -1015,14 +1015,14 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `releaseStageCreate` | `ReleaseStagePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `releaseStageUnarchive` | `ReleaseStageArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `releaseStageUpdate` | `ReleaseStagePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `releaseSync` | `ReleasePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `releaseSyncByAccessKey` | `AccessKeyReleasePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `releaseSync` | `ReleasePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `releaseSyncByAccessKey` | `AccessKeyReleasePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `releaseUnarchive` | `ReleaseArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `releaseUpdate` | `ReleasePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `releaseUpdateByPipeline` | `ReleasePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `releaseUpdateByPipelineByAccessKey` | `AccessKeyReleasePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `resendOrganizationInvite` | `DeletePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `resendOrganizationInviteByEmail` | `DeletePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `releaseUpdateByPipeline` | `ReleasePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `releaseUpdateByPipelineByAccessKey` | `AccessKeyReleasePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `resendOrganizationInvite` | `DeletePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `resendOrganizationInviteByEmail` | `DeletePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `roadmapArchive` | `RoadmapArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `roadmapCreate` | `RoadmapPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `roadmapDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
@@ -1048,8 +1048,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `timeScheduleDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `timeScheduleRefreshIntegrationSchedule` | `TimeSchedulePayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `timeScheduleUpdate` | `TimeSchedulePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `timeScheduleUpsertExternal` | `TimeSchedulePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `trackAnonymousEvent` | `EventTrackingPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `timeScheduleUpsertExternal` | `TimeSchedulePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `trackAnonymousEvent` | `EventTrackingPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `triageResponsibilityCreate` | `TriageResponsibilityPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `triageResponsibilityDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `triageResponsibilityUpdate` | `TriageResponsibilityPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
