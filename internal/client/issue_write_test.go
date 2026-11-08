@@ -414,8 +414,6 @@ func matchingTarget() config.Target {
 	}
 }
 
-// teamOnlyTarget is a pinned target without a project, exercising the
-// project-unpinned guard mode (CONTEXT.md: project_id optional).
 func teamOnlyTarget() config.Target {
 	return config.Target{
 		OrgID:   "org-id",
