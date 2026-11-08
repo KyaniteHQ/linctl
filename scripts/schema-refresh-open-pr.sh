@@ -52,13 +52,8 @@ title="Refresh vendored Linear schema (${SHORT_SHA})"
 
 warning=""
 if [[ "$BREAKING" == "true" ]]; then
-  warning="$(cat <<'EOF'
-## Review carefully
-
-This drift includes removals or field type changes. Additive-only refreshes are usually safe; this one may need operation updates before merge.
-
-EOF
-)"
+  printf -v warning '%s\n\n%s\n\n' "## Review carefully" \
+    "This drift includes removals or field type changes. Additive-only refreshes are usually safe; this one may need operation updates before merge."
 fi
 
 body="$(cat <<EOF
@@ -77,16 +72,11 @@ ${warning}## Drift report (before refresh)
 ${DRIFT_REPORT}
 \`\`\`
 
-## Safety
+## Review
 
-- [x] Reads stay free; no write-path changes in this refresh
-- [x] Operations remain schema-aligned (client regenerated from the new snapshot)
-- [x] No token value is printed or logged
-
-## Checks
-
-- [ ] \`task ci\` green on this PR
-- [ ] Human review of removals / type changes if called out above
+- [ ] \`go tool task ci\` green on this PR
+- [ ] Removals and type changes called out above checked against \`internal/client/operations\`
+- [ ] New interface cases and changed types in \`generated.go\` checked against the commands that read them
 
 Opened by the \`schema-refresh\` workflow. Merge closes the nightly schema-drift failure loop.
 EOF

@@ -177,15 +177,12 @@ func classifyLoose(name string, kind string) (string, string) {
 		return "blocked_needs_design", "destructive or access-changing operation needs explicit safety model"
 	case strings.Contains(lower, "admin"),
 		strings.Contains(lower, "auth"),
-		strings.Contains(lower, "oauth"),
 		strings.Contains(lower, "session"),
 		strings.Contains(lower, "webhook"),
 		strings.Contains(lower, "integration"):
 		return "intentionally_excluded", "admin/auth/internal integration surface outside ordinary agent CLI"
-	case hasWritePrefix(lower):
+	case kind == "mutation":
 		return "blocked_needs_design", "write operation needs guarded target semantics before exposure"
-	case strings.Contains(lower, "resolve"):
-		return "blocked_needs_design", "state-changing operation needs guarded target semantics before exposure"
 	case strings.Contains(lower, "issue"),
 		strings.Contains(lower, "project"),
 		strings.Contains(lower, "cycle"),
@@ -196,9 +193,6 @@ func classifyLoose(name string, kind string) (string, string) {
 		strings.Contains(lower, "comment"):
 		return "accepted_gap", "repo-planned or likely useful CLI domain"
 	default:
-		if kind == "mutation" {
-			return "blocked_needs_design", "mutation needs product and safety design"
-		}
 		return "safe_candidate", "read operation may fit future CLI coverage"
 	}
 }
@@ -216,7 +210,15 @@ var explicitRiskClassifications = map[string]riskClassification{
 	},
 	"emailintakeaddress": {
 		status:    "intentionally_excluded",
-		rationale: "email intake administration sits outside the ordinary agent CLI read surface",
+		rationale: emailIntakeRationale(),
+	},
+	"emailintakeaddresses": {
+		status:    "intentionally_excluded",
+		rationale: emailIntakeRationale(),
+	},
+	"organizationcodinginferencekeys": {
+		status:    "intentionally_excluded",
+		rationale: "workspace inference credential configuration sits outside the ordinary agent CLI read surface",
 	},
 	"emailintakeaddress_sesdomainidentity": {
 		status:    "intentionally_excluded",
@@ -328,6 +330,14 @@ var explicitRiskClassifications = map[string]riskClassification{
 		status: "blocked_needs_design",
 		rationale: "Linear v2 issue import creation starts import workflow state and needs explicit " +
 			"import guard semantics",
+	},
+	"documentshare": {
+		status:    "blocked_needs_design",
+		rationale: "document sharing changes access state and needs target-pinned guard semantics",
+	},
+	"documentunshare": {
+		status:    "blocked_needs_design",
+		rationale: "document unsharing changes access state and needs target-pinned guard semantics",
 	},
 	"issueshare": {
 		status:    "blocked_needs_design",
@@ -489,6 +499,10 @@ func contentPayloadReadRationale() string {
 		"needs explicit opt-in projection before CLI exposure"
 }
 
+func emailIntakeRationale() string {
+	return "email intake administration sits outside the ordinary agent CLI read surface"
+}
+
 func organizationInviteRationale() string {
 	return "organization invite reads can expose invitee and admin metadata " +
 		"outside an agent-safe CLI surface"
@@ -544,23 +558,4 @@ func sdkMutationRootCandidates(name string) []string {
 		}
 	}
 	return candidates
-}
-
-func hasWritePrefix(lowerName string) bool {
-	for _, prefix := range []string{
-		"create",
-		"update",
-		"archive",
-		"delete",
-		"unarchive",
-		"cancel",
-		"mark",
-		"move",
-		"rotate",
-	} {
-		if strings.HasPrefix(lowerName, prefix) || strings.HasSuffix(lowerName, prefix) {
-			return true
-		}
-	}
-	return false
 }
