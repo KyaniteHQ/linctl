@@ -247,33 +247,39 @@ func Test_CreateWorkflowState_reconciles_ambiguous_create_without_replay(t *test
 }
 
 func Test_CreateWorkflowState_returns_conflict_when_reconciled_fields_differ(t *testing.T) {
+	writeErr := errors.New("timeout")
 	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"WorkflowStateCreate": "",
 		"workflowState":       workflowStateGetResponse("Other", "started", "ready items", 3),
-	}).withError(errors.New("timeout"))}
+	}).withError(writeErr)}
 
 	_, err := CreateWorkflowState(context.Background(), recorder, matchingTarget(), WorkflowStateCreateRequest{
 		ID: testWorkflowStateID, Name: "Ready", Type: "unstarted", Color: "#f2c94c",
 	})
 
 	require.ErrorIs(t, err, ErrWriteConflict)
+	require.ErrorIs(t, err, writeErr)
+	require.ErrorContains(t, err, "timeout")
 	require.Equal(t, 1, recorder.countOf("WorkflowStateCreate"))
 	require.Equal(t, 1, recorder.countOf("workflowState"))
 }
 
 func Test_CreateWorkflowState_returns_target_mismatch_when_reconciled_team_differs(t *testing.T) {
+	writeErr := errors.New("timeout")
 	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"WorkflowStateCreate": "",
 		"workflowState": `{"workflowState":` + workflowStateEntityJSON(
 			"Ready", "unstarted", "other-team", "OTHER", "", 1,
 		) + `}`,
-	}).withError(errors.New("timeout"))}
+	}).withError(writeErr)}
 
 	_, err := CreateWorkflowState(context.Background(), recorder, matchingTarget(), WorkflowStateCreateRequest{
 		ID: testWorkflowStateID, Name: "Ready", Type: "unstarted", Color: "#f2c94c",
 	})
 
 	require.ErrorIs(t, err, ErrTargetMismatch)
+	require.ErrorIs(t, err, writeErr)
+	require.ErrorContains(t, err, "timeout")
 	require.Equal(t, 1, recorder.countOf("WorkflowStateCreate"))
 }
 
@@ -309,6 +315,7 @@ func Test_CreateWorkflowState_returns_readback_error_when_reconciliation_fails(t
 	})
 
 	require.ErrorIs(t, err, readErr)
+	require.ErrorIs(t, err, writeErr)
 	require.Equal(t, 1, recorder.countOf("WorkflowStateCreate"))
 	require.Equal(t, 1, recorder.countOf("workflowState"))
 }
@@ -622,10 +629,11 @@ func Test_UpdateWorkflowState_reconciles_ambiguous_update_without_replay(t *test
 }
 
 func Test_UpdateWorkflowState_returns_conflict_when_reconciled_fields_differ(t *testing.T) {
+	writeErr := errors.New("timeout")
 	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"workflowState":       workflowStateGetResponse("Ready", "unstarted", "", 1),
 		"WorkflowStateUpdate": "",
-	}).withError(errors.New("timeout"))}
+	}).withError(writeErr)}
 	name := "Next"
 
 	_, err := UpdateWorkflowState(context.Background(), recorder, matchingTarget(), WorkflowStateUpdateRequest{
@@ -634,6 +642,8 @@ func Test_UpdateWorkflowState_returns_conflict_when_reconciled_fields_differ(t *
 	})
 
 	require.ErrorIs(t, err, ErrWriteConflict)
+	require.ErrorIs(t, err, writeErr)
+	require.ErrorContains(t, err, "timeout")
 	require.Equal(t, 1, recorder.countOf("WorkflowStateUpdate"))
 }
 

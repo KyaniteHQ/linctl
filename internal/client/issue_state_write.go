@@ -69,9 +69,5 @@ func (guard *guardedClient) finishStateWrite(
 		observed.Summary.StateID,
 		observed.Summary.State,
 	)
-	if writeErr != nil {
-		return IssueSummary{}, fmt.Errorf("%w: %w", mismatch, writeErr)
-	}
-
-	return IssueSummary{}, mismatch
+	return IssueSummary{}, withMutationError(mismatch, writeErr)
 }

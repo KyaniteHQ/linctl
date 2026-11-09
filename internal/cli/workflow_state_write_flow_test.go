@@ -8,8 +8,10 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Khan/genqlient/graphql"
 	"github.com/stretchr/testify/require"
 
+	"github.com/KyaniteHQ/linctl/internal/auth"
 	"github.com/KyaniteHQ/linctl/internal/client"
 )
 
@@ -203,4 +205,50 @@ func Test_WorkflowStateCreate_emits_conflict_without_replaying(t *testing.T) {
 	require.ErrorIs(t, err, client.ErrWriteConflict)
 	require.Equal(t, "CONFLICT", errorCode(err))
 	require.Contains(t, stderr.String(), `"error_code":"CONFLICT"`)
+}
+
+type failingOperationClient struct {
+	inner graphql.Client
+	op    string
+	err   error
+}
+
+func (client failingOperationClient) MakeRequest(
+	ctx context.Context,
+	request *graphql.Request,
+	response *graphql.Response,
+) error {
+	if request.OpName == client.op {
+		return client.err
+	}
+
+	return client.inner.MakeRequest(ctx, request, response)
+}
+
+func Test_WorkflowStateUpdate_keeps_conflict_code_when_the_mutation_failed_with_an_auth_error(t *testing.T) {
+	restore := useCommandRuntime(t, failingOperationClient{
+		inner: graphqlPayloadOverride{
+			inner: commandFlowFakeClient{},
+			payloads: map[string]string{
+				"workflowState": `{"workflowState":` + cliWorkflowStateJSON("Ready", "queued work", 2) + `}`,
+			},
+		},
+		op:  "WorkflowStateUpdate",
+		err: auth.WrapError(auth.ErrorCodeReauthRequired, "reauthorize linctl", errors.New("refresh rejected")),
+	})
+	defer restore()
+	var stdout, stderr bytes.Buffer
+	err := execute(
+		context.Background(),
+		BuildInfo{},
+		strings.NewReader(""),
+		&stdout,
+		&stderr,
+		[]string{"workflow-state", "update", cliWorkflowStateID, "--name", "Next"},
+	)
+
+	require.ErrorIs(t, err, client.ErrWriteConflict)
+	require.Equal(t, "CONFLICT", errorCode(err))
+	require.Contains(t, stderr.String(), `"error_code":"CONFLICT"`)
+	require.Contains(t, stderr.String(), "reauthorize linctl")
 }

@@ -26,6 +26,15 @@ type errorEnvelope struct {
 // errorCode maps a command error to a stable machine error_code, preferring the
 // client sentinels (matched through wrapping) over the not-found heuristic.
 func errorCode(err error) string {
+	var reconcileErr *client.ReconcileError
+	if errors.As(err, &reconcileErr) {
+		return errorCode(reconcileErr.Outcome)
+	}
+
+	return sentinelErrorCode(err)
+}
+
+func sentinelErrorCode(err error) string {
 	var authErr *auth.AuthError
 	var tokenErr *auth.TokenEndpointError
 	switch {
