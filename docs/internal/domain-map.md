@@ -70,7 +70,7 @@ Schema backing:
 
 - Types: `AgentSession`, `AgentSessionConnection`, `AgentSessionStatus`
 - Reads: `Query.agentSessions`, `Query.agentSession`
-- Writes: `Mutation.agentSessionCreateExternal`, `Mutation.agentSessionTransitionExternal`, and prompt/sandbox session mutations
+- Writes: `Mutation.agentSessionCreateOnIssue`, `Mutation.agentSessionCreateExternal`, `Mutation.agentSessionTransitionExternal`, and prompt/sandbox session mutations
 - Relevant fields: `AgentSession.id`, `AgentSession.slugId`, `AgentSession.status`, `AgentSession.summary`, `AgentSession.url`, `AgentSession.startedAt`, `AgentSession.endedAt`, `AgentSession.creator`, `AgentSession.appUser`, `AgentSession.issue`, `AgentSession.createdAt`, `AgentSession.updatedAt`
 
 Command coverage:
@@ -79,8 +79,9 @@ Command coverage:
 | --- | --- | --- |
 | `agent-session list` | `Query.agentSessions` | Read-only |
 | `agent-session get` | `Query.agentSession` | Read-only |
+| `agent-session create` | `Mutation.agentSessionCreateOnIssue` | Resource-Scoped Write, additive only: the issue is resolved and compared against the pinned team and pinned project, failing closed on mismatch; the session belongs to the authenticated app user and carries no creator |
 
-Only `agent-session list` and `agent-session get` are implemented in the current CLI. AgentSession reads omit the activity stream, plan, and `sourceMetadata` payloads and expose only session status and identity. AgentSession writes remain deferred until their session and delegation guard model is explicit.
+`agent-session list`, `agent-session get`, and `agent-session create` are implemented in the current CLI. AgentSession reads omit the activity stream, plan, and `sourceMetadata` payloads and expose only session status and identity. Every other AgentSession write remains deferred until its session and delegation guard model is explicit.
 
 ## ExternalUser
 

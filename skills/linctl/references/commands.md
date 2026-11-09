@@ -80,10 +80,24 @@ Flags:
 
 ### linctl agent-session
 
-Read Linear AgentSessions
+Read Linear AgentSessions and start one on an issue
 
 ```
 linctl agent-session
+```
+
+### linctl agent-session create
+
+Start an AgentSession on an issue that is on the pinned target
+
+```
+linctl agent-session create [flags]
+```
+
+Flags:
+
+```
+      --issue string   issue id or identifier to start the session on
 ```
 
 ### linctl agent-session get

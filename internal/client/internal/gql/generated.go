@@ -759,6 +759,188 @@ var AllAgentActivityType = []AgentActivityType{
 	AgentActivityTypeThought,
 }
 
+// AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayload includes the requested fields of the GraphQL type AgentSessionPayload.
+type AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The agent session that was created or updated.
+	AgentSession AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession `json:"agentSession"`
+}
+
+// GetSuccess returns AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayload.Success, and is useful for accessing the field via an interface.
+func (v *AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayload) GetSuccess() bool {
+	return v.Success
+}
+
+// GetAgentSession returns AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayload.AgentSession, and is useful for accessing the field via an interface.
+func (v *AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayload) GetAgentSession() AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession {
+	return v.AgentSession
+}
+
+// AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession includes the requested fields of the GraphQL type AgentSession.
+// The GraphQL type's documentation follows.
+//
+// A session representing an AI coding agent's work on an issue or conversation. Agent sessions track the lifecycle of an agent's engagement, from creation through active work to completion or dismissal. Each session is associated with an agent user (the bot), optionally a human creator, an issue, and a comment thread where the agent posts updates. Sessions contain activities that record the agent's observable steps and can be linked to pull requests created during the work.
+type AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession struct {
+	AgentSessionSummaryFields `json:"-"`
+}
+
+// GetId returns AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession.Id, and is useful for accessing the field via an interface.
+func (v *AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession) GetId() string {
+	return v.AgentSessionSummaryFields.Id
+}
+
+// GetSlugId returns AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession.SlugId, and is useful for accessing the field via an interface.
+func (v *AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession) GetSlugId() string {
+	return v.AgentSessionSummaryFields.SlugId
+}
+
+// GetStatus returns AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession.Status, and is useful for accessing the field via an interface.
+func (v *AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession) GetStatus() AgentSessionStatus {
+	return v.AgentSessionSummaryFields.Status
+}
+
+// GetSummary returns AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession.Summary, and is useful for accessing the field via an interface.
+func (v *AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession) GetSummary() *string {
+	return v.AgentSessionSummaryFields.Summary
+}
+
+// GetUrl returns AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession.Url, and is useful for accessing the field via an interface.
+func (v *AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession) GetUrl() *string {
+	return v.AgentSessionSummaryFields.Url
+}
+
+// GetStartedAt returns AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession.StartedAt, and is useful for accessing the field via an interface.
+func (v *AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession) GetStartedAt() *string {
+	return v.AgentSessionSummaryFields.StartedAt
+}
+
+// GetEndedAt returns AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession.EndedAt, and is useful for accessing the field via an interface.
+func (v *AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession) GetEndedAt() *string {
+	return v.AgentSessionSummaryFields.EndedAt
+}
+
+// GetCreatedAt returns AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession.CreatedAt, and is useful for accessing the field via an interface.
+func (v *AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession) GetCreatedAt() string {
+	return v.AgentSessionSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession) GetUpdatedAt() string {
+	return v.AgentSessionSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession) GetArchivedAt() *string {
+	return v.AgentSessionSummaryFields.ArchivedAt
+}
+
+// GetCreator returns AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession.Creator, and is useful for accessing the field via an interface.
+func (v *AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession) GetCreator() *AgentSessionSummaryFieldsCreatorUser {
+	return v.AgentSessionSummaryFields.Creator
+}
+
+// GetAppUser returns AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession.AppUser, and is useful for accessing the field via an interface.
+func (v *AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession) GetAppUser() AgentSessionSummaryFieldsAppUser {
+	return v.AgentSessionSummaryFields.AppUser
+}
+
+// GetIssue returns AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession.Issue, and is useful for accessing the field via an interface.
+func (v *AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession) GetIssue() *AgentSessionSummaryFieldsIssue {
+	return v.AgentSessionSummaryFields.Issue
+}
+
+func (v *AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.AgentSessionSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalAgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession struct {
+	Id string `json:"id"`
+
+	SlugId string `json:"slugId"`
+
+	Status AgentSessionStatus `json:"status"`
+
+	Summary *string `json:"summary"`
+
+	Url *string `json:"url"`
+
+	StartedAt *string `json:"startedAt"`
+
+	EndedAt *string `json:"endedAt"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Creator *AgentSessionSummaryFieldsCreatorUser `json:"creator"`
+
+	AppUser AgentSessionSummaryFieldsAppUser `json:"appUser"`
+
+	Issue *AgentSessionSummaryFieldsIssue `json:"issue"`
+}
+
+func (v *AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession) __premarshalJSON() (*__premarshalAgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession, error) {
+	var retval __premarshalAgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayloadAgentSession
+
+	retval.Id = v.AgentSessionSummaryFields.Id
+	retval.SlugId = v.AgentSessionSummaryFields.SlugId
+	retval.Status = v.AgentSessionSummaryFields.Status
+	retval.Summary = v.AgentSessionSummaryFields.Summary
+	retval.Url = v.AgentSessionSummaryFields.Url
+	retval.StartedAt = v.AgentSessionSummaryFields.StartedAt
+	retval.EndedAt = v.AgentSessionSummaryFields.EndedAt
+	retval.CreatedAt = v.AgentSessionSummaryFields.CreatedAt
+	retval.UpdatedAt = v.AgentSessionSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.AgentSessionSummaryFields.ArchivedAt
+	retval.Creator = v.AgentSessionSummaryFields.Creator
+	retval.AppUser = v.AgentSessionSummaryFields.AppUser
+	retval.Issue = v.AgentSessionSummaryFields.Issue
+	return &retval, nil
+}
+
+// AgentSessionCreateOnIssueResponse is returned by AgentSessionCreateOnIssue on success.
+type AgentSessionCreateOnIssueResponse struct {
+	// Creates a new agent session on an issue.
+	AgentSessionCreateOnIssue AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayload `json:"agentSessionCreateOnIssue"`
+}
+
+// GetAgentSessionCreateOnIssue returns AgentSessionCreateOnIssueResponse.AgentSessionCreateOnIssue, and is useful for accessing the field via an interface.
+func (v *AgentSessionCreateOnIssueResponse) GetAgentSessionCreateOnIssue() AgentSessionCreateOnIssueAgentSessionCreateOnIssueAgentSessionPayload {
+	return v.AgentSessionCreateOnIssue
+}
+
 // The status of an agent session.
 type AgentSessionStatus string
 
@@ -31849,6 +32031,16 @@ type __AgentActivityCreateInput struct {
 
 // GetInput returns __AgentActivityCreateInput.Input, and is useful for accessing the field via an interface.
 func (v *__AgentActivityCreateInput) GetInput() gqlmodel.LinearAgentActivityCreateInput {
+	return v.Input
+}
+
+// __AgentSessionCreateOnIssueInput is used internally by genqlient
+type __AgentSessionCreateOnIssueInput struct {
+	Input gqlmodel.LinearAgentSessionCreateOnIssueInput `json:"input"`
+}
+
+// GetInput returns __AgentSessionCreateOnIssueInput.Input, and is useful for accessing the field via an interface.
+func (v *__AgentSessionCreateOnIssueInput) GetInput() gqlmodel.LinearAgentSessionCreateOnIssueInput {
 	return v.Input
 }
 
@@ -82503,6 +82695,65 @@ func AgentActivityCreate(
 	}
 
 	data_ = &AgentActivityCreateResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by AgentSessionCreateOnIssue.
+const AgentSessionCreateOnIssue_Operation = `
+mutation AgentSessionCreateOnIssue ($input: AgentSessionCreateOnIssue!) {
+	agentSessionCreateOnIssue(input: $input) {
+		success
+		agentSession {
+			... AgentSessionSummaryFields
+		}
+	}
+}
+fragment AgentSessionSummaryFields on AgentSession {
+	id
+	slugId
+	status
+	summary
+	url
+	startedAt
+	endedAt
+	createdAt
+	updatedAt
+	archivedAt
+	creator {
+		id
+	}
+	appUser {
+		id
+	}
+	issue {
+		id
+		identifier
+	}
+}
+`
+
+func AgentSessionCreateOnIssue(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	input gqlmodel.LinearAgentSessionCreateOnIssueInput,
+) (data_ *AgentSessionCreateOnIssueResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "AgentSessionCreateOnIssue",
+		Query:  AgentSessionCreateOnIssue_Operation,
+		Variables: &__AgentSessionCreateOnIssueInput{
+			Input: input,
+		},
+	}
+
+	data_ = &AgentSessionCreateOnIssueResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

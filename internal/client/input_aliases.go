@@ -74,6 +74,9 @@ type LinearAgentActivityCreateInput = gqlmodel.LinearAgentActivityCreateInput
 // LinearTeamSettingsInput is the client compatibility alias for the GraphQL input model.
 type LinearTeamSettingsInput = gqlmodel.LinearTeamSettingsInput
 
+// LinearAgentSessionCreateOnIssueInput is the client compatibility alias for the GraphQL input model.
+type LinearAgentSessionCreateOnIssueInput = gqlmodel.LinearAgentSessionCreateOnIssueInput
+
 // LinearTeamCreateInput is the client compatibility alias for the GraphQL input model.
 type LinearTeamCreateInput = gqlmodel.LinearTeamCreateInput
 
