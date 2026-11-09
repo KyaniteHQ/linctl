@@ -38,7 +38,7 @@ func Test_GitContextScenarios_resolve_or_report_issue_references(t *testing.T) {
 
 	t.Run("empty git branch and empty jj description are reported", func(t *testing.T) {
 		dir := t.TempDir()
-		runGit(t, dir, "init")
+		runGit(t, dir, "init", "--initial-branch=master")
 		jjPath := filepath.Join(dir, "jj")
 		require.NoError(t, os.WriteFile(jjPath, []byte("#!/usr/bin/env bash\nexit 0\n"), 0o700))
 		t.Setenv("PATH", dir+string(os.PathListSeparator)+os.Getenv("PATH"))
