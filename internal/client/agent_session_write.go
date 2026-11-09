@@ -11,8 +11,7 @@ import (
 )
 
 // CreateAgentSessionOnIssue starts an AgentSession on an issue after resolving
-// the issue and comparing it against the pinned target. The session belongs to
-// the authenticated app user, so Linear sends the app its created event.
+// the issue and comparing it against the pinned target.
 func CreateAgentSessionOnIssue(
 	ctx context.Context,
 	graphqlClient graphql.Client,

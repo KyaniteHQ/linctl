@@ -79,7 +79,7 @@ Command coverage:
 | --- | --- | --- |
 | `agent-session list` | `Query.agentSessions` | Read-only |
 | `agent-session get` | `Query.agentSession` | Read-only |
-| `agent-session create` | `Mutation.agentSessionCreateOnIssue` | Resource-Scoped Write, additive only: the issue is resolved and compared against the pinned team and pinned project, failing closed on mismatch; the session belongs to the authenticated app user and carries no creator |
+| `agent-session create` | `Mutation.agentSessionCreateOnIssue` | Resource-Scoped Write, additive only: the issue is resolved and compared against the pinned team and pinned project, failing closed on mismatch; a session started with an app actor token belongs to the app user and carries no creator |
 
 `agent-session list`, `agent-session get`, and `agent-session create` are implemented in the current CLI. AgentSession reads omit the activity stream, plan, and `sourceMetadata` payloads and expose only session status and identity. Every other AgentSession write remains deferred until its session and delegation guard model is explicit.
 

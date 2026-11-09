@@ -53,6 +53,7 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{args: []string{"--json", "agent-skill", "get", "agent-skill-id"}, keys: []string{"id"}},
 		{args: []string{"--json", "--fields", "id,slug_id,status", "agent-session", "list", "--limit", "1"}, keys: []string{"agent_sessions"}},
 		{args: []string{"--json", "agent-session", "get", "agent-session-id"}, keys: []string{"id"}},
+		{args: []string{"--json", "agent-session", "create", "--issue", "LIT-1"}, keys: []string{"id"}},
 		{args: []string{"--json", "--fields", "id,display_name,last_seen", "external-user", "list", "--limit", "1"}, keys: []string{"external_users"}},
 		{args: []string{"--json", "external-user", "get", "external-user-id"}, keys: []string{"id"}},
 		{args: []string{"--json", "--fields", "type,description", "audit-entry", "types"}, keys: []string{"audit_entry_types"}},
