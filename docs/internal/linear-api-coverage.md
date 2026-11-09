@@ -16,11 +16,11 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 
 | Surface | Total | Covered/exposed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods with generated local operations | 481 | 164 | 481 |
+| Upstream SDK root methods with generated local operations | 481 | 165 | 481 |
 | Upstream Query root fields used by generated local operations | 183 | 115 | 183 |
-| Upstream Mutation root fields used by generated local operations | 391 | 51 | 391 |
-| Local generated Go operations declared in GraphQL files | 319 | 319 | 319 |
-| Public CLI commands from command inventory | 443 | 334 | 443 |
+| Upstream Mutation root fields used by generated local operations | 391 | 52 | 391 |
+| Local generated Go operations declared in GraphQL files | 320 | 320 | 320 |
+| Public CLI commands from command inventory | 444 | 335 | 444 |
 
 ## Upstream SDK Root Methods
 
@@ -31,7 +31,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `agentActivity` | method | generated_operation | local GraphQL operation uses this root |
 | `agentSession` | method | generated_operation | local GraphQL operation uses this root |
 | `agentSessionCreateOnComment` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `agentSessionCreateOnIssue` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
+| `agentSessionCreateOnIssue` | method | generated_operation | local GraphQL operation uses this root |
 | `agentSessionUpdateExternalUrl` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSessions` | method | generated_operation | local GraphQL operation uses this root |
 | `agentSkill` | method | generated_operation | local GraphQL operation uses this root |
@@ -706,7 +706,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `agentActivitySendQueued` | `AgentActivityPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `agentSessionCreate` | `AgentSessionPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSessionCreateOnComment` | `AgentSessionPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `agentSessionCreateOnIssue` | `AgentSessionPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
+| `agentSessionCreateOnIssue` | `AgentSessionPayload!` | generated_operation | root field used by local GraphQL operation |
 | `agentSessionRestartWithDefaultModel` | `AgentSessionPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSessionUpdate` | `AgentSessionPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSessionUpdateExternalUrl` | `AgentSessionPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -1097,6 +1097,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Operation | Kind | Root fields | Status | Evidence |
 | --- | --- | --- | --- | --- |
 | `AgentActivityCreate` | mutation | `agentActivityCreate` | generated | `internal/client/internal/gql/generated.go` |
+| `AgentSessionCreateOnIssue` | mutation | `agentSessionCreateOnIssue` | generated | `internal/client/internal/gql/generated.go` |
 | `AttachmentDelete` | mutation | `attachmentDelete` | generated | `internal/client/internal/gql/generated.go` |
 | `AttachmentLinkURL` | mutation | `attachmentCreate` | generated | `internal/client/internal/gql/generated.go` |
 | `CommentDelete` | mutation | `commentDelete` | generated | `internal/client/internal/gql/generated.go` |
@@ -1444,6 +1445,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | AgentSkill | `agent-skill archive` | `Mutation.agentSkillArchive` | Blocked: destructive command needs explicit AgentSkill safety semantics | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
 | AgentSession | `agent-session list` | `Query.agentSessions` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | AgentSession | `agent-session get` | `Query.agentSession` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
+| AgentSession | `agent-session create` | `Mutation.agentSessionCreateOnIssue` | Resource-Scoped Write, additive only: the issue is resolved and compared against the pinned team and pinned project, failing closed on mismatch; a session started with an app actor token belongs to the app user and carries no creator | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | ExternalUser | `external-user list` | `Query.externalUsers` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | ExternalUser | `external-user get` | `Query.externalUser` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | AuditEntry | `audit-entry types` | `Query.auditEntryTypes` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |

@@ -1257,6 +1257,16 @@ Success is pass/fail:
      `Test_CloseIssue_applies_the_transitions_allowlist_to_the_configured_state`;
      `go test -tags=integration ./internal/client` (compile check only locally), `Test_Integration_issueClose_whenCloseStateConfigured`.
 
+231. AgentActivity create
+   - Success: `linctl agent-activity create AGENT_SESSION_ID --type TYPE ...` emits one typed AgentActivity only after resolving the AgentSession's issue and comparing the pinned target, and refuses an unknown type before any request.
+   - Evidence: `go test ./internal/cli`, `Test_AgentActivityCreate_writes_the_created_activity`, `Test_AgentActivityCreate_refuses_an_unknown_type`;
+     `go test ./internal/client`, `Test_CreateAgentActivity_emits_a_thought_into_a_pinned_session`, `Test_CreateAgentActivity_refuses_a_session_on_another_teams_issue`.
+
+232. AgentSession create
+   - Success: `linctl agent-session create --issue ISSUE` starts an AgentSession on an Issue only after resolving the Issue and comparing the pinned team and project, and sends the resolved Issue id as the only input field.
+   - Evidence: `go test ./internal/cli`, `Test_AgentSessionCreate_writes_the_created_session`, `Test_CommandFlows_print_json_for_read_and_comment_commands`;
+     `go test ./internal/client`, `Test_CreateAgentSessionOnIssue_sends_the_resolved_issue_id`, `Test_CreateAgentSessionOnIssue_refuses_an_issue_outside_the_pinned_target`.
+
 ## Current Outcome
 
 All local scenarios pass under the method above. The complete product suite also passes with

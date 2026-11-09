@@ -73,6 +73,8 @@ func commandFlowAgentPayload(operation string) (string, bool) {
 	switch operation {
 	case "AgentActivityCreate":
 		return `{"agentActivityCreate":{"success":true,"agentActivity":` + commandAgentActivityJSON() + `}}`, true
+	case "AgentSessionCreateOnIssue":
+		return `{"agentSessionCreateOnIssue":{"success":true,"agentSession":` + commandAgentSessionJSON() + `}}`, true
 	default:
 		return "", false
 	}

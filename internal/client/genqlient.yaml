@@ -37,6 +37,8 @@ bindings:
     type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearIssueUpdateInput
   AgentActivityCreateInput:
     type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearAgentActivityCreateInput
+  AgentSessionCreateOnIssue:
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearAgentSessionCreateOnIssueInput
   JSON:
     type: encoding/json.RawMessage
   JSONObject:

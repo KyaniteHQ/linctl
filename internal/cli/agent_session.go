@@ -9,13 +9,13 @@ import (
 )
 
 func addAgentSessionCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addReadListGetCommand(
+	command := addReadListGetCommand(
 		ctx,
 		root,
 		options,
 		readListGetSpec[client.AgentSessionList, client.AgentSessionSummary]{
 			Use:       "agent-session",
-			Short:     "Read Linear AgentSessions",
+			Short:     "Read Linear AgentSessions and start one on an issue",
 			ListShort: "List Linear AgentSessions",
 			LimitHelp: "maximum AgentSessions to return",
 			GetUse:    "get AGENT_SESSION_ID",
@@ -25,6 +25,7 @@ func addAgentSessionCommand(ctx context.Context, root *cobra.Command, options *r
 			WriteItem: writeAgentSession,
 		},
 	)
+	addAgentSessionCreateCommand(ctx, command, options)
 }
 
 func writeAgentSession(command *cobra.Command, options *rootOptions, session client.AgentSessionSummary) error {

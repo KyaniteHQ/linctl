@@ -38,3 +38,12 @@ fragment AgentSessionSummaryFields on AgentSession {
     identifier
   }
 }
+
+mutation AgentSessionCreateOnIssue($input: AgentSessionCreateOnIssue!) {
+  agentSessionCreateOnIssue(input: $input) {
+    success
+    agentSession {
+      ...AgentSessionSummaryFields
+    }
+  }
+}
