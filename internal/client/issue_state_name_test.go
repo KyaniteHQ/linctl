@@ -208,6 +208,7 @@ func Test_CreateIssue_fails_closed_when_created_title_is_ambiguous(t *testing.T)
 
 	require.ErrorIs(t, err, ErrWriteInvalid)
 	require.ErrorContains(t, err, "ambiguous")
+	require.ErrorContains(t, err, "injected IssueCreate failure")
 }
 
 func Test_CreateIssue_fails_closed_when_created_title_page_is_truncated(t *testing.T) {

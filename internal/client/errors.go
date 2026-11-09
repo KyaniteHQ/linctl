@@ -48,3 +48,19 @@ func notFoundError(format string, args ...any) error {
 
 	return fmt.Errorf(format+": %w", args...)
 }
+
+// ReconcileError is the outcome of a readback that followed a failed mutation.
+// Outcome decides the error code; MutationErr is the mutation's own error, such
+// as Linear's FORBIDDEN, which errors.Is and errors.As still reach.
+type ReconcileError struct {
+	Outcome     error
+	MutationErr error
+}
+
+func (err *ReconcileError) Error() string {
+	return err.Outcome.Error() + "; the mutation returned: " + err.MutationErr.Error()
+}
+
+func (err *ReconcileError) Unwrap() []error {
+	return []error{err.Outcome, err.MutationErr}
+}

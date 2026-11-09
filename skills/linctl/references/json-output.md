@@ -190,7 +190,7 @@ linctl never prints a secret value.
 | `team_name` | string | |
 | `pipeline_id` | string | *optional*; writes require this empty |
 
-A `CONFLICT` error names the template id. It never includes raw template data.
+A `CONFLICT` error names the template id. linctl adds no template data to it; when the mutation failed, the text after `; the mutation returned:` is Linear's own error message.
 
 ## Usage
 
@@ -227,5 +227,7 @@ agent can then branch on a stable code instead of a parse of the prose.
 - `AUTH_TARGET_MISMATCH`: OAuth readiness could not prove that the token reaches the pinned target.
 - `AUTH_TARGET_NOT_CONFIGURED`: there is no pinned target. Set `org_id`, `team_key`, and `team_id` in `.linctl.toml`.
 - `INTERNAL`: any other error, such as a config error, an unknown command, or a decode error.
+
+When the mutation itself failed, a reconcile error such as `CONFLICT`, `STATE_MISMATCH`, or `TARGET_MISMATCH` keeps its code and its message ends with `; the mutation returned: <error>`. A `FORBIDDEN` there means the credential may not make this write, so reading again or retrying does not help.
 
 Read the JSON line from stderr. The human-readable line follows it, also on stderr.

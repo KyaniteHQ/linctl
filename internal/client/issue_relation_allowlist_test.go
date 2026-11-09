@@ -379,6 +379,7 @@ func Test_CreateIssueRelation_reconcile_returns_write_error_when_readback_fails(
 
 	require.Error(t, err)
 	require.ErrorContains(t, err, "injected issueRelation failure")
+	require.ErrorContains(t, err, "injected IssueRelationCreate failure")
 }
 
 func Test_CreateIssueRelation_refuses_unreadable_allowed_issue(t *testing.T) {

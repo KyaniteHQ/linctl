@@ -1,9 +1,6 @@
 package client
 
-import (
-	"errors"
-	"fmt"
-)
+import "errors"
 
 func finishReconciledWrite[T any](
 	class MutationRetryClass,
@@ -20,21 +17,25 @@ func finishReconciledWrite[T any](
 			return zero, writeErr
 		}
 
-		return zero, readErr
+		return zero, withMutationError(readErr, writeErr)
 	}
 	if teamErr != nil {
-		return zero, teamErr
+		return zero, withMutationError(teamErr, writeErr)
 	}
 	if !matches {
-		if writeErr != nil {
-			return zero, fmt.Errorf("%w; the mutation returned: %w", conflict, writeErr)
-		}
-
-		return zero, conflict
+		return zero, withMutationError(conflict, writeErr)
 	}
 	if writeErr != nil {
 		return applyMutationRetryClass(class, observed, true, writeErr)
 	}
 
 	return observed, nil
+}
+
+func withMutationError(outcome error, writeErr error) error {
+	if writeErr == nil {
+		return outcome
+	}
+
+	return &ReconcileError{Outcome: outcome, MutationErr: writeErr}
 }

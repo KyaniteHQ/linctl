@@ -213,7 +213,7 @@ func (guard *guardedClient) reconcileMissingCreate(
 ) (IssueSummary, error) {
 	found, ok, err := guard.findCreatedIssue(ctx, request)
 	if errors.Is(err, ErrWriteInvalid) {
-		return IssueSummary{}, err
+		return IssueSummary{}, withMutationError(err, writeErr)
 	}
 	if err != nil {
 		return IssueSummary{}, writeErr
