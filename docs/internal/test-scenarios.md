@@ -1222,9 +1222,10 @@ Success is pass/fail:
      `Test_TemplateWriteCommandFlows_cover_output_modes`.
 
 227. Template and WorkflowState recovery
-   - Success: GraphQL errors, `success: false`, timeouts, and decode failures record one mutation and one exact-id read. Matching readback succeeds. Different fields return `CONFLICT`. A missing id returns the original mutation error. Wrong-team readback returns `TARGET_MISMATCH`. The writer does not replay.
+   - Success: GraphQL errors, `success: false`, timeouts, and decode failures record one mutation and one exact-id read. Matching readback succeeds. Different fields return `CONFLICT`, whose message carries the mutation's own error when the mutation returned one, such as Linear's `FORBIDDEN`. A missing id returns the original mutation error. Wrong-team readback returns `TARGET_MISMATCH`. The writer does not replay.
    - Evidence: `go test ./internal/client`, `Test_CreateWorkflowState_reconciles_ambiguous_create_without_replay`,
      `Test_CreateWorkflowState_returns_conflict_when_reconciled_fields_differ`,
+     `Test_UpdateWorkflowState_returns_conflict_when_reconciled_fields_differ`,
      `Test_CreateWorkflowState_returns_target_mismatch_when_reconciled_team_differs`,
      `Test_CreateWorkflowState_returns_original_error_when_id_is_absent`,
      `Test_CreateTemplate_reconciles_ambiguous_create_without_replay`,

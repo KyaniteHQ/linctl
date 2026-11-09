@@ -257,6 +257,8 @@ func Test_CreateWorkflowState_returns_conflict_when_reconciled_fields_differ(t *
 	})
 
 	require.ErrorIs(t, err, ErrWriteConflict)
+	require.ErrorContains(t, err, "the mutation returned: ")
+	require.ErrorContains(t, err, "timeout")
 	require.Equal(t, 1, recorder.countOf("WorkflowStateCreate"))
 	require.Equal(t, 1, recorder.countOf("workflowState"))
 }
@@ -634,6 +636,8 @@ func Test_UpdateWorkflowState_returns_conflict_when_reconciled_fields_differ(t *
 	})
 
 	require.ErrorIs(t, err, ErrWriteConflict)
+	require.ErrorContains(t, err, "the mutation returned: ")
+	require.ErrorContains(t, err, "timeout")
 	require.Equal(t, 1, recorder.countOf("WorkflowStateUpdate"))
 }
 
