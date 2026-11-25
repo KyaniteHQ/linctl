@@ -2,7 +2,13 @@
 # shellcheck shell=bash
 set -euo pipefail
 
-profile="${1:-/tmp/linctl.cover}"
+if (( $# > 0 )); then
+  profile="$1"
+else
+  profile_dir="$(mktemp -d)"
+  trap 'rm -rf "${profile_dir:?}"' EXIT
+  profile="$profile_dir/linctl.cover"
+fi
 filtered="${profile%.cover}.handwritten.cover"
 
 # Portable replacement for 'mapfile' (absent on the macOS system bash 3.2), so
