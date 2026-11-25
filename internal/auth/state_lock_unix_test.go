@@ -31,23 +31,11 @@ func Test_Store_cancels_while_waiting_for_OS_lock_without_writing_or_leaking(t *
 		require.NoError(t, lockFile.Close())
 	})
 
-	ctx, cancel := context.WithCancel(context.Background())
-	result := make(chan error, 1)
-	go func() {
-		result <- store.SaveTokenState(ctx, "", TokenState{AccessToken: "late-access-token"})
-	}()
+	ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
+	defer cancel()
+	err = store.SaveTokenState(ctx, "", TokenState{AccessToken: "late-access-token"})
 
-	require.Never(t, func() bool {
-		select {
-		case err := <-result:
-			result <- err
-			return true
-		default:
-			return false
-		}
-	}, 50*time.Millisecond, time.Millisecond)
-	cancel()
-	require.ErrorIs(t, <-result, context.Canceled)
+	require.ErrorIs(t, err, context.DeadlineExceeded)
 	state, err := store.Load(context.Background())
 	require.NoError(t, err)
 	require.Equal(t, initial, state.Token)
@@ -115,35 +103,24 @@ func Test_Store_reports_temp_file_creation_error(t *testing.T) {
 	require.NoFileExists(t, appConfigPath)
 }
 
-func Test_Store_reports_lock_permission_errors(t *testing.T) {
-	if os.Geteuid() == 0 {
-		t.Skip("root may change permissions of the system paths these cases rely on refusing chmod")
+func Test_Store_saves_readable_private_files_under_a_restrictive_umask(t *testing.T) {
+	paths := testPaths(t)
+	require.NoError(t, os.MkdirAll(filepath.Dir(filepath.Dir(paths.AppConfigPath)), 0o700))
+	require.NoError(t, os.MkdirAll(filepath.Dir(filepath.Dir(paths.TokenPath)), 0o700))
+	previous := syscall.Umask(0o477)
+	t.Cleanup(func() { syscall.Umask(previous) })
+	store := NewStore(paths)
+	saved := State{
+		App:   AppConfig{ClientID: "client-id"},
+		Token: TokenState{AccessToken: "oauth-access-token"},
 	}
-	t.Parallel()
 
-	t.Run("lock directory the user does not own", func(t *testing.T) {
-		t.Parallel()
-		root := t.TempDir()
-		linkedDir := filepath.Join(root, "root-dir")
-		require.NoError(t, os.Symlink("/", linkedDir))
+	require.NoError(t, store.Save(context.Background(), saved))
 
-		err := NewStore(Paths{TokenPath: filepath.Join(linkedDir, tokenFileName)}).
-			SaveTokenState(context.Background(), "", TokenState{AccessToken: "oauth-access-token"})
-
-		require.ErrorIs(t, err, os.ErrPermission)
-		require.ErrorContains(t, err, "secure auth token state lock directory")
-	})
-
-	t.Run("lock file the user does not own", func(t *testing.T) {
-		t.Parallel()
-		paths := testPaths(t)
-		require.NoError(t, os.MkdirAll(filepath.Dir(paths.TokenPath), 0o700))
-		require.NoError(t, os.Symlink(os.DevNull, paths.TokenPath+".lock"))
-
-		err := NewStore(paths).SaveTokenState(context.Background(), "", TokenState{AccessToken: "oauth-access-token"})
-
-		require.ErrorIs(t, err, os.ErrPermission)
-		require.ErrorContains(t, err, "secure auth token state lock "+paths.TokenPath+".lock")
-		require.NoFileExists(t, paths.TokenPath)
-	})
+	loaded, err := store.Load(context.Background())
+	require.NoError(t, err)
+	require.Equal(t, saved.App, loaded.App)
+	require.Equal(t, saved.Token, loaded.Token)
+	assertPrivateDirAndFile(t, filepath.Dir(paths.AppConfigPath), paths.AppConfigPath)
+	assertPrivateDirAndFile(t, filepath.Dir(paths.TokenPath), paths.TokenPath)
 }

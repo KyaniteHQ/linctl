@@ -200,22 +200,11 @@ func Test_Store_cancels_while_waiting_for_in_process_lock_without_writing_or_lea
 	}()
 	<-holding
 
-	ctx, cancel := context.WithCancel(context.Background())
-	waiterResult := make(chan error, 1)
-	go func() {
-		waiterResult <- store.SaveTokenState(ctx, "", TokenState{AccessToken: "late-access-token"})
-	}()
-	require.Never(t, func() bool {
-		select {
-		case err := <-waiterResult:
-			waiterResult <- err
-			return true
-		default:
-			return false
-		}
-	}, 50*time.Millisecond, time.Millisecond)
-	cancel()
-	require.ErrorIs(t, <-waiterResult, context.Canceled)
+	ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
+	defer cancel()
+	err := store.SaveTokenState(ctx, "", TokenState{AccessToken: "late-access-token"})
+
+	require.ErrorIs(t, err, context.DeadlineExceeded)
 	close(releaseHolder)
 	require.NoError(t, <-holderResult)
 

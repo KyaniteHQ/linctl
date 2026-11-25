@@ -575,9 +575,10 @@ func writeJSON(path string, value any, label string) error {
 			_ = os.Remove(tmpPath) //nolint:errcheck // temp cleanup is best effort after a failed write.
 		}
 	}()
+	chmodErr := chmodIfSupported(tmpPath, 0o600)
 
 	_, writeErr := tmp.Write(data)
-	if err = errors.Join(writeErr, tmp.Sync(), tmp.Close()); err != nil {
+	if err = errors.Join(chmodErr, writeErr, tmp.Sync(), tmp.Close()); err != nil {
 		return fmt.Errorf("write %s %s: %w", label, path, err)
 	}
 	if err = os.Rename(tmpPath, path); err != nil {

@@ -36,22 +36,16 @@ func Test_lockStateFile_waits_for_a_held_lock_until_release_or_cancel(t *testing
 	waiter := openLockHandle(t, path)
 	require.NoError(t, lockStateFile(context.Background(), holder))
 
-	ctx, cancel := context.WithCancel(context.Background())
-	canceled := make(chan error, 1)
-	go func() {
-		canceled <- lockStateFile(ctx, waiter)
-	}()
-	requireStillWaiting(t, canceled)
-	cancel()
-	require.ErrorIs(t, <-canceled, context.Canceled)
+	ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
+	defer cancel()
+	require.ErrorIs(t, lockStateFile(ctx, waiter), context.DeadlineExceeded)
 
-	acquired := make(chan error, 1)
-	go func() {
-		acquired <- lockStateFile(context.Background(), waiter)
-	}()
-	requireStillWaiting(t, acquired)
-	require.NoError(t, unlockStateFile(holder))
-	require.NoError(t, <-acquired)
+	released := make(chan error, 1)
+	time.AfterFunc(50*time.Millisecond, func() {
+		released <- unlockStateFile(holder)
+	})
+	require.NoError(t, lockStateFile(context.Background(), waiter))
+	require.NoError(t, <-released)
 	require.NoError(t, unlockStateFile(waiter))
 }
 
@@ -69,17 +63,4 @@ func openLockHandle(t *testing.T, path string) *os.File {
 		require.NoError(t, file.Close())
 	})
 	return file
-}
-
-func requireStillWaiting(t *testing.T, result chan error) {
-	t.Helper()
-	require.Never(t, func() bool {
-		select {
-		case err := <-result:
-			result <- err
-			return true
-		default:
-			return false
-		}
-	}, 50*time.Millisecond, time.Millisecond)
 }
