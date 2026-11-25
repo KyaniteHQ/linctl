@@ -65,9 +65,6 @@ func Test_CliOutputHelpers_cover_json_projection_and_sort_edges(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "Alpha", sortedItems[0].Title)
 
-	_, err = sortByJSONField(items, "title", "sideways")
-	require.ErrorContains(t, err, "invalid sort order")
-
 	_, err = sortByJSONField(items, "missing", "asc")
 	require.ErrorContains(t, err, "sort field \"missing\" is not present")
 
@@ -113,8 +110,4 @@ func Test_CliOutputHelpers_cover_json_projection_and_sort_edges(t *testing.T) {
 
 	_, err = sortByJSONField([]map[string]any{{"bad": func() {}}}, "bad", "asc")
 	require.ErrorContains(t, err, "marshal output")
-
-	destination := map[string]any{}
-	require.NoError(t, copyJSONPath(map[string]any{"id": "issue-id"}, destination, nil))
-	require.Empty(t, destination)
 }

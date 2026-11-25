@@ -241,14 +241,12 @@ func runUserSettingsThemeCommand(
 			return err
 		}
 		return writeUserSettingsNullableValue(command, options, theme, userSettingsThemeText(name, deviceType, mode))
-	case "custom-sidebar-theme":
+	default:
 		theme, err := client.GetUserSettingsCustomSidebarTheme(ctx, runtime.graphqlClient, deviceType, mode)
 		if err != nil {
 			return err
 		}
 		return writeUserSettingsNullableValue(command, options, theme, userSettingsThemeText(name, deviceType, mode))
-	default:
-		return fmt.Errorf("unknown user settings theme command %q", name)
 	}
 }
 
