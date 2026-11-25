@@ -81,6 +81,7 @@ func Test_CommandFlows_current_issue_prefers_the_pinned_team_key(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			configureTestAuthEnvironment(t)
 			dir := t.TempDir()
 			runGitCommand(t, dir, "init")
 			runGitCommand(t, dir, "checkout", "-b", "omer/abc-3-lit-12-thing")
@@ -266,7 +267,7 @@ func Test_runNextWithPicker_notes_truncated_ranking(t *testing.T) {
 	err := runNextWithPicker(
 		context.Background(),
 		command,
-		&rootOptions{format: "compact"},
+		&rootOptions{},
 		port,
 		nextFlags{dryRun: true, limit: 20},
 	)
@@ -326,7 +327,7 @@ func Test_runNextWithPicker_surfaces_truncated_ranking_note_writer_errors(t *tes
 	err := runNextWithPicker(
 		context.Background(),
 		command,
-		&rootOptions{format: "compact"},
+		&rootOptions{},
 		port,
 		nextFlags{dryRun: true, limit: 20},
 	)
@@ -352,7 +353,7 @@ func Test_runNextWithPicker_reads_and_starts_through_the_port(t *testing.T) {
 	err := runNextWithPicker(
 		context.Background(),
 		command,
-		&rootOptions{format: "compact"},
+		&rootOptions{},
 		port,
 		nextFlags{limit: 7},
 	)

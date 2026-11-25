@@ -541,3 +541,67 @@ func Test_CommandFlows_report_project_milestone_write_writer_errors(t *testing.T
 		})
 	}
 }
+
+func Test_CommandFlows_typed_search_emits_json(t *testing.T) {
+	tests := []struct {
+		name string
+		want string
+	}{
+		{
+			name: "documents",
+			want: `{"documents":[{
+				"id":"search-document-id",
+				"title":"Search spec",
+				"slug_id":"search-spec",
+				"url":"https://linear.app/kyanite/document/search-spec",
+				"parent_type":"team",
+				"parent_id":"team-id",
+				"parent_name":"linctl"
+			}],"total_count":1,"has_next_page":false}`,
+		},
+		{
+			name: "issues",
+			want: `{"issues":[{
+				"id":"search-issue-id",
+				"identifier":"LIT-30",
+				"title":"Search issue",
+				"url":"https://linear.app/kyanite/issue/LIT-30",
+				"team_id":"team-id",
+				"team_key":"LIT",
+				"team_name":"linctl",
+				"state_id":"state-id",
+				"state_name":"Todo",
+				"state_type":"unstarted",
+				"project_id":"project-id",
+				"project_name":"Pinned project"
+			}],"total_count":1,"has_next_page":false}`,
+		},
+		{
+			name: "projects",
+			want: `{"projects":[{
+				"id":"search-project-id",
+				"name":"Search project",
+				"slug_id":"search-project",
+				"url":"https://linear.app/kyanite/project/search-project",
+				"status":{"id":"status-id","name":"Backlog","type":"backlog"},
+				"lead":"Omer",
+				"teams":[{"id":"team-id","key":"LIT","name":"linctl"}]
+			}],"total_count":1,"has_next_page":false}`,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			output := bytes.Buffer{}
+			restore := useCommandRuntime(t, commandFlowFakeClient{})
+			defer restore()
+			command := NewRootCommand(context.Background(), BuildInfo{})
+			command.SetOut(&output)
+			command.SetArgs([]string{"--json", "search", test.name, "agent search"})
+
+			err := command.ExecuteContext(context.Background())
+
+			require.NoError(t, err)
+			require.JSONEq(t, test.want, output.String())
+		})
+	}
+}
