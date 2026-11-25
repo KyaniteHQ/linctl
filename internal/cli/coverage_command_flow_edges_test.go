@@ -565,6 +565,22 @@ func Test_UserSettings_honors_output_modes(t *testing.T) {
 	}
 }
 
+func Test_UserSettings_theme_reports_a_preset_linctl_does_not_know_as_sent(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, payloadGraphQLClient{
+		payload: `{"userSettings":{"theme":{"preset":"aurora","custom":null}}}`,
+	})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"--json", "--compact", "user", "settings", "theme"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Equal(t, `{"preset":"aurora"}`+"\n", output.String())
+}
+
 func Test_UserSettings_prints_none_when_mobile_delivery_is_null(t *testing.T) {
 	output := bytes.Buffer{}
 	restore := useCommandRuntime(t, payloadGraphQLClient{
