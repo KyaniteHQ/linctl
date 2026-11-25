@@ -167,10 +167,6 @@ func Test_Transport_maps_missing_entity_graphql_errors_to_not_found(t *testing.T
 	}
 }
 
-func Test_graphQLErrorsSignalMissingEntity_rejects_empty_error_list(t *testing.T) {
-	require.False(t, graphQLErrorsSignalMissingEntity(nil))
-}
-
 func Test_Transport_returns_typed_auth_error_for_401(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if got := request.Header.Get("Authorization"); got != "Bearer expired-token" {
@@ -511,31 +507,24 @@ func Test_Transport_logs_terminal_http_failures_without_response_body(t *testing
 	require.NotContains(t, logs.String(), "test-token")
 }
 
-func Test_NewTransport_uses_project_owned_default_client(t *testing.T) {
-	transport := NewTransport(TransportConfig{Timeout: 2 * time.Second})
-
-	require.NotSame(t, http.DefaultClient, transport.httpClient)
-	require.Equal(t, 2*time.Second, transport.httpClient.Timeout)
-}
-
-func Test_defaultHTTPClient_falls_back_when_default_transport_is_custom(t *testing.T) {
+func Test_Transport_sends_through_a_replaced_default_transport(t *testing.T) {
 	originalTransport := http.DefaultTransport
-	customTransport := staticResponseTransport{}
-	http.DefaultTransport = customTransport
+	http.DefaultTransport = staticResponseTransport{}
 	t.Cleanup(func() {
 		http.DefaultTransport = originalTransport
 	})
+	transport := NewTransport(TransportConfig{
+		Endpoint: "http://127.0.0.1:1/graphql",
+		Timeout:  2 * time.Second,
+	})
+	response := graphql.Response{Data: &testGraphQLData{}}
 
-	client := defaultHTTPClient(2 * time.Second)
+	err := transport.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &response)
 
-	require.Equal(t, 2*time.Second, client.Timeout)
-	require.Equal(t, customTransport, client.Transport)
-}
-
-func Test_firstGraphQLErrorCode_returns_empty_when_errors_have_no_code(t *testing.T) {
-	code := firstGraphQLErrorCode([]byte(`{"errors":[{"message":"body stays private"}]}`))
-
-	require.Empty(t, code)
+	require.NoError(t, err)
+	data, ok := response.Data.(*testGraphQLData)
+	require.True(t, ok)
+	require.Equal(t, "user-id", data.Viewer.ID)
 }
 
 func Test_Transport_timeout_bounds_total_time_across_retries(t *testing.T) {

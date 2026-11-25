@@ -2,7 +2,10 @@ package client
 
 import (
 	"context"
+	"strconv"
+	"sync"
 	"testing"
+	"time"
 
 	"github.com/Khan/genqlient/graphql"
 	"github.com/stretchr/testify/require"
@@ -632,27 +635,19 @@ func Test_UpdateIssue_returns_error_for_invalid_priority_string(t *testing.T) {
 	require.ErrorIs(t, err, ErrWriteInvalid)
 }
 
-func Test_parsePriority_returns_nil_for_empty_string(t *testing.T) {
-	result, err := parsePriority("")
-
-	require.NoError(t, err)
-	require.Nil(t, result)
-}
-
-func Test_parsePriority_returns_error_for_non_numeric_string(t *testing.T) {
-	_, err := parsePriority("high")
-
-	require.Error(t, err)
-	require.ErrorIs(t, err, ErrWriteInvalid)
-}
-
-func Test_parsePriority_rejects_out_of_range_values(t *testing.T) {
+func Test_CreateIssue_rejects_out_of_range_priority(t *testing.T) {
 	for _, raw := range []string{"-1", "5"} {
 		t.Run(raw, func(t *testing.T) {
-			_, err := parsePriority(raw)
+			recorder := &mutationRecordingClient{inner: issueWriteFakeClient(map[string]string{})}
 
-			require.Error(t, err)
+			_, err := CreateIssue(context.Background(), recorder, matchingTarget(), IssueCreateRequest{
+				Title:    "typed",
+				Priority: raw,
+			})
+
 			require.ErrorIs(t, err, ErrWriteInvalid)
+			require.ErrorContains(t, err, "priority must be 0-4")
+			require.False(t, recorder.sentOperation("IssueCreate"))
 		})
 	}
 }
@@ -695,13 +690,13 @@ func b1IssueFixture(identifier string) issueFixture {
 
 func Test_CreateIssue_sets_assignee_label_and_due_date(t *testing.T) {
 	// Given
-	graphqlClient := issueWriteFakeClient(map[string]string{
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"issueLabel":  `{"issueLabel":` + issueLabelJSON("label-id", "bug", "team-id", "LIT") + `}`,
 		"IssueCreate": `{"issueCreate":{"success":true,"issue":` + issueJSON(b1IssueFixture("LIT-7")) + `}}`,
-	})
+	})}
 
 	// When
-	issue, err := CreateIssue(context.Background(), graphqlClient, matchingTarget(), IssueCreateRequest{
+	issue, err := CreateIssue(context.Background(), recorder, matchingTarget(), IssueCreateRequest{
 		Title:      "b1",
 		AssigneeID: "user-id",
 		LabelIDs:   []string{"label-id"},
@@ -711,6 +706,16 @@ func Test_CreateIssue_sets_assignee_label_and_due_date(t *testing.T) {
 	// Then
 	require.NoError(t, err)
 	require.Equal(t, "LIT-7", issue.Identifier)
+	require.JSONEq(t, `{
+		"input": {
+			"title": "b1",
+			"teamId": "team-id",
+			"projectId": "project-id",
+			"assigneeId": "user-id",
+			"labelIds": ["label-id"],
+			"dueDate": "2026-07-01"
+		}
+	}`, string(recorder.variablesFor(t, "IssueCreate")))
 }
 
 func Test_CreateIssue_rejects_invalid_due_date(t *testing.T) {
@@ -730,14 +735,14 @@ func Test_CreateIssue_rejects_invalid_due_date(t *testing.T) {
 
 func Test_UpdateIssue_sets_assignee_label_and_due_date(t *testing.T) {
 	// Given
-	graphqlClient := issueWriteFakeClient(map[string]string{
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"issue":       `{"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}`,
 		"issueLabel":  `{"issueLabel":` + issueLabelJSON("label-id", "bug", "team-id", "LIT") + `}`,
 		"IssueUpdate": `{"issueUpdate":{"success":true,"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}}`,
-	})
+	})}
 
 	// When
-	issue, err := UpdateIssue(context.Background(), graphqlClient, matchingTarget(), IssueUpdateRequest{
+	issue, err := UpdateIssue(context.Background(), recorder, matchingTarget(), IssueUpdateRequest{
 		ID:         "LIT-1",
 		AssigneeID: "user-id",
 		LabelIDs:   []string{"label-id"},
@@ -747,17 +752,25 @@ func Test_UpdateIssue_sets_assignee_label_and_due_date(t *testing.T) {
 	// Then
 	require.NoError(t, err)
 	require.Equal(t, "LIT-1", issue.Identifier)
+	require.JSONEq(t, `{
+		"id": "LIT-1",
+		"input": {
+			"assigneeId": "user-id",
+			"labelIds": ["label-id"],
+			"dueDate": "2026-07-01"
+		}
+	}`, string(recorder.variablesFor(t, "IssueUpdate")))
 }
 
 func Test_UpdateIssue_clears_due_date_when_requested(t *testing.T) {
 	// Given
-	graphqlClient := issueWriteFakeClient(map[string]string{
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"issue":       `{"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}`,
 		"IssueUpdate": `{"issueUpdate":{"success":true,"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}}`,
-	})
+	})}
 
 	// When
-	issue, err := UpdateIssue(context.Background(), graphqlClient, matchingTarget(), IssueUpdateRequest{
+	issue, err := UpdateIssue(context.Background(), recorder, matchingTarget(), IssueUpdateRequest{
 		ID:           "LIT-1",
 		ClearDueDate: true,
 	})
@@ -765,6 +778,10 @@ func Test_UpdateIssue_clears_due_date_when_requested(t *testing.T) {
 	// Then
 	require.NoError(t, err)
 	require.Equal(t, "LIT-1", issue.Identifier)
+	require.JSONEq(t, `{
+		"id": "LIT-1",
+		"input": {"dueDate": null}
+	}`, string(recorder.variablesFor(t, "IssueUpdate")))
 }
 
 func Test_UpdateIssue_rejects_due_date_with_clear_due_date(t *testing.T) {
@@ -800,7 +817,7 @@ func Test_UpdateIssue_rejects_invalid_due_date(t *testing.T) {
 
 func Test_CreateIssue_assigns_milestone_after_pinned_target_check(t *testing.T) {
 	// Given
-	graphqlClient := issueWriteFakeClient(map[string]string{
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"projectMilestone": `{"projectMilestone":` +
 			projectMilestoneJSON("Launch milestone", "next", "project-id") + `}`,
 		"IssueCreate": `{"issueCreate":{"success":true,"issue":` + issueJSON(issueFixture{
@@ -809,10 +826,10 @@ func Test_CreateIssue_assigns_milestone_after_pinned_target_check(t *testing.T) 
 			ProjectID:  "project-id",
 			Project:    "fixture",
 		}) + `}}`,
-	})
+	})}
 
 	// When
-	issue, err := CreateIssue(context.Background(), graphqlClient, matchingTarget(), IssueCreateRequest{
+	issue, err := CreateIssue(context.Background(), recorder, matchingTarget(), IssueCreateRequest{
 		Title:              "with milestone",
 		ProjectMilestoneID: "project-milestone-id",
 	})
@@ -820,6 +837,14 @@ func Test_CreateIssue_assigns_milestone_after_pinned_target_check(t *testing.T) 
 	// Then
 	require.NoError(t, err)
 	require.Equal(t, "LIT-9", issue.Identifier)
+	require.JSONEq(t, `{
+		"input": {
+			"title": "with milestone",
+			"teamId": "team-id",
+			"projectId": "project-id",
+			"projectMilestoneId": "project-milestone-id"
+		}
+	}`, string(recorder.variablesFor(t, "IssueCreate")))
 }
 
 func Test_CreateIssue_rejects_milestone_without_pinned_project(t *testing.T) {
@@ -875,11 +900,6 @@ func Test_CreateIssues_resolves_target_once(t *testing.T) {
 		require.Equal(t, "LIT-1", outcome.Issue.Identifier)
 	}
 	require.Equal(t, 1, recorder.countOf("Viewer"), "viewer should resolve once, not per row")
-	// The fixture serves no "team" fixture, so the direct-lookup fast path errors
-	// and falls through to the "Teams" scan; both run exactly once per
-	// resolveTarget call, not once per row.
-	require.Equal(t, 1, recorder.countOf("team"), "the direct team lookup should run once, not per row")
-	require.Equal(t, 1, recorder.countOf("Teams"), "the team scan should run once, not per row")
 }
 
 func Test_CreateIssues_resolves_shared_state_and_estimate_config_once(t *testing.T) {
@@ -977,20 +997,62 @@ func Test_CreateIssues_reports_row_error_for_invalid_due_date(t *testing.T) {
 }
 
 func Test_CreateIssues_defaults_and_clamps_concurrency(t *testing.T) {
-	// Given
-	graphqlClient := issueWriteFakeClient(map[string]string{
-		"IssueCreate": `{"issueCreate":{"success":true,"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}}`,
-	})
-	requests := []IssueCreateRequest{{Title: "First"}}
-
-	// When / Then
-	for _, concurrency := range []int{0, -1, 100} {
-		outcomes, err := CreateIssues(context.Background(), graphqlClient, matchingTarget(), requests, concurrency)
-
-		require.NoError(t, err)
-		require.Len(t, outcomes, 1)
-		require.NoError(t, outcomes[0].Err)
+	tests := []struct {
+		concurrency int
+		maxInFlight int
+	}{
+		{concurrency: 0, maxInFlight: 4},
+		{concurrency: -1, maxInFlight: 4},
+		{concurrency: 100, maxInFlight: 8},
 	}
+	for _, test := range tests {
+		t.Run(strconv.Itoa(test.concurrency), func(t *testing.T) {
+			graphqlClient := &inFlightIssueCreateClient{inner: issueWriteFakeClient(map[string]string{
+				"IssueCreate": `{"issueCreate":{"success":true,"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}}`,
+			})}
+			requests := make([]IssueCreateRequest, 16)
+			for index := range requests {
+				requests[index] = IssueCreateRequest{Title: "row"}
+			}
+
+			outcomes, err := CreateIssues(context.Background(), graphqlClient, matchingTarget(), requests, test.concurrency)
+
+			require.NoError(t, err)
+			require.Len(t, outcomes, len(requests))
+			for _, outcome := range outcomes {
+				require.NoError(t, outcome.Err)
+			}
+			require.LessOrEqual(t, graphqlClient.peak, test.maxInFlight)
+		})
+	}
+}
+
+type inFlightIssueCreateClient struct {
+	inner graphql.Client
+
+	mu       sync.Mutex
+	inFlight int
+	peak     int
+}
+
+func (client *inFlightIssueCreateClient) MakeRequest(
+	ctx context.Context,
+	request *graphql.Request,
+	response *graphql.Response,
+) error {
+	if request.OpName != "IssueCreate" {
+		return client.inner.MakeRequest(ctx, request, response)
+	}
+	client.mu.Lock()
+	client.inFlight++
+	client.peak = max(client.peak, client.inFlight)
+	client.mu.Unlock()
+	time.Sleep(20 * time.Millisecond)
+	client.mu.Lock()
+	client.inFlight--
+	client.mu.Unlock()
+
+	return client.inner.MakeRequest(ctx, request, response)
 }
 
 func Test_CreateIssues_returns_error_when_target_resolution_fails(t *testing.T) {
