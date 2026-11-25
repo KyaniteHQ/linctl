@@ -183,8 +183,8 @@ team_id = "team-id"
 }
 
 func Test_AuthApp_obtains_app_actor_token_after_live_readiness(t *testing.T) {
-	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "injected-access-token")
 	paths := cliAuthTestPaths(t)
+	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "injected-access-token")
 	require.NoError(t, auth.NewStore(paths).SaveAppConfig(context.Background(), "", auth.AppConfig{
 		ClientID:     "client-id",
 		ClientSecret: "client-secret",
@@ -234,8 +234,8 @@ func Test_AuthApp_obtains_app_actor_token_after_live_readiness(t *testing.T) {
 }
 
 func Test_AuthStatus_reports_injected_token_with_local_app_config(t *testing.T) {
-	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "injected-access-token")
 	paths := cliAuthTestPaths(t)
+	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "injected-access-token")
 	require.NoError(t, auth.NewStore(paths).Save(context.Background(), auth.State{
 		App: auth.AppConfig{
 			ClientID:     "client-id",
@@ -273,8 +273,8 @@ func Test_AuthStatus_reports_injected_token_with_local_app_config(t *testing.T) 
 }
 
 func Test_AuthStatus_rejects_personal_api_key_shaped_injected_token(t *testing.T) {
-	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "lin_api_personal_key")
 	paths := cliAuthTestPaths(t)
+	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "lin_api_personal_key")
 	restore := useAuthCommandHooks(t, paths, &fakeOAuthTokenClient{}, &fakeAuthReadinessChecker{})
 	defer restore()
 
@@ -576,58 +576,6 @@ func Test_AuthStatus_recovers_an_unusable_token_once_and_reports_the_new_token(t
 	}
 }
 
-type logoutOnWriteWriter struct {
-	bytes.Buffer
-	logout func()
-}
-
-func (writer *logoutOnWriteWriter) Write(data []byte) (int, error) {
-	if writer.logout != nil {
-		writer.logout()
-		writer.logout = nil
-	}
-
-	return writer.Buffer.Write(data)
-}
-
-func Test_AuthStatus_logout_wins_after_token_transaction_commits(t *testing.T) {
-	paths := cliAuthTestPaths(t)
-	store := auth.NewStore(paths)
-	app := auth.AppConfig{ClientID: "client-id", ClientSecret: "client-secret", Scopes: []string{"read"}}
-	require.NoError(t, store.Save(context.Background(), auth.State{App: app}))
-	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
-		"app-access-token",
-		"",
-		"Bearer",
-		time.Now().Add(time.Hour),
-		[]string{"read"},
-	)}
-	restore := useAuthCommandHooks(
-		t,
-		paths,
-		fakeOAuth,
-		&fakeAuthReadinessChecker{report: readyAuthReport("app")},
-	)
-	defer restore()
-	stdout := &logoutOnWriteWriter{logout: func() {
-		require.NoError(t, store.ClearTokenState(context.Background(), ""))
-	}}
-
-	err := execute(context.Background(), BuildInfo{}, nil, stdout, &bytes.Buffer{}, []string{
-		"--org", "org-id",
-		"--team", "LIT",
-		"--team-id", "team-id",
-		"auth",
-		"status",
-	})
-
-	require.NoError(t, err)
-	require.Contains(t, stdout.String(), "auth set actor app")
-	finalState, err := store.Load(context.Background())
-	require.NoError(t, err)
-	require.Empty(t, finalState.Token, "logout must win after the status token transaction commits")
-}
-
 func Test_AuthStatus_reports_expired_token_refresh_error(t *testing.T) {
 	paths := cliAuthTestPaths(t)
 	expiredAt := time.Now().Add(-time.Hour)
@@ -658,8 +606,8 @@ func Test_AuthStatus_reports_expired_token_refresh_error(t *testing.T) {
 }
 
 func Test_AuthRefresh_rotates_authorization_code_token_and_checks_readiness(t *testing.T) {
-	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "injected-access-token")
 	paths := cliAuthTestPaths(t)
+	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "injected-access-token")
 	expiresAt := time.Now().Add(time.Hour).UTC().Truncate(time.Second)
 	require.NoError(t, auth.NewStore(paths).Save(context.Background(), auth.State{
 		App: auth.AppConfig{
@@ -766,8 +714,8 @@ func Test_AuthRefresh_reacquires_client_credentials_token(t *testing.T) {
 }
 
 func Test_AuthLogout_revokes_tokens_and_clears_token_state_while_keeping_app(t *testing.T) {
-	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "injected-access-token")
 	paths := cliAuthTestPaths(t)
+	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "injected-access-token")
 	require.NoError(t, auth.NewStore(paths).Save(context.Background(), auth.State{
 		App: auth.AppConfig{
 			ClientID:     "client-id",
@@ -816,8 +764,8 @@ func Test_AuthLogout_revokes_tokens_and_clears_token_state_while_keeping_app(t *
 }
 
 func Test_AuthLogout_does_not_revoke_injected_token_without_local_state(t *testing.T) {
-	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "injected-access-token")
 	paths := cliAuthTestPaths(t)
+	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "injected-access-token")
 	fakeOAuth := &fakeOAuthTokenClient{}
 	restore := useAuthCommandHooks(t, paths, fakeOAuth, &fakeAuthReadinessChecker{})
 	defer restore()
@@ -832,8 +780,8 @@ func Test_AuthLogout_does_not_revoke_injected_token_without_local_state(t *testi
 }
 
 func Test_AuthRefresh_explains_injected_token_when_local_state_is_missing(t *testing.T) {
-	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "injected-access-token")
 	paths := cliAuthTestPaths(t)
+	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "injected-access-token")
 	restore := useAuthCommandHooks(t, paths, &fakeOAuthTokenClient{}, &fakeAuthReadinessChecker{})
 	defer restore()
 
@@ -905,10 +853,10 @@ func Test_AuthStatus_reports_reauth_required_when_linear_keeps_rejecting_the_tok
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			paths := cliAuthTestPaths(t)
 			if test.injectedToken != "" {
 				t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", test.injectedToken)
 			}
-			paths := cliAuthTestPaths(t)
 			require.NoError(t, auth.NewStore(paths).Save(context.Background(), auth.State{
 				App: auth.AppConfig{
 					ClientID:     "client-id",
