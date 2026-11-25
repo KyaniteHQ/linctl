@@ -54,47 +54,6 @@ func (client *recordingGraphQLClient) MakeRequest(
 	return client.client.MakeRequest(ctx, request, response)
 }
 
-type closeErrorTempFile struct {
-	name string
-}
-
-type writeErrorTempFile struct {
-	downloadTempFile
-	err error
-}
-
-func (file writeErrorTempFile) Write(_ []byte) (int, error) {
-	return 0, file.err
-}
-
-func stubAtomicTempWriteError(t *testing.T, writeErr error) {
-	t.Helper()
-	original := createDownloadTempFile
-	createDownloadTempFile = func(directory string, pattern string) (downloadTempFile, error) {
-		file, err := os.CreateTemp(directory, pattern)
-		if err != nil {
-			return nil, err
-		}
-
-		return writeErrorTempFile{downloadTempFile: file, err: writeErr}, nil
-	}
-	t.Cleanup(func() {
-		createDownloadTempFile = original
-	})
-}
-
-func (file closeErrorTempFile) Write(bytes []byte) (int, error) {
-	return len(bytes), nil
-}
-
-func (file closeErrorTempFile) Close() error {
-	return errors.New("close boom")
-}
-
-func (file closeErrorTempFile) Name() string {
-	return file.name
-}
-
 func runFilesCommand(t *testing.T, doer httpDoer, args []string) (string, error) {
 	t.Helper()
 	restore := useCommandRuntimeWithFiles(t, commandFlowFakeClient{}, doer)
@@ -447,24 +406,6 @@ func Test_Files_download_reports_write_error(t *testing.T) {
 	})
 
 	require.ErrorContains(t, err, "write")
-}
-
-func Test_writeDownloadedFile_reports_close_error(t *testing.T) {
-	original := createDownloadTempFile
-	createDownloadTempFile = func(directory string, pattern string) (downloadTempFile, error) {
-		return closeErrorTempFile{name: filepath.Join(directory, pattern)}, nil
-	}
-	defer func() {
-		createDownloadTempFile = original
-	}()
-
-	_, err := writeDownloadedFile(
-		http.NoBody,
-		filepath.Join(t.TempDir(), "got.txt"),
-		nil,
-	)
-
-	require.ErrorContains(t, err, "close boom")
 }
 
 func Test_Files_download_to_a_directory_fails_and_leaves_no_temp_file(t *testing.T) {

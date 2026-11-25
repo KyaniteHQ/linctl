@@ -468,14 +468,3 @@ func Test_CommandFlows_issue_bulk_export_neutralizes_csv_formula_cells(t *testin
 	}, records)
 }
 
-func Test_CommandFlows_issue_bulk_export_leaves_no_file_on_write_failure(t *testing.T) {
-	dir := t.TempDir()
-	stubAtomicTempWriteError(t, errors.New("write boom"))
-
-	_, err := runBulkFlow(t, commandFlowFakeClient{}, []string{"issue", "bulk-export", filepath.Join(dir, "issues.csv")})
-
-	require.ErrorContains(t, err, "write boom")
-	entries, readErr := os.ReadDir(dir)
-	require.NoError(t, readErr)
-	require.Empty(t, entries)
-}

@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"cmp"
 	"context"
 	"errors"
 	"fmt"
@@ -39,16 +40,6 @@ type fileUploadResult struct {
 type fileDownloadResult struct {
 	Path  string `json:"path"`
 	Bytes int64  `json:"bytes"`
-}
-
-type downloadTempFile interface {
-	io.Writer
-	Close() error
-	Name() string
-}
-
-var createDownloadTempFile = func(directory string, pattern string) (downloadTempFile, error) {
-	return os.CreateTemp(directory, pattern)
 }
 
 func addFilesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -301,7 +292,7 @@ func downloadExceedsMaxSize(size int64, limit *downloadMaxSize) bool {
 func writeFileAtomically(path string, write func(io.Writer) error) error {
 	directory := filepath.Dir(path)
 	pattern := "." + filepath.Base(path) + ".tmp-*"
-	file, err := createDownloadTempFile(directory, pattern)
+	file, err := os.CreateTemp(directory, pattern)
 	if err != nil {
 		return err
 	}
@@ -315,11 +306,8 @@ func writeFileAtomically(path string, write func(io.Writer) error) error {
 
 	writeErr := write(file)
 	closeErr := file.Close()
-	if writeErr != nil {
-		return writeErr
-	}
-	if closeErr != nil {
-		return closeErr
+	if err := cmp.Or(writeErr, closeErr); err != nil {
+		return err
 	}
 	if err := os.Rename(tempPath, path); err != nil {
 		return err
