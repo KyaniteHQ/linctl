@@ -22,8 +22,6 @@ var (
 	kernel32         = syscall.NewLazyDLL("kernel32.dll")
 	lockFileExProc   = kernel32.NewProc("LockFileEx")
 	unlockFileExProc = kernel32.NewProc("UnlockFileEx")
-	lockFileExCall   = lockFileExProc.Call
-	unlockFileExCall = unlockFileExProc.Call
 )
 
 func lockStateFile(ctx context.Context, file *os.File) error {
@@ -32,7 +30,7 @@ func lockStateFile(ctx context.Context, file *os.File) error {
 			return err
 		}
 		overlapped := syscall.Overlapped{}
-		result, _, callErr := lockFileExCall(
+		result, _, callErr := lockFileExProc.Call(
 			file.Fd(),
 			lockFileExclusiveLock|lockFileFailImmediately,
 			0,
@@ -59,7 +57,7 @@ func lockStateFile(ctx context.Context, file *os.File) error {
 
 func unlockStateFile(file *os.File) error {
 	overlapped := syscall.Overlapped{}
-	result, _, callErr := unlockFileExCall(
+	result, _, callErr := unlockFileExProc.Call(
 		file.Fd(),
 		0,
 		1,
@@ -70,5 +68,9 @@ func unlockStateFile(file *os.File) error {
 		return callErr
 	}
 
+	return nil
+}
+
+func chmodIfSupported(string, os.FileMode) error {
 	return nil
 }

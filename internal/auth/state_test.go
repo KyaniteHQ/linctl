@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"errors"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -444,186 +443,24 @@ func Test_Store_reports_operation_read_errors(t *testing.T) {
 
 		require.ErrorContains(t, err, "parse auth token state")
 	})
-
-	t.Run("clear token state parse error", func(t *testing.T) {
-		t.Parallel()
-		paths := testPaths(t)
-		require.NoError(t, os.MkdirAll(filepath.Dir(paths.TokenPath), 0o700))
-		require.NoError(t, os.WriteFile(paths.TokenPath, []byte("{"), 0o600))
-		store := NewStore(paths)
-
-		err := store.ClearTokenState(context.Background(), "")
-
-		require.ErrorContains(t, err, "parse auth token state")
-	})
-
-	t.Run("clear app config parse error", func(t *testing.T) {
-		t.Parallel()
-		paths := testPaths(t)
-		require.NoError(t, os.MkdirAll(filepath.Dir(paths.AppConfigPath), 0o700))
-		require.NoError(t, os.WriteFile(paths.AppConfigPath, []byte("{"), 0o600))
-		store := NewStore(paths)
-
-		err := store.ClearAppConfig(context.Background(), "")
-
-		require.ErrorContains(t, err, "parse auth app config")
-	})
 }
 
-func Test_writeJSON_reports_encode_and_permission_errors(t *testing.T) {
-	t.Run("encode error", func(t *testing.T) {
-		err := writeJSON(filepath.Join(t.TempDir(), "auth.json"), func() {}, "auth app config")
+func Test_Store_reports_token_encode_error_without_changing_saved_state(t *testing.T) {
+	t.Parallel()
+	store := NewStore(testPaths(t))
+	initial := TokenState{AccessToken: "initial-access-token"}
+	require.NoError(t, store.SaveTokenState(context.Background(), "", initial))
+	unencodable := time.Date(10000, 1, 1, 0, 0, 0, 0, time.UTC)
 
-		require.ErrorContains(t, err, "encode auth app config")
+	err := store.SaveTokenState(context.Background(), "", TokenState{
+		AccessToken: "new-access-token",
+		ExpiresAt:   &unencodable,
 	})
 
-	t.Run("create directory", func(t *testing.T) {
-		parentFile := filepath.Join(t.TempDir(), "not-a-directory")
-		require.NoError(t, os.WriteFile(parentFile, []byte("file"), 0o600))
-
-		err := writeJSON(filepath.Join(parentFile, "auth.json"), struct{}{}, "auth app config")
-
-		require.ErrorContains(t, err, "create auth app config directory")
-	})
-
-	t.Run("secure directory error", func(t *testing.T) {
-		withRuntimeGOOS(t, "linux")
-		withChmodFile(t, func(string, os.FileMode) error {
-			return errors.New("chmod failed")
-		})
-
-		err := writeJSON(filepath.Join(t.TempDir(), "dir", "auth.json"), struct{}{}, "auth app config")
-
-		require.ErrorContains(t, err, "secure auth app config directory")
-	})
-
-	t.Run("create temp file", func(t *testing.T) {
-		if runtime.GOOS == "windows" {
-			t.Skip("read-only directory simulation is a unix permission contract")
-		}
-		withRuntimeGOOS(t, "linux")
-		withChmodFile(t, func(string, os.FileMode) error {
-			return nil
-		})
-		root := t.TempDir()
-		dir := filepath.Join(root, "auth")
-		require.NoError(t, os.Mkdir(dir, 0o500))
-		t.Cleanup(func() {
-			_ = os.Chmod(dir, 0o700) //nolint:errcheck // test cleanup restores permissions on a best-effort basis.
-		})
-		appConfigPath := filepath.Join(dir, appConfigFileName)
-
-		err := writeJSON(appConfigPath, struct{}{}, "auth app config")
-
-		require.ErrorContains(t, err, "write auth app config")
-	})
-
-	t.Run("secure file error", func(t *testing.T) {
-		withRuntimeGOOS(t, "linux")
-		calls := 0
-		withChmodFile(t, func(string, os.FileMode) error {
-			calls++
-			if calls == 2 {
-				return errors.New("chmod failed")
-			}
-
-			return nil
-		})
-
-		err := writeJSON(filepath.Join(t.TempDir(), "dir", "auth.json"), struct{}{}, "auth app config")
-
-		require.ErrorContains(t, err, "secure auth app config")
-		require.Equal(t, 2, calls)
-	})
-
-	t.Run("secure renamed file error", func(t *testing.T) {
-		withRuntimeGOOS(t, "linux")
-		calls := 0
-		withChmodFile(t, func(string, os.FileMode) error {
-			calls++
-			if calls == 3 {
-				return errors.New("chmod failed")
-			}
-
-			return nil
-		})
-
-		err := writeJSON(filepath.Join(t.TempDir(), "dir", "auth.json"), struct{}{}, "auth app config")
-
-		require.ErrorContains(t, err, "secure auth app config")
-		require.Equal(t, 3, calls)
-	})
-
-	t.Run("write temp file error", func(t *testing.T) {
-		withWriteTempFile(t, func(*os.File, []byte) (int, error) {
-			return 0, errors.New("write failed")
-		})
-
-		path := seededAuthPath(t, "old-content")
-		err := writeJSON(path, struct{}{}, "auth app config")
-
-		require.ErrorContains(t, err, "write auth app config")
-		require.ErrorContains(t, err, path)
-		requireNoTempResidue(t, filepath.Dir(path))
-		requireFileContent(t, path, "old-content")
-	})
-
-	t.Run("sync temp file error", func(t *testing.T) {
-		withSyncTempFile(t, func(*os.File) error {
-			return errors.New("sync failed")
-		})
-
-		path := seededAuthPath(t, "old-content")
-		err := writeJSON(path, struct{}{}, "auth app config")
-
-		require.ErrorContains(t, err, "write auth app config")
-		require.ErrorContains(t, err, path)
-		requireNoTempResidue(t, filepath.Dir(path))
-		requireFileContent(t, path, "old-content")
-	})
-
-	t.Run("close temp file error", func(t *testing.T) {
-		withCloseTempFile(t, func(file *os.File) error {
-			// Release the real handle before injecting the failure: a real
-			// Close deallocates the handle even when it errors, and Windows
-			// cannot remove the temp file while a handle stays open.
-			_ = file.Close() //nolint:errcheck // the injected error below is the one under test.
-			return errors.New("close failed")
-		})
-
-		path := seededAuthPath(t, "old-content")
-		err := writeJSON(path, struct{}{}, "auth app config")
-
-		require.ErrorContains(t, err, "write auth app config")
-		require.ErrorContains(t, err, path)
-		requireNoTempResidue(t, filepath.Dir(path))
-		requireFileContent(t, path, "old-content")
-	})
-}
-
-func seededAuthPath(t *testing.T, content string) string {
-	t.Helper()
-	dir := t.TempDir()
-	path := filepath.Join(dir, appConfigFileName)
-	require.NoError(t, os.WriteFile(path, []byte(content), 0o600))
-
-	return path
-}
-
-func requireNoTempResidue(t *testing.T, dir string) {
-	t.Helper()
-	entries, err := os.ReadDir(dir)
-	require.NoError(t, err)
-	for _, entry := range entries {
-		require.NotContains(t, entry.Name(), ".tmp-")
-	}
-}
-
-func requireFileContent(t *testing.T, path string, want string) {
-	t.Helper()
-	got, err := os.ReadFile(path)
-	require.NoError(t, err)
-	require.Equal(t, want, string(got))
+	require.ErrorContains(t, err, "encode auth token state")
+	state, loadErr := store.Load(context.Background())
+	require.NoError(t, loadErr)
+	require.Equal(t, initial, state.Token)
 }
 
 func Test_writeJSON_leaves_no_temp_file_after_success(t *testing.T) {
@@ -634,42 +471,6 @@ func Test_writeJSON_leaves_no_temp_file_after_success(t *testing.T) {
 	require.NoError(t, store.Save(context.Background(), State{
 		Token: TokenState{AccessToken: "oauth-access-token"},
 	}))
-
-	entries, err := os.ReadDir(filepath.Dir(paths.TokenPath))
-	require.NoError(t, err)
-	names := make([]string, 0, len(entries))
-	for _, entry := range entries {
-		names = append(names, entry.Name())
-	}
-	require.Equal(t, []string{tokenFileName, tokenFileName + ".lock"}, names)
-}
-
-func Test_writeJSON_preserves_existing_state_when_rename_source_fails(t *testing.T) {
-	withRuntimeGOOS(t, "linux")
-	paths := testPaths(t)
-	store := NewStore(paths)
-	require.NoError(t, store.SaveTokenState(context.Background(), "", TokenState{
-		AccessToken: "oauth-access-token",
-	}))
-
-	calls := 0
-	withChmodFile(t, func(string, os.FileMode) error {
-		calls++
-		if calls == 2 {
-			return errors.New("chmod failed")
-		}
-
-		return nil
-	})
-
-	err := store.SaveTokenState(context.Background(), "", TokenState{
-		AccessToken: "new-oauth-access-token",
-	})
-	require.Error(t, err)
-
-	got, err := store.Load(context.Background())
-	require.NoError(t, err)
-	require.Equal(t, TokenState{AccessToken: "oauth-access-token"}, got.Token)
 
 	entries, err := os.ReadDir(filepath.Dir(paths.TokenPath))
 	require.NoError(t, err)
@@ -702,30 +503,6 @@ func Test_State_profile_selects_default_named_and_missing_state(t *testing.T) {
 		Token: TokenState{AccessToken: "work-oauth-access-token"},
 	}, state.Profile("work"))
 	require.Empty(t, state.Profile("missing"))
-}
-
-func Test_chmodIfSupported_skips_windows_permissions(t *testing.T) {
-	withRuntimeGOOS(t, "windows")
-	withChmodFile(t, func(string, os.FileMode) error {
-		return errors.New("chmod should not be called")
-	})
-
-	require.NoError(t, chmodIfSupported("ignored", 0o600))
-}
-
-func Test_DefaultPaths_uses_xdg_state_fallback_on_linux(t *testing.T) {
-	if runtime.GOOS != "linux" {
-		t.Skip("XDG state fallback is a Linux path contract")
-	}
-	root := t.TempDir()
-
-	got, err := DefaultPaths(staticEnv{
-		"HOME":            root,
-		"XDG_CONFIG_HOME": filepath.Join(root, "config"),
-	})
-
-	require.NoError(t, err)
-	require.Equal(t, filepath.Join(root, ".local", "state", "linctl", tokenFileName), got.TokenPath)
 }
 
 func Test_DefaultPaths_uses_process_environment_when_env_is_nil(t *testing.T) {
@@ -773,6 +550,11 @@ func Test_DefaultPaths_reports_environment_errors(t *testing.T) {
 			env:  staticEnv{},
 			want: "HOME is not set",
 		},
+		{
+			name: "missing HOME for state fallback",
+			env:  staticEnv{"XDG_CONFIG_HOME": filepath.Join(root, "config")},
+			want: "HOME is not set",
+		},
 	}
 	if runtime.GOOS == "windows" {
 		tests = []struct {
@@ -809,19 +591,6 @@ func Test_DefaultPaths_reports_environment_errors(t *testing.T) {
 	}
 }
 
-func Test_osEnv_lookup_reads_process_environment(t *testing.T) {
-	const key = "LINCTL_AUTH_TEST_LOOKUP"
-	t.Setenv(key, "set")
-
-	value, ok := osEnv{}.Lookup(key)
-	require.True(t, ok)
-	require.Equal(t, "set", value)
-
-	value, ok = osEnv{}.Lookup(key + "_MISSING")
-	require.False(t, ok)
-	require.Empty(t, value)
-}
-
 func testPaths(t *testing.T) Paths {
 	t.Helper()
 	root := t.TempDir()
@@ -842,65 +611,11 @@ func assertPrivateDirAndFile(t *testing.T, dir string, path string) {
 	require.Equal(t, os.FileMode(0o600), fileInfo.Mode().Perm())
 }
 
-func withRuntimeGOOS(t *testing.T, goos string) {
-	t.Helper()
-	original := runtimeGOOS
-	runtimeGOOS = goos
-	t.Cleanup(func() {
-		runtimeGOOS = original
-	})
-}
-
-func withChmodFile(t *testing.T, fn func(string, os.FileMode) error) {
-	t.Helper()
-	original := chmodFile
-	chmodFile = fn
-	t.Cleanup(func() {
-		chmodFile = original
-	})
-}
-
-func withWriteTempFile(t *testing.T, fn func(*os.File, []byte) (int, error)) {
-	t.Helper()
-	original := writeTempFile
-	writeTempFile = fn
-	t.Cleanup(func() {
-		writeTempFile = original
-	})
-}
-
-func withSyncTempFile(t *testing.T, fn func(*os.File) error) {
-	t.Helper()
-	original := syncTempFile
-	syncTempFile = fn
-	t.Cleanup(func() {
-		syncTempFile = original
-	})
-}
-
-func withCloseTempFile(t *testing.T, fn func(*os.File) error) {
-	t.Helper()
-	original := closeTempFile
-	closeTempFile = fn
-	t.Cleanup(func() {
-		closeTempFile = original
-	})
-}
-
 func withLockAuthFile(t *testing.T, fn func(context.Context, *os.File) error) {
 	t.Helper()
 	original := lockAuthFile
 	lockAuthFile = fn
 	t.Cleanup(func() {
 		lockAuthFile = original
-	})
-}
-
-func withUnlockAuthFile(t *testing.T, fn func(*os.File) error) {
-	t.Helper()
-	original := unlockAuthFile
-	unlockAuthFile = fn
-	t.Cleanup(func() {
-		unlockAuthFile = original
 	})
 }

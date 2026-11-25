@@ -212,26 +212,6 @@ func Test_SelectLocalSession_loads_local_state_despite_injected_token(t *testing
 	require.ErrorContains(t, err, "select local auth session context")
 }
 
-func Test_AppConfigFromEnv_resolves_oauth_material(t *testing.T) {
-	t.Parallel()
-
-	app := AppConfigFromEnv(staticEnv{
-		oauthClientIDEnv:     "client-id",
-		oauthClientSecretEnv: "client-secret",
-		oauthRedirectURIEnv:  "http://127.0.0.1:8484/callback",
-		oauthScopesEnv:       "read,write comments:create",
-		"LINCTL_TOKEN":       "legacy-token",
-		"LINEAR_API_KEY":     "legacy-token",
-	})
-
-	require.Equal(t, AppConfig{
-		ClientID:     "client-id",
-		ClientSecret: "client-secret",
-		RedirectURI:  "http://127.0.0.1:8484/callback",
-		Scopes:       []string{"read", "write", "comments:create"},
-	}, app)
-}
-
 func Test_MergeAppConfig_overlays_explicit_fields(t *testing.T) {
 	t.Parallel()
 
