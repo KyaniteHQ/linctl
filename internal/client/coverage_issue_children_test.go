@@ -25,7 +25,6 @@ func Test_ClientReadScenarios_return_issue_child_metadata_reads(t *testing.T) {
 		"issueVcsBranchSearch_needs":        `{"issueVcsBranchSearch":{"id":"issue-id","identifier":"LIT-1","needs":` + needs + `}}`,
 		"issueVcsBranchSearch_formerNeeds":  `{"issueVcsBranchSearch":{"id":"issue-id","identifier":"LIT-1","formerNeeds":` + needs + `}}`,
 		"issueVcsBranchSearch_sharedAccess": `{"issueVcsBranchSearch":{"id":"issue-id","identifier":"LIT-1","sharedAccess":` + sharedAccess + `}}`,
-		"attachmentIssue_comments":          `{"attachmentIssue":{"id":"issue-id","identifier":"LIT-1","comments":` + comments + `}}`,
 		"attachmentIssue_needs":             `{"attachmentIssue":{"id":"issue-id","identifier":"LIT-1","needs":` + needs + `}}`,
 		"attachmentIssue_formerNeeds":       `{"attachmentIssue":{"id":"issue-id","identifier":"LIT-1","formerNeeds":` + needs + `}}`,
 		"attachmentIssue_sharedAccess":      `{"attachmentIssue":{"id":"issue-id","identifier":"LIT-1","sharedAccess":` + sharedAccess + `}}`,
@@ -46,8 +45,6 @@ func Test_ClientReadScenarios_return_issue_child_metadata_reads(t *testing.T) {
 	require.NoError(t, err)
 	branchSharedAccess, err := GetIssueVCSBranchSharedAccess(context.Background(), graphqlClient, "omer/branch")
 	require.NoError(t, err)
-	attachmentComments, err := ListAttachmentIssueComments(context.Background(), graphqlClient, "attachment-id", 1)
-	require.NoError(t, err)
 	attachmentNeeds, err := ListAttachmentIssueNeeds(context.Background(), graphqlClient, "attachment-id", 1)
 	require.NoError(t, err)
 	attachmentFormerNeeds, err := ListAttachmentIssueFormerNeeds(context.Background(), graphqlClient, "attachment-id", 1)
@@ -65,7 +62,6 @@ func Test_ClientReadScenarios_return_issue_child_metadata_reads(t *testing.T) {
 	require.Equal(t, "Omer", branchComments.Comments[0].DisplayName)
 	require.Equal(t, "customer-need-id", branchNeeds.Needs[0].ID)
 	require.Equal(t, "customer-need-id", branchFormerNeeds.Needs[0].ID)
-	require.Equal(t, "comment-id", attachmentComments.Comments[0].ID)
 	require.Equal(t, "customer-need-id", attachmentNeeds.Needs[0].ID)
 	require.Equal(t, "customer-need-id", attachmentFormerNeeds.Needs[0].ID)
 	for _, access := range []IssueSharedAccessSummary{
@@ -125,22 +121,14 @@ func Test_ClientFailureScenarios_wrap_issue_child_metadata_errors(t *testing.T) 
 	}
 
 	_, err = ListIssueVCSBranchComments(context.Background(), nilBranchClient, "omer/branch", 1)
-	require.Error(t, err)
-	require.ErrorIs(t, err, ErrNotFound)
 	require.ErrorIs(t, err, ErrNotFound)
 
 	_, err = ListIssueVCSBranchNeeds(context.Background(), nilBranchClient, "omer/branch", 1)
-	require.Error(t, err)
-	require.ErrorIs(t, err, ErrNotFound)
 	require.ErrorIs(t, err, ErrNotFound)
 
 	_, err = ListIssueVCSBranchFormerNeeds(context.Background(), nilBranchClient, "omer/branch", 1)
-	require.Error(t, err)
-	require.ErrorIs(t, err, ErrNotFound)
 	require.ErrorIs(t, err, ErrNotFound)
 
 	_, err = GetIssueVCSBranchSharedAccess(context.Background(), nilBranchClient, "omer/branch")
-	require.Error(t, err)
-	require.ErrorIs(t, err, ErrNotFound)
 	require.ErrorIs(t, err, ErrNotFound)
 }

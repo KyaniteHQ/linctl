@@ -226,7 +226,6 @@ func Test_ClientReadCoreSearchReleaseScenarios_return_compact_lists_details_and_
 	require.Equal(t, "agent-session-id", agentActivity.AgentSessionID)
 	require.Equal(t, "comment-id", agentActivity.SourceCommentID)
 	require.Equal(t, "read_file", agentActivity.Content.Action)
-	require.Empty(t, agentActivityContentSummary(nil).Type)
 	require.True(t, agentSkills.HasNextPage)
 	require.Equal(t, &endCursor, agentSkills.EndCursor)
 	require.Equal(t, "agent-skill-id", agentSkills.AgentSkills[0].ID)

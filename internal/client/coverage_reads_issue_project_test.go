@@ -256,7 +256,7 @@ func Test_ClientReadIssueAndProjectScenarios_return_compact_lists_details_and_me
 	require.Equal(t, "listed", projects.Projects[0].Name)
 	require.Equal(t, "detail", project.Name)
 	require.Equal(t, "Existing project content", projectDetail.Content)
-	require.Equal(t, project.ID, projectDetail.Summary.ID)
+	require.Equal(t, "project-id", projectDetail.Summary.ID)
 	require.Equal(t, "Omer", members.Members[0].DisplayName)
 	require.Equal(t, &endCursor, members.EndCursor)
 	require.Equal(t, "project-attachment-id", projectAttachments.Attachments[0].ID)
