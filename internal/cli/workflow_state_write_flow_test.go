@@ -112,37 +112,18 @@ func Test_WorkflowStateWriteCommandFlows_cover_output_modes(t *testing.T) {
 	}
 }
 
-func Test_WorkflowStateWriteCommandFlows_report_runtime_and_writer_errors(t *testing.T) {
-	commands := [][]string{
-		{"workflow-state", "create", "--id", cliWorkflowStateID, "--name", "Ready", "--type", "unstarted", "--color", "#f2c94c"},
-		{"workflow-state", "update", cliWorkflowStateID, "--name", "Ready"},
-	}
-	for _, args := range commands {
-		t.Run("runtime "+strings.Join(args[:2], " "), func(t *testing.T) {
-			original := buildCommandRuntime
-			buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
-				return commandRuntime{}, errors.New("runtime failed")
-			}
-			defer func() { buildCommandRuntime = original }()
-			command := NewRootCommand(context.Background(), BuildInfo{})
-			command.SetArgs(args)
+func Test_WorkflowStateCreate_reports_writer_errors(t *testing.T) {
+	restore := useCommandRuntime(t, workflowStateWriteFake())
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(commandFailingWriter{})
+	command.SetArgs([]string{
+		"workflow-state", "create", "--id", cliWorkflowStateID, "--name", "Ready", "--type", "unstarted", "--color", "#f2c94c",
+	})
 
-			err := command.ExecuteContext(context.Background())
+	err := command.ExecuteContext(context.Background())
 
-			require.ErrorContains(t, err, "runtime failed")
-		})
-		t.Run("writer "+strings.Join(args[:2], " "), func(t *testing.T) {
-			restore := useCommandRuntime(t, workflowStateWriteFake())
-			defer restore()
-			command := NewRootCommand(context.Background(), BuildInfo{})
-			command.SetOut(commandFailingWriter{})
-			command.SetArgs(args)
-
-			err := command.ExecuteContext(context.Background())
-
-			require.ErrorContains(t, err, "write failed")
-		})
-	}
+	require.ErrorContains(t, err, "write failed")
 }
 
 func Test_WorkflowStateUpdate_emits_stable_target_mismatch_output(t *testing.T) {

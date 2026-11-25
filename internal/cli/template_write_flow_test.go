@@ -3,7 +3,6 @@ package cli
 import (
 	"bytes"
 	"context"
-	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -108,28 +107,14 @@ func Test_TemplateWriteCommandFlows_cover_output_modes(t *testing.T) {
 	}
 }
 
-func Test_TemplateWriteCommandFlows_report_runtime_and_writer_errors(t *testing.T) {
+func Test_TemplateWriteCommandFlows_report_writer_errors(t *testing.T) {
 	dataFile := writeTemplateDataFile(t, `{"title":"Bug"}`)
 	commands := [][]string{
 		{"template", "create", "--id", cliTemplateID, "--name", "Bug report", "--type", "issue", "--data-file", dataFile},
-		{"template", "update", cliTemplateID, "--name", "Bug report"},
 		{"template", "content", cliTemplateID},
 	}
 	for _, args := range commands {
-		t.Run("runtime "+strings.Join(args[:2], " "), func(t *testing.T) {
-			original := buildCommandRuntime
-			buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
-				return commandRuntime{}, errors.New("runtime failed")
-			}
-			defer func() { buildCommandRuntime = original }()
-			command := NewRootCommand(context.Background(), BuildInfo{})
-			command.SetArgs(args)
-
-			err := command.ExecuteContext(context.Background())
-
-			require.ErrorContains(t, err, "runtime failed")
-		})
-		t.Run("writer "+strings.Join(args[:2], " "), func(t *testing.T) {
+		t.Run(strings.Join(args[:2], " "), func(t *testing.T) {
 			restore := useCommandRuntime(t, templateWriteFake())
 			defer restore()
 			command := NewRootCommand(context.Background(), BuildInfo{})

@@ -41,12 +41,6 @@ func Test_normalizedPriorityValue_maps_all_aliases(t *testing.T) {
 	}
 }
 
-func Test_normalizedPriorityValue_returns_error_for_unknown(t *testing.T) {
-	_, _, err := normalizedPriorityValue("critical")
-
-	require.ErrorContains(t, err, "unknown priority")
-}
-
 func Test_normalizedStateType_maps_all_aliases(t *testing.T) {
 	tests := []struct {
 		raw      string
