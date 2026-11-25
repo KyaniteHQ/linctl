@@ -5,11 +5,10 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"io"
+	"os"
 	"strings"
 	"testing"
 
-	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/require"
 )
 
@@ -52,6 +51,7 @@ func Test_RootCommand_exposes_global_flags_when_created(t *testing.T) {
 func Test_RootCommand_treats_explicit_empty_config_flag_as_missing_error(t *testing.T) {
 	dir := t.TempDir()
 	t.Chdir(dir)
+	configureTestAuthEnvironment(t)
 
 	err := execute(
 		context.Background(),
@@ -65,22 +65,29 @@ func Test_RootCommand_treats_explicit_empty_config_flag_as_missing_error(t *test
 	require.ErrorContains(t, err, "read explicit repo config")
 }
 
-func Test_RootCommand_threads_injected_stderr_into_root_options(t *testing.T) {
-	var captured io.Writer
-	original := buildCommandRuntime
-	buildCommandRuntime = func(_ context.Context, options *rootOptions) (commandRuntime, error) {
-		captured = options.stderr
-		return commandRuntime{}, errors.New("stop after capturing stderr")
-	}
-	defer func() {
-		buildCommandRuntime = original
-	}()
-	stderrBuf := &bytes.Buffer{}
+func Test_Execute_writes_debug_diagnostics_to_its_stderr(t *testing.T) {
+	t.Chdir(t.TempDir())
+	configureTestAuthEnvironment(t)
+	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "test-token")
+	t.Setenv("LINCTL_DEBUG_JSON", "")
+	require.NoError(t, os.WriteFile(".linctl.toml", []byte(`
+[target]
+org_id = "org-id"
+team_key = "LIT"
+team_id = "team-id"
+`), 0o600))
+	var stderr bytes.Buffer
 
-	err := execute(context.Background(), BuildInfo{}, nil, &bytes.Buffer{}, stderrBuf, []string{"whoami"})
+	err := execute(
+		context.Background(), BuildInfo{}, nil, &bytes.Buffer{}, &stderr,
+		[]string{"--debug", "files", "upload", t.TempDir()},
+	)
 
-	require.ErrorContains(t, err, "stop after capturing stderr")
-	require.Same(t, stderrBuf, captured)
+	require.ErrorContains(t, err, "not a regular file")
+	require.Contains(t, stderr.String(), "level=DEBUG")
+	require.Contains(t, stderr.String(), `msg="runtime ready"`)
+	require.Contains(t, stderr.String(), "team_key=LIT")
+	require.NotContains(t, stderr.String(), "test-token")
 }
 
 func Test_RootCommand_rejects_invalid_order_before_any_request(t *testing.T) {
@@ -117,23 +124,6 @@ func Test_RootCommand_rejects_order_without_sort_before_any_request(t *testing.T
 
 	require.ErrorContains(t, err, `invalid --order "desc": --sort is required`)
 	require.Empty(t, recorder.calls)
-}
-
-func Test_ValidateCommandFlags_reports_order_parse_error(t *testing.T) {
-	command := &cobra.Command{}
-	command.Flags().Int("order", 0, "")
-
-	err := validateCommandFlags(command)
-
-	require.ErrorContains(t, err, "read --order")
-}
-
-func Test_ValidateCommandFlags_skips_missing_order_flag(t *testing.T) {
-	command := &cobra.Command{}
-
-	err := validateCommandFlags(command)
-
-	require.NoError(t, err)
 }
 
 func Test_RootCommand_rejects_non_positive_limit_before_runtime(t *testing.T) {
@@ -247,17 +237,29 @@ func Test_GroupCommand_bare_group_prints_help(t *testing.T) {
 	require.Empty(t, stderr.String())
 }
 
-func Test_execute_falls_back_to_plain_error_when_envelope_write_fails(t *testing.T) {
-	// Given
-	stdout := bytes.Buffer{}
+type envelopeRejectingWriter struct {
+	rejected bool
+	written  bytes.Buffer
+}
 
-	// When
+func (writer *envelopeRejectingWriter) Write(payload []byte) (int, error) {
+	if !writer.rejected {
+		writer.rejected = true
+		return 0, errors.New("envelope write failed")
+	}
+
+	return writer.written.Write(payload)
+}
+
+func Test_execute_falls_back_to_plain_error_when_envelope_write_fails(t *testing.T) {
+	stderr := &envelopeRejectingWriter{}
+
 	err := execute(
-		context.Background(), BuildInfo{}, strings.NewReader(""), &stdout, commandFailingWriter{}, []string{"not-a-real-command"},
+		context.Background(), BuildInfo{}, strings.NewReader(""), &bytes.Buffer{}, stderr, []string{"not-a-real-command"},
 	)
 
-	// Then
 	require.Error(t, err)
+	require.Equal(t, `unknown command "not-a-real-command" for "linctl"`+"\n", stderr.written.String())
 }
 
 func Test_Usage_prints_overview_when_called(t *testing.T) {

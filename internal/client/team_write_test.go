@@ -141,17 +141,6 @@ func Test_CreateTeam_omits_the_optional_fields_it_was_not_given(t *testing.T) {
 	require.JSONEq(t, `{"input": {"name": "Operations"}}`, string(recorder.variablesFor(t, "TeamCreate")))
 }
 
-func Test_CreateTeam_proceeds_when_pinned_project_present(t *testing.T) {
-	// matchingTarget() pins project-id. A Team create compares organization only,
-	// so a pinned project must not block it.
-	team, err := CreateTeam(context.Background(), projectWriteFakeClient(map[string]string{
-		"TeamCreate": `{"teamCreate":{"success":true,"team":` + teamJSON("org-id") + `}}`,
-	}), matchingTarget(), TeamCreateRequest{Name: "Operations", OrgWide: true})
-
-	require.NoError(t, err)
-	require.Equal(t, "created-team-id", team.ID)
-}
-
 func teamDeletePayloads(orgID string) map[string]string {
 	return map[string]string{
 		"team":       `{"team":` + otherTeamJSON("ops-team-id", orgID) + `}`,

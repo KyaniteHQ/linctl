@@ -188,9 +188,19 @@ func Test_ListCycleUncompletedIssuesUponClose_wraps_graphql_errors(t *testing.T)
 	require.ErrorContains(t, err, "list cycle uncompleted issues cycle-id")
 }
 
-func Test_CycleStatus_describes_completion_and_date_edges(t *testing.T) {
-	require.Equal(t, "completed", cycleStatus("2026-01-01T00:00:00Z", "2099-01-01T00:00:00Z", "2026-01-02T00:00:00Z"))
-	require.Equal(t, "future", cycleStatus("2099-01-01T00:00:00Z", "2099-02-01T00:00:00Z", ""))
-	require.Equal(t, "past", cycleStatus("2000-01-01T00:00:00Z", "2000-02-01T00:00:00Z", ""))
-	require.Equal(t, "unknown", cycleStatus("not-a-date", "2099-01-01T00:00:00Z", ""))
+func Test_ListCyclesByTeam_reports_future_past_and_unknown_status(t *testing.T) {
+	graphqlClient := fakeGraphQLClient{
+		"cycles": `{"cycles":{"nodes":[` +
+			`{"id":"future-cycle-id","number":20,"name":null,"description":null,"startsAt":"2099-01-01T00:00:00Z","endsAt":"2099-02-01T00:00:00Z","completedAt":null,"progress":0,"team":{"id":"team-id","key":"LIT","name":"linctl"}},` +
+			`{"id":"past-cycle-id","number":1,"name":null,"description":null,"startsAt":"2000-01-01T00:00:00Z","endsAt":"2000-02-01T00:00:00Z","completedAt":null,"progress":0.5,"team":{"id":"team-id","key":"LIT","name":"linctl"}},` +
+			`{"id":"unknown-cycle-id","number":2,"name":null,"description":null,"startsAt":"not-a-date","endsAt":"2099-01-01T00:00:00Z","completedAt":null,"progress":0,"team":{"id":"team-id","key":"LIT","name":"linctl"}}` +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
+	}
+
+	cycles, err := ListCyclesByTeam(context.Background(), graphqlClient, "team-id", 3)
+
+	require.NoError(t, err)
+	require.Equal(t, "future", cycles.Cycles[0].Status)
+	require.Equal(t, "past", cycles.Cycles[1].Status)
+	require.Equal(t, "unknown", cycles.Cycles[2].Status)
 }

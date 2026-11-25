@@ -256,7 +256,7 @@ func Test_ClientReadIssueAndProjectScenarios_return_compact_lists_details_and_me
 	require.Equal(t, "listed", projects.Projects[0].Name)
 	require.Equal(t, "detail", project.Name)
 	require.Equal(t, "Existing project content", projectDetail.Content)
-	require.Equal(t, project.ID, projectDetail.Summary.ID)
+	require.Equal(t, "project-id", projectDetail.Summary.ID)
 	require.Equal(t, "Omer", members.Members[0].DisplayName)
 	require.Equal(t, &endCursor, members.EndCursor)
 	require.Equal(t, "project-attachment-id", projectAttachments.Attachments[0].ID)
@@ -372,4 +372,22 @@ func Test_ClientReadIssueAndProjectScenarios_return_compact_lists_details_and_me
 	require.Equal(t, "release-id", issueToReleases.Associations[0].ReleaseID)
 	require.Equal(t, "issue-to-release-id", issueToRelease.ID)
 	require.Equal(t, "release-id", issueToRelease.ReleaseID)
+}
+
+func Test_GetIssueDependencies_returns_no_parent_for_a_top_level_issue(t *testing.T) {
+	graphqlClient := fakeGraphQLClient{
+		"IssueDependencies": `{"issue":{
+			"id":"issue-id",
+			"identifier":"LIT-1",
+			"parent":null,
+			"children":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+			"relations":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+			"inverseRelations":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}
+		}}`,
+	}
+
+	dependencies, err := GetIssueDependencies(context.Background(), graphqlClient, "LIT-1", 2)
+
+	require.NoError(t, err)
+	require.Nil(t, dependencies.Parent)
 }

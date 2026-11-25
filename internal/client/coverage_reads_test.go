@@ -2,27 +2,38 @@ package client
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
-func Test_CheckOrganizationExists_returns_operation_errors(t *testing.T) {
-	_, err := CheckOrganizationExists(context.Background(), fakeGraphQLClient{}, "missing")
+func Test_CheckOrganizationExists_and_GetRateLimitStatus_return_transport_errors(t *testing.T) {
+	sentinel := errors.New("network down")
+	graphqlClient := errorGraphQLClient{err: sentinel}
 
-	require.ErrorContains(t, err, "missing fake response for organizationExists")
+	_, err := CheckOrganizationExists(context.Background(), graphqlClient, "kyanite")
+	require.ErrorIs(t, err, sentinel)
+
+	_, err = GetRateLimitStatus(context.Background(), graphqlClient)
+	require.ErrorIs(t, err, sentinel)
 }
 
-func Test_GetRateLimitStatus_returns_operation_errors(t *testing.T) {
-	_, err := GetRateLimitStatus(context.Background(), fakeGraphQLClient{})
+func Test_BotActorReads_return_no_bot_for_human_authored_entities(t *testing.T) {
+	graphqlClient := fakeGraphQLClient{
+		"comment_botActor": `{"comment":{"id":"comment-id","botActor":null}}`,
+		"issue_botActor":   `{"issue":{"id":"issue-id","botActor":null}}`,
+	}
 
-	require.ErrorContains(t, err, "missing fake response for rateLimitStatus")
-}
+	comment, err := GetCommentBotActor(context.Background(), graphqlClient, "comment-id")
+	require.NoError(t, err)
+	require.Equal(t, "comment-id", comment.CommentID)
+	require.Nil(t, comment.Bot)
 
-func Test_ClientReadHelpers_cover_nil_actor_bot_summaries(t *testing.T) {
-	require.Nil(t, actorBotSummary(nil))
-	require.Nil(t, commentActorBotSummary(nil))
-	require.Nil(t, issueActorBotSummary(nil))
+	issue, err := GetIssueBotActor(context.Background(), graphqlClient, "LIT-1")
+	require.NoError(t, err)
+	require.Equal(t, "issue-id", issue.IssueID)
+	require.Nil(t, issue.Bot)
 }
 
 func Test_ClientReadScenarios_return_not_found_for_null_vcs_branch_issue(t *testing.T) {
@@ -43,56 +54,30 @@ func Test_ClientReadScenarios_return_not_found_for_null_vcs_branch_issue(t *test
 	}
 
 	_, err := GetIssueByVCSBranch(context.Background(), graphqlClient, "missing/branch")
-	require.Error(t, err)
-	require.ErrorIs(t, err, ErrNotFound)
 	require.ErrorIs(t, err, ErrNotFound)
 	_, err = ListIssueVCSBranchAttachments(context.Background(), graphqlClient, "missing/branch", 1)
-	require.Error(t, err)
-	require.ErrorIs(t, err, ErrNotFound)
 	require.ErrorIs(t, err, ErrNotFound)
 	_, err = GetIssueVCSBranchBotActor(context.Background(), graphqlClient, "missing/branch")
-	require.Error(t, err)
-	require.ErrorIs(t, err, ErrNotFound)
 	require.ErrorIs(t, err, ErrNotFound)
 	_, err = ListIssueVCSBranchChildren(context.Background(), graphqlClient, "missing/branch", 1)
-	require.Error(t, err)
-	require.ErrorIs(t, err, ErrNotFound)
 	require.ErrorIs(t, err, ErrNotFound)
 	_, err = ListIssueVCSBranchDocuments(context.Background(), graphqlClient, "missing/branch", 1)
-	require.Error(t, err)
-	require.ErrorIs(t, err, ErrNotFound)
 	require.ErrorIs(t, err, ErrNotFound)
 	_, err = ListIssueVCSBranchFormerAttachments(context.Background(), graphqlClient, "missing/branch", 1)
-	require.Error(t, err)
-	require.ErrorIs(t, err, ErrNotFound)
 	require.ErrorIs(t, err, ErrNotFound)
 	_, err = ListIssueVCSBranchHistory(context.Background(), graphqlClient, "missing/branch", 1)
-	require.Error(t, err)
-	require.ErrorIs(t, err, ErrNotFound)
 	require.ErrorIs(t, err, ErrNotFound)
 	_, err = ListIssueVCSBranchInverseRelations(context.Background(), graphqlClient, "missing/branch", 1)
-	require.Error(t, err)
-	require.ErrorIs(t, err, ErrNotFound)
 	require.ErrorIs(t, err, ErrNotFound)
 	_, err = ListIssueVCSBranchLabels(context.Background(), graphqlClient, "missing/branch", 1)
-	require.Error(t, err)
-	require.ErrorIs(t, err, ErrNotFound)
 	require.ErrorIs(t, err, ErrNotFound)
 	_, err = ListIssueVCSBranchRelations(context.Background(), graphqlClient, "missing/branch", 1)
-	require.Error(t, err)
-	require.ErrorIs(t, err, ErrNotFound)
 	require.ErrorIs(t, err, ErrNotFound)
 	_, err = ListIssueVCSBranchReleases(context.Background(), graphqlClient, "missing/branch", 1)
-	require.Error(t, err)
-	require.ErrorIs(t, err, ErrNotFound)
 	require.ErrorIs(t, err, ErrNotFound)
 	_, err = ListIssueVCSBranchStateHistory(context.Background(), graphqlClient, "missing/branch", 1)
-	require.Error(t, err)
-	require.ErrorIs(t, err, ErrNotFound)
 	require.ErrorIs(t, err, ErrNotFound)
 	_, err = ListIssueVCSBranchSubscribers(context.Background(), graphqlClient, "missing/branch", 1)
-	require.Error(t, err)
-	require.ErrorIs(t, err, ErrNotFound)
 	require.ErrorIs(t, err, ErrNotFound)
 }
 

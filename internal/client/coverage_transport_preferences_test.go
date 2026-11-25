@@ -4,58 +4,117 @@ import (
 	"context"
 	"math"
 	"net/http"
+	"net/http/httptest"
 	"strconv"
+	"sync/atomic"
 	"testing"
 	"time"
 
-	"github.com/Khan/genqlient/graphql"
 	"github.com/stretchr/testify/require"
 )
 
-func Test_TransportScenarios_return_actionable_errors(t *testing.T) {
-	require.Equal(t, 3*time.Second, defaultDuration(3*time.Second, time.Second))
-	require.Equal(t, time.Second, defaultDuration(0, time.Second))
-	require.Equal(t, 200*time.Millisecond, retryDelay(http.Header{}, 1))
-	require.Equal(t, 100*time.Millisecond, retryDelay(http.Header{"Retry-After": []string{"not-a-number"}}, 0))
-	require.Equal(t, 2*time.Second, retryDelay(http.Header{"Retry-After": []string{"2"}}, 0))
-	require.Equal(t, maxRetryDelay, retryDelay(http.Header{"Retry-After": []string{"120"}}, 0))
-	require.Equal(t, 100*time.Millisecond, retryDelay(http.Header{"Retry-After": []string{"-1"}}, 0))
-	require.Equal(t, 100*time.Millisecond, retryDelay(http.Header{"Retry-After": []string{"0"}}, 0))
-	require.Equal(t, maxRetryDelay, retryDelay(http.Header{"Retry-After": []string{strconv.Itoa(math.MaxInt)}}, 0))
+func Test_Transport_rejects_a_success_status_with_a_body_that_is_not_json(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
+		writeTestBody(t, writer, "not json")
+	}))
+	defer server.Close()
+	transport := NewTransport(TransportConfig{Endpoint: server.URL, Timeout: 2 * time.Second})
 
-	require.True(t, isRateLimited(http.StatusTooManyRequests, nil))
-	require.True(t, isRateLimited(http.StatusBadRequest, []byte(`{"errors":[{"extensions":{"code":"RATELIMITED"}}]}`)))
-	require.False(t, isRateLimited(http.StatusBadRequest, []byte(`{"errors":[{"extensions":{"code":"BAD_USER_INPUT"}}]}`)))
-	require.False(t, isRateLimited(http.StatusBadRequest, []byte("not json")))
-	require.False(t, isRateLimited(http.StatusOK, nil))
-	rateLimitedBody := []byte(`{"errors":[{"extensions":{"code":"RATELIMITED"}}]}`)
-	require.False(t, isRateLimited(http.StatusInternalServerError, rateLimitedBody))
-	require.ErrorIs(t, rateLimitError(http.StatusTooManyRequests, []byte("slow down")), ErrRateLimited)
+	err := requestViewer(transport, &testGraphQLData{})
 
-	response := graphql.Response{}
-	err := decodeGraphQLResponse([]byte("not json"), http.StatusOK, &response)
 	require.ErrorContains(t, err, "decode graphql response")
-
-	err = decodeGraphQLResponse([]byte("server down"), http.StatusBadGateway, &response)
-	require.ErrorContains(t, err, "graphql http status 502")
 }
 
-func Test_retryDelay_clamps_non_positive_and_overflow_retry_after_into_max_bound(t *testing.T) {
-	cases := []struct {
+func Test_Transport_does_not_retry_responses_that_are_not_rate_limits(t *testing.T) {
+	tests := []struct {
 		name       string
-		retryAfter string
+		statusCode int
+		body       string
+		want       string
 	}{
-		{name: "Retry-After -1", retryAfter: "-1"},
-		{name: "Retry-After 0", retryAfter: "0"},
-		{name: "overflow-scale Retry-After", retryAfter: strconv.Itoa(math.MaxInt)},
+		{
+			name:       "400 with another error code",
+			statusCode: http.StatusBadRequest,
+			body:       `{"errors":[{"message":"bad input","extensions":{"code":"BAD_USER_INPUT"}}]}`,
+			want:       "graphql http status 400 code=BAD_USER_INPUT",
+		},
+		{
+			name:       "400 with a body that is not json",
+			statusCode: http.StatusBadRequest,
+			body:       "not json",
+			want:       "graphql http status 400",
+		},
+		{
+			name:       "400 with valid json and no code",
+			statusCode: http.StatusBadRequest,
+			body:       `{"errors":[{"message":"private detail"}]}`,
+			want:       "graphql http status 400",
+		},
+		{
+			name:       "500 with a RATELIMITED code",
+			statusCode: http.StatusInternalServerError,
+			body:       `{"errors":[{"message":"rate limit exceeded","extensions":{"code":"RATELIMITED"}}]}`,
+			want:       "graphql http status 500 code=RATELIMITED",
+		},
 	}
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
-			delay := retryDelay(http.Header{"Retry-After": []string{tc.retryAfter}}, 0)
-			require.GreaterOrEqual(t, delay, time.Duration(0))
-			require.LessOrEqual(t, delay, maxRetryDelay)
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			var requests atomic.Int32
+			server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
+				requests.Add(1)
+				writer.WriteHeader(test.statusCode)
+				writeTestBody(t, writer, test.body)
+			}))
+			defer server.Close()
+			transport := NewTransport(TransportConfig{Endpoint: server.URL, Timeout: 2 * time.Second, MaxRetries: 1})
+
+			err := requestViewer(transport, &testGraphQLData{})
+
+			require.EqualError(t, err, test.want)
+			require.NotContains(t, err.Error(), "private detail")
+			require.NotErrorIs(t, err, ErrRateLimited)
+			require.Equal(t, int32(1), requests.Load())
 		})
 	}
+}
+
+func Test_Transport_does_not_retry_at_once_when_retry_after_overflows_a_duration(t *testing.T) {
+	var requests atomic.Int32
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
+		if requests.Add(1) == 1 {
+			writer.Header().Set("Retry-After", strconv.Itoa(math.MaxInt))
+			writer.WriteHeader(http.StatusTooManyRequests)
+			return
+		}
+		writeTestBody(t, writer, `{"data":{"viewer":{"id":"user-id"}}}`)
+	}))
+	defer server.Close()
+	transport := NewTransport(TransportConfig{
+		Endpoint:   server.URL,
+		Timeout:    300 * time.Millisecond,
+		MaxRetries: 1,
+	})
+
+	err := requestViewer(transport, &testGraphQLData{})
+
+	require.ErrorIs(t, err, context.DeadlineExceeded)
+	require.ErrorContains(t, err, "wait for retry")
+	require.Equal(t, int32(1), requests.Load())
+}
+
+func Test_NewTransport_without_a_timeout_still_completes_requests(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
+		writeTestBody(t, writer, `{"data":{"viewer":{"id":"user-id"}}}`)
+	}))
+	defer server.Close()
+	transport := NewTransport(TransportConfig{Endpoint: server.URL})
+	data := &testGraphQLData{}
+
+	err := requestViewer(transport, data)
+
+	require.NoError(t, err)
+	require.Equal(t, "user-id", data.Viewer.ID)
 }
 
 func Test_CustomViewPreferenceReads_return_empty_values_when_organization_defaults_are_absent(t *testing.T) {

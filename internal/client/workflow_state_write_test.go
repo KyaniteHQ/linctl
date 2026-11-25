@@ -197,19 +197,6 @@ func Test_CreateWorkflowState_refuses_when_pinned_project_is_missing(t *testing.
 	require.False(t, recorder.sentOperation("WorkflowStateCreate"))
 }
 
-func Test_CreateWorkflowState_allows_team_owned_write_with_valid_project_pin(t *testing.T) {
-	graphqlClient := issueWriteFakeClient(map[string]string{
-		"WorkflowStateCreate": workflowStateCreateResponse(),
-		"workflowState":       workflowStateGetResponse("Ready", "unstarted", "", 1),
-	})
-
-	_, err := CreateWorkflowState(context.Background(), graphqlClient, matchingTarget(), WorkflowStateCreateRequest{
-		ID: testWorkflowStateID, Name: "Ready", Type: "unstarted", Color: "#f2c94c",
-	})
-
-	require.NoError(t, err)
-}
-
 func Test_CreateWorkflowState_allows_team_only_pin(t *testing.T) {
 	graphqlClient := issueWriteFakeClient(map[string]string{
 		"WorkflowStateCreate": workflowStateCreateResponse(),

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/Khan/genqlient/graphql"
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
@@ -20,9 +21,10 @@ func addUserSettingsCommand(ctx context.Context, root *cobra.Command, options *r
 	addUserSettingsMobileDeliveryCommand(ctx, settingsCommand, options)
 	addUserSettingsMobileScheduleCommand(ctx, settingsCommand, options)
 	addUserSettingsMobileScheduleDayCommand(ctx, settingsCommand, options)
-	addUserSettingsThemeCommand(ctx, settingsCommand, options, "theme")
-	addUserSettingsThemeCommand(ctx, settingsCommand, options, "custom-theme")
-	addUserSettingsThemeCommand(ctx, settingsCommand, options, "custom-sidebar-theme")
+	addUserSettingsThemeCommand(ctx, settingsCommand, options, "theme", client.GetUserSettingsTheme)
+	addUserSettingsThemeCommand(ctx, settingsCommand, options, "custom-theme", client.GetUserSettingsCustomTheme)
+	addUserSettingsThemeCommand(ctx, settingsCommand, options, "custom-sidebar-theme",
+		client.GetUserSettingsCustomSidebarTheme)
 	root.AddCommand(settingsCommand)
 }
 
@@ -191,11 +193,12 @@ func addUserSettingsMobileScheduleDayCommand(ctx context.Context, root *cobra.Co
 	})
 }
 
-func addUserSettingsThemeCommand(
+func addUserSettingsThemeCommand[T any](
 	ctx context.Context,
 	root *cobra.Command,
 	options *rootOptions,
 	name string,
+	get func(context.Context, graphql.Client, string, string) (*T, error),
 ) {
 	deviceType := "desktop"
 	mode := "light"
@@ -208,7 +211,14 @@ func addUserSettingsThemeCommand(
 			if err != nil {
 				return err
 			}
-			return runUserSettingsThemeCommand(ctx, command, options, runtime, name, deviceType, mode)
+			theme, err := get(ctx, runtime.graphqlClient, deviceType, mode)
+			if err != nil {
+				return err
+			}
+
+			human := userSettingsThemeText(name, deviceType, mode)
+
+			return writeUserSettingsNullableValue(command, options, theme, human)
 		},
 	}
 	command.Flags().StringVar(
@@ -217,39 +227,6 @@ func addUserSettingsThemeCommand(
 	)
 	command.Flags().StringVar(&mode, "mode", mode, "theme mode: light or dark")
 	addCommandWithSafety(root, CommandSafetyRead, command)
-}
-
-func runUserSettingsThemeCommand(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	runtime commandRuntime,
-	name string,
-	deviceType string,
-	mode string,
-) error {
-	switch name {
-	case "theme":
-		theme, err := client.GetUserSettingsTheme(ctx, runtime.graphqlClient, deviceType, mode)
-		if err != nil {
-			return err
-		}
-		return writeUserSettingsNullableValue(command, options, theme, userSettingsThemeText(name, deviceType, mode))
-	case "custom-theme":
-		theme, err := client.GetUserSettingsCustomTheme(ctx, runtime.graphqlClient, deviceType, mode)
-		if err != nil {
-			return err
-		}
-		return writeUserSettingsNullableValue(command, options, theme, userSettingsThemeText(name, deviceType, mode))
-	case "custom-sidebar-theme":
-		theme, err := client.GetUserSettingsCustomSidebarTheme(ctx, runtime.graphqlClient, deviceType, mode)
-		if err != nil {
-			return err
-		}
-		return writeUserSettingsNullableValue(command, options, theme, userSettingsThemeText(name, deviceType, mode))
-	default:
-		return fmt.Errorf("unknown user settings theme command %q", name)
-	}
 }
 
 func writeUserSettings(command *cobra.Command, options *rootOptions, settings client.UserSettingsSummary) error {

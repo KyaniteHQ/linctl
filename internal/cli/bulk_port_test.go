@@ -13,33 +13,21 @@ import (
 	"github.com/KyaniteHQ/linctl/internal/client"
 )
 
-// fakeBulkCreator is an in-memory bulkIssueCreator: it records each request and
-// can fail at a chosen row, so the import create loop's accumulation and
-// per-row error wrapping are tested without canned GraphQL JSON or a real
-// batch target resolution.
 type fakeBulkCreator struct {
-	results        []client.IssueSummary
-	failAt         int // 1-based row to fail at; 0 never fails
-	failErr        error
-	batchCalls     int
-	calls          int
-	requests       []client.IssueCreateRequest
-	sawConcurrency int
+	results []client.IssueSummary
+	failAt  int // 1-based row to fail at; 0 never fails
+	failErr error
 }
 
 func (creator *fakeBulkCreator) CreateIssues(
 	_ context.Context,
 	requests []client.IssueCreateRequest,
-	concurrency int,
+	_ int,
 ) ([]client.IssueCreateOutcome, error) {
-	creator.batchCalls++
-	creator.sawConcurrency = concurrency
 	outcomes := make([]client.IssueCreateOutcome, len(requests))
-	for index, request := range requests {
-		creator.calls++
-		creator.requests = append(creator.requests, request)
+	for index := range requests {
 		outcome := client.IssueCreateOutcome{Index: index}
-		if creator.failAt == creator.calls {
+		if creator.failAt == index+1 {
 			outcome.Err = creator.failErr
 		} else if index < len(creator.results) {
 			outcome.Issue = creator.results[index]
@@ -48,44 +36,6 @@ func (creator *fakeBulkCreator) CreateIssues(
 	}
 
 	return outcomes, nil
-}
-
-func Test_createImportedIssues_creates_each_row_through_the_port(t *testing.T) {
-	command, stdout, _ := bufferedCommand()
-	creator := &fakeBulkCreator{
-		results: []client.IssueSummary{
-			{Identifier: "LIT-1", Title: "First", State: "Todo"},
-			{Identifier: "LIT-2", Title: "Second", State: "Todo"},
-		},
-	}
-	requests := []client.IssueCreateRequest{{Title: "First"}, {Title: "Second"}}
-
-	err := createImportedIssues(context.Background(), command, &rootOptions{}, creator, requests)
-
-	require.NoError(t, err)
-	require.Equal(t, 1, creator.batchCalls)
-	require.Equal(t, 2, creator.calls)
-	require.Equal(t, "First", creator.requests[0].Title)
-	require.Equal(t, "Second", creator.requests[1].Title)
-	require.Contains(t, stdout.String(), "LIT-1")
-	require.Contains(t, stdout.String(), "LIT-2")
-}
-
-func Test_createImportedIssues_wraps_the_failing_row(t *testing.T) {
-	command, _, _ := bufferedCommand()
-	creator := &fakeBulkCreator{
-		results: []client.IssueSummary{{Identifier: "LIT-1"}},
-		failAt:  2,
-		failErr: errors.New("boom"),
-	}
-	requests := []client.IssueCreateRequest{{Title: "First"}, {Title: "Second"}}
-
-	err := createImportedIssues(context.Background(), command, &rootOptions{}, creator, requests)
-
-	require.ErrorContains(t, err, "import row 2")
-	require.ErrorContains(t, err, "Second")
-	require.ErrorContains(t, err, "boom")
-	require.Equal(t, 2, creator.calls)
 }
 
 func Test_createImportedIssues_reports_partial_success_in_json_mode(t *testing.T) {
@@ -171,7 +121,7 @@ func Test_createImportedIssues_surfaces_stderr_write_errors_for_failures(t *test
 	require.ErrorContains(t, err, "stderr closed")
 }
 
-func Test_createImportedIssues_partial_report_with_batch_creator(t *testing.T) {
+func Test_createImportedIssues_reports_rows_created_around_a_failed_row(t *testing.T) {
 	command, stdout, stderr := bufferedCommand()
 	creator := &fakeBulkCreator{
 		results: []client.IssueSummary{
@@ -187,12 +137,11 @@ func Test_createImportedIssues_partial_report_with_batch_creator(t *testing.T) {
 	err := createImportedIssues(context.Background(), command, &rootOptions{}, creator, requests)
 
 	require.ErrorContains(t, err, "import completed with 1 failed rows")
-	require.Equal(t, 1, creator.batchCalls)
-	require.Equal(t, 3, creator.calls)
-	require.Equal(t, importBatchConcurrency, creator.sawConcurrency)
+	require.ErrorContains(t, err, `import row 2 "Second"`)
+	require.ErrorContains(t, err, "boom")
 	require.Contains(t, stdout.String(), "LIT-1")
 	require.Contains(t, stdout.String(), "LIT-3")
-	require.Contains(t, stderr.String(), "row 2")
+	require.Contains(t, stderr.String(), `row 2 "Second" failed: boom`)
 }
 
 func Test_createImportedIssues_surfaces_batch_resolution_error(t *testing.T) {

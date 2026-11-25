@@ -52,6 +52,18 @@ func (body *responseBody) Close() error {
 	return body.closeErr
 }
 
+func linearOAuthServerClient(server *httptest.Server) *http.Client {
+	transport := server.Client().Transport
+
+	return &http.Client{Transport: roundTripFunc(func(request *http.Request) (*http.Response, error) {
+		redirected := request.Clone(request.Context())
+		redirected.URL.Scheme = "http"
+		redirected.URL.Host = server.Listener.Addr().String()
+
+		return transport.RoundTrip(redirected)
+	})}
+}
+
 func writeResponseBody(writer http.ResponseWriter, body string) error {
 	_, err := writer.Write([]byte(body))
 	return err
@@ -85,15 +97,11 @@ func Test_Client_exchanges_authorization_code_with_pkce_form(t *testing.T) {
 		}
 	}))
 	t.Cleanup(server.Close)
-	now := time.Date(2026, 6, 29, 12, 0, 0, 0, time.UTC)
 	client := oauth.NewClient(oauth.ClientConfig{
-		Endpoint:   server.URL,
-		HTTPClient: server.Client(),
-		Now: func() time.Time {
-			return now
-		},
+		HTTPClient: linearOAuthServerClient(server),
 	})
 
+	before := time.Now()
 	token, err := client.ExchangeAuthorizationCode(context.Background(), oauth.AuthorizationCodeRequest{
 		Code:         "authorization-code",
 		RedirectURI:  "http://127.0.0.1:8080/callback",
@@ -102,6 +110,7 @@ func Test_Client_exchanges_authorization_code_with_pkce_form(t *testing.T) {
 		CodeVerifier: "pkce-code-verifier",
 	})
 
+	after := time.Now()
 	require.NoError(t, err)
 	request := <-requests
 	require.Equal(t, http.MethodPost, request.Method)
@@ -119,7 +128,7 @@ func Test_Client_exchanges_authorization_code_with_pkce_form(t *testing.T) {
 	require.Equal(t, "Bearer", token.TokenType)
 	require.Equal(t, []string{"read", "write"}, token.Scopes)
 	require.NotNil(t, token.ExpiresAt)
-	require.Equal(t, now.Add(time.Hour), *token.ExpiresAt)
+	require.WithinRange(t, *token.ExpiresAt, before.Add(time.Hour), after.Add(time.Hour))
 }
 
 func Test_Client_refreshes_rotated_token_state_with_form_client_auth(t *testing.T) {
@@ -150,21 +159,18 @@ func Test_Client_refreshes_rotated_token_state_with_form_client_auth(t *testing.
 		}
 	}))
 	t.Cleanup(server.Close)
-	now := time.Date(2026, 6, 29, 13, 0, 0, 0, time.UTC)
 	client := oauth.NewClient(oauth.ClientConfig{
-		Endpoint:   server.URL,
-		HTTPClient: server.Client(),
-		Now: func() time.Time {
-			return now
-		},
+		HTTPClient: linearOAuthServerClient(server),
 	})
 
+	before := time.Now()
 	token, err := client.RefreshToken(context.Background(), oauth.RefreshTokenRequest{
 		RefreshToken: "old-refresh-token",
 		ClientID:     "client-id",
 		ClientSecret: "client-secret",
 	})
 
+	after := time.Now()
 	require.NoError(t, err)
 	request := <-requests
 	require.Equal(t, http.MethodPost, request.Method)
@@ -180,7 +186,7 @@ func Test_Client_refreshes_rotated_token_state_with_form_client_auth(t *testing.
 	require.Equal(t, "Bearer", token.TokenType)
 	require.Equal(t, []string{"read", "write"}, token.Scopes)
 	require.NotNil(t, token.ExpiresAt)
-	require.Equal(t, now.Add(30*time.Minute), *token.ExpiresAt)
+	require.WithinRange(t, *token.ExpiresAt, before.Add(30*time.Minute), after.Add(30*time.Minute))
 }
 
 func Test_Client_obtains_client_credentials_app_actor_token(t *testing.T) {
@@ -210,21 +216,18 @@ func Test_Client_obtains_client_credentials_app_actor_token(t *testing.T) {
 		}
 	}))
 	t.Cleanup(server.Close)
-	now := time.Date(2026, 6, 29, 14, 0, 0, 0, time.UTC)
 	client := oauth.NewClient(oauth.ClientConfig{
-		Endpoint:   server.URL,
-		HTTPClient: server.Client(),
-		Now: func() time.Time {
-			return now
-		},
+		HTTPClient: linearOAuthServerClient(server),
 	})
 
+	before := time.Now()
 	token, err := client.ClientCredentials(context.Background(), oauth.ClientCredentialsRequest{
 		ClientID:     "client-id",
 		ClientSecret: "client-secret",
 		Scopes:       []string{"read", "write"},
 	})
 
+	after := time.Now()
 	require.NoError(t, err)
 	request := <-requests
 	require.Equal(t, http.MethodPost, request.Method)
@@ -241,7 +244,7 @@ func Test_Client_obtains_client_credentials_app_actor_token(t *testing.T) {
 	require.Equal(t, "Bearer", token.TokenType)
 	require.Equal(t, []string{"read", "write"}, token.Scopes)
 	require.NotNil(t, token.ExpiresAt)
-	require.Equal(t, now.Add(2*time.Hour), *token.ExpiresAt)
+	require.WithinRange(t, *token.ExpiresAt, before.Add(2*time.Hour), after.Add(2*time.Hour))
 }
 
 func Test_Client_revokes_token_with_token_form_field(t *testing.T) {
@@ -264,8 +267,7 @@ func Test_Client_revokes_token_with_token_form_field(t *testing.T) {
 	}))
 	t.Cleanup(server.Close)
 	client := oauth.NewClient(oauth.ClientConfig{
-		RevocationEndpoint: server.URL,
-		HTTPClient:         server.Client(),
+		HTTPClient: linearOAuthServerClient(server),
 	})
 
 	err := client.RevokeToken(context.Background(), oauth.RevocationRequest{
@@ -300,8 +302,7 @@ func Test_Client_revoke_error_redacts_secret_values(t *testing.T) {
 	}))
 	t.Cleanup(server.Close)
 	client := oauth.NewClient(oauth.ClientConfig{
-		RevocationEndpoint: server.URL,
-		HTTPClient:         server.Client(),
+		HTTPClient: linearOAuthServerClient(server),
 	})
 
 	err := client.RevokeToken(context.Background(), oauth.RevocationRequest{
@@ -331,8 +332,7 @@ func Test_Client_token_endpoint_error_has_code_and_redacts_secrets(t *testing.T)
 	}))
 	t.Cleanup(server.Close)
 	client := oauth.NewClient(oauth.ClientConfig{
-		Endpoint:   server.URL,
-		HTTPClient: server.Client(),
+		HTTPClient: linearOAuthServerClient(server),
 	})
 
 	_, err := client.RefreshToken(context.Background(), oauth.RefreshTokenRequest{
@@ -373,8 +373,7 @@ func Test_Client_token_endpoint_invalid_scope_maps_missing_scope(t *testing.T) {
 	}))
 	t.Cleanup(server.Close)
 	client := oauth.NewClient(oauth.ClientConfig{
-		Endpoint:   server.URL,
-		HTTPClient: server.Client(),
+		HTTPClient: linearOAuthServerClient(server),
 	})
 
 	_, err := client.ClientCredentials(context.Background(), oauth.ClientCredentialsRequest{
@@ -391,11 +390,12 @@ func Test_Client_token_endpoint_invalid_scope_maps_missing_scope(t *testing.T) {
 	require.NotContains(t, err.Error(), "scope denied")
 }
 
-func Test_Client_exchange_request_creation_error(t *testing.T) {
+func Test_Client_exchange_reports_a_request_creation_error_for_a_nil_context(t *testing.T) {
 	t.Parallel()
-	client := oauth.NewClient(oauth.ClientConfig{Endpoint: "http://[::1"})
+	client := oauth.NewClient(oauth.ClientConfig{})
+	var missingContext context.Context
 
-	_, err := client.ExchangeAuthorizationCode(context.Background(), oauth.AuthorizationCodeRequest{})
+	_, err := client.ExchangeAuthorizationCode(missingContext, oauth.AuthorizationCodeRequest{})
 
 	require.ErrorContains(t, err, "create oauth token request")
 }
@@ -404,7 +404,6 @@ func Test_Client_exchange_http_error(t *testing.T) {
 	t.Parallel()
 	requestErr := errors.New("transport unavailable")
 	client := oauth.NewClient(oauth.ClientConfig{
-		Endpoint: "https://oauth.test/token",
 		HTTPClient: &http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) {
 			return nil, requestErr
 		})},
@@ -442,7 +441,6 @@ func Test_Client_exchange_response_body_errors(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 			client := oauth.NewClient(oauth.ClientConfig{
-				Endpoint: "https://oauth.test/token",
 				HTTPClient: &http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
@@ -462,7 +460,6 @@ func Test_Client_exchange_response_body_errors(t *testing.T) {
 func Test_Client_exchange_rejects_malformed_token_json(t *testing.T) {
 	t.Parallel()
 	client := oauth.NewClient(oauth.ClientConfig{
-		Endpoint: "https://oauth.test/token",
 		HTTPClient: &http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) {
 			return &http.Response{
 				StatusCode: http.StatusOK,
@@ -487,8 +484,7 @@ func Test_Client_token_endpoint_malformed_error_body_uses_empty_oauth_error(t *t
 	}))
 	t.Cleanup(server.Close)
 	client := oauth.NewClient(oauth.ClientConfig{
-		Endpoint:   server.URL,
-		HTTPClient: server.Client(),
+		HTTPClient: linearOAuthServerClient(server),
 	})
 
 	_, err := client.RefreshToken(context.Background(), oauth.RefreshTokenRequest{RefreshToken: "refresh-token"})
@@ -500,70 +496,63 @@ func Test_Client_token_endpoint_malformed_error_body_uses_empty_oauth_error(t *t
 	require.Empty(t, tokenErr.OAuthError)
 }
 
-func Test_Client_revoke_request_creation_error(t *testing.T) {
+func Test_NewClient_defaults_to_linear_token_and_revocation_endpoints(t *testing.T) {
 	t.Parallel()
-	client := oauth.NewClient(oauth.ClientConfig{RevocationEndpoint: "http://[::1"})
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	client := oauth.NewClient(oauth.ClientConfig{})
 
-	err := client.RevokeToken(context.Background(), oauth.RevocationRequest{Token: "refresh-token"})
+	_, exchangeErr := client.ExchangeAuthorizationCode(ctx, oauth.AuthorizationCodeRequest{})
+	revokeErr := client.RevokeToken(ctx, oauth.RevocationRequest{Token: "refresh-token"})
 
-	require.ErrorContains(t, err, "create oauth revoke request")
+	var exchangeURLErr *url.Error
+	require.ErrorAs(t, exchangeErr, &exchangeURLErr)
+	require.Equal(t, "https://api.linear.app/oauth/token", exchangeURLErr.URL)
+	require.ErrorIs(t, exchangeErr, context.Canceled)
+	var revokeURLErr *url.Error
+	require.ErrorAs(t, revokeErr, &revokeURLErr)
+	require.Equal(t, "https://api.linear.app/oauth/revoke", revokeURLErr.URL)
+	require.ErrorIs(t, revokeErr, context.Canceled)
+	require.ErrorContains(t, revokeErr, "request oauth revoke")
 }
 
-func Test_Client_revoke_http_error(t *testing.T) {
+func Test_Client_token_response_scope_null_and_non_string_values(t *testing.T) {
 	t.Parallel()
-	requestErr := errors.New("revocation transport unavailable")
-	client := oauth.NewClient(oauth.ClientConfig{
-		RevocationEndpoint: "https://oauth.test/revoke",
-		HTTPClient: &http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) {
-			return nil, requestErr
-		})},
-	})
-
-	err := client.RevokeToken(context.Background(), oauth.RevocationRequest{Token: "refresh-token"})
-
-	require.ErrorIs(t, err, requestErr)
-	require.ErrorContains(t, err, "request oauth revoke")
-}
-
-func Test_Client_revoke_response_body_errors(t *testing.T) {
-	t.Parallel()
-	readErr := errors.New("read failed")
-	closeErr := errors.New("close failed")
 	for _, test := range []struct {
 		name      string
-		body      io.ReadCloser
-		wantError error
-		wantText  string
+		body      string
+		wantError string
 	}{
 		{
-			name:      "read error",
-			body:      &responseBody{readErr: readErr},
-			wantError: readErr,
-			wantText:  "read oauth revoke response",
+			name: "null scope leaves scopes unset",
+			body: `{"access_token":"access-token","scope":null}`,
 		},
 		{
-			name:      "close error",
-			body:      &responseBody{reader: strings.NewReader(""), closeErr: closeErr},
-			wantError: closeErr,
-			wantText:  "close oauth revoke response",
+			name:      "numeric scope is rejected",
+			body:      `{"access_token":"access-token","scope":42}`,
+			wantError: "decode oauth token response: scope must be a string or array",
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 			client := oauth.NewClient(oauth.ClientConfig{
-				RevocationEndpoint: "https://oauth.test/revoke",
 				HTTPClient: &http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       test.body,
+						Body:       io.NopCloser(strings.NewReader(test.body)),
 					}, nil
 				})},
 			})
 
-			err := client.RevokeToken(context.Background(), oauth.RevocationRequest{Token: "refresh-token"})
+			token, err := client.ClientCredentials(context.Background(), oauth.ClientCredentialsRequest{})
 
-			require.ErrorIs(t, err, test.wantError)
-			require.ErrorContains(t, err, test.wantText)
+			if test.wantError != "" {
+				require.EqualError(t, err, test.wantError)
+				return
+			}
+			require.NoError(t, err)
+			require.Equal(t, "access-token", token.AccessToken)
+			require.Nil(t, token.Scopes)
 		})
 	}
 }

@@ -3,7 +3,6 @@ package cli
 import (
 	"bytes"
 	"context"
-	"errors"
 	"os"
 	"path/filepath"
 	"testing"
@@ -136,12 +135,6 @@ func Test_writeExportDocument_refuses_identifier_outside_the_linear_grammar(t *t
 	require.NoDirExists(t, dir)
 }
 
-func Test_issueExportLeaf_refuses_identifier_outside_the_linear_grammar(t *testing.T) {
-	_, err := issueExportLeaf("../escape")
-
-	require.ErrorContains(t, err, "not a valid Linear issue identifier")
-}
-
 func Test_writeExportDocument_surfaces_write_errors(t *testing.T) {
 	dir := t.TempDir()
 	require.NoError(t, os.Mkdir(filepath.Join(dir, "LIT-1.md"), 0o750))
@@ -149,19 +142,6 @@ func Test_writeExportDocument_surfaces_write_errors(t *testing.T) {
 	_, err := writeExportDocument(dir, "LIT-1", "body")
 
 	require.Error(t, err)
-}
-
-func Test_writeExportDocument_leaves_no_destination_on_write_failure(t *testing.T) {
-	dir := t.TempDir()
-	stubAtomicTempWriteError(t, errors.New("write boom"))
-
-	_, err := writeExportDocument(dir, "LIT-1", "body")
-
-	require.ErrorContains(t, err, "write boom")
-	require.NoFileExists(t, filepath.Join(dir, "LIT-1.md"))
-	entries, readErr := os.ReadDir(dir)
-	require.NoError(t, readErr)
-	require.Empty(t, entries)
 }
 
 func Test_renderExportDescription_falls_back_when_empty(t *testing.T) {
@@ -287,17 +267,11 @@ func Test_renderExportContent_falls_back_when_empty(t *testing.T) {
 	require.Contains(t, renderExportContent("   "), "_No content._")
 }
 
-func Test_projectExportLeaf_prefers_slug_then_id(t *testing.T) {
+func Test_projectExportLeaf_prefers_a_valid_slug(t *testing.T) {
 	slug, err := projectExportLeaf(client.ProjectSummary{ID: "project-id", SlugID: "hive-spec"})
+
 	require.NoError(t, err)
 	require.Equal(t, "hive-spec", slug)
-
-	id, err := projectExportLeaf(client.ProjectSummary{ID: "project-id", SlugID: "Detail project"})
-	require.NoError(t, err)
-	require.Equal(t, "project-id", id)
-
-	_, err = projectExportLeaf(client.ProjectSummary{ID: "../escape", SlugID: "bad name"})
-	require.ErrorContains(t, err, "not a valid export filename")
 }
 
 func Test_runIssueExport_surfaces_identifier_errors(t *testing.T) {

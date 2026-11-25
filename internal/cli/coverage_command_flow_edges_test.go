@@ -3,14 +3,13 @@ package cli
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"strings"
 	"testing"
 
-	"github.com/spf13/cobra"
+	"github.com/Khan/genqlient/graphql"
 	"github.com/stretchr/testify/require"
-
-	"github.com/KyaniteHQ/linctl/internal/client"
 )
 
 func Test_CommandFlows_cover_output_error_and_quiet_branches(t *testing.T) {
@@ -143,20 +142,69 @@ func Test_CommandFlows_cover_issue_list_filter_validation(t *testing.T) {
 	}
 }
 
-func Test_validateIssueListFilters_allows_combined_team_scoped_filters(t *testing.T) {
-	require.NoError(t, validateIssueListFilters(issueListFlagValues{
-		stateType:     "started",
-		projectID:     "project-id",
-		assigneeID:    "user-id",
-		labelID:       "label-id",
-		cycleID:       "cycle-id",
-		createdAfter:  "2026-06-01",
-		createdBefore: "2026-06-30",
-		updatedAfter:  "2026-07-01",
-		updatedBefore: "2026-07-30",
-		hasBlockers:   true,
-		blocks:        true,
-	}))
+type issueListFilterCapture struct {
+	filter string
+}
+
+func (capture *issueListFilterCapture) MakeRequest(
+	ctx context.Context,
+	request *graphql.Request,
+	response *graphql.Response,
+) error {
+	if request.OpName != "IssuesByTeamFiltered" {
+		return commandFlowFakeClient{}.MakeRequest(ctx, request, response)
+	}
+	payload, err := json.Marshal(request.Variables)
+	if err != nil {
+		return err
+	}
+	var variables struct {
+		Filter json.RawMessage `json:"filter"`
+	}
+	if err := json.Unmarshal(payload, &variables); err != nil {
+		return err
+	}
+	capture.filter = string(variables.Filter)
+
+	return json.Unmarshal([]byte(`{"data":{"issues":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`), response)
+}
+
+func Test_IssueList_sends_every_combined_team_scoped_filter(t *testing.T) {
+	capture := &issueListFilterCapture{}
+	restore := useCommandRuntime(t, capture)
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&bytes.Buffer{})
+	command.SetArgs([]string{
+		"issue", "list",
+		"--state", "started",
+		"--project", "project-id",
+		"--assignee", "user-id",
+		"--label", "label-id",
+		"--cycle", "cycle-id",
+		"--created-after", "2026-06-01",
+		"--created-before", "2026-06-30",
+		"--updated-after", "2026-07-01",
+		"--updated-before", "2026-07-30",
+		"--has-blockers",
+		"--blocks",
+	})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.JSONEq(t, `{
+		"team":{"id":{"eq":"team-id"}},
+		"state":{"type":{"eq":"started"}},
+		"project":{"id":{"eq":"project-id"}},
+		"assignee":{"id":{"eq":"user-id"}},
+		"labels":{"some":{"id":{"eq":"label-id"}}},
+		"cycle":{"id":{"eq":"cycle-id"}},
+		"createdAt":{"gte":"2026-06-01","lte":"2026-06-30"},
+		"updatedAt":{"gte":"2026-07-01","lte":"2026-07-30"},
+		"hasBlockedByRelations":{"eq":true},
+		"hasBlockingRelations":{"eq":true}
+	}`, capture.filter)
 }
 
 func Test_CommandFlows_cover_issue_current_error_branches(t *testing.T) {
@@ -294,64 +342,18 @@ func Test_CommandFlows_cover_project_update_create_stdin_read_error(t *testing.T
 	require.ErrorContains(t, err, "read body from stdin")
 }
 
-func Test_CommandFlows_cover_issue_comments_error_branches(t *testing.T) {
-	t.Run("operation error", func(t *testing.T) {
-		restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: "issue_comments"})
-		defer restore()
-		command := NewRootCommand(context.Background(), BuildInfo{})
-		command.SetArgs([]string{"issue", "comments", "LIT-1"})
+func Test_CommandFlows_cover_issue_comments_operation_error(t *testing.T) {
+	restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: "issue_comments"})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetArgs([]string{"issue", "comments", "LIT-1"})
 
-		err := command.ExecuteContext(context.Background())
+	err := command.ExecuteContext(context.Background())
 
-		require.ErrorContains(t, err, "list issue comments LIT-1")
-	})
-
-	t.Run("writer error", func(t *testing.T) {
-		command := &cobra.Command{}
-		command.SetOut(commandFailingWriter{})
-
-		err := writeIssueCommentSummary(
-			command, &rootOptions{},
-			client.IssueCommentSummary{ID: "comment-id", DisplayName: "Omer", Body: "body"},
-		)
-
-		require.ErrorContains(t, err, "write line")
-	})
+	require.ErrorContains(t, err, "list issue comments LIT-1")
 }
 
-func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *testing.T) {
-	t.Run("project filter suggestion runtime error", func(t *testing.T) {
-		original := buildCommandRuntime
-		buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
-			return commandRuntime{}, errors.New("runtime failed")
-		}
-		defer func() {
-			buildCommandRuntime = original
-		}()
-		command := NewRootCommand(context.Background(), BuildInfo{})
-		command.SetArgs([]string{"project", "filter-suggestion", "started projects"})
-
-		err := command.ExecuteContext(context.Background())
-
-		require.ErrorContains(t, err, "runtime failed")
-	})
-
-	t.Run("issue vcs branch search runtime error", func(t *testing.T) {
-		original := buildCommandRuntime
-		buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
-			return commandRuntime{}, errors.New("runtime failed")
-		}
-		defer func() {
-			buildCommandRuntime = original
-		}()
-		command := NewRootCommand(context.Background(), BuildInfo{})
-		command.SetArgs([]string{"issue", "vcs-branch-search", "get", "omer/branch"})
-
-		err := command.ExecuteContext(context.Background())
-
-		require.ErrorContains(t, err, "runtime failed")
-	})
-
+func Test_CommandFlows_cover_comment_child_error_branches(t *testing.T) {
 	t.Run("issue vcs branch search operation error", func(t *testing.T) {
 		restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: "issueVcsBranchSearch"})
 		defer restore()
@@ -361,22 +363,6 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 		err := command.ExecuteContext(context.Background())
 
 		require.ErrorContains(t, err, "get issue by vcs branch omer/branch")
-	})
-
-	t.Run("issue vcs branch bot actor runtime error", func(t *testing.T) {
-		original := buildCommandRuntime
-		buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
-			return commandRuntime{}, errors.New("runtime failed")
-		}
-		defer func() {
-			buildCommandRuntime = original
-		}()
-		command := NewRootCommand(context.Background(), BuildInfo{})
-		command.SetArgs([]string{"issue", "vcs-branch-search", "bot-actor", "omer/branch"})
-
-		err := command.ExecuteContext(context.Background())
-
-		require.ErrorContains(t, err, "runtime failed")
 	})
 
 	t.Run("issue vcs branch bot actor operation error", func(t *testing.T) {
@@ -401,38 +387,6 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 		require.ErrorContains(t, err, "get issue vcs branch shared access omer/branch")
 	})
 
-	t.Run("issue vcs branch shared access runtime error", func(t *testing.T) {
-		original := buildCommandRuntime
-		buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
-			return commandRuntime{}, errors.New("runtime failed")
-		}
-		defer func() {
-			buildCommandRuntime = original
-		}()
-		command := NewRootCommand(context.Background(), BuildInfo{})
-		command.SetArgs([]string{"issue", "vcs-branch-search", "shared-access", "omer/branch"})
-
-		err := command.ExecuteContext(context.Background())
-
-		require.ErrorContains(t, err, "runtime failed")
-	})
-
-	t.Run("attachment issue runtime error", func(t *testing.T) {
-		original := buildCommandRuntime
-		buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
-			return commandRuntime{}, errors.New("runtime failed")
-		}
-		defer func() {
-			buildCommandRuntime = original
-		}()
-		command := NewRootCommand(context.Background(), BuildInfo{})
-		command.SetArgs([]string{"attachment", "issue", "get", "attachment-id"})
-
-		err := command.ExecuteContext(context.Background())
-
-		require.ErrorContains(t, err, "runtime failed")
-	})
-
 	t.Run("attachment issue operation error", func(t *testing.T) {
 		restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: "attachmentIssue"})
 		defer restore()
@@ -442,22 +396,6 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 		err := command.ExecuteContext(context.Background())
 
 		require.ErrorContains(t, err, "get attachment issue attachment-id")
-	})
-
-	t.Run("attachment issue bot actor runtime error", func(t *testing.T) {
-		original := buildCommandRuntime
-		buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
-			return commandRuntime{}, errors.New("runtime failed")
-		}
-		defer func() {
-			buildCommandRuntime = original
-		}()
-		command := NewRootCommand(context.Background(), BuildInfo{})
-		command.SetArgs([]string{"attachment", "issue", "bot-actor", "attachment-id"})
-
-		err := command.ExecuteContext(context.Background())
-
-		require.ErrorContains(t, err, "runtime failed")
 	})
 
 	t.Run("attachment issue bot actor operation error", func(t *testing.T) {
@@ -482,38 +420,6 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 		require.ErrorContains(t, err, "get attachment issue shared access attachment-id")
 	})
 
-	t.Run("attachment issue shared access runtime error", func(t *testing.T) {
-		original := buildCommandRuntime
-		buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
-			return commandRuntime{}, errors.New("runtime failed")
-		}
-		defer func() {
-			buildCommandRuntime = original
-		}()
-		command := NewRootCommand(context.Background(), BuildInfo{})
-		command.SetArgs([]string{"attachment", "issue", "shared-access", "attachment-id"})
-
-		err := command.ExecuteContext(context.Background())
-
-		require.ErrorContains(t, err, "runtime failed")
-	})
-
-	t.Run("issue bot actor runtime error", func(t *testing.T) {
-		original := buildCommandRuntime
-		buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
-			return commandRuntime{}, errors.New("runtime failed")
-		}
-		defer func() {
-			buildCommandRuntime = original
-		}()
-		command := NewRootCommand(context.Background(), BuildInfo{})
-		command.SetArgs([]string{"issue", "bot-actor", "LIT-1"})
-
-		err := command.ExecuteContext(context.Background())
-
-		require.ErrorContains(t, err, "runtime failed")
-	})
-
 	t.Run("issue bot actor operation error", func(t *testing.T) {
 		restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: "issue_botActor"})
 		defer restore()
@@ -536,38 +442,6 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 		require.ErrorContains(t, err, "get issue shared access LIT-1")
 	})
 
-	t.Run("issue shared access runtime error", func(t *testing.T) {
-		original := buildCommandRuntime
-		buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
-			return commandRuntime{}, errors.New("runtime failed")
-		}
-		defer func() {
-			buildCommandRuntime = original
-		}()
-		command := NewRootCommand(context.Background(), BuildInfo{})
-		command.SetArgs([]string{"issue", "shared-access", "LIT-1"})
-
-		err := command.ExecuteContext(context.Background())
-
-		require.ErrorContains(t, err, "runtime failed")
-	})
-
-	t.Run("comment bot actor runtime error", func(t *testing.T) {
-		original := buildCommandRuntime
-		buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
-			return commandRuntime{}, errors.New("runtime failed")
-		}
-		defer func() {
-			buildCommandRuntime = original
-		}()
-		command := NewRootCommand(context.Background(), BuildInfo{})
-		command.SetArgs([]string{"comment", "bot-actor", "comment-id"})
-
-		err := command.ExecuteContext(context.Background())
-
-		require.ErrorContains(t, err, "runtime failed")
-	})
-
 	t.Run("bot actor operation error", func(t *testing.T) {
 		restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: "comment_botActor"})
 		defer restore()
@@ -577,16 +451,6 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 		err := command.ExecuteContext(context.Background())
 
 		require.ErrorContains(t, err, "get comment bot actor comment-id")
-	})
-
-	t.Run("child page projection", func(t *testing.T) {
-		page, err := pageWithItems(
-			client.CommentChildList{CommentID: "comment-id"},
-			[]client.CommentMetadataSummary{{ID: "child-comment-id"}},
-		)
-
-		require.NoError(t, err)
-		require.Equal(t, "child-comment-id", page.Comments[0].ID)
 	})
 }
 
@@ -601,8 +465,6 @@ func Test_CommandFlows_cover_user_settings_error_and_writer_branches(t *testing.
 		{"user", "settings", "mobile-schedule"},
 		{"user", "settings", "mobile-schedule-day", "monday"},
 		{"user", "settings", "theme"},
-		{"user", "settings", "custom-theme"},
-		{"user", "settings", "custom-sidebar-theme"},
 	}
 	for _, args := range runtimeErrorCommands {
 		t.Run("runtime "+strings.Join(args, " "), func(t *testing.T) {
@@ -651,52 +513,92 @@ func Test_CommandFlows_cover_user_settings_error_and_writer_branches(t *testing.
 			require.ErrorContains(t, err, test.contains)
 		})
 	}
+}
 
-	command := &cobra.Command{}
+func Test_UserSettings_honors_output_modes(t *testing.T) {
+	nullMobile := payloadGraphQLClient{
+		payload: `{"userSettings":{"notificationDeliveryPreferences":{"mobile":null}}}`,
+	}
+	tests := []struct {
+		name string
+		args []string
+		fake graphql.Client
+		want string
+	}{
+		{
+			name: "settings id-only",
+			args: []string{"--id-only", "user", "settings", "get"},
+			fake: commandFlowFakeClient{},
+			want: "settings-id\n",
+		},
+		{
+			name: "settings quiet",
+			args: []string{"--quiet", "user", "settings", "get"},
+			fake: commandFlowFakeClient{},
+			want: "",
+		},
+		{
+			name: "schedule day quiet",
+			args: []string{"--quiet", "user", "settings", "mobile-schedule-day", "monday"},
+			fake: commandFlowFakeClient{},
+			want: "",
+		},
+		{
+			name: "schedule day json",
+			args: []string{"--json", "--compact", "user", "settings", "mobile-schedule-day", "monday"},
+			fake: commandFlowFakeClient{},
+			want: `{"start":"09:00","end":"18:00"}` + "\n",
+		},
+		{
+			name: "schedule day without a schedule",
+			args: []string{"user", "settings", "mobile-schedule-day", "monday"},
+			fake: nullMobile,
+			want: "monday start=- end=-\n",
+		},
+		{
+			name: "mobile delivery quiet",
+			args: []string{"--quiet", "user", "settings", "mobile-delivery"},
+			fake: commandFlowFakeClient{},
+			want: "",
+		},
+		{
+			name: "null mobile schedule json",
+			args: []string{"--json", "user", "settings", "mobile-schedule"},
+			fake: nullMobile,
+			want: "null\n",
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			output := bytes.Buffer{}
+			restore := useCommandRuntime(t, test.fake)
+			defer restore()
+			command := NewRootCommand(context.Background(), BuildInfo{})
+			command.SetOut(&output)
+			command.SetArgs(test.args)
+
+			err := command.ExecuteContext(context.Background())
+
+			require.NoError(t, err)
+			require.Equal(t, test.want, output.String())
+		})
+	}
+}
+
+func Test_UserSettings_theme_reports_a_preset_linctl_does_not_know_as_sent(t *testing.T) {
 	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, payloadGraphQLClient{
+		payload: `{"userSettings":{"theme":{"preset":"aurora","custom":null}}}`,
+	})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
 	command.SetOut(&output)
-	settings := client.UserSettingsSummary{ID: "settings-id", UserID: "user-id"}
-	require.NoError(t, writeUserSettings(command, &rootOptions{idOnly: true}, settings))
-	require.NoError(t, writeUserSettings(command, &rootOptions{quiet: true}, settings))
-	require.NoError(t, writeUserSettingsValue(command, &rootOptions{quiet: true}, settings, "settings"))
-	require.NoError(t, writeUserSettingsValue(command, &rootOptions{json: true}, settings, "settings"))
-	var nilChannel *client.NotificationDeliveryChannel
-	var nilSchedule *client.NotificationDeliverySchedule
-	var nilTheme *client.UserSettingsThemeSummary
-	require.NoError(t, writeUserSettingsNullableValue(command, &rootOptions{quiet: true}, nilChannel, "nullable"))
-	require.NoError(t, writeUserSettingsNullableValue(command, &rootOptions{json: true}, nilSchedule, "nullable"))
-	output.Reset()
-	require.NoError(t, writeUserSettingsNullableValue(command, &rootOptions{}, nilTheme, "nullable"))
-	require.Equal(t, "nullable none\n", output.String())
-	output.Reset()
-	require.NoError(t, writeUserSettingsNullableValue(
-		command, &rootOptions{json: true, compact: true, fields: "notifications_disabled"},
-		&client.NotificationDeliveryChannel{NotificationsDisabled: boolPointerForUserSettingsTest(false)},
-		"nullable",
-	))
-	require.Contains(t, output.String(), `"notifications_disabled"`)
-	require.NotContains(t, output.String(), `"schedule"`)
-	require.Empty(t, pointerString(nil))
-	require.Equal(t, "value", pointerString(stringPointerForUserSettingsTest("value")))
+	command.SetArgs([]string{"--json", "--compact", "user", "settings", "theme"})
 
-	err := runUserSettingsThemeCommand(
-		context.Background(),
-		command,
-		&rootOptions{},
-		commandRuntime{},
-		"unknown",
-		"desktop",
-		"light",
-	)
-	require.Error(t, err)
-}
+	err := command.ExecuteContext(context.Background())
 
-func stringPointerForUserSettingsTest(value string) *string {
-	return &value
-}
-
-func boolPointerForUserSettingsTest(value bool) *bool {
-	return &value
+	require.NoError(t, err)
+	require.JSONEq(t, `{"preset":"aurora"}`, output.String())
 }
 
 func Test_UserSettings_prints_none_when_mobile_delivery_is_null(t *testing.T) {

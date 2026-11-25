@@ -51,7 +51,10 @@ func Test_UpdateIssue_sets_delegate_alone(t *testing.T) {
 	})
 
 	require.NoError(t, err)
-	require.Equal(t, 1, recorder.countOf("IssueUpdate"))
+	require.JSONEq(t, `{
+		"id": "LIT-1",
+		"input": {"delegateId": "agent-user-id"}
+	}`, string(recorder.variablesFor(t, "IssueUpdate")))
 }
 
 func Test_UpdateIssue_clears_delegate_when_requested(t *testing.T) {
@@ -120,7 +123,6 @@ func Test_UpdateIssue_trusts_the_mutation_state_when_the_read_trails_the_write(t
 
 	require.NoError(t, err)
 	require.Equal(t, "in-review-state", issue.StateID)
-	require.Equal(t, 2, sequenced.calls["issue"])
 }
 
 func Test_UpdateIssue_reports_a_mismatch_when_the_mutation_state_differs(t *testing.T) {

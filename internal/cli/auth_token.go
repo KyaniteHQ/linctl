@@ -157,7 +157,7 @@ func acquireClientCredentialsToken(
 	if err != nil {
 		return auth.TokenState{}, authReadinessReport{}, err
 	}
-	readiness, err := requireLoggedAuthReadiness(ctx, authContext.log(), authReadinessRequest{
+	readiness, err := requireLoggedAuthReadiness(ctx, authContext.logger, authReadinessRequest{
 		AccessToken:    token.AccessToken,
 		TokenActor:     token.Actor,
 		TokenScopes:    token.Scopes,
@@ -229,12 +229,6 @@ func refreshAuthToken(
 	token auth.TokenState,
 	timeout time.Duration,
 ) (auth.TokenState, error) {
-	if token.AccessToken == "" && token.RefreshToken == "" {
-		return auth.TokenState{}, auth.NewError(
-			auth.ErrorCodeNotConfigured,
-			"missing OAuth token state: run linctl auth login or linctl auth app",
-		)
-	}
 	if token.GrantType == authGrantClientCredentials {
 		if app.ClientID == "" || app.ClientSecret == "" {
 			return auth.TokenState{}, auth.NewError(
@@ -276,7 +270,7 @@ func refreshedAuthReadiness(
 	timeout time.Duration,
 ) (authReadinessReport, error) {
 	actor := cmp.Or(expectedActor, appActor)
-	return requireLoggedAuthReadiness(ctx, authContext.log(), authReadinessRequest{
+	return requireLoggedAuthReadiness(ctx, authContext.logger, authReadinessRequest{
 		AccessToken:    token.AccessToken,
 		TokenActor:     token.Actor,
 		TokenScopes:    token.Scopes,
@@ -330,9 +324,6 @@ func revokeTokenState(
 	oauthClient authOAuthClient,
 	token auth.TokenState,
 ) ([]string, bool) {
-	if logger == nil {
-		logger = discardLogger
-	}
 	revoked := []string{}
 	failed := false
 	for _, request := range []oauth.RevocationRequest{

@@ -76,6 +76,7 @@ func testCommandRuntime(graphqlClient graphql.Client) commandRuntime {
 		},
 		repoConfig:    repoConfigSelection{Path: "/repo/.linctl.toml", Status: repoConfigLoaded},
 		graphqlClient: graphqlClient,
+		logger:        discardLogger,
 	}
 }
 

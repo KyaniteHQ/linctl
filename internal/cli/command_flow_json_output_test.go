@@ -94,6 +94,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{args: []string{"--json", "issue", "priority-values"}, nonObjectOK: true},
 		{args: []string{"--json", "issue", "filter-suggestion", "started issues"}, keys: []string{"filter", "log_id"}},
 		{args: []string{"--json", "issue", "title-suggestion", "Customer asks for faster exports"}, keys: []string{"title"}},
+		{args: []string{"--json", "issue", "bot-actor", "LIT-1"}, keys: []string{"issue_id", "bot"}},
+		{args: []string{"--json", "comment", "bot-actor", "comment-id"}, keys: []string{"comment_id", "bot"}},
 		{args: []string{"--json", "--fields", "id,display_name", "comment", "list", "--limit", "1"}, keys: []string{"comments"}},
 		{args: []string{"--json", "comment", "get", "comment-id"}, keys: []string{"id"}},
 		{args: []string{"--json", "comment", "update", "comment-id", "--body", "New body"}, keys: []string{"id", "body"}},
@@ -332,6 +334,7 @@ func Test_CommandFlows_suppress_success_output_when_quiet_flag_is_set(t *testing
 		{"--quiet", "agent-session", "get", "agent-session-id"},
 		{"--quiet", "team", "git-automation-states", "team-id"},
 		{"--quiet", "customer-need", "project-attachment", "customer-need-id"},
+		{"--quiet", "project", "filter-suggestion", "started projects"},
 	}
 
 	for _, args := range tests {

@@ -897,7 +897,6 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 		project := client.ProjectSummary{ID: "project-id"}
 		milestone := client.ProjectMilestoneSummary{ID: "project-milestone-id"}
 		auditEntryType := client.AuditEntryTypeSummary{Type: "user_login", Description: "User logged in"}
-		require.Equal(t, "-", emptyDash(""))
 
 		quietOutput := bytes.Buffer{}
 		quietCommand := &cobra.Command{}
@@ -940,13 +939,10 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 		require.True(t, wrote)
 		require.ErrorContains(t, err, "id is empty")
 
-		require.NoError(t, ensureNonEmpty(&rootOptions{}, 0))
-		require.Error(t, writeIssue(command, &rootOptions{format: "wide"}, issue))
+		require.ErrorContains(t, writeIssue(command, &rootOptions{format: "wide"}, issue), "invalid format")
 		require.Error(t, writeCycle(command, &rootOptions{format: "wide"}, cycle))
 		require.Error(t, writeProject(command, &rootOptions{format: "wide"}, project))
 		require.Error(t, writeProjectMilestone(command, &rootOptions{format: "wide"}, milestone))
-		_, err = normalizedHumanFormat(&rootOptions{format: "wide"})
-		require.ErrorContains(t, err, "invalid format")
 
 		err = writeJSONValue(command, &rootOptions{json: true, fields: "missing"}, issue)
 		require.ErrorContains(t, err, "field \"missing\" is not present")

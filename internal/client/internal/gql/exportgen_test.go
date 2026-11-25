@@ -123,10 +123,33 @@ func shadow() {
 
 func TestExportgenIsIdempotentAndReproducible(t *testing.T) {
 	paths := writeExportgenWorkspace(t, `package fixture
-func operation(value string) string { return value }
+
+func alpha(value string) string { return value }
+func bravo(value string) string { return value }
+func charlie(value string) string { return value }
+func delta(value string) string { return value }
+func echo(value string) string { return value }
+func foxtrot(value string) string { return value }
+func golf(value string) string { return value }
+func hotel(value string) string { return value }
+func india(value string) string { return value }
+func juliet(value string) string { return value }
 `, `package parent
+
 import gql "example.com/generated/gql"
-var _ = gql.XOperation("value")
+
+var (
+	_ = gql.XAlpha
+	_ = gql.XBravo
+	_ = gql.XCharlie
+	_ = gql.XDelta
+	_ = gql.XEcho
+	_ = gql.XFoxtrot
+	_ = gql.XGolf
+	_ = gql.XHotel
+	_ = gql.XIndia
+	_ = gql.XJuliet
+)
 `)
 
 	runExportgen(t, paths, true)

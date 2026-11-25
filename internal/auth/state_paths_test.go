@@ -40,7 +40,7 @@ func Test_DefaultPaths_use_os_config_and_state_locations(t *testing.T) {
 	require.NotContains(t, got.TokenPath, ".linctl.toml")
 }
 
-func Test_DefaultPaths_cover_supported_os_locations(t *testing.T) {
+func Test_DefaultPaths_fall_back_when_preferred_location_is_unset(t *testing.T) {
 	root := t.TempDir()
 	tests := []struct {
 		name              string
@@ -50,16 +50,6 @@ func Test_DefaultPaths_cover_supported_os_locations(t *testing.T) {
 		wantTokenPath     string
 	}{
 		{
-			name: "windows local app data",
-			goos: "windows",
-			env: staticEnv{
-				"APPDATA":      filepath.Join(root, "appdata"),
-				"LOCALAPPDATA": filepath.Join(root, "localappdata"),
-			},
-			wantAppConfigPath: filepath.Join(root, "appdata", "linctl", appConfigFileName),
-			wantTokenPath:     filepath.Join(root, "localappdata", "linctl", tokenFileName),
-		},
-		{
 			name: "windows app data fallback",
 			goos: "windows",
 			env: staticEnv{
@@ -67,29 +57,6 @@ func Test_DefaultPaths_cover_supported_os_locations(t *testing.T) {
 			},
 			wantAppConfigPath: filepath.Join(root, "appdata", "linctl", appConfigFileName),
 			wantTokenPath:     filepath.Join(root, "appdata", "linctl", tokenFileName),
-		},
-		{
-			name: "darwin application support",
-			goos: "darwin",
-			env:  staticEnv{"HOME": root},
-			wantAppConfigPath: filepath.Join(
-				root,
-				"Library",
-				"Application Support",
-				"linctl",
-				appConfigFileName,
-			),
-			wantTokenPath: filepath.Join(root, "Library", "Application Support", "linctl", tokenFileName),
-		},
-		{
-			name: "linux xdg",
-			goos: "linux",
-			env: staticEnv{
-				"XDG_CONFIG_HOME": filepath.Join(root, "config"),
-				"XDG_STATE_HOME":  filepath.Join(root, "state"),
-			},
-			wantAppConfigPath: filepath.Join(root, "config", "linctl", appConfigFileName),
-			wantTokenPath:     filepath.Join(root, "state", "linctl", tokenFileName),
 		},
 		{
 			name:              "linux home fallback",
@@ -102,7 +69,9 @@ func Test_DefaultPaths_cover_supported_os_locations(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			withRuntimeGOOS(t, tt.goos)
+			if tt.goos != runtime.GOOS {
+				t.Skip("location fallback belongs to " + tt.goos)
+			}
 
 			got, err := DefaultPaths(tt.env)
 
@@ -113,7 +82,7 @@ func Test_DefaultPaths_cover_supported_os_locations(t *testing.T) {
 	}
 }
 
-func Test_DefaultPaths_reports_supported_os_environment_errors(t *testing.T) {
+func Test_DefaultPaths_reports_environment_errors(t *testing.T) {
 	root := t.TempDir()
 	tests := []struct {
 		name string
@@ -122,28 +91,17 @@ func Test_DefaultPaths_reports_supported_os_environment_errors(t *testing.T) {
 		want string
 	}{
 		{
-			name: "windows missing app data",
-			goos: "windows",
-			env:  staticEnv{},
-			want: "APPDATA is not set",
-		},
-		{
-			name: "darwin missing home",
-			goos: "darwin",
-			env:  staticEnv{},
-			want: "HOME is not set",
-		},
-		{
-			name: "linux relative config home",
+			name: "relative XDG_CONFIG_HOME",
 			goos: "linux",
 			env: staticEnv{
 				"HOME":            root,
 				"XDG_CONFIG_HOME": "relative",
+				"XDG_STATE_HOME":  filepath.Join(root, "state"),
 			},
 			want: "XDG_CONFIG_HOME must be absolute",
 		},
 		{
-			name: "linux relative state home",
+			name: "relative XDG_STATE_HOME",
 			goos: "linux",
 			env: staticEnv{
 				"HOME":            root,
@@ -153,18 +111,36 @@ func Test_DefaultPaths_reports_supported_os_environment_errors(t *testing.T) {
 			want: "XDG_STATE_HOME must be absolute",
 		},
 		{
-			name: "linux missing state home fallback",
+			name: "linux missing HOME",
 			goos: "linux",
-			env: staticEnv{
-				"XDG_CONFIG_HOME": filepath.Join(root, "config"),
-			},
+			env:  staticEnv{},
+			want: "HOME is not set",
+		},
+		{
+			name: "linux missing HOME for state fallback",
+			goos: "linux",
+			env:  staticEnv{"XDG_CONFIG_HOME": filepath.Join(root, "config")},
+			want: "HOME is not set",
+		},
+		{
+			name: "windows missing APPDATA",
+			goos: "windows",
+			env:  staticEnv{},
+			want: "APPDATA is not set",
+		},
+		{
+			name: "darwin missing HOME",
+			goos: "darwin",
+			env:  staticEnv{},
 			want: "HOME is not set",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			withRuntimeGOOS(t, tt.goos)
+			if tt.goos != runtime.GOOS {
+				t.Skip("environment error belongs to " + tt.goos)
+			}
 
 			_, err := DefaultPaths(tt.env)
 

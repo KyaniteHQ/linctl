@@ -9,19 +9,6 @@ import (
 	"github.com/KyaniteHQ/linctl/internal/client"
 )
 
-// discardLogger is the fallback for runtimes built without a logger (test
-// fakes), so logging call-sites never need a nil check.
-var discardLogger = slog.New(slog.DiscardHandler)
-
-// log returns the runtime logger, or a discarding logger when one was not set.
-func (runtime commandRuntime) log() *slog.Logger {
-	if runtime.logger == nil {
-		return discardLogger
-	}
-
-	return runtime.logger
-}
-
 // logTargetResolution records the outcome of a target resolution at debug
 // level. The mismatch attribute flags a Target Mismatch refusal versus an
 // unrelated resolve error; the underlying error is already surfaced to the

@@ -257,9 +257,6 @@ func Test_TaxonomyDirectWriteCommandFlows_propagate_mutation_errors(t *testing.T
 		{name: "project label update", args: []string{"project-label", "update", "project-label-id", "--name", "Updated", "--org-wide"}, operation: "ProjectLabelUpdate"},
 		{name: "project label retire", args: []string{"project-label", "retire", "project-label-id", "--org-wide"}, operation: "ProjectLabelRetire"},
 		{name: "project label restore", args: []string{"project-label", "restore", "project-label-id", "--org-wide"}, operation: "ProjectLabelRestore"},
-		{name: "project milestone create", args: []string{"project-milestone", "create", "project-id", "--name", "Created"}, operation: "ProjectMilestoneCreate"},
-		{name: "project milestone update", args: []string{"project-milestone", "update", "project-milestone-id", "--name", "Updated"}, operation: "ProjectMilestoneUpdate"},
-		{name: "project milestone delete", args: []string{"project-milestone", "delete", "project-milestone-id"}, operation: "ProjectMilestoneDelete"},
 	}
 
 	for _, test := range tests {

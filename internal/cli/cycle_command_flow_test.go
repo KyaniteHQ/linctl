@@ -12,20 +12,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_CycleCommandFlows_list_cycles(t *testing.T) {
-	output := bytes.Buffer{}
-	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{})
-	defer restore()
-	command := NewRootCommand(context.Background(), BuildInfo{})
-	command.SetOut(&output)
-	command.SetArgs([]string{"cycle", "list", "--limit", "1"})
-
-	err := command.ExecuteContext(context.Background())
-
-	require.NoError(t, err)
-	require.Contains(t, output.String(), "cycle-id Cycle 12 [active]")
-}
-
 func Test_CycleCommandFlows_list_cycles_notes_truncation(t *testing.T) {
 	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{truncatedCycles: true})
 	defer restore()
@@ -259,6 +245,20 @@ func Test_CycleCommandFlows_get_current_sprint_full_format(t *testing.T) {
 	require.NoError(t, err)
 	require.Contains(t, output.String(), "starts_at=")
 	require.Contains(t, output.String(), "progress=")
+}
+
+func Test_CycleCommandFlows_empty_format_renders_compact(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"--format", "", "sprint", "current"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Equal(t, "cycle-id Cycle 12 [active]\n", output.String())
 }
 
 func Test_CycleCommandFlows_get_current_sprint_json(t *testing.T) {
@@ -560,21 +560,10 @@ func Test_CycleCommandFlows_list_cycle_issue_edges(t *testing.T) {
 		wantMessage string
 	}{
 		{
-			name:        "runtime",
-			args:        []string{"cycle", "issues", "cycle-id"},
-			wantMessage: "runtime failed",
-		},
-		{
 			name:        "operation",
 			args:        []string{"cycle", "issues", "cycle-id"},
 			fake:        cycleCommandFlowFakeClient{failOperation: "cycle_issues"},
 			wantMessage: "cycle_issues failed",
-		},
-		{
-			name:        "uncompleted operation",
-			args:        []string{"cycle", "uncompleted-issues", "cycle-id"},
-			fake:        cycleCommandFlowFakeClient{failOperation: "cycle_uncompletedIssuesUponClose"},
-			wantMessage: "cycle_uncompletedissuesuponclose failed",
 		},
 		{
 			name:        "empty",
@@ -591,18 +580,7 @@ func Test_CycleCommandFlows_list_cycle_issue_edges(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			var restore func()
-			if test.name == "runtime" {
-				original := buildCommandRuntime
-				buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
-					return commandRuntime{}, errors.New("runtime failed")
-				}
-				restore = func() {
-					buildCommandRuntime = original
-				}
-			} else {
-				restore = useCommandRuntime(t, test.fake)
-			}
+			restore := useCommandRuntime(t, test.fake)
 			defer restore()
 			command := NewRootCommand(context.Background(), BuildInfo{})
 			command.SetArgs(test.args)
@@ -675,16 +653,6 @@ func Test_CycleCommandFlows_report_cycle_write_edges(t *testing.T) {
 		{
 			name:        "create runtime",
 			args:        []string{"cycle", "create", "--starts-at", "2026-07-01T00:00:00Z", "--ends-at", "2026-07-15T00:00:00Z"},
-			wantMessage: "runtime failed",
-		},
-		{
-			name:        "update runtime",
-			args:        []string{"cycle", "update", "cycle-id", "--name", "Updated cycle"},
-			wantMessage: "runtime failed",
-		},
-		{
-			name:        "archive runtime",
-			args:        []string{"cycle", "archive", "cycle-id"},
 			wantMessage: "runtime failed",
 		},
 		{

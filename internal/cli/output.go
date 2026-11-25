@@ -199,9 +199,6 @@ func sortByJSONField[T any](items []T, field string, order string) ([]T, error) 
 	if field == "" {
 		return items, nil
 	}
-	if order != "asc" && order != "desc" {
-		return nil, fmt.Errorf("invalid sort order %q: use asc or desc", order)
-	}
 	if items == nil {
 		return nil, nil
 	}
@@ -375,10 +372,6 @@ func projectCollectionKey(raw map[string]any, paths [][]string, key string) (map
 }
 
 func copyJSONPath(source map[string]any, destination map[string]any, path []string) error {
-	if len(path) == 0 {
-		return nil
-	}
-
 	value, ok := source[path[0]]
 	if !ok {
 		return fmt.Errorf("project json fields: field %q is not present", strings.Join(path, "."))

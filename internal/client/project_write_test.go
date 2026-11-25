@@ -30,7 +30,7 @@ func Test_CreateProject_returns_created_project_when_target_matches(t *testing.T
 	require.NoError(t, err)
 	require.Equal(t, "project-id", project.ID)
 	require.Equal(t, "created", project.Name)
-	require.True(t, projectHasTeam(project, "team-id", "LIT"))
+	require.Equal(t, []ProjectTeam{{ID: "team-id", Key: "LIT", Name: "linctl-it"}}, project.Teams)
 	require.JSONEq(t, `{
 		"input": {
 			"name": "created",
@@ -63,26 +63,38 @@ func Test_UpdateProject_refuses_when_pinned_project_differs(t *testing.T) {
 }
 
 func Test_UpdateProject_refuses_when_project_lacks_pinned_team(t *testing.T) {
-	// Given: the resolved project id matches the pinned project, but the project
-	// belongs to a different team. This isolates requireProject's projectHasTeam
-	// branch (write_guard.go) from the project-id mismatch branch above it.
-	graphqlClient := projectWriteFakeClient(map[string]string{
-		"project": `{"project":` + projectJSONWithTeam(projectFixture{
-			ID:     "project-id",
-			Name:   "fixture",
-			Status: "Backlog",
-		}, "other-team", "OTHER") + `}`,
-	})
+	testCases := []struct {
+		name    string
+		teamID  string
+		teamKey string
+	}{
+		{name: "other team", teamID: "other-team", teamKey: "OTHER"},
+		{name: "pinned team id with another key", teamID: "team-id", teamKey: "ABC"},
+		{name: "pinned team key with another id", teamID: "other-team", teamKey: "LIT"},
+	}
 
-	// When
-	_, err := UpdateProject(context.Background(), graphqlClient, matchingTarget(), ProjectUpdateRequest{
-		ID:   "project-id",
-		Name: "updated",
-	})
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			// Given
+			recorder := &mutationRecordingClient{inner: projectWriteFakeClient(map[string]string{
+				"project": `{"project":` + projectJSONWithTeam(projectFixture{
+					ID:     "project-id",
+					Name:   "fixture",
+					Status: "Backlog",
+				}, testCase.teamID, testCase.teamKey) + `}`,
+			})}
 
-	// Then
-	require.Error(t, err)
-	require.ErrorIs(t, err, ErrTargetMismatch)
+			// When
+			_, err := UpdateProject(context.Background(), recorder, matchingTarget(), ProjectUpdateRequest{
+				ID:   "project-id",
+				Name: "updated",
+			})
+
+			// Then
+			require.ErrorIs(t, err, ErrTargetMismatch)
+			require.False(t, recorder.sentOperation("ProjectUpdate"))
+		})
+	}
 }
 
 // Test_UpdateProject_succeeds_when_pinned_team_matches_on_truncated_page proves

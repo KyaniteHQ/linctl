@@ -5,107 +5,64 @@ package auth
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"syscall"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 )
 
+const (
+	errorInvalidHandle = syscall.Errno(6)
+	errorNotLocked     = syscall.Errno(158)
+)
+
 func Test_lockStateFile_reports_context_and_non_contention_errors(t *testing.T) {
-	file := tempLockFile(t)
+	file, err := os.Create(filepath.Join(t.TempDir(), "lock"))
+	require.NoError(t, err)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	require.ErrorIs(t, lockStateFile(ctx, file), context.Canceled)
 
-	want := syscall.Errno(6)
-	withLockFileExCall(t, func(...uintptr) (uintptr, uintptr, error) {
-		return 0, 0, want
-	})
-	require.ErrorIs(t, lockStateFile(context.Background(), file), want)
+	require.NoError(t, file.Close())
+	require.ErrorIs(t, lockStateFile(context.Background(), file), errorInvalidHandle)
 }
 
-func Test_lockStateFile_retries_lock_violation_then_succeeds(t *testing.T) {
-	file := tempLockFile(t)
+func Test_lockStateFile_waits_for_a_held_lock_until_release_or_cancel(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "lock")
+	holder := openLockHandle(t, path)
+	waiter := openLockHandle(t, path)
+	require.NoError(t, lockStateFile(context.Background(), holder))
 
-	calls := 0
-	withLockFileExCall(t, func(...uintptr) (uintptr, uintptr, error) {
-		calls++
-		if calls == 1 {
-			return 0, 0, lockFileLockViolation
-		}
-		return 1, 0, nil
+	ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
+	defer cancel()
+	require.ErrorIs(t, lockStateFile(ctx, waiter), context.DeadlineExceeded)
+
+	released := make(chan error, 1)
+	time.AfterFunc(50*time.Millisecond, func() {
+		released <- unlockStateFile(holder)
 	})
-
-	require.NoError(t, lockStateFile(context.Background(), file))
-	require.Equal(t, 2, calls)
+	acquireCtx, cancelAcquire := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancelAcquire()
+	require.NoError(t, lockStateFile(acquireCtx, waiter))
+	require.NoError(t, <-released)
+	require.NoError(t, unlockStateFile(waiter))
 }
 
-func Test_lockStateFile_cancels_while_retrying_lock_violation(t *testing.T) {
-	file := tempLockFile(t)
+func Test_unlockStateFile_reports_unlocking_an_unlocked_file(t *testing.T) {
+	file := openLockHandle(t, filepath.Join(t.TempDir(), "lock"))
 
-	ctx, cancel := context.WithCancel(context.Background())
-	t.Cleanup(cancel)
-
-	waiting := make(chan struct{})
-	var reported bool
-	withLockFileExCall(t, func(...uintptr) (uintptr, uintptr, error) {
-		if !reported {
-			reported = true
-			close(waiting)
-		}
-		return 0, 0, lockFileLockViolation
-	})
-
-	result := make(chan error, 1)
-	go func() {
-		result <- lockStateFile(ctx, file)
-	}()
-
-	<-waiting
-	cancel()
-	require.ErrorIs(t, <-result, context.Canceled)
+	require.ErrorIs(t, unlockStateFile(file), errorNotLocked)
 }
 
-func Test_unlockStateFile_reports_syscall_error(t *testing.T) {
-	file := tempLockFile(t)
-
-	withUnlockFileExCall(t, func(...uintptr) (uintptr, uintptr, error) {
-		return 1, 0, nil
-	})
-	require.NoError(t, unlockStateFile(file))
-
-	want := syscall.Errno(6)
-	withUnlockFileExCall(t, func(...uintptr) (uintptr, uintptr, error) {
-		return 0, 0, want
-	})
-	require.ErrorIs(t, unlockStateFile(file), want)
-}
-
-func tempLockFile(t *testing.T) *os.File {
+func openLockHandle(t *testing.T, path string) *os.File {
 	t.Helper()
-	file, err := os.CreateTemp(t.TempDir(), "lock")
+	file, err := os.OpenFile(path, os.O_CREATE|os.O_RDWR, 0o600)
 	require.NoError(t, err)
 	t.Cleanup(func() {
 		require.NoError(t, file.Close())
 	})
 	return file
-}
-
-func withLockFileExCall(t *testing.T, fn func(...uintptr) (uintptr, uintptr, error)) {
-	t.Helper()
-	original := lockFileExCall
-	lockFileExCall = fn
-	t.Cleanup(func() {
-		lockFileExCall = original
-	})
-}
-
-func withUnlockFileExCall(t *testing.T, fn func(...uintptr) (uintptr, uintptr, error)) {
-	t.Helper()
-	original := unlockFileExCall
-	unlockFileExCall = fn
-	t.Cleanup(func() {
-		unlockFileExCall = original
-	})
 }

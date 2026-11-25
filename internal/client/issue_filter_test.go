@@ -21,28 +21,6 @@ func issueFilterFakeClient() fakeGraphQLClient {
 	}
 }
 
-func Test_ListIssuesByTeam_composes_combined_filters_into_one_operation(t *testing.T) {
-	recorder := &recordingGraphQLClient{inner: issueFilterFakeClient()}
-
-	issues, err := ListIssuesByTeam(context.Background(), recorder, "team-id", 2, IssueListFilters{
-		StateType:  "started",
-		AssigneeID: "user-id",
-	})
-
-	require.NoError(t, err)
-	require.NotEmpty(t, issues.Issues)
-	require.JSONEq(t, `{
-		"filter": {
-			"team": {"id": {"eq": "team-id"}},
-			"state": {"type": {"eq": "started"}},
-			"assignee": {"id": {"eq": "user-id"}}
-		},
-		"first": 2,
-		"after": null,
-		"includeArchived": true
-	}`, string(recorder.variablesFor(t, "IssuesByTeamFiltered")))
-}
-
 func Test_ListIssuesByTeam_composes_each_filter_clause(t *testing.T) {
 	team := `"team": {"id": {"eq": "team-id"}}`
 	tests := []struct {

@@ -2,8 +2,11 @@ package client
 
 import "errors"
 
+// finishReconciledWrite confirms a guarded write by reading it back. Linear's
+// mutation inputs have no stable idempotency key (vendored schema.graphql;
+// Linear SDK pin in .linear-sdk-ref), so a blind replay of an ambiguous result
+// can duplicate an entity or hide a failed change.
 func finishReconciledWrite[T any](
-	class MutationRetryClass,
 	observed T,
 	readErr error,
 	writeErr error,
@@ -24,9 +27,6 @@ func finishReconciledWrite[T any](
 	}
 	if !matches {
 		return zero, withMutationError(conflict, writeErr)
-	}
-	if writeErr != nil {
-		return applyMutationRetryClass(class, observed, true, writeErr)
 	}
 
 	return observed, nil

@@ -175,21 +175,6 @@ func Test_EnrichCommandInventory_adds_graphql_backing_without_mutating_source(t 
 	}, enriched[0].GraphQLRoots)
 	require.Equal(t, "Query.issue", enriched[1].OperationBacking)
 	require.Empty(t, enriched[2].OperationBacking)
-	require.False(t, slices.ContainsFunc(enriched, func(command CommandInfo) bool {
-		return command.OperationBacking == "Query.missing"
-	}))
-}
-
-func Test_commandBacking_reports_missing_backing(t *testing.T) {
-	backing, ok := commandBacking(CommandInfo{
-		Path:    "issue get",
-		Aliases: []string{"issue get ISSUE_ID"},
-	}, map[string]CommandBacking{
-		"issue list": {OperationBacking: "Query.issues"},
-	})
-
-	require.False(t, ok)
-	require.Empty(t, backing)
 }
 
 func Test_SortedAvailableCommands_skips_unavailable_commands(t *testing.T) {
@@ -204,71 +189,67 @@ func Test_SortedAvailableCommands_skips_unavailable_commands(t *testing.T) {
 	require.Equal(t, "visible", commands[0].Name())
 }
 
-func Test_collectionKeyForPage_uses_typed_list_envelope(t *testing.T) {
-	require.Equal(t, "attachments", collectionKeyForPage[client.AttachmentList]())
-	require.Equal(t, "users", collectionKeyForPage[client.UserList]())
-}
+func Test_CommandInventory_reports_unannotated_commands_as_unknown(t *testing.T) {
+	run := func(*cobra.Command, []string) {}
+	root := &cobra.Command{Use: "linctl"}
+	group := &cobra.Command{Use: "issue"}
+	root.AddCommand(group)
+	addCommandWithSafety(group, CommandSafetyWrite, &cobra.Command{Use: "archive", Short: "Archive issue", Run: run})
+	group.AddCommand(&cobra.Command{Use: "create", Short: "Create issue", Run: run})
+	group.AddCommand(&cobra.Command{Use: "get", Short: "Get issue", Run: run})
+	group.AddCommand(&cobra.Command{Use: "sync", Short: "Synchronize issue", Run: run})
 
-func Test_commandAnnotationHelpers_ignore_empty_values(t *testing.T) {
-	command := &cobra.Command{Use: "list"}
-
-	annotateCommand(command, commandCollectionKeyAnnotation, "")
-	require.Nil(t, command.Annotations)
-	require.Empty(t, commandCollectionKey(command))
-
-	annotateReadCollectionCommand(command, "issues")
-	require.Equal(t, "issues", commandCollectionKey(command))
-	require.Equal(t, CommandSafetyRead, commandSafety(command))
-
-	annotateCommand(command, commandCollectionKeyAnnotation, "projects")
-	require.Equal(t, "projects", commandCollectionKey(command))
-}
-
-func Test_commandSafety_classifies_annotations_paths_and_descriptions(t *testing.T) {
-	for _, safety := range []CommandSafety{
-		CommandSafetyRead,
-		CommandSafetyWrite,
-		CommandSafetyLocal,
-		CommandSafetyUnknown,
-	} {
-		command := &cobra.Command{
-			Use:         "annotated",
-			Annotations: map[string]string{commandSafetyAnnotation: string(safety)},
-		}
-		require.Equal(t, safety, commandSafety(command))
+	safetyByPath := map[string]CommandSafety{}
+	for _, command := range CommandInventory(root) {
+		safetyByPath[command.Path] = command.Safety
+		require.Equal(t, "issue", command.Entity)
+		require.Equal(t, "issue", command.DocCategory)
 	}
 
-	// Every class comes from an explicit annotation. An unannotated command is
-	// Unknown whatever its Short text says, so the inventory test fails loud
-	// instead of trusting prose.
-	require.Equal(t, CommandSafetyUnknown, commandSafety(commandWithPath("document", "create", "Create document")))
-	require.Equal(t, CommandSafetyUnknown, commandSafety(commandWithPath("issue", "get", "Get issue")))
-	require.Equal(t, CommandSafetyLocal, commandSafety(commandWithPath("completion", "bash", "Generate completion")))
-	require.Equal(t, CommandSafetyUnknown, commandSafety(commandWithPath("issue", "sync", "Synchronize issue")))
-	require.Empty(t, commandEntity(&cobra.Command{}))
-	require.Empty(t, commandDocCategory(&cobra.Command{}))
+	require.Equal(t, map[string]CommandSafety{
+		"issue":         CommandSafetyUnknown,
+		"issue archive": CommandSafetyWrite,
+		"issue create":  CommandSafetyUnknown,
+		"issue get":     CommandSafetyUnknown,
+		"issue sync":    CommandSafetyUnknown,
+	}, safetyByPath)
 }
 
-func Test_collectionKeyForPage_rejects_ambiguous_or_non_collection_shapes(t *testing.T) {
+func Test_list_command_registration_requires_one_json_collection_field(t *testing.T) {
+	type item struct {
+		ID string `json:"id"`
+	}
 	type pointerPage struct {
-		Items []string `json:"items,omitempty"`
+		Items []item `json:"items,omitempty"`
+		client.Page
 	}
-	type noJSONTagPage struct {
-		Items []string
+	type untaggedPage struct {
+		Items []item
+		client.Page
 	}
-	type ignoredJSONTagPage struct {
-		Items []string `json:"-"`
-	}
-	type multipleSlicesPage struct {
-		Items  []string `json:"items"`
-		Labels []string `json:"labels"`
+	type ignoredPage struct {
+		Items []item `json:"-"`
+		client.Page
 	}
 
-	require.Equal(t, "items", collectionKeyForPage[*pointerPage]())
-	require.Empty(t, collectionKeyForPage[string]())
-	require.Empty(t, collectionKeyForPage[noJSONTagPage]())
-	require.Empty(t, collectionKeyForPage[ignoredJSONTagPage]())
-	require.Empty(t, collectionKeyForPage[multipleSlicesPage]())
+	pointerRoot := &cobra.Command{Use: "root"}
+	registerTestList[*pointerPage, item](pointerRoot, &pointerPage{})
+	require.Equal(t, "items", CommandInventory(pointerRoot)[0].CollectionKey)
+	require.PanicsWithError(
+		t,
+		"list page cli.untaggedPage has no exported JSON slice field",
+		func() { registerTestList[untaggedPage, item](&cobra.Command{Use: "root"}, untaggedPage{}) },
+	)
+	require.PanicsWithError(
+		t,
+		"list page cli.ignoredPage has no exported JSON slice field",
+		func() { registerTestList[ignoredPage, item](&cobra.Command{Use: "root"}, ignoredPage{}) },
+	)
+	require.PanicsWithError(
+		t,
+		"list page cli.testSlicePage must be a struct or pointer to a struct",
+		func() { registerTestList[testSlicePage, testItem](&cobra.Command{Use: "root"}, nil) },
+	)
 }
 
 func Test_list_command_registration_rejects_invalid_page_shapes(t *testing.T) {
@@ -329,17 +310,6 @@ func registerTestList[Page listPage, Item any](root *cobra.Command, page Page) {
 		},
 		WriteItem: func(*cobra.Command, *rootOptions, Item) error { return nil },
 	})
-}
-
-func commandWithPath(parentUse string, childUse string, childShort string) *cobra.Command {
-	parent := &cobra.Command{Use: "linctl"}
-	group := &cobra.Command{Use: parentUse}
-	child := &cobra.Command{Use: childUse, Short: childShort}
-
-	parent.AddCommand(group)
-	group.AddCommand(child)
-
-	return child
 }
 
 func smokeCommandTokens(commandText string) []string {

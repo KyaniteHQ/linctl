@@ -10,7 +10,7 @@ import (
 func Test_ClientWriteScenarios_guard_writes_and_report_results(t *testing.T) {
 	// Given
 	t.Run("invalid requests fail before network", func(t *testing.T) {
-		graphqlClient := issueWriteFakeClient(map[string]string{})
+		graphqlClient := &mutationRecordingClient{inner: issueWriteFakeClient(map[string]string{})}
 
 		_, err := CreateIssue(context.Background(), graphqlClient, matchingTarget(), IssueCreateRequest{})
 		require.ErrorIs(t, err, ErrWriteInvalid)
@@ -34,17 +34,15 @@ func Test_ClientWriteScenarios_guard_writes_and_report_results(t *testing.T) {
 		_, err = CommentOnIssue(context.Background(), graphqlClient, matchingTarget(), IssueCommentRequest{Body: "body"})
 		require.ErrorIs(t, err, ErrWriteInvalid)
 
-		_, err = StartIssue(context.Background(), graphqlClient, matchingTarget(), "")
-		require.Error(t, err)
-
-		_, err = CloseIssue(context.Background(), graphqlClient, matchingTarget(), "")
-		require.Error(t, err)
-
 		_, err = CreateProject(context.Background(), graphqlClient, matchingTarget(), ProjectCreateRequest{})
 		require.ErrorIs(t, err, ErrWriteInvalid)
 
 		_, err = UpdateProject(context.Background(), graphqlClient, matchingTarget(), ProjectUpdateRequest{ID: "project-id"})
 		require.ErrorIs(t, err, ErrWriteInvalid)
+
+		_, err = UpdateProject(context.Background(), graphqlClient, matchingTarget(), ProjectUpdateRequest{Name: "missing id"})
+		require.ErrorIs(t, err, ErrWriteInvalid)
+		require.ErrorContains(t, err, "project id is required")
 
 		_, err = CreateProjectMilestone(context.Background(), graphqlClient, matchingTarget(), ProjectMilestoneCreateRequest{
 			Name: "name",
@@ -64,6 +62,15 @@ func Test_ClientWriteScenarios_guard_writes_and_report_results(t *testing.T) {
 		)
 		require.ErrorIs(t, err, ErrWriteInvalid)
 
+		_, err = UpdateProjectMilestone(
+			context.Background(),
+			graphqlClient,
+			matchingTarget(),
+			ProjectMilestoneUpdateRequest{Name: "missing id"},
+		)
+		require.ErrorIs(t, err, ErrWriteInvalid)
+		require.ErrorContains(t, err, "project milestone id is required")
+
 		_, err = CreateCycle(context.Background(), graphqlClient, matchingTarget(), CycleCreateRequest{
 			EndsAt: "2026-07-15T00:00:00Z",
 		})
@@ -77,11 +84,17 @@ func Test_ClientWriteScenarios_guard_writes_and_report_results(t *testing.T) {
 		_, err = UpdateCycle(context.Background(), graphqlClient, matchingTarget(), CycleUpdateRequest{ID: "cycle-id"})
 		require.ErrorIs(t, err, ErrWriteInvalid)
 
+		_, err = UpdateCycle(context.Background(), graphqlClient, matchingTarget(), CycleUpdateRequest{Name: "missing id"})
+		require.ErrorIs(t, err, ErrWriteInvalid)
+		require.ErrorContains(t, err, "cycle id is required")
+
 		_, err = ArchiveCycle(context.Background(), graphqlClient, matchingTarget(), "")
 		require.ErrorIs(t, err, ErrWriteInvalid)
 
 		_, err = ArchiveProject(context.Background(), graphqlClient, matchingTarget(), "")
 		require.ErrorIs(t, err, ErrWriteInvalid)
+
+		require.Empty(t, graphqlClient.sent)
 	})
 
 	t.Run("issue comment succeeds", func(t *testing.T) {
@@ -148,36 +161,54 @@ func Test_ClientWriteScenarios_guard_writes_and_report_results(t *testing.T) {
 	})
 
 	t.Run("issue update appends to description", func(t *testing.T) {
-		graphqlClient := issueWriteFakeClient(map[string]string{
-			"issue": `{"issue":` + issueJSONWithDescription(issueFixture{
-				Identifier: "LIT-22",
-				Title:      "append target",
-				ProjectID:  "project-id",
-				Project:    "fixture",
-				StateID:    "todo",
-				State:      "Todo",
-				StateType:  "unstarted",
-			}, "Existing description") + `}`,
-			"IssueUpdate": `{"issueUpdate":{"success":true,"issue":` + issueJSON(issueFixture{
-				Identifier: "LIT-22",
-				Title:      "append target",
-				ProjectID:  "project-id",
-				Project:    "fixture",
-				StateID:    "todo",
-				State:      "Todo",
-				StateType:  "unstarted",
-			}) + `}}`,
-		})
+		fixture := issueFixture{
+			Identifier: "LIT-22",
+			Title:      "append target",
+			ProjectID:  "project-id",
+			Project:    "fixture",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}
+		tests := []struct {
+			name     string
+			issue    string
+			expected string
+		}{
+			{
+				name:     "existing description",
+				issue:    issueJSONWithDescription(fixture, "Existing description"),
+				expected: `{"id":"LIT-22","input":{"description":"Existing description\n\nProgress note"}}`,
+			},
+			{
+				name:     "existing description with trailing newline",
+				issue:    issueJSONWithDescription(fixture, `Existing description\n`),
+				expected: `{"id":"LIT-22","input":{"description":"Existing description\n\nProgress note"}}`,
+			},
+			{
+				name:     "no description",
+				issue:    issueJSON(fixture),
+				expected: `{"id":"LIT-22","input":{"description":"Progress note"}}`,
+			},
+		}
 
-		issue, err := UpdateIssue(context.Background(), graphqlClient, matchingTarget(), IssueUpdateRequest{
-			ID:     "LIT-22",
-			Append: "Progress note",
-		})
+		for _, test := range tests {
+			t.Run(test.name, func(t *testing.T) {
+				recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
+					"issue":       `{"issue":` + test.issue + `}`,
+					"IssueUpdate": `{"issueUpdate":{"success":true,"issue":` + issueJSON(fixture) + `}}`,
+				})}
 
-		require.NoError(t, err)
-		require.Equal(t, "append target", issue.Title)
-		require.Equal(t, "Progress note", appendIssueDescription("", "Progress note"))
-		require.Equal(t, "Existing description\n\nProgress note", appendIssueDescription("Existing description\n", "Progress note"))
+				issue, err := UpdateIssue(context.Background(), recorder, matchingTarget(), IssueUpdateRequest{
+					ID:     "LIT-22",
+					Append: "Progress note",
+				})
+
+				require.NoError(t, err)
+				require.Equal(t, "append target", issue.Title)
+				require.JSONEq(t, test.expected, string(recorder.variablesFor(t, "IssueUpdate")))
+			})
+		}
 	})
 
 	t.Run("project update and archive succeed", func(t *testing.T) {

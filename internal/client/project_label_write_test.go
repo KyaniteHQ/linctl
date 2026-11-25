@@ -80,22 +80,6 @@ func Test_CreateProjectLabel_fails_when_mutation_reports_no_success(t *testing.T
 	require.ErrorIs(t, err, ErrMutationFailed)
 }
 
-func Test_CreateProjectLabel_proceeds_when_pinned_project_present(t *testing.T) {
-	// matchingTarget() pins project-id; ProjectLabel taxonomy writes compare
-	// organization only, so a pinned project must not block this write (103
-	// decision memo ruling).
-	graphqlClient := projectWriteFakeClient(map[string]string{
-		"ProjectLabelCreate": `{"projectLabelCreate":{"success":true,"projectLabel":` +
-			projectLabelWithOrgJSON("org-id") + `}}`,
-	})
-
-	_, err := CreateProjectLabel(context.Background(), graphqlClient, matchingTarget(), ProjectLabelCreateRequest{
-		Name: "priority", OrgWide: true,
-	})
-
-	require.NoError(t, err)
-}
-
 func Test_UpdateProjectLabel_updates_label_when_organization_matches(t *testing.T) {
 	graphqlClient := projectWriteFakeClient(map[string]string{
 		"projectLabel": `{"projectLabel":` + projectLabelWithOrgJSON("org-id") + `}`,

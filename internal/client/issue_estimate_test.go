@@ -17,35 +17,37 @@ func teamEstimateConfigJSON(estimationType string, allowZero bool) string {
 }
 
 func Test_CreateIssue_sets_estimate_when_team_scale_accepts_it(t *testing.T) {
-	graphqlClient := issueWriteFakeClient(map[string]string{
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"teamEstimateConfig": teamEstimateConfigJSON("fibonacci", false),
 		"IssueCreate":        `{"issueCreate":{"success":true,"issue":` + issueJSON(b1IssueFixture("LIT-7")) + `}}`,
-	})
+	})}
 
 	estimate := 3
-	issue, err := CreateIssue(context.Background(), graphqlClient, matchingTarget(), IssueCreateRequest{
+	_, err := CreateIssue(context.Background(), recorder, matchingTarget(), IssueCreateRequest{
 		Title:    "b3",
 		Estimate: &estimate,
 	})
 
 	require.NoError(t, err)
-	require.Equal(t, "LIT-7", issue.Identifier)
+	require.JSONEq(t, `{"input": {"title": "b3", "teamId": "team-id", "projectId": "project-id", "estimate": 3}}`,
+		string(recorder.variablesFor(t, "IssueCreate")))
 }
 
 func Test_CreateIssue_accepts_zero_estimate_when_team_allows_zero(t *testing.T) {
-	graphqlClient := issueWriteFakeClient(map[string]string{
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"teamEstimateConfig": teamEstimateConfigJSON("fibonacci", true),
 		"IssueCreate":        `{"issueCreate":{"success":true,"issue":` + issueJSON(b1IssueFixture("LIT-7")) + `}}`,
-	})
+	})}
 
 	estimate := 0
-	issue, err := CreateIssue(context.Background(), graphqlClient, matchingTarget(), IssueCreateRequest{
+	_, err := CreateIssue(context.Background(), recorder, matchingTarget(), IssueCreateRequest{
 		Title:    "b3",
 		Estimate: &estimate,
 	})
 
 	require.NoError(t, err)
-	require.Equal(t, "LIT-7", issue.Identifier)
+	require.JSONEq(t, `{"input": {"title": "b3", "teamId": "team-id", "projectId": "project-id", "estimate": 0}}`,
+		string(recorder.variablesFor(t, "IssueCreate")))
 }
 
 func Test_CreateIssue_rejects_estimate_when_team_estimates_disabled(t *testing.T) {
@@ -103,35 +105,37 @@ func Test_CreateIssue_wraps_team_estimate_config_read_error(t *testing.T) {
 }
 
 func Test_UpdateIssue_sets_estimate_when_team_scale_accepts_it(t *testing.T) {
-	graphqlClient := issueWriteFakeClient(map[string]string{
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"issue":              `{"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}`,
 		"teamEstimateConfig": teamEstimateConfigJSON("fibonacci", false),
 		"IssueUpdate":        `{"issueUpdate":{"success":true,"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}}`,
-	})
+	})}
 
 	estimate := 5
-	issue, err := UpdateIssue(context.Background(), graphqlClient, matchingTarget(), IssueUpdateRequest{
+	_, err := UpdateIssue(context.Background(), recorder, matchingTarget(), IssueUpdateRequest{
 		ID:       "LIT-1",
 		Estimate: &estimate,
 	})
 
 	require.NoError(t, err)
-	require.Equal(t, "LIT-1", issue.Identifier)
+	require.JSONEq(t, `{"id": "LIT-1", "input": {"estimate": 5}}`,
+		string(recorder.variablesFor(t, "IssueUpdate")))
 }
 
 func Test_UpdateIssue_clears_estimate_when_requested(t *testing.T) {
-	graphqlClient := issueWriteFakeClient(map[string]string{
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"issue":       `{"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}`,
 		"IssueUpdate": `{"issueUpdate":{"success":true,"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}}`,
-	})
+	})}
 
-	issue, err := UpdateIssue(context.Background(), graphqlClient, matchingTarget(), IssueUpdateRequest{
+	_, err := UpdateIssue(context.Background(), recorder, matchingTarget(), IssueUpdateRequest{
 		ID:            "LIT-1",
 		ClearEstimate: true,
 	})
 
 	require.NoError(t, err)
-	require.Equal(t, "LIT-1", issue.Identifier)
+	require.JSONEq(t, `{"id": "LIT-1", "input": {"estimate": null}}`,
+		string(recorder.variablesFor(t, "IssueUpdate")))
 }
 
 func Test_UpdateIssue_rejects_estimate_with_clear_estimate(t *testing.T) {

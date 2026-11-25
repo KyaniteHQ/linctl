@@ -8,8 +8,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// Every client read wraps a transport failure with its operation context and
-// keeps the injected error in the chain for errors.Is-based recovery.
 func Test_ClientReadFailureScenarios_wrap_graphql_errors(t *testing.T) {
 	sentinel := errors.New("network down")
 	graphqlClient := errorGraphQLClient{err: sentinel}

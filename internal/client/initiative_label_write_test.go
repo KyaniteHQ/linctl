@@ -116,21 +116,6 @@ func Test_RetireInitiativeLabel_fails_when_mutation_reports_no_success(t *testin
 	require.ErrorIs(t, err, ErrMutationFailed)
 }
 
-func Test_RetireInitiativeLabel_proceeds_when_pinned_project_present(t *testing.T) {
-	// matchingTarget() pins project-id; InitiativeLabel taxonomy writes compare
-	// organization only, so a pinned project must not block this write.
-	graphqlClient := projectWriteFakeClient(map[string]string{
-		"initiativeLabel": `{"initiativeLabel":` + initiativeLabelWithOrgJSON("org-id") + `}`,
-		"InitiativeLabelRetire": `{"initiativeLabelRetire":{"success":true,"initiativeLabel":` +
-			initiativeLabelWithOrgJSON("org-id") + `}}`,
-	})
-
-	label, err := RetireInitiativeLabel(context.Background(), graphqlClient, matchingTarget(), "initiative-label-id", true)
-
-	require.NoError(t, err)
-	require.Equal(t, "initiative-label-id", label.ID)
-}
-
 func Test_RestoreInitiativeLabel_restores_label_when_organization_matches(t *testing.T) {
 	graphqlClient := projectWriteFakeClient(map[string]string{
 		"initiativeLabel": `{"initiativeLabel":` + initiativeLabelWithOrgJSON("org-id") + `}`,

@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
 func uploadFileResponseJSON(success bool, hasFile bool) string {
@@ -34,20 +36,33 @@ func Test_PrepareFileUpload_returns_signed_target_on_success(t *testing.T) {
 	require.Equal(t, "https://uploads.example/put", upload.UploadURL)
 	require.Len(t, upload.Headers, 1)
 	require.Equal(t, "x-amz-meta", upload.Headers[0].Key)
-	require.Equal(t, []string{"Viewer", "team", "Teams", "TargetProject", "fileUpload"}, recordedOperationNames(graphqlClient))
+	require.JSONEq(t, `{"contentType":"image/png","filename":"a.png","size":12}`,
+		string(graphqlClient.variablesFor(t, "fileUpload")))
 }
 
 func Test_PrepareFileUpload_refuses_target_mismatch_before_mutation(t *testing.T) {
-	graphqlClient := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
-		"fileUpload": uploadFileResponseJSON(true, true),
-	})}
-	target := matchingTarget()
-	target.OrgID = "other-org"
+	testCases := []struct {
+		name   string
+		mutate func(target *config.Target)
+	}{
+		{name: "other organization", mutate: func(target *config.Target) { target.OrgID = "other-org" }},
+		{name: "other pinned project", mutate: func(target *config.Target) { target.ProjectID = "other-project-id" }},
+	}
 
-	_, err := PrepareFileUpload(context.Background(), graphqlClient, target, "a.png", "image/png", 12)
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			graphqlClient := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
+				"fileUpload": uploadFileResponseJSON(true, true),
+			})}
+			target := matchingTarget()
+			testCase.mutate(&target)
 
-	require.ErrorIs(t, err, ErrTargetMismatch)
-	require.Equal(t, 0, graphqlClient.countOf("fileUpload"))
+			_, err := PrepareFileUpload(context.Background(), graphqlClient, target, "a.png", "image/png", 12)
+
+			require.ErrorIs(t, err, ErrTargetMismatch)
+			require.Equal(t, 0, graphqlClient.countOf("fileUpload"))
+		})
+	}
 }
 
 func Test_PrepareFileUpload_requires_filename(t *testing.T) {
@@ -94,16 +109,4 @@ func Test_PrepareFileUpload_fails_when_upload_file_missing(t *testing.T) {
 	_, err := PrepareFileUpload(context.Background(), graphqlClient, matchingTarget(), "a.png", "image/png", 12)
 
 	require.ErrorIs(t, err, ErrMutationFailed)
-}
-
-func recordedOperationNames(graphqlClient *recordingGraphQLClient) []string {
-	graphqlClient.mu.Lock()
-	defer graphqlClient.mu.Unlock()
-
-	operations := make([]string, 0, len(graphqlClient.requests))
-	for _, request := range graphqlClient.requests {
-		operations = append(operations, request.OpName)
-	}
-
-	return operations
 }

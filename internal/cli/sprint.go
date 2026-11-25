@@ -74,6 +74,6 @@ func addSprintReportCommand(ctx context.Context, root *cobra.Command, options *r
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum issues to include")
-	annotateReadCollectionCommand(command, collectionKeyForPage[client.SprintReport]())
+	annotateReadCollectionCommand(command, mustCollectionKeyForList[client.SprintReport, client.IssueSummary]())
 	root.AddCommand(command)
 }

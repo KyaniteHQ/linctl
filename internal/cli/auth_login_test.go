@@ -23,8 +23,8 @@ import (
 )
 
 func Test_AuthLogin_builds_authorization_url_with_app_actor_by_default(t *testing.T) {
-	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "injected-access-token")
 	paths := cliAuthTestPaths(t)
+	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "injected-access-token")
 	saveAuthLoginApp(t, paths)
 	restorePaths := useAuthPaths(t, paths)
 	defer restorePaths()
@@ -50,7 +50,7 @@ func Test_AuthLogin_builds_authorization_url_with_app_actor_by_default(t *testin
 	require.Equal(t, "http://127.0.0.1:8484/callback", query.Get("redirect_uri"))
 	require.Equal(t, "read,write", query.Get("scope"))
 	require.Equal(t, "state-123", query.Get("state"))
-	require.Equal(t, "challenge-123", query.Get("code_challenge"))
+	require.Regexp(t, `^[A-Za-z0-9_-]{43}$`, query.Get("code_challenge"))
 	require.Equal(t, "S256", query.Get("code_challenge_method"))
 	require.Equal(t, "app", query.Get("actor"))
 	require.Equal(t, "consent", query.Get("prompt"))
@@ -174,24 +174,27 @@ func Test_AuthLogin_rejects_invalid_actor(t *testing.T) {
 	require.Contains(t, stderr.String(), `"error_code":"AUTH_ACTOR_MISMATCH"`)
 }
 
-func Test_GenerateOAuthState_returns_url_safe_state(t *testing.T) {
-	state, err := generateOAuthState()
+func Test_AuthLogin_generates_fresh_state_and_pkce_per_run(t *testing.T) {
+	paths := cliAuthTestPaths(t)
+	saveAuthLoginApp(t, paths)
+	restorePaths := useAuthPaths(t, paths)
+	defer restorePaths()
+	start := func() url.Values {
+		var stdout bytes.Buffer
+		err := execute(context.Background(), BuildInfo{}, nil, &stdout, &bytes.Buffer{}, []string{"--json", "auth", "login"})
+		require.NoError(t, err)
 
-	require.NoError(t, err)
-	require.NotEmpty(t, state)
-	require.NotContains(t, state, "=")
-}
+		return authLoginAuthorizeURL(t, decodeAuthLoginStartReport(t, stdout.Bytes()).AuthorizeURL).Query()
+	}
 
-func Test_GenerateOAuthState_reports_random_reader_error(t *testing.T) {
-	original := authLoginRandomReader
-	authLoginRandomReader = failingReader{err: errors.New("entropy unavailable")}
-	defer func() {
-		authLoginRandomReader = original
-	}()
+	first := start()
+	second := start()
 
-	_, err := generateOAuthState()
-
-	require.ErrorContains(t, err, "generate oauth state")
+	require.NotEmpty(t, first.Get("state"))
+	require.NotEmpty(t, first.Get("code_challenge"))
+	require.Equal(t, "S256", first.Get("code_challenge_method"))
+	require.NotEqual(t, first.Get("state"), second.Get("state"))
+	require.NotEqual(t, first.Get("code_challenge"), second.Get("code_challenge"))
 }
 
 func Test_AuthLogin_reports_app_configuration_errors(t *testing.T) {
@@ -226,55 +229,6 @@ func Test_AuthLogin_reports_app_configuration_errors(t *testing.T) {
 
 		require.Error(t, err)
 		require.Contains(t, stderr.String(), "missing OAuth redirect URI")
-	})
-}
-
-func Test_AuthLogin_reports_generated_proof_errors(t *testing.T) {
-	t.Run("pkce", func(t *testing.T) {
-		paths := cliAuthTestPaths(t)
-		saveAuthLoginApp(t, paths)
-		restorePaths := useAuthPaths(t, paths)
-		defer restorePaths()
-		originalPKCE := generateAuthLoginPKCE
-		generateAuthLoginPKCE = func() (oauth.PKCE, error) {
-			return oauth.PKCE{}, errors.New("pkce failed")
-		}
-		defer func() {
-			generateAuthLoginPKCE = originalPKCE
-		}()
-
-		err := execute(context.Background(), BuildInfo{}, nil, &bytes.Buffer{}, &bytes.Buffer{}, []string{
-			"auth",
-			"login",
-		})
-
-		require.ErrorContains(t, err, "pkce failed")
-	})
-
-	t.Run("state", func(t *testing.T) {
-		paths := cliAuthTestPaths(t)
-		saveAuthLoginApp(t, paths)
-		restorePaths := useAuthPaths(t, paths)
-		defer restorePaths()
-		originalPKCE := generateAuthLoginPKCE
-		originalState := generateAuthLoginState
-		generateAuthLoginPKCE = func() (oauth.PKCE, error) {
-			return oauth.PKCE{CodeVerifier: "verifier", CodeChallenge: "challenge", CodeChallengeMethod: "S256"}, nil
-		}
-		generateAuthLoginState = func() (string, error) {
-			return "", errors.New("state failed")
-		}
-		defer func() {
-			generateAuthLoginState = originalState
-			generateAuthLoginPKCE = originalPKCE
-		}()
-
-		err := execute(context.Background(), BuildInfo{}, nil, &bytes.Buffer{}, &bytes.Buffer{}, []string{
-			"auth",
-			"login",
-		})
-
-		require.ErrorContains(t, err, "state failed")
 	})
 }
 
@@ -345,13 +299,15 @@ func Test_AuthLogin_callback_url_exchanges_and_saves_after_readiness(t *testing.
 
 	require.NoError(t, err)
 	require.Equal(t, 1, fakeOAuth.authorizationCodeCalls)
+	exchange := fakeOAuth.authorizationCodeRequest
+	require.Regexp(t, `^[A-Za-z0-9_-]{43}$`, exchange.CodeVerifier)
+	exchange.CodeVerifier = ""
 	require.Equal(t, oauth.AuthorizationCodeRequest{
 		Code:         "code-123",
 		RedirectURI:  "http://127.0.0.1:8484/callback",
 		ClientID:     "client-id",
 		ClientSecret: "client-secret",
-		CodeVerifier: "verifier-123",
-	}, fakeOAuth.authorizationCodeRequest)
+	}, exchange)
 	require.Equal(t, "oauth-access-token", fakeReadiness.accessToken)
 	require.Equal(t, "app", fakeReadiness.expectedActor)
 	require.Equal(t, []string{"read", "write"}, fakeReadiness.requiredScopes)
@@ -433,8 +389,11 @@ func Test_AuthLogin_reads_manual_callback_from_stdin_with_same_state(t *testing.
 	require.NoError(t, err)
 	require.Equal(t, 1, fakeOAuth.authorizationCodeCalls)
 	require.Equal(t, "stdin-code", fakeOAuth.authorizationCodeRequest.Code)
-	require.Equal(t, "verifier-123", fakeOAuth.authorizationCodeRequest.CodeVerifier)
-	require.Contains(t, stderr.String(), "state-123")
+	authorizeURL := authLoginAuthorizeURL(t, strings.TrimSpace(stderr.String()))
+	require.Equal(t, "state-123", authorizeURL.Query().Get("state"))
+	require.Equal(t,
+		oauth.CodeChallengeS256(fakeOAuth.authorizationCodeRequest.CodeVerifier),
+		authorizeURL.Query().Get("code_challenge"))
 	require.NotContains(t, stdout.String(), "oauth-access-token")
 	require.NotContains(t, stdout.String(), "oauth-refresh-token")
 	require.NotContains(t, stderr.String(), "client-secret")
@@ -485,85 +444,95 @@ func Test_AuthLogin_reports_empty_callback_from_stdin(t *testing.T) {
 	require.Contains(t, stderr.String(), "missing OAuth callback code")
 }
 
-func Test_AuthLogin_callback_writer_error_is_reported(t *testing.T) {
-	command := (cobraCommandWithIO{err: failingWriter{err: errors.New("stderr closed")}}).command()
+func Test_AuthLogin_reports_authorization_url_write_error_before_reading_stdin(t *testing.T) {
+	paths := cliAuthTestPaths(t)
+	saveAuthLoginApp(t, paths)
+	restorePaths := useAuthPaths(t, paths)
+	defer restorePaths()
+	restoreLogin := useAuthLoginGeneratedValues(t)
+	defer restoreLogin()
 
-	_, err := authLoginCallback(command, &rootOptions{}, "-", authLoginStartReport{
-		AuthorizeURL: "https://linear.app/oauth/authorize",
-	})
+	err := execute(
+		context.Background(),
+		BuildInfo{},
+		failingReader{err: errors.New("stdin must not be read")},
+		&bytes.Buffer{},
+		failingWriter{err: errors.New("stderr closed")},
+		[]string{"auth", "login", "--callback", "-"},
+	)
 
 	require.ErrorContains(t, err, "stderr closed")
 }
 
-func Test_AuthLogin_reports_completion_errors(t *testing.T) {
-	baseRequest := authLoginCompletionRequest{
-		App: auth.AppConfig{
-			ClientID:     "client-id",
-			ClientSecret: "client-secret",
-			RedirectURI:  "http://127.0.0.1:8484/callback",
+func Test_AuthLogin_callback_failures_save_no_token(t *testing.T) {
+	tests := []struct {
+		name          string
+		oauth         *fakeOAuthTokenClient
+		readiness     *fakeAuthReadinessChecker
+		wantError     string
+		wantErrorCode string
+	}{
+		{
+			name:      "token exchange fails",
+			oauth:     &fakeOAuthTokenClient{err: errors.New("exchange failed")},
+			readiness: &fakeAuthReadinessChecker{report: readyAuthReport("app")},
+			wantError: "exchange failed",
 		},
-		Actor:         "app",
-		Scopes:        []string{"read"},
-		Callback:      "http://127.0.0.1:8484/callback?code=code-123&state=state-123",
-		ExpectedState: "state-123",
-		PKCE:          oauth.PKCE{CodeVerifier: "verifier-123"},
-	}
-
-	t.Run("exchange error", func(t *testing.T) {
-		restore := useAuthCommandHooks(
-			t,
-			cliAuthTestPaths(t),
-			&fakeOAuthTokenClient{err: errors.New("exchange failed")},
-			&fakeAuthReadinessChecker{},
-		)
-		defer restore()
-
-		_, _, err := completeAuthLogin(context.Background(), authCommandContext{}, baseRequest)
-
-		require.ErrorContains(t, err, "exchange failed")
-	})
-
-	t.Run("missing scope", func(t *testing.T) {
-		restore := useAuthCommandHooks(
-			t,
-			cliAuthTestPaths(t),
-			&fakeOAuthTokenClient{grant: auth.NewTokenState(
-				"oauth-access-token",
-				"oauth-refresh-token",
-				"Bearer",
-				time.Now().Add(time.Hour),
-				[]string{},
-			)},
-			&fakeAuthReadinessChecker{},
-		)
-		defer restore()
-
-		_, _, err := completeAuthLogin(context.Background(), authCommandContext{}, baseRequest)
-
-		require.Error(t, err)
-		require.Equal(t, string(auth.ErrorCodeMissingScope), errorCode(err))
-	})
-
-	t.Run("readiness error", func(t *testing.T) {
-		restore := useAuthCommandHooks(
-			t,
-			cliAuthTestPaths(t),
-			&fakeOAuthTokenClient{grant: auth.NewTokenState(
+		{
+			name: "granted scopes miss a required scope",
+			oauth: &fakeOAuthTokenClient{grant: auth.NewTokenState(
 				"oauth-access-token",
 				"oauth-refresh-token",
 				"Bearer",
 				time.Now().Add(time.Hour),
 				[]string{"read"},
 			)},
-			&fakeAuthReadinessChecker{err: client.ErrTargetMismatch},
-		)
-		defer restore()
+			readiness:     &fakeAuthReadinessChecker{report: readyAuthReport("app")},
+			wantErrorCode: "MISSING_SCOPE",
+		},
+		{
+			name: "authorization does not match the pinned target",
+			oauth: &fakeOAuthTokenClient{grant: auth.NewTokenState(
+				"oauth-access-token",
+				"oauth-refresh-token",
+				"Bearer",
+				time.Now().Add(time.Hour),
+				[]string{"read", "write"},
+			)},
+			readiness:     &fakeAuthReadinessChecker{err: client.ErrTargetMismatch},
+			wantErrorCode: "AUTH_TARGET_MISMATCH",
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			paths := cliAuthTestPaths(t)
+			saveAuthLoginApp(t, paths)
+			restore := useAuthCommandHooks(t, paths, test.oauth, test.readiness)
+			defer restore()
+			restoreLogin := useAuthLoginGeneratedValues(t)
+			defer restoreLogin()
 
-		_, _, err := completeAuthLogin(context.Background(), authCommandContext{}, baseRequest)
+			err := execute(context.Background(), BuildInfo{}, nil, &bytes.Buffer{}, &bytes.Buffer{}, []string{
+				"--org", "org-id",
+				"--team", "LIT",
+				"--team-id", "team-id",
+				"auth",
+				"login",
+				"--callback", "http://127.0.0.1:8484/callback?code=code-123&state=state-123",
+			})
 
-		require.Error(t, err)
-		require.Equal(t, string(auth.ErrorCodeTargetMismatch), errorCode(err))
-	})
+			require.Error(t, err)
+			if test.wantError != "" {
+				require.ErrorContains(t, err, test.wantError)
+			}
+			if test.wantErrorCode != "" {
+				require.Equal(t, test.wantErrorCode, errorCode(err))
+			}
+			got, loadErr := auth.NewStore(paths).Load(context.Background())
+			require.NoError(t, loadErr)
+			require.Empty(t, got.Token)
+		})
+	}
 }
 
 func Test_AuthLogin_reports_token_state_save_error_after_callback(t *testing.T) {
@@ -599,38 +568,37 @@ func Test_AuthLogin_reports_token_state_save_error_after_callback(t *testing.T) 
 	require.ErrorContains(t, err, "read auth token state")
 }
 
-func Test_AuthorizationCodeFromCallback_reports_missing_code_shapes(t *testing.T) {
+func Test_AuthLogin_refuses_callbacks_without_a_code(t *testing.T) {
 	tests := []struct {
 		name     string
 		callback string
-		want     string
 	}{
-		{
-			name: "empty",
-			want: "missing OAuth callback code",
-		},
-		{
-			name:     "url missing code",
-			callback: "http://127.0.0.1:8484/callback?state=state-123",
-			want:     "OAuth callback is missing code",
-		},
-		{
-			name:     "url-shaped without query",
-			callback: "http://127.0.0.1:8484/callback",
-			want:     "OAuth callback is missing code",
-		},
-		{
-			name:     "query-shaped without code",
-			callback: "?state=state-123",
-			want:     "OAuth callback is missing code",
-		},
+		{name: "url missing code", callback: "http://127.0.0.1:8484/callback?state=state-123"},
+		{name: "url-shaped without query", callback: "http://127.0.0.1:8484/callback"},
+		{name: "query-shaped without code", callback: "?state=state-123"},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := authorizationCodeFromCallback(tt.callback, "state-123")
+			paths := cliAuthTestPaths(t)
+			saveAuthLoginApp(t, paths)
+			fakeOAuth := &fakeOAuthTokenClient{}
+			restore := useAuthCommandHooks(t, paths, fakeOAuth, &fakeAuthReadinessChecker{report: readyAuthReport("app")})
+			defer restore()
+			restoreLogin := useAuthLoginGeneratedValues(t)
+			defer restoreLogin()
+			var stderr bytes.Buffer
 
-			require.ErrorContains(t, err, tt.want)
+			err := execute(context.Background(), BuildInfo{}, nil, &bytes.Buffer{}, &stderr, []string{
+				"auth",
+				"login",
+				"--callback", tt.callback,
+			})
+
+			require.Error(t, err)
+			require.Equal(t, "AUTH_REAUTH_REQUIRED", errorCode(err))
+			require.Contains(t, stderr.String(), "OAuth callback is missing code")
+			require.Zero(t, fakeOAuth.authorizationCodeCalls)
 		})
 	}
 }
@@ -647,22 +615,13 @@ func saveAuthLoginApp(t *testing.T, paths auth.Paths) {
 
 func useAuthLoginGeneratedValues(t *testing.T) func() {
 	t.Helper()
-	originalPKCE := generateAuthLoginPKCE
 	originalState := generateAuthLoginState
-	generateAuthLoginPKCE = func() (oauth.PKCE, error) {
-		return oauth.PKCE{
-			CodeVerifier:        "verifier-123",
-			CodeChallenge:       "challenge-123",
-			CodeChallengeMethod: "S256",
-		}, nil
-	}
-	generateAuthLoginState = func() (string, error) {
-		return "state-123", nil
+	generateAuthLoginState = func() string {
+		return "state-123"
 	}
 
 	return func() {
 		generateAuthLoginState = originalState
-		generateAuthLoginPKCE = originalPKCE
 	}
 }
 

@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -68,16 +70,33 @@ func Test_CommandFlows_resolve_current_issue_from_lowercase_branch(t *testing.T)
 	require.Equal(t, "LIT-12\n", output.String())
 }
 
-func Test_pinnedTeamKeyHint_returns_the_pinned_team_key(t *testing.T) {
-	teamKey := pinnedTeamKeyHint(context.Background(), &rootOptions{team: "LIT"})
+func Test_CommandFlows_current_issue_prefers_the_pinned_team_key(t *testing.T) {
+	tests := []struct {
+		name string
+		args []string
+		want string
+	}{
+		{name: "pinned team", args: []string{"--team", "LIT", "issue", "id"}, want: "LIT-12\n"},
+		{name: "unresolvable config", args: []string{"--profile", "does-not-exist", "issue", "id"}, want: "ABC-3\n"},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			configureTestAuthEnvironment(t)
+			dir := t.TempDir()
+			runGitCommand(t, dir, "init")
+			runGitCommand(t, dir, "checkout", "-b", "omer/abc-3-lit-12-thing")
+			t.Chdir(dir)
+			output := bytes.Buffer{}
+			command := NewRootCommand(context.Background(), BuildInfo{})
+			command.SetOut(&output)
+			command.SetArgs(test.args)
 
-	require.Equal(t, "LIT", teamKey)
-}
+			err := command.ExecuteContext(context.Background())
 
-func Test_pinnedTeamKeyHint_returns_empty_when_config_is_unresolvable(t *testing.T) {
-	teamKey := pinnedTeamKeyHint(context.Background(), &rootOptions{profile: "does-not-exist"})
-
-	require.Empty(t, teamKey)
+			require.NoError(t, err)
+			require.Equal(t, test.want, output.String())
+		})
+	}
 }
 
 func Test_CommandFlows_print_current_issue_as_json(t *testing.T) {
@@ -183,13 +202,6 @@ func Test_CommandFlows_rank_next_issue_candidates(t *testing.T) {
 	require.Contains(t, output.String(), "LIT-30 Unblocks checkout [Todo]")
 }
 
-func swapCheckoutBranch(fn func(context.Context, string) error) func() {
-	original := checkoutBranch
-	checkoutBranch = fn
-
-	return func() { checkoutBranch = original }
-}
-
 func Test_CommandFlows_next_starts_picked_issue(t *testing.T) {
 	output := bytes.Buffer{}
 	restore := useCommandRuntime(t, commandFlowFakeClient{})
@@ -205,13 +217,9 @@ func Test_CommandFlows_next_starts_picked_issue(t *testing.T) {
 }
 
 func Test_CommandFlows_next_checkout_creates_branch_then_starts(t *testing.T) {
-	called := false
-	restoreCheckout := swapCheckoutBranch(func(_ context.Context, _ string) error {
-		called = true
-
-		return nil
-	})
-	defer restoreCheckout()
+	dir := t.TempDir()
+	runGitCommand(t, dir, "init")
+	t.Chdir(dir)
 	output := bytes.Buffer{}
 	restore := useCommandRuntime(t, commandFlowFakeClient{})
 	defer restore()
@@ -222,23 +230,22 @@ func Test_CommandFlows_next_checkout_creates_branch_then_starts(t *testing.T) {
 	err := command.ExecuteContext(context.Background())
 
 	require.NoError(t, err)
-	require.True(t, called)
+	head, err := os.ReadFile(filepath.Join(dir, ".git", "HEAD"))
+	require.NoError(t, err)
+	require.Equal(t, "ref: refs/heads/lit-27-next-issue\n", string(head))
 	require.Contains(t, output.String(), "LIT-1")
 }
 
 func Test_CommandFlows_next_checkout_failure_aborts(t *testing.T) {
-	restoreCheckout := swapCheckoutBranch(func(_ context.Context, _ string) error {
-		return errors.New("checkout boom")
-	})
-	defer restoreCheckout()
-	restore := useCommandRuntime(t, commandFlowFakeClient{})
+	t.Chdir(t.TempDir())
+	restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: "IssueUpdate"})
 	defer restore()
 	command := NewRootCommand(context.Background(), BuildInfo{})
 	command.SetArgs([]string{"next", "--checkout"})
 
 	err := command.ExecuteContext(context.Background())
 
-	require.ErrorContains(t, err, "checkout boom")
+	require.ErrorContains(t, err, "git checkout -b")
 }
 
 func Test_runNextWithPicker_notes_truncated_ranking(t *testing.T) {
@@ -368,26 +375,6 @@ func Test_CommandFlows_next_surfaces_start_failure(t *testing.T) {
 	err := command.ExecuteContext(context.Background())
 
 	require.Error(t, err)
-}
-
-func Test_runGitCheckoutBranch_creates_and_fails(t *testing.T) {
-	t.Run("creates a branch in a repo", func(t *testing.T) {
-		dir := t.TempDir()
-		runGitCommand(t, dir, "init")
-		t.Chdir(dir)
-
-		err := runGitCheckoutBranch(context.Background(), "linctl-it-next")
-
-		require.NoError(t, err)
-	})
-
-	t.Run("fails outside a repo", func(t *testing.T) {
-		t.Chdir(t.TempDir())
-
-		err := runGitCheckoutBranch(context.Background(), "linctl-it-next")
-
-		require.ErrorContains(t, err, "git checkout -b")
-	})
 }
 
 func Test_CommandFlows_report_current_issue_errors(t *testing.T) {

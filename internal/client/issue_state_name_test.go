@@ -255,10 +255,14 @@ func Test_UpdateIssue_returns_readback_error_when_issue_vanishes(t *testing.T) {
 		Identifier: "LIT-1", Title: "job", ProjectID: "project-id", Project: "fixture",
 		StateID: "todo-state", State: "Todo", StateType: "unstarted",
 	}
+	written := before
+	written.StateID = "in-review-state"
+	written.State = "In Review"
+	written.StateType = "started"
 	inner := issueWriteFakeClient(map[string]string{
 		"issue":                `{"issue":` + issueJSON(before) + `}`,
 		"WorkflowStatesByTeam": multipleStartedStatesJSON(),
-		"IssueUpdate":          `{"issueUpdate":{"success":true,"issue":` + issueJSON(before) + `}}`,
+		"IssueUpdate":          `{"issueUpdate":{"success":true,"issue":` + issueJSON(written) + `}}`,
 	})
 	sequenced := newSequentialOpClient(inner)
 	sequenced.failAt["issue"] = 2
@@ -268,7 +272,6 @@ func Test_UpdateIssue_returns_readback_error_when_issue_vanishes(t *testing.T) {
 		IssueUpdateRequest{ID: "LIT-1", StateSelector: "In Review"},
 	)
 
-	require.Error(t, err)
 	require.ErrorContains(t, err, "injected issue failure")
 }
 
@@ -318,12 +321,17 @@ func Test_UpdateIssue_prefers_mutation_error_when_readback_also_fails(t *testing
 	require.ErrorContains(t, err, "timeout")
 }
 
-func Test_resolveStateID_requires_selector(t *testing.T) {
-	guard := &guardedClient{stateIDs: &stateIDCache{lists: map[string][]workflowStateCandidate{}}}
+func Test_UpdateIssue_refuses_a_blank_state_selector(t *testing.T) {
+	recorder := &mutationRecordingClient{inner: issueWriteFakeClient(map[string]string{
+		"issue": `{"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}`,
+	})}
 
-	_, err := guard.resolveStateID(context.Background(), "team-id", "  ")
+	_, err := UpdateIssue(context.Background(), recorder, matchingTarget(),
+		IssueUpdateRequest{ID: "LIT-1", StateSelector: "  "})
 
 	require.ErrorIs(t, err, ErrWriteInvalid)
+	require.ErrorContains(t, err, "state is required")
+	require.False(t, recorder.sentOperation("IssueUpdate"))
 }
 
 func Test_resolveStateID_returns_error_when_team_states_cannot_be_listed(t *testing.T) {
@@ -374,14 +382,19 @@ func Test_StartIssue_selects_lowest_position_started_type_not_name_started(t *te
 	}`, string(recorder.variablesFor(t, "IssueUpdate")))
 }
 
-func Test_selectWorkflowStateID_returns_error_when_name_is_ambiguous(t *testing.T) {
-	states := []workflowStateCandidate{
-		{ID: "a", Name: "In Review", Type: "started", Position: 1},
-		{ID: "b", Name: "in review", Type: "started", Position: 2},
-	}
+func Test_UpdateIssue_refuses_a_state_name_two_workflow_states_share(t *testing.T) {
+	recorder := &mutationRecordingClient{inner: issueWriteFakeClient(map[string]string{
+		"issue": `{"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}`,
+		"WorkflowStatesByTeam": workflowStatesByTeamJSON(`
+			{"id":"a","name":"In Review","type":"started","position":1},
+			{"id":"b","name":"in review","type":"started","position":2}
+		`),
+	})}
 
-	_, err := selectWorkflowStateID(states, "In Review")
+	_, err := UpdateIssue(context.Background(), recorder, matchingTarget(),
+		IssueUpdateRequest{ID: "LIT-1", StateSelector: "In Review"})
 
 	require.ErrorIs(t, err, ErrWriteInvalid)
 	require.ErrorContains(t, err, "ambiguous")
+	require.False(t, recorder.sentOperation("IssueUpdate"))
 }

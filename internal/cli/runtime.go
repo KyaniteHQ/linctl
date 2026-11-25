@@ -68,24 +68,16 @@ func resolveConfigWithSource(
 }
 
 func selectRepoConfig(options *rootOptions) (repoConfigSelection, error) {
-	return selectRepoConfigWithFS(options, filepath.Abs, os.Stat)
-}
-
-func selectRepoConfigWithFS(
-	options *rootOptions,
-	absolutePath func(string) (string, error),
-	stat func(string) (os.FileInfo, error),
-) (repoConfigSelection, error) {
 	path := options.configPath
 	explicit := options.configPathExplicit
 	if path == "" {
 		path = ".linctl.toml"
 	}
-	resolvedPath, err := absolutePath(path)
+	resolvedPath, err := filepath.Abs(path)
 	if err != nil {
 		return repoConfigSelection{}, fmt.Errorf("resolve repo config path %s: %w", path, err)
 	}
-	_, err = stat(resolvedPath)
+	_, err = os.Stat(resolvedPath)
 	if err == nil {
 		return repoConfigSelection{Path: resolvedPath, Status: repoConfigLoaded}, nil
 	}
@@ -150,7 +142,6 @@ func newCommandRuntime(ctx context.Context, options *rootOptions) (commandRuntim
 			App:            authSession.App,
 			Store:          authStore,
 			Profile:        resolvedConfig.Profile,
-			Timeout:        options.timeout,
 			Logger:         logger,
 			OAuthClient:    newAuthOAuthClient(options.timeout),
 			NewClient: func(accessToken string) graphql.Client {
@@ -170,7 +161,6 @@ type recoveringGraphQLClientConfig struct {
 	App            auth.AppConfig
 	Store          auth.Store
 	Profile        string
-	Timeout        time.Duration
 	Logger         *slog.Logger
 	OAuthClient    authOAuthClient
 	NewClient      func(accessToken string) graphql.Client
@@ -188,48 +178,25 @@ type recoveringGraphQLClient struct {
 	app         auth.AppConfig
 	store       auth.Store
 	profile     string
-	timeout     time.Duration
 	logger      *slog.Logger
 	oauthClient authOAuthClient
 	newClient   func(accessToken string) graphql.Client
 }
 
 func newRecoveringGraphQLClient(config recoveringGraphQLClientConfig) *recoveringGraphQLClient {
-	newClient := config.NewClient
-	if newClient == nil {
-		newClient = func(accessToken string) graphql.Client {
-			return client.NewTransport(client.TransportConfig{
-				Token:   client.OAuthAccessToken(accessToken),
-				Timeout: config.Timeout,
-			})
-		}
-	}
-	oauthClient := config.OAuthClient
-	if oauthClient == nil {
-		oauthClient = newAuthOAuthClient(config.Timeout)
-	}
-	logger := config.Logger
-	if logger == nil {
-		logger = discardLogger
-	}
-	credentialKind := config.CredentialKind
-	if credentialKind == auth.CredentialKindMissing {
-		credentialKind = auth.CredentialKindFromToken(config.Token)
-	}
 	recovering := &recoveringGraphQLClient{
 		state: recoveringGraphQLClientState{
 			token:          config.Token,
-			credentialKind: credentialKind,
+			credentialKind: config.CredentialKind,
 		},
 		app:         config.App,
 		store:       config.Store,
 		profile:     config.Profile,
-		timeout:     config.Timeout,
-		logger:      logger,
-		oauthClient: oauthClient,
-		newClient:   newClient,
+		logger:      config.Logger,
+		oauthClient: config.OAuthClient,
+		newClient:   config.NewClient,
 	}
-	recovering.state.client = newClient(config.Token.AccessToken)
+	recovering.state.client = config.NewClient(config.Token.AccessToken)
 
 	return recovering
 }
@@ -428,7 +395,7 @@ func (recovering *recoveringGraphQLClient) reacquireClientCredentials(ctx contex
 
 func (runtime commandRuntime) resolveTarget(ctx context.Context) (client.ResolvedTarget, error) {
 	target, err := client.ResolveTarget(ctx, runtime.graphqlClient, runtime.config.Target)
-	logTargetResolution(runtime.log(), target, err)
+	logTargetResolution(runtime.logger, target, err)
 
 	return target, err
 }

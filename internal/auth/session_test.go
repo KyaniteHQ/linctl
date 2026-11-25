@@ -11,7 +11,7 @@ import (
 
 func Test_SelectSession_resolves_local_auth_state(t *testing.T) {
 	t.Parallel()
-	paths := testAuthPaths(t)
+	paths := testPaths(t)
 	require.NoError(t, NewStore(paths).Save(context.Background(), State{
 		App: AppConfig{
 			ClientID:     "client-id",
@@ -24,6 +24,7 @@ func Test_SelectSession_resolves_local_auth_state(t *testing.T) {
 	}))
 
 	session, err := SelectSession(context.Background(), SessionRequest{
+		Env:   staticEnv{},
 		Store: NewStore(paths),
 	})
 
@@ -37,7 +38,7 @@ func Test_SelectSession_resolves_local_auth_state(t *testing.T) {
 
 func Test_SelectSession_env_oauth_app_material_overrides_local_app(t *testing.T) {
 	t.Parallel()
-	paths := testAuthPaths(t)
+	paths := testPaths(t)
 	require.NoError(t, NewStore(paths).Save(context.Background(), State{
 		Profiles: map[string]ProfileState{
 			"work": {
@@ -75,7 +76,7 @@ func Test_SelectSession_env_oauth_app_material_overrides_local_app(t *testing.T)
 
 func Test_SelectSession_env_token_is_non_persistent(t *testing.T) {
 	t.Parallel()
-	paths := testAuthPaths(t)
+	paths := testPaths(t)
 	require.NoError(t, NewStore(paths).Save(context.Background(), State{
 		App: AppConfig{
 			ClientID:     "local-client-id",
@@ -106,7 +107,8 @@ func Test_SelectSession_reports_missing_token_source(t *testing.T) {
 	t.Parallel()
 
 	session, err := SelectSession(context.Background(), SessionRequest{
-		Store: NewStore(testAuthPaths(t)),
+		Env:   staticEnv{},
+		Store: NewStore(testPaths(t)),
 	})
 
 	require.NoError(t, err)
@@ -145,12 +147,13 @@ func Test_SelectSession_rejects_personal_api_key_shapes(t *testing.T) {
 		},
 		{
 			name:  "local token",
+			env:   staticEnv{},
 			state: State{Token: TokenState{AccessToken: "lin_api_personal_key"}},
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			paths := testAuthPaths(t)
+			paths := testPaths(t)
 			require.NoError(t, NewStore(paths).Save(context.Background(), test.state))
 
 			_, err := SelectSession(context.Background(), SessionRequest{
@@ -179,6 +182,7 @@ func Test_SelectSession_reports_context_and_store_errors(t *testing.T) {
 		require.NoError(t, os.Mkdir(appConfigPath, 0o700))
 
 		_, err := SelectSession(context.Background(), SessionRequest{
+			Env: staticEnv{},
 			Store: NewStore(Paths{
 				AppConfigPath: appConfigPath,
 				TokenPath:     filepath.Join(root, "auth-token.json"),
@@ -190,7 +194,7 @@ func Test_SelectSession_reports_context_and_store_errors(t *testing.T) {
 }
 
 func Test_SelectLocalSession_loads_local_state_despite_injected_token(t *testing.T) {
-	paths := testAuthPaths(t)
+	paths := testPaths(t)
 	require.NoError(t, NewStore(paths).Save(context.Background(), State{
 		App:   AppConfig{ClientID: "local-client-id"},
 		Token: TokenState{AccessToken: "local-access-token"},
@@ -210,26 +214,6 @@ func Test_SelectLocalSession_loads_local_state_despite_injected_token(t *testing
 	cancel()
 	_, err = SelectLocalSession(ctx, SessionRequest{})
 	require.ErrorContains(t, err, "select local auth session context")
-}
-
-func Test_AppConfigFromEnv_resolves_oauth_material(t *testing.T) {
-	t.Parallel()
-
-	app := AppConfigFromEnv(staticEnv{
-		oauthClientIDEnv:     "client-id",
-		oauthClientSecretEnv: "client-secret",
-		oauthRedirectURIEnv:  "http://127.0.0.1:8484/callback",
-		oauthScopesEnv:       "read,write comments:create",
-		"LINCTL_TOKEN":       "legacy-token",
-		"LINEAR_API_KEY":     "legacy-token",
-	})
-
-	require.Equal(t, AppConfig{
-		ClientID:     "client-id",
-		ClientSecret: "client-secret",
-		RedirectURI:  "http://127.0.0.1:8484/callback",
-		Scopes:       []string{"read", "write", "comments:create"},
-	}, app)
 }
 
 func Test_MergeAppConfig_overlays_explicit_fields(t *testing.T) {
@@ -254,13 +238,4 @@ func Test_MergeAppConfig_overlays_explicit_fields(t *testing.T) {
 		RedirectURI:  "http://127.0.0.1:8484/local",
 		Scopes:       []string{"read", "write"},
 	}, got)
-}
-
-func testAuthPaths(t *testing.T) Paths {
-	t.Helper()
-	root := t.TempDir()
-	return Paths{
-		AppConfigPath: filepath.Join(root, "config", "linctl", "auth-app.json"),
-		TokenPath:     filepath.Join(root, "state", "linctl", "auth-token.json"),
-	}
 }

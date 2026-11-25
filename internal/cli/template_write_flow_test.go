@@ -3,7 +3,6 @@ package cli
 import (
 	"bytes"
 	"context"
-	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -78,14 +77,15 @@ func Test_TemplateWriteCommandFlows_cover_output_modes(t *testing.T) {
 	updateArgs := []string{"template", "update", cliTemplateID, "--name", "Bug report"}
 	contentArgs := []string{"template", "content", cliTemplateID}
 	tests := []struct {
-		name string
-		args []string
-		want string
+		name  string
+		args  []string
+		want  string
+		quiet bool
 	}{
 		{name: "create human", args: createArgs, want: cliTemplateID + " Bug report [issue] team LIT\n"},
 		{name: "create json", args: append([]string{"--json", "--compact"}, createArgs...), want: `"data":{"title":"Bug"}`},
 		{name: "create id-only", args: append([]string{"--id-only"}, createArgs...), want: cliTemplateID + "\n"},
-		{name: "create quiet", args: append([]string{"--quiet"}, createArgs...), want: ""},
+		{name: "create quiet", args: append([]string{"--quiet"}, createArgs...), quiet: true},
 		{name: "update human", args: updateArgs, want: cliTemplateID + " Bug report [issue] team LIT\n"},
 		{
 			name: "update data-file",
@@ -103,33 +103,23 @@ func Test_TemplateWriteCommandFlows_cover_output_modes(t *testing.T) {
 			err := execute(context.Background(), BuildInfo{}, strings.NewReader(""), &stdout, &bytes.Buffer{}, test.args)
 
 			require.NoError(t, err)
+			if test.quiet {
+				require.Empty(t, stdout.String())
+				return
+			}
 			require.Contains(t, stdout.String(), test.want)
 		})
 	}
 }
 
-func Test_TemplateWriteCommandFlows_report_runtime_and_writer_errors(t *testing.T) {
+func Test_TemplateWriteCommandFlows_report_writer_errors(t *testing.T) {
 	dataFile := writeTemplateDataFile(t, `{"title":"Bug"}`)
 	commands := [][]string{
 		{"template", "create", "--id", cliTemplateID, "--name", "Bug report", "--type", "issue", "--data-file", dataFile},
-		{"template", "update", cliTemplateID, "--name", "Bug report"},
 		{"template", "content", cliTemplateID},
 	}
 	for _, args := range commands {
-		t.Run("runtime "+strings.Join(args[:2], " "), func(t *testing.T) {
-			original := buildCommandRuntime
-			buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
-				return commandRuntime{}, errors.New("runtime failed")
-			}
-			defer func() { buildCommandRuntime = original }()
-			command := NewRootCommand(context.Background(), BuildInfo{})
-			command.SetArgs(args)
-
-			err := command.ExecuteContext(context.Background())
-
-			require.ErrorContains(t, err, "runtime failed")
-		})
-		t.Run("writer "+strings.Join(args[:2], " "), func(t *testing.T) {
+		t.Run(strings.Join(args[:2], " "), func(t *testing.T) {
 			restore := useCommandRuntime(t, templateWriteFake())
 			defer restore()
 			command := NewRootCommand(context.Background(), BuildInfo{})
@@ -196,6 +186,24 @@ func Test_TemplateCreate_rejects_data_file_failures_before_mutation(t *testing.T
 			require.Zero(t, fake.count("TemplateCreate"))
 		})
 	}
+}
+
+func Test_TemplateCreate_requires_a_data_file_before_mutation(t *testing.T) {
+	fake := &mutationCallCounter{inner: templateWriteFake()}
+	restore := useCommandRuntime(t, fake)
+	defer restore()
+	err := execute(
+		context.Background(),
+		BuildInfo{},
+		strings.NewReader(""),
+		&bytes.Buffer{},
+		&bytes.Buffer{},
+		[]string{"template", "create", "--id", cliTemplateID, "--name", "Bug report", "--type", "issue"},
+	)
+
+	require.ErrorIs(t, err, client.ErrWriteInvalid)
+	require.ErrorContains(t, err, "data-file is required")
+	require.Zero(t, fake.count("TemplateCreate"))
 }
 
 func Test_TemplateGet_stays_data_free(t *testing.T) {

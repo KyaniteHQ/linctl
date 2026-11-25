@@ -13,7 +13,6 @@ import (
 
 type renderWriterCase struct {
 	name  string
-	item  any
 	write func(*cobra.Command, *rootOptions) error
 	text  string
 }
@@ -253,13 +252,6 @@ func renderWriterCases() []renderWriterCase {
 		SLAType:    "all",
 		RemovesSLA: false,
 	}
-	semanticSearchResult := client.SemanticSearchResultSummary{
-		Type:  "issue",
-		ID:    "issue-id",
-		Key:   "LIT-3",
-		Title: "Search result",
-		URL:   "https://linear.app/kyanite/issue/LIT-3",
-	}
 	customer := client.CustomerSummary{
 		ID:                   "customer-id",
 		Name:                 "Acme",
@@ -424,13 +416,11 @@ func renderWriterCases() []renderWriterCase {
 	return []renderWriterCase{
 		{
 			name:  "Issue",
-			item:  issue,
 			write: func(command *cobra.Command, options *rootOptions) error { return writeIssue(command, options, issue) },
 			text:  "LIT-1 Ship coverage [Todo]\n",
 		},
 		{
 			name: "IssueBotActor",
-			item: issueBotActor,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeIssueBotActor(command, options, issueBotActor)
 			},
@@ -438,7 +428,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "IssueBotActor 2",
-			item: client.IssueBotActor{IssueID: "plain-issue-id"},
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeIssueBotActor(command, options, client.IssueBotActor{IssueID: "plain-issue-id"})
 			},
@@ -446,7 +435,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "IssueStateSpan",
-			item: issueStateSpan,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeIssueStateSpan(command, options, issueStateSpan)
 			},
@@ -454,13 +442,11 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name:  "Cycle",
-			item:  cycle,
 			write: func(command *cobra.Command, options *rootOptions) error { return writeCycle(command, options, cycle) },
 			text:  "cycle-id Planning cycle [active]\n",
 		},
 		{
 			name: "Project",
-			item: project,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeProject(command, options, project)
 			},
@@ -468,7 +454,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "ProjectUpdate",
-			item: projectUpdate,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeProjectUpdate(command, options, projectUpdate)
 			},
@@ -476,7 +461,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "ProjectMilestone",
-			item: milestone,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeProjectMilestone(command, options, milestone)
 			},
@@ -484,7 +468,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "ProjectStatus",
-			item: projectStatus,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeProjectStatus(command, options, projectStatus)
 			},
@@ -492,7 +475,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "ProjectStatusProjectCount",
-			item: projectStatusProjectCount,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeProjectStatusProjectCount(command, options, projectStatusProjectCount)
 			},
@@ -500,7 +482,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "ProjectLabel",
-			item: projectLabel,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeProjectLabel(command, options, projectLabel)
 			},
@@ -508,7 +489,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "ProjectRelation",
-			item: projectRelation,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeProjectRelation(command, options, projectRelation)
 			},
@@ -516,7 +496,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "IssueRelation",
-			item: issueRelation,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeIssueRelation(command, options, issueRelation)
 			},
@@ -524,7 +503,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "IssueToRelease",
-			item: issueToRelease,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeIssueToRelease(command, options, issueToRelease)
 			},
@@ -532,7 +510,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "Document",
-			item: document,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeDocument(command, options, document)
 			},
@@ -540,19 +517,16 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name:  "Label",
-			item:  label,
 			write: func(command *cobra.Command, options *rootOptions) error { return writeLabel(command, options, label) },
 			text:  "label-id Bug #ff0000\n",
 		},
 		{
 			name:  "Team",
-			item:  team,
 			write: func(command *cobra.Command, options *rootOptions) error { return writeTeam(command, options, team) },
 			text:  "team-id LIT linctl\n",
 		},
 		{
 			name: "TeamMembership",
-			item: teamMembership,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeTeamMembership(command, options, teamMembership)
 			},
@@ -560,7 +534,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "GitAutomationState",
-			item: gitAutomationState,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeGitAutomationState(command, options, gitAutomationState)
 			},
@@ -568,19 +541,16 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name:  "User",
-			item:  user,
 			write: func(command *cobra.Command, options *rootOptions) error { return writeUser(command, options, user) },
 			text:  "user-id Omer <omer@example.com>\n",
 		},
 		{
 			name:  "Draft",
-			item:  draft,
 			write: func(command *cobra.Command, options *rootOptions) error { return writeDraft(command, options, draft) },
 			text:  "draft-id issue LIT-3 Draft issue\n",
 		},
 		{
 			name: "Comment",
-			item: comment,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeComment(command, options, comment)
 			},
@@ -588,7 +558,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "CommentMetadata",
-			item: commentMetadata,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeCommentMetadata(command, options, commentMetadata)
 			},
@@ -596,7 +565,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "CommentBotActor",
-			item: commentBotActor,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeCommentBotActor(command, options, commentBotActor)
 			},
@@ -604,7 +572,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "CommentBotActor 2",
-			item: client.CommentBotActor{CommentID: "plain-comment-id"},
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeCommentBotActor(command, options, client.CommentBotActor{CommentID: "plain-comment-id"})
 			},
@@ -612,7 +579,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "WorkflowState",
-			item: workflowState,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeWorkflowState(command, options, workflowState)
 			},
@@ -620,7 +586,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "TimeSchedule",
-			item: timeSchedule,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeTimeSchedule(command, options, timeSchedule)
 			},
@@ -628,7 +593,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "Template",
-			item: template,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeTemplate(command, options, template)
 			},
@@ -636,7 +600,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "Initiative",
-			item: initiative,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeInitiative(command, options, initiative)
 			},
@@ -644,7 +607,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "InitiativeHistory",
-			item: initiativeHistory,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeInitiativeHistory(command, options, initiativeHistory)
 			},
@@ -652,7 +614,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "InitiativeRelation",
-			item: initiativeRelation,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeInitiativeRelation(command, options, initiativeRelation)
 			},
@@ -660,7 +621,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "InitiativeToProject",
-			item: initiativeToProject,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeInitiativeToProject(command, options, initiativeToProject)
 			},
@@ -668,7 +628,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "RoadmapToProject",
-			item: roadmapToProject,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeRoadmapToProject(command, options, roadmapToProject)
 			},
@@ -676,7 +635,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "InitiativeUpdate",
-			item: initiativeUpdate,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeInitiativeUpdate(command, options, initiativeUpdate)
 			},
@@ -684,7 +642,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "Roadmap",
-			item: roadmap,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeRoadmap(command, options, roadmap)
 			},
@@ -692,7 +649,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "CustomView",
-			item: customView,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeCustomView(command, options, customView)
 			},
@@ -700,7 +656,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "CustomViewSubscriberStatus",
-			item: customViewSubscriberStatus,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeCustomViewSubscriberStatus(command, options, customViewSubscriberStatus)
 			},
@@ -708,7 +663,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "CustomViewPreferences",
-			item: customViewPreferences,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeCustomViewPreferences(command, options, customViewPreferences)
 			},
@@ -716,7 +670,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "CustomViewPreferenceValues",
-			item: customViewPreferenceValues,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeCustomViewPreferenceValues(command, options, customViewPreferenceValues)
 			},
@@ -724,7 +677,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "CustomViewPreferences 2",
-			item: client.CustomViewPreferences{CustomViewID: "empty-custom-view-id"},
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeCustomViewPreferences(command, options, client.CustomViewPreferences{CustomViewID: "empty-custom-view-id"})
 			},
@@ -732,7 +684,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "SLAConfiguration",
-			item: slaConfiguration,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeSLAConfiguration(command, options, slaConfiguration)
 			},
@@ -740,7 +691,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "SLAConfiguration 2",
-			item: client.SLAConfigurationSummary{ID: "sla-remove-id", Name: "Remove SLA", RemovesSLA: true},
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeSLAConfiguration(command, options, client.SLAConfigurationSummary{ID: "sla-remove-id", Name: "Remove SLA", RemovesSLA: true})
 			},
@@ -748,7 +698,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "Customer",
-			item: customer,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeCustomer(command, options, customer)
 			},
@@ -756,7 +705,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "CustomerNeed",
-			item: customerNeed,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeCustomerNeed(command, options, customerNeed)
 			},
@@ -764,7 +712,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "CustomerStatus",
-			item: customerStatus,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeCustomerStatus(command, options, customerStatus)
 			},
@@ -772,7 +719,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "CustomerTier",
-			item: customerTier,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeCustomerTier(command, options, customerTier)
 			},
@@ -780,7 +726,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "ApplicationInfo",
-			item: application,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeApplicationInfo(command, options, application)
 			},
@@ -788,7 +733,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "AgentActivity",
-			item: agentActivity,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeAgentActivity(command, options, agentActivity)
 			},
@@ -796,7 +740,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "AgentSkill",
-			item: agentSkill,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeAgentSkill(command, options, agentSkill)
 			},
@@ -804,7 +747,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "ExternalUser",
-			item: externalUser,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeExternalUser(command, options, externalUser)
 			},
@@ -812,7 +754,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "AuditEntryType",
-			item: auditEntryType,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeAuditEntryType(command, options, auditEntryType)
 			},
@@ -820,7 +761,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "OrganizationExists",
-			item: organizationExistsStatus,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeOrganizationExists(command, options, organizationExistsStatus)
 			},
@@ -828,7 +768,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "RateLimitStatus",
-			item: rateLimitStatus,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeRateLimitStatus(command, options, rateLimitStatus)
 			},
@@ -836,7 +775,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "Favorite",
-			item: favorite,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeFavorite(command, options, favorite)
 			},
@@ -844,13 +782,11 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name:  "Emoji",
-			item:  emoji,
 			write: func(command *cobra.Command, options *rootOptions) error { return writeEmoji(command, options, emoji) },
 			text:  "emoji-id party [custom]\n",
 		},
 		{
 			name: "Attachment",
-			item: attachment,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeAttachment(command, options, attachment)
 			},
@@ -858,7 +794,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "Notification",
-			item: notification,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeNotification(command, options, notification)
 			},
@@ -866,7 +801,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "NotificationSubscription",
-			item: notificationSubscription,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeNotificationSubscription(command, options, notificationSubscription)
 			},
@@ -874,7 +808,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "TriageResponsibility",
-			item: triageResponsibility,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeTriageResponsibility(command, options, triageResponsibility)
 			},
@@ -882,7 +815,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "TriageResponsibilityManualSelection",
-			item: triageManualSelection,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeTriageResponsibilityManualSelection(command, options, triageManualSelection)
 			},
@@ -890,7 +822,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "ReleasePipeline",
-			item: releasePipeline,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeReleasePipeline(command, options, releasePipeline)
 			},
@@ -898,7 +829,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "ReleaseStage",
-			item: releaseStage,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeReleaseStage(command, options, releaseStage)
 			},
@@ -906,7 +836,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "Release",
-			item: release,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeRelease(command, options, release)
 			},
@@ -914,7 +843,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "ReleaseHistory",
-			item: releaseHistory,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeReleaseHistory(command, options, releaseHistory)
 			},
@@ -922,7 +850,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "IssueHistory",
-			item: issueHistory,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeIssueHistory(command, options, issueHistory)
 			},
@@ -930,7 +857,6 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "EntityExternalLink",
-			item: releaseLink,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeEntityExternalLink(command, options, releaseLink)
 			},
@@ -938,43 +864,22 @@ func renderWriterCases() []renderWriterCase {
 		},
 		{
 			name: "ReleaseNote",
-			item: releaseNote,
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeReleaseNote(command, options, releaseNote)
 			},
 			text: "release-note-id Launch notes pipeline Production releases 2\n",
 		},
-		{
-			name: "SemanticSearchResult json only",
-			item: semanticSearchResult,
-			write: func(command *cobra.Command, options *rootOptions) error {
-				return writeSemanticSearchResult(command, options, semanticSearchResult)
-			},
-		},
 	}
 }
 
-// Each render writer emits its documented human line in text mode and the
-// item's JSON encoding in JSON mode.
-func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
+func Test_CliRenderHelpers_write_text_output(t *testing.T) {
 	for _, test := range renderWriterCases() {
-		if test.text != "" {
-			t.Run(test.name+" text", func(t *testing.T) {
-				output := bytes.Buffer{}
-				command := &cobra.Command{}
-				command.SetOut(&output)
-				require.NoError(t, test.write(command, &rootOptions{}))
-				require.Equal(t, test.text, output.String())
-			})
-		}
-		t.Run(test.name+" json", func(t *testing.T) {
+		t.Run(test.name, func(t *testing.T) {
 			output := bytes.Buffer{}
 			command := &cobra.Command{}
 			command.SetOut(&output)
-			require.NoError(t, test.write(command, &rootOptions{json: true}))
-			expected, err := json.Marshal(test.item)
-			require.NoError(t, err)
-			require.JSONEq(t, string(expected), output.String())
+			require.NoError(t, test.write(command, &rootOptions{}))
+			require.Equal(t, test.text, output.String())
 		})
 	}
 }

@@ -12,10 +12,6 @@ import (
 	"github.com/KyaniteHQ/linctl/internal/client"
 )
 
-// checkoutBranch creates and switches to a git branch. It is a package var so
-// tests can substitute the git invocation.
-var checkoutBranch = runGitCheckoutBranch
-
 func runGitCheckoutBranch(ctx context.Context, branchName string) error {
 	// branchName is a Linear-provided issue branch name passed as a discrete argv
 	// argument (no shell), so there is no command-injection surface here.
@@ -124,7 +120,7 @@ func runNextWithPicker(
 		return writeIssue(command, options, picked)
 	}
 	if flags.checkout {
-		if err := checkoutBranch(ctx, picked.BranchName); err != nil {
+		if err := runGitCheckoutBranch(ctx, picked.BranchName); err != nil {
 			return err
 		}
 	}

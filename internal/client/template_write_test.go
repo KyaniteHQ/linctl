@@ -65,13 +65,30 @@ func Test_GetTemplateDetail_returns_canonical_data_and_scope(t *testing.T) {
 
 func Test_GetTemplateDetail_unwraps_encoded_object_layer(t *testing.T) {
 	graphqlClient := fakeGraphQLClient{
-		"templateContent": templateContentResponse("Bug report", `"{\"title\":\"Encoded\"}"`),
+		"templateContent": templateContentResponse("Bug report", `"{\"title\":\"Encoded\",\"n\":1.0}"`),
 	}
 
 	detail, err := GetTemplateDetail(context.Background(), graphqlClient, testTemplateID)
 
 	require.NoError(t, err)
-	require.JSONEq(t, `{"title":"Encoded"}`, string(detail.Data))
+	require.Equal(t, `{"n":1.0,"title":"Encoded"}`, string(detail.Data)) //nolint:testifylint // lexeme must stay 1.0
+}
+
+func Test_GetTemplateDetail_rejects_missing_or_malformed_data(t *testing.T) {
+	tests := map[string]string{
+		"missing": `{"template":{"id":"` + testTemplateID +
+			`","name":"Bug report","type":"issue","team":null,"pipeline":null}}`,
+		"malformed encoded": templateContentResponse("Bug report", `"{"`),
+	}
+	for name, response := range tests {
+		t.Run(name, func(t *testing.T) {
+			graphqlClient := fakeGraphQLClient{"templateContent": response}
+
+			_, err := GetTemplateDetail(context.Background(), graphqlClient, testTemplateID)
+
+			require.ErrorIs(t, err, ErrWriteInvalid)
+		})
+	}
 }
 
 func Test_GetTemplateDetail_requires_template_id(t *testing.T) {
