@@ -52,9 +52,6 @@ func requireLoggedAuthReadiness(
 	logger *slog.Logger,
 	request authReadinessRequest,
 ) (authReadinessReport, error) {
-	if logger == nil {
-		logger = discardLogger
-	}
 	logger.DebugContext(
 		ctx,
 		"auth readiness check started",
@@ -100,7 +97,10 @@ func defaultCheckAuthReadiness(ctx context.Context, request authReadinessRequest
 	if request.AccessToken == "" {
 		return authReadinessReport{}, auth.NewError(auth.ErrorCodeNotConfigured, "missing OAuth access token")
 	}
-	graphqlClient := newAuthReadinessGraphQLClient(request.AccessToken, request.Timeout)
+	graphqlClient := client.NewTransport(client.TransportConfig{
+		Token:   client.OAuthAccessToken(request.AccessToken),
+		Timeout: request.Timeout,
+	})
 	target, err := client.ResolveTarget(ctx, graphqlClient, request.ExpectedTarget)
 	if err != nil {
 		return authReadinessReport{}, err
@@ -119,11 +119,8 @@ func actorFromViewer(viewer client.TargetViewer) string {
 
 func mapAuthReadinessError(err error) error {
 	var authErr *auth.AuthError
-	var tokenErr *auth.TokenEndpointError
 	switch {
 	case errors.As(err, &authErr):
-		return err
-	case errors.As(err, &tokenErr):
 		return err
 	case errors.Is(err, client.ErrAuthFailed):
 		return auth.WrapError(

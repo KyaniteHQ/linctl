@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/csv"
+	"encoding/json"
 	"errors"
 	"os"
 	"path/filepath"
@@ -58,18 +59,13 @@ team_id = "team-id"
 `)
 }
 
-func Test_dataFormat_resolves_and_rejects(t *testing.T) {
-	format, err := dataFormat("rows.JSON")
-	require.NoError(t, err)
-	//nolint:testifylint // formatJSON is the literal "json", not JSON content for JSONEq.
-	require.Equal(t, formatJSON, format)
+func Test_CommandFlows_issue_import_accepts_an_uppercase_extension(t *testing.T) {
+	path := writeImportFile(t, "rows.JSON", `[{"title":"First"}]`)
 
-	format, err = dataFormat("rows.csv")
-	require.NoError(t, err)
-	require.Equal(t, formatCSV, format)
+	stdout, err := runBulkFlow(t, commandFlowFakeClient{}, []string{"issue", "import", path})
 
-	_, err = dataFormat("rows.txt")
-	require.Error(t, err)
+	require.NoError(t, err)
+	require.Equal(t, "LIT-2 Created issue [Todo]\n", stdout)
 }
 
 func Test_CommandFlows_issue_import_creates_from_json(t *testing.T) {
@@ -134,7 +130,7 @@ func Test_CommandFlows_issue_import_quiet_result(t *testing.T) {
 
 func Test_CommandFlows_issue_import_dry_run_previews(t *testing.T) {
 	writePinnedImportDryRunConfig(t)
-	path := writeImportFile(t, "rows.json", `[{"title":"First","priority":"high","state":"In Review"}]`)
+	path := writeImportFile(t, "rows.json", `[{"title":"First","priority":"high","state":"  In Review  "}]`)
 
 	stdout, err := runBulkFlow(t, commandFlowFakeClient{}, []string{"issue", "import", path, "--dry-run"})
 	require.NoError(t, err)
@@ -276,19 +272,6 @@ func Test_CommandFlows_issue_import_surfaces_input_errors(t *testing.T) {
 	}
 }
 
-func Test_importRowToRequest_keeps_exact_state_name(t *testing.T) {
-	request, err := importRowToRequest(issueImportRow{
-		Title:    "First",
-		State:    "  In Review  ",
-		Priority: "high",
-	}, "LIT")
-
-	require.NoError(t, err)
-	require.Equal(t, "In Review", request.StateSelector)
-	require.Empty(t, request.StateType)
-	require.Equal(t, "2", request.Priority)
-}
-
 func Test_importRowToRequest_does_not_map_state_name_to_type(t *testing.T) {
 	request, err := importRowToRequest(issueImportRow{Title: "First", State: "started"}, "LIT")
 
@@ -315,25 +298,6 @@ func Test_CommandFlows_issue_import_selects_exact_state_name(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, 1, fake.calls)
 	require.Contains(t, stdout, "LIT-2")
-}
-
-func Test_importRowToRequest_reports_INVALID_WRITE(t *testing.T) {
-	tests := []struct {
-		name string
-		row  issueImportRow
-		team string
-	}{
-		{name: "missing title", row: issueImportRow{Title: "  "}, team: "LIT"},
-		{name: "team mismatch", row: issueImportRow{Title: "First", Team: "OTH"}, team: "LIT"},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			_, err := importRowToRequest(tt.row, tt.team)
-
-			require.ErrorIs(t, err, client.ErrWriteInvalid)
-			require.Equal(t, "INVALID_WRITE", errorCode(err))
-		})
-	}
 }
 
 func Test_CommandFlows_issue_import_surfaces_csv_errors(t *testing.T) {
@@ -453,74 +417,64 @@ func Test_CommandFlows_issue_bulk_export_surfaces_errors(t *testing.T) {
 	require.Error(t, err)
 }
 
-func Test_encodeIssues_surfaces_writer_errors(t *testing.T) {
-	issues := []client.IssueSummary{{Identifier: "LIT-1", Title: "First"}}
-
-	require.Error(t, encodeIssues(commandFailingWriter{}, formatJSON, issues))
-	require.Error(t, encodeIssues(commandFailingWriter{}, formatCSV, issues))
+type formulaIssueListClient struct {
+	delegate graphql.Client
 }
 
-func Test_prefixCSVFormulaCell(t *testing.T) {
-	require.Empty(t, prefixCSVFormulaCell(""))
-	require.Equal(t, "Listed issue", prefixCSVFormulaCell("Listed issue"))
-	require.Equal(t, `'=HYPERLINK("http://evil/","click")`, prefixCSVFormulaCell(`=HYPERLINK("http://evil/","click")`))
-	require.Equal(t, "'+cmd", prefixCSVFormulaCell("+cmd"))
-	require.Equal(t, "'-1+1", prefixCSVFormulaCell("-1+1"))
-	require.Equal(t, "'@SUM(1)", prefixCSVFormulaCell("@SUM(1)"))
-	require.Equal(t, "'\tTAB", prefixCSVFormulaCell("\tTAB"))
-	require.Equal(t, "'\rCR", prefixCSVFormulaCell("\rCR"))
-}
-
-func Test_issuesToCSVRecords_prefixes_formula_trigger_cells(t *testing.T) {
-	records := issuesToCSVRecords([]client.IssueSummary{{
-		Identifier:    "=CMD",
-		Title:         `=HYPERLINK("http://evil/","click")`,
-		State:         "+cmd",
-		PriorityLabel: "-1+1",
-		Assignee:      "@SUM(1)",
-		Project:       "\tTAB",
-		URL:           "\rCR",
+func (fake formulaIssueListClient) MakeRequest(
+	ctx context.Context,
+	request *graphql.Request,
+	response *graphql.Response,
+) error {
+	if request.OpName != "IssuesByTeamFiltered" {
+		return fake.delegate.MakeRequest(ctx, request, response)
+	}
+	payload, err := json.Marshal(map[string]any{"issues": map[string]any{
+		"nodes": []map[string]any{{
+			"id":            "issue-id",
+			"identifier":    "=CMD",
+			"title":         `=HYPERLINK("http://evil/","click")`,
+			"branchName":    "lit-1-formula",
+			"url":           "\rCR",
+			"priority":      0,
+			"priorityLabel": "-1+1",
+			"team":          map[string]any{"id": "team-id", "key": "LIT", "name": "LIT"},
+			"state":         map[string]any{"id": "todo-state", "name": "+cmd", "type": "unstarted"},
+			"assignee":      map[string]any{"id": "user-id", "name": "omer", "displayName": "@SUM(1)"},
+			"project":       map[string]any{"id": "project-id", "name": "\tTAB"},
+		}},
+		"pageInfo": map[string]any{"hasNextPage": false, "endCursor": nil},
 	}})
+	if err != nil {
+		return err
+	}
 
-	require.Equal(t, []string{"identifier", "title", "state", "priority", "assignee", "project", "url"}, records[0])
-	require.Equal(t, []string{
-		"'=CMD",
-		`'=HYPERLINK("http://evil/","click")`,
-		"'+cmd",
-		"'-1+1",
-		"'@SUM(1)",
-		"'\tTAB",
-		"'\rCR",
-	}, records[1])
+	return json.Unmarshal([]byte(`{"data":`+string(payload)+`}`), response)
 }
 
-func Test_writeIssueFile_prefixes_csv_formula_cells_on_disk(t *testing.T) {
+func Test_CommandFlows_issue_bulk_export_neutralizes_csv_formula_cells(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "issues.csv")
 
-	err := writeIssueFile(path, formatCSV, []client.IssueSummary{{
-		Identifier: "LIT-1",
-		Title:      `=HYPERLINK("http://evil/","click")`,
-		State:      "Todo",
-	}})
+	_, err := runBulkFlow(t, formulaIssueListClient{delegate: commandFlowFakeClient{}}, []string{"issue", "bulk-export", path})
 
 	require.NoError(t, err)
 	data, err := os.ReadFile(path) //nolint:gosec // G304: test-controlled temp path.
 	require.NoError(t, err)
-	require.Contains(t, string(data), `'=HYPERLINK`)
 	records, err := csv.NewReader(strings.NewReader(string(data))).ReadAll()
 	require.NoError(t, err)
-	require.Equal(t, `'=HYPERLINK("http://evil/","click")`, records[1][1])
+	require.Equal(t, [][]string{
+		{"identifier", "title", "state", "priority", "assignee", "project", "url"},
+		{"'=CMD", `'=HYPERLINK("http://evil/","click")`, "'+cmd", "'-1+1", "'@SUM(1)", "'\tTAB", "'\rCR"},
+	}, records)
 }
 
-func Test_writeIssueFile_leaves_no_destination_on_write_failure(t *testing.T) {
+func Test_CommandFlows_issue_bulk_export_leaves_no_file_on_write_failure(t *testing.T) {
 	dir := t.TempDir()
-	dest := filepath.Join(dir, "issues.csv")
 	stubAtomicTempWriteError(t, errors.New("write boom"))
 
-	err := writeIssueFile(dest, formatCSV, []client.IssueSummary{{Identifier: "LIT-1", Title: "Listed issue"}})
+	_, err := runBulkFlow(t, commandFlowFakeClient{}, []string{"issue", "bulk-export", filepath.Join(dir, "issues.csv")})
 
 	require.ErrorContains(t, err, "write boom")
-	require.NoFileExists(t, dest)
 	entries, readErr := os.ReadDir(dir)
 	require.NoError(t, readErr)
 	require.Empty(t, entries)

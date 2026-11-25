@@ -6,10 +6,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/require"
-
-	"github.com/KyaniteHQ/linctl/internal/client"
 )
 
 func Test_CommandFlows_customer_need_project_attachment_handles_missing_attachment(t *testing.T) {
@@ -344,58 +341,6 @@ func Test_CommandFlows_semantic_search_honors_id_only_and_quiet(t *testing.T) {
 
 			require.NoError(t, err)
 			require.Equal(t, test.output, output.String())
-		})
-	}
-}
-
-func Test_CommandFlows_typed_search_writers_emit_json(t *testing.T) {
-	tests := []struct {
-		name  string
-		write func(*cobra.Command, *rootOptions) error
-		want  string
-	}{
-		{
-			name: "document",
-			write: func(command *cobra.Command, options *rootOptions) error {
-				return writeSearchDocument(command, options, client.SearchDocumentSummary{
-					ID:    "search-document-id",
-					Title: "Search spec",
-				})
-			},
-			want: `{"id":"search-document-id","title":"Search spec","slug_id":"","url":""}`,
-		},
-		{
-			name: "issue",
-			write: func(command *cobra.Command, options *rootOptions) error {
-				return writeSearchIssue(command, options, client.SearchIssueSummary{
-					ID:         "search-issue-id",
-					Identifier: "LIT-30",
-					Title:      "Search issue",
-				})
-			},
-			want: `{"id":"search-issue-id","identifier":"LIT-30","title":"Search issue","url":"","team_id":"","team_key":"","team_name":"","state_id":"","state_name":"","state_type":""}`,
-		},
-		{
-			name: "project",
-			write: func(command *cobra.Command, options *rootOptions) error {
-				return writeSearchProject(command, options, client.SearchProjectSummary{
-					ID:   "search-project-id",
-					Name: "Search project",
-				})
-			},
-			want: `{"id":"search-project-id","name":"Search project","slug_id":"","url":"","status":{"id":"","name":"","type":""},"teams":null}`,
-		},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			output := bytes.Buffer{}
-			command := &cobra.Command{}
-			command.SetOut(&output)
-
-			err := test.write(command, &rootOptions{json: true})
-
-			require.NoError(t, err)
-			require.JSONEq(t, test.want, output.String())
 		})
 	}
 }

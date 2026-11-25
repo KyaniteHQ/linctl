@@ -50,8 +50,6 @@ type authLogoutReport struct {
 	RevocationFailed bool     `json:"revocation_failed,omitempty"`
 }
 
-var afterAuthStatusTokenAcquired func()
-
 func writeCurrentOrRefreshedAuthStatus(
 	ctx context.Context,
 	command *cobra.Command,
@@ -63,9 +61,6 @@ func writeCurrentOrRefreshedAuthStatus(
 	token, readiness, err := currentOrRefreshedAuthToken(ctx, authContext, app, token, options.timeout)
 	if err != nil {
 		return err
-	}
-	if afterAuthStatusTokenAcquired != nil {
-		afterAuthStatusTokenAcquired()
 	}
 
 	return writeAuthStatus(command, options, newAuthStatusReport(app, token, readiness))

@@ -11,7 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Khan/genqlient/graphql"
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/auth"
@@ -28,18 +27,12 @@ const (
 )
 
 var (
-	defaultOAuthScopes            = []string{"read", "write", "issues:create", "comments:create"}
-	appActorInitiativeScopes      = []string{"initiative:read", "initiative:write"}
-	authDefaultPaths              = auth.DefaultPaths
-	authNow                       = time.Now
-	checkAuthReadiness            = defaultCheckAuthReadiness
-	newAuthReadinessGraphQLClient = func(accessToken string, timeout time.Duration) graphql.Client {
-		return client.NewTransport(client.TransportConfig{
-			Token:   client.OAuthAccessToken(accessToken),
-			Timeout: timeout,
-		})
-	}
-	newAuthOAuthClient = func(timeout time.Duration) authOAuthClient {
+	defaultOAuthScopes       = []string{"read", "write", "issues:create", "comments:create"}
+	appActorInitiativeScopes = []string{"initiative:read", "initiative:write"}
+	authDefaultPaths         = auth.DefaultPaths
+	authNow                  = time.Now
+	checkAuthReadiness       = defaultCheckAuthReadiness
+	newAuthOAuthClient       = func(timeout time.Duration) authOAuthClient {
 		return oauth.NewClient(oauth.ClientConfig{HTTPClient: newOAuthHTTPClient(timeout)})
 	}
 )

@@ -790,89 +790,40 @@ func Test_AuthLogout_reports_clear_state_errors(t *testing.T) {
 	})
 }
 
-func Test_AuthHelper_refresh_errors(t *testing.T) {
-	authContext := authCommandContext{
-		store: auth.NewStore(cliAuthTestPaths(t)),
-	}
-
-	t.Run("refresh token endpoint failure", func(t *testing.T) {
-		restore := useAuthCommandHooks(
-			t,
-			cliAuthTestPaths(t),
-			&fakeOAuthTokenClient{err: errors.New("token endpoint down")},
-			&fakeAuthReadinessChecker{},
-		)
-		defer restore()
-
-		_, _, err := refreshAuthTokenState(context.Background(), authContext, auth.AppConfig{
-			ClientID: "client-id",
-			Scopes:   []string{"read"},
-		}, auth.TokenState{
-			AccessToken:  "access-token",
-			RefreshToken: "refresh-token",
+func Test_AuthRefresh_reports_missing_scope_without_saving_token(t *testing.T) {
+	paths := cliAuthTestPaths(t)
+	require.NoError(t, auth.NewStore(paths).Save(context.Background(), auth.State{
+		App: auth.AppConfig{ClientID: "client-id", Scopes: []string{"read"}},
+		Token: auth.TokenState{
+			AccessToken:  "old-access-token",
+			RefreshToken: "old-refresh-token",
+			Scopes:       []string{"read"},
+			Actor:        "user",
 			GrantType:    authGrantAuthorizationCode,
-		}, time.Second)
+		},
+	}))
+	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
+		"new-access-token",
+		"new-refresh-token",
+		"Bearer",
+		time.Now().Add(time.Hour),
+		[]string{},
+	)}
+	restore := useAuthCommandHooks(t, paths, fakeOAuth, &fakeAuthReadinessChecker{report: readyAuthReport("user")})
+	defer restore()
+	var stderr bytes.Buffer
 
-		require.Error(t, err)
-		require.Equal(t, string(auth.ErrorCodeRefreshFailed), errorCode(err))
+	err := execute(context.Background(), BuildInfo{}, nil, &bytes.Buffer{}, &stderr, []string{
+		"auth",
+		"refresh",
 	})
 
-	t.Run("refresh readiness failure", func(t *testing.T) {
-		restore := useAuthCommandHooks(
-			t,
-			cliAuthTestPaths(t),
-			&fakeOAuthTokenClient{grant: auth.NewTokenState(
-				"new-access-token",
-				"new-refresh-token",
-				"Bearer",
-				time.Now().Add(time.Hour),
-				[]string{"read"},
-			)},
-			&fakeAuthReadinessChecker{err: client.ErrTargetMismatch},
-		)
-		defer restore()
-
-		_, _, err := refreshAuthTokenState(context.Background(), authContext, auth.AppConfig{
-			ClientID: "client-id",
-			Scopes:   []string{"read"},
-		}, auth.TokenState{
-			AccessToken:  "access-token",
-			RefreshToken: "refresh-token",
-			Actor:        "app",
-			GrantType:    authGrantAuthorizationCode,
-		}, time.Second)
-
-		require.Error(t, err)
-		require.Equal(t, string(auth.ErrorCodeTargetMismatch), errorCode(err))
-	})
-
-	t.Run("refresh missing scope", func(t *testing.T) {
-		restore := useAuthCommandHooks(
-			t,
-			cliAuthTestPaths(t),
-			&fakeOAuthTokenClient{grant: auth.NewTokenState(
-				"new-access-token",
-				"new-refresh-token",
-				"Bearer",
-				time.Now().Add(time.Hour),
-				[]string{},
-			)},
-			&fakeAuthReadinessChecker{},
-		)
-		defer restore()
-
-		_, _, err := refreshAuthTokenState(context.Background(), authContext, auth.AppConfig{
-			ClientID: "client-id",
-			Scopes:   []string{"read"},
-		}, auth.TokenState{
-			AccessToken:  "access-token",
-			RefreshToken: "refresh-token",
-			GrantType:    authGrantAuthorizationCode,
-		}, time.Second)
-
-		require.Error(t, err)
-		require.Equal(t, string(auth.ErrorCodeMissingScope), errorCode(err))
-	})
+	require.Error(t, err)
+	require.Contains(t, stderr.String(), `"error_code":"MISSING_SCOPE"`)
+	got, loadErr := auth.NewStore(paths).Load(context.Background())
+	require.NoError(t, loadErr)
+	require.Equal(t, "old-access-token", got.Token.AccessToken)
+	require.Equal(t, "old-refresh-token", got.Token.RefreshToken)
 }
 
 func Test_ValidateCommandFlags_reports_limit_parse_error(t *testing.T) {

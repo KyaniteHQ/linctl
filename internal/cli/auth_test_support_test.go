@@ -2,14 +2,10 @@ package cli
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
 	"fmt"
 	"slices"
 	"testing"
 	"time"
-
-	"github.com/Khan/genqlient/graphql"
 
 	"github.com/KyaniteHQ/linctl/internal/auth"
 	"github.com/KyaniteHQ/linctl/internal/client"
@@ -60,22 +56,10 @@ func useAuthCommandHooks(
 	}
 }
 
-func useAuthReadinessGraphQLClient(t *testing.T, client graphql.Client) func() {
-	t.Helper()
-	original := newAuthReadinessGraphQLClient
-	newAuthReadinessGraphQLClient = func(string, time.Duration) graphql.Client {
-		return client
-	}
-	return func() {
-		newAuthReadinessGraphQLClient = original
-	}
-}
-
 type fakeOAuthTokenClient struct {
 	grant                    auth.TokenState
 	err                      error
 	clientCredentialsCalls   int
-	clientCredentialsRequest oauth.ClientCredentialsRequest
 	authorizationCodeCalls   int
 	authorizationCodeRequest oauth.AuthorizationCodeRequest
 	refreshTokenCalls        int
@@ -89,10 +73,9 @@ type fakeOAuthTokenClient struct {
 
 func (client *fakeOAuthTokenClient) ClientCredentials(
 	_ context.Context,
-	request oauth.ClientCredentialsRequest,
+	_ oauth.ClientCredentialsRequest,
 ) (auth.TokenState, error) {
 	client.clientCredentialsCalls++
-	client.clientCredentialsRequest = request
 	if client.err != nil {
 		return auth.TokenState{}, client.err
 	}
@@ -147,8 +130,6 @@ type fakeAuthReadinessChecker struct {
 	report         authReadinessReport
 	err            error
 	accessToken    string
-	tokenActor     string
-	tokenScopes    []string
 	expectedActor  string
 	requiredScopes []string
 	rejectedTokens []string
@@ -160,8 +141,6 @@ func (checker *fakeAuthReadinessChecker) check(
 	request authReadinessRequest,
 ) (authReadinessReport, error) {
 	checker.accessToken = request.AccessToken
-	checker.tokenActor = request.TokenActor
-	checker.tokenScopes = request.TokenScopes
 	checker.expectedActor = request.ExpectedActor
 	checker.requiredScopes = request.RequiredScopes
 	if checker.beforeReturn != nil {
@@ -187,22 +166,4 @@ func readyAuthReport(actor string) authReadinessReport {
 			Resolved: config.Target{OrgID: "org-id", TeamKey: "LIT", TeamID: "team-id"},
 		},
 	}
-}
-
-type authReadinessFakeGraphQLClient map[string]string
-
-func (client authReadinessFakeGraphQLClient) MakeRequest(
-	ctx context.Context,
-	request *graphql.Request,
-	response *graphql.Response,
-) error {
-	if err := ctx.Err(); err != nil {
-		return err
-	}
-	payload, ok := client[request.OpName]
-	if !ok {
-		return errors.New("missing fake response for " + request.OpName)
-	}
-
-	return json.Unmarshal([]byte(`{"data":`+payload+`}`), response)
 }
