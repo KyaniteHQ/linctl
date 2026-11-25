@@ -23,16 +23,6 @@ func runIssueCreateCommand(t *testing.T, args []string) (string, error) {
 	return output.String(), err
 }
 
-func Test_IssueCreate_dry_run_renders_title_and_description(t *testing.T) {
-	output, err := runIssueCreateCommand(t, []string{
-		"issue", "create", "--dry-run", "--title", "Draft issue", "--description", "Body text",
-	})
-
-	require.NoError(t, err)
-	require.Contains(t, output, "Draft issue")
-	require.Contains(t, output, "Body text")
-}
-
 func Test_IssueCreate_plain_dry_run_does_not_build_runtime(t *testing.T) {
 	output := bytes.Buffer{}
 	runtimeErr := errors.New("runtime should not be built")
@@ -53,6 +43,7 @@ func Test_IssueCreate_plain_dry_run_does_not_build_runtime(t *testing.T) {
 
 	require.NoError(t, err)
 	require.Contains(t, output.String(), "Draft issue")
+	require.Contains(t, output.String(), "Body text")
 }
 
 func Test_IssueCreate_template_dry_run_builds_runtime(t *testing.T) {

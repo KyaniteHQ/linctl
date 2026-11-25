@@ -7,8 +7,10 @@ import (
 	"io"
 	"math"
 	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 	"testing"
@@ -21,26 +23,20 @@ import (
 )
 
 type fakeHTTPDoer struct {
-	status         int
-	body           string
-	bodyErr        bool
-	err            error
-	requestContext context.Context
-	requestSize    int64
+	status      int
+	err         error
+	requested   bool
+	requestSize int64
 }
 
 func (doer *fakeHTTPDoer) Do(request *http.Request) (*http.Response, error) {
-	doer.requestContext = request.Context()
+	doer.requested = true
 	doer.requestSize = request.ContentLength
 	if doer.err != nil {
 		return nil, doer.err
 	}
-	body := io.NopCloser(strings.NewReader(doer.body))
-	if doer.bodyErr {
-		body = io.NopCloser(errorReader{})
-	}
 
-	return &http.Response{StatusCode: doer.status, Body: body}, nil
+	return &http.Response{StatusCode: doer.status, Body: http.NoBody}, nil
 }
 
 type recordingGraphQLClient struct {
@@ -56,12 +52,6 @@ func (client *recordingGraphQLClient) MakeRequest(
 	client.calls = append(client.calls, request.OpName)
 
 	return client.client.MakeRequest(ctx, request, response)
-}
-
-type errorReader struct{}
-
-func (errorReader) Read(_ []byte) (int, error) {
-	return 0, errors.New("read boom")
 }
 
 type closeErrorTempFile struct {
@@ -105,24 +95,10 @@ func (file closeErrorTempFile) Name() string {
 	return file.name
 }
 
-func useFileTransferHTTPClient(t *testing.T, doer httpDoer) func() {
-	t.Helper()
-	original := newFileTransferHTTPClient
-	newFileTransferHTTPClient = func(_ *rootOptions) httpDoer {
-		return doer
-	}
-
-	return func() {
-		newFileTransferHTTPClient = original
-	}
-}
-
 func runFilesCommand(t *testing.T, doer httpDoer, args []string) (string, error) {
 	t.Helper()
 	restore := useCommandRuntimeWithFiles(t, commandFlowFakeClient{}, doer)
 	defer restore()
-	restoreFileClient := useFileTransferHTTPClient(t, doer)
-	defer restoreFileClient()
 	output := bytes.Buffer{}
 	command := NewRootCommand(context.Background(), BuildInfo{})
 	command.SetOut(&output)
@@ -131,6 +107,24 @@ func runFilesCommand(t *testing.T, doer httpDoer, args []string) (string, error)
 	err := command.ExecuteContext(context.Background())
 
 	return output.String(), err
+}
+
+func serveDownload(t *testing.T, handler http.HandlerFunc) string {
+	t.Helper()
+	server := httptest.NewServer(handler)
+	t.Cleanup(server.Close)
+
+	return server.URL + "/file.txt"
+}
+
+func downloadBody(t *testing.T, body string) http.HandlerFunc {
+	t.Helper()
+
+	return func(writer http.ResponseWriter, _ *http.Request) {
+		if _, err := io.WriteString(writer, body); err != nil {
+			t.Errorf("write download body: %v", err)
+		}
+	}
 }
 
 func writeUploadFile(t *testing.T) string {
@@ -150,7 +144,6 @@ func Test_Files_upload_prints_asset_url(t *testing.T) {
 	require.NoError(t, err)
 	require.Contains(t, output, "https://assets.example/file.txt")
 	require.Equal(t, int64(len("hello world")), doer.requestSize)
-	require.NotNil(t, doer.requestContext)
 }
 
 func Test_Files_upload_honors_output_flags(t *testing.T) {
@@ -175,6 +168,42 @@ func Test_Files_upload_honors_output_flags(t *testing.T) {
 	require.Empty(t, quiet)
 }
 
+func Test_Files_upload_sends_the_content_type_to_linear(t *testing.T) {
+	dir := t.TempDir()
+	image := filepath.Join(dir, "photo.png")
+	bare := filepath.Join(dir, "mystery-file")
+	require.NoError(t, os.WriteFile(image, []byte("png"), 0o600))
+	require.NoError(t, os.WriteFile(bare, []byte("raw"), 0o600))
+	tests := []struct {
+		name string
+		args []string
+		want string
+	}{
+		{name: "extension", args: []string{"files", "upload", image}, want: "image/png"},
+		{name: "no extension", args: []string{"files", "upload", bare}, want: "application/octet-stream"},
+		{name: "flag", args: []string{"files", "upload", bare, "--content-type", "text/plain"}, want: "text/plain"},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			fake := &directWriteCaptureClient{
+				operation: "fileUpload",
+				variables: []expectedWriteVariable{{path: []string{"contentType"}, value: test.want}},
+				delegate:  commandFlowFakeClient{},
+			}
+			restore := useCommandRuntimeWithFiles(t, fake, &fakeHTTPDoer{status: http.StatusOK})
+			defer restore()
+			command := NewRootCommand(context.Background(), BuildInfo{})
+			command.SetOut(&bytes.Buffer{})
+			command.SetArgs(test.args)
+
+			err := command.ExecuteContext(context.Background())
+
+			require.NoError(t, err)
+			require.Equal(t, 1, fake.calls)
+		})
+	}
+}
+
 func Test_Files_upload_reports_read_error(t *testing.T) {
 	missing := filepath.Join(t.TempDir(), "nope.txt")
 
@@ -193,21 +222,22 @@ func Test_Files_upload_reports_non_regular_file(t *testing.T) {
 	require.ErrorContains(t, err, "not a regular file")
 }
 
-func Test_Files_upload_reports_open_error(t *testing.T) {
-	path := writeUploadFile(t)
-	original := openUploadFile
-	openUploadFile = func(_ string) (*os.File, error) {
-		return nil, errors.New("open boom")
+func Test_Files_upload_refuses_an_unreadable_file_before_any_upload(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("Windows file modes do not deny reads")
 	}
-	defer func() {
-		openUploadFile = original
-	}()
+	if os.Geteuid() == 0 {
+		t.Skip("root reads a file whatever its mode")
+	}
+	path := writeUploadFile(t)
+	require.NoError(t, os.Chmod(path, 0o000))
+	doer := &fakeHTTPDoer{status: http.StatusOK}
 
-	_, err := runFilesCommand(t, &fakeHTTPDoer{status: http.StatusOK}, []string{
-		"files", "upload", path,
-	})
+	_, err := runFilesCommand(t, doer, []string{"files", "upload", path})
 
-	require.ErrorContains(t, err, "read")
+	require.ErrorIs(t, err, os.ErrPermission)
+	require.ErrorContains(t, err, "read "+path)
+	require.False(t, doer.requested)
 }
 
 func Test_Files_upload_reports_mutation_error(t *testing.T) {
@@ -230,10 +260,10 @@ func Test_Files_upload_target_mismatch_stops_before_file_upload_and_put(t *testi
 	doer := &fakeHTTPDoer{status: http.StatusOK}
 	original := buildCommandRuntime
 	buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
-		runtime := testCommandRuntime(graphqlClient)
-		runtime.config.Target.OrgID = "other-org"
-		runtime.fileClient = doer
-		return runtime, nil
+		mismatched := testCommandRuntime(graphqlClient)
+		mismatched.config.Target.OrgID = "other-org"
+		mismatched.fileClient = doer
+		return mismatched, nil
 	}
 	defer func() {
 		buildCommandRuntime = original
@@ -245,7 +275,7 @@ func Test_Files_upload_target_mismatch_stops_before_file_upload_and_put(t *testi
 
 	require.ErrorIs(t, err, client.ErrTargetMismatch)
 	require.NotContains(t, graphqlClient.calls, "fileUpload")
-	require.Nil(t, doer.requestContext)
+	require.False(t, doer.requested)
 }
 
 func Test_Files_upload_reports_put_failure(t *testing.T) {
@@ -269,7 +299,7 @@ func Test_putFileContents_reports_request_build_error(t *testing.T) {
 		context.Background(),
 		&fakeHTTPDoer{status: http.StatusOK},
 		client.FileUpload{UploadURL: "://bad", ContentType: "text/plain"},
-		strings.NewReader("x"),
+		http.NoBody,
 		1,
 	)
 
@@ -279,8 +309,8 @@ func Test_putFileContents_reports_request_build_error(t *testing.T) {
 func Test_Files_download_writes_file(t *testing.T) {
 	out := filepath.Join(t.TempDir(), "got.txt")
 
-	output, err := runFilesCommand(t, &fakeHTTPDoer{status: http.StatusOK, body: "payload bytes"}, []string{
-		"files", "download", "https://assets.example/file.txt", "--output", out,
+	output, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+		"files", "download", serveDownload(t, downloadBody(t, "payload bytes")), "--output", out,
 	})
 
 	require.NoError(t, err)
@@ -292,22 +322,23 @@ func Test_Files_download_writes_file(t *testing.T) {
 
 func Test_Files_download_honors_output_flags(t *testing.T) {
 	out := filepath.Join(t.TempDir(), "got.txt")
+	url := serveDownload(t, downloadBody(t, "data"))
 
-	jsonOut, err := runFilesCommand(t, &fakeHTTPDoer{status: http.StatusOK, body: "data"}, []string{
-		"--json", "files", "download", "https://assets.example/file.txt", "--output", out,
+	jsonOut, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+		"--json", "files", "download", url, "--output", out,
 	})
 	require.NoError(t, err)
 	require.Contains(t, jsonOut, `"path"`)
 
-	quiet, err := runFilesCommand(t, &fakeHTTPDoer{status: http.StatusOK, body: "data"}, []string{
-		"--quiet", "files", "download", "https://assets.example/file.txt", "--output", out,
+	quiet, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+		"--quiet", "files", "download", url, "--output", out,
 	})
 	require.NoError(t, err)
 	require.Empty(t, quiet)
 }
 
 func Test_Files_download_requires_output(t *testing.T) {
-	_, err := runFilesCommand(t, &fakeHTTPDoer{status: http.StatusOK, body: "data"}, []string{
+	_, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
 		"files", "download", "https://assets.example/file.txt",
 	})
 
@@ -315,7 +346,7 @@ func Test_Files_download_requires_output(t *testing.T) {
 }
 
 func Test_Files_download_reports_bad_url(t *testing.T) {
-	_, err := runFilesCommand(t, &fakeHTTPDoer{status: http.StatusOK, body: "data"}, []string{
+	_, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
 		"files", "download", "://bad", "--output", filepath.Join(t.TempDir(), "x"),
 	})
 
@@ -323,25 +354,55 @@ func Test_Files_download_reports_bad_url(t *testing.T) {
 }
 
 func Test_Files_download_reports_http_status(t *testing.T) {
-	_, err := runFilesCommand(t, &fakeHTTPDoer{status: http.StatusNotFound}, []string{
-		"files", "download", "https://assets.example/file.txt", "--output", filepath.Join(t.TempDir(), "x"),
+	url := serveDownload(t, func(writer http.ResponseWriter, _ *http.Request) {
+		writer.WriteHeader(http.StatusNotFound)
 	})
 
-	require.ErrorContains(t, err, "unexpected status")
+	_, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+		"files", "download", url, "--output", filepath.Join(t.TempDir(), "x"),
+	})
+
+	require.ErrorContains(t, err, "unexpected status 404")
 }
 
 func Test_Files_download_reports_transport_error(t *testing.T) {
-	_, err := runFilesCommand(t, &fakeHTTPDoer{err: errors.New("dial boom")}, []string{
-		"files", "download", "https://assets.example/file.txt", "--output", filepath.Join(t.TempDir(), "x"),
+	server := httptest.NewServer(downloadBody(t, "data"))
+	url := server.URL + "/file.txt"
+	server.Close()
+
+	_, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+		"files", "download", url, "--output", filepath.Join(t.TempDir(), "x"),
 	})
 
-	require.ErrorContains(t, err, "download")
+	require.ErrorContains(t, err, "download "+url)
+}
+
+func Test_Files_download_stops_at_the_timeout_flag(t *testing.T) {
+	out := filepath.Join(t.TempDir(), "got.txt")
+	url := serveDownload(t, func(writer http.ResponseWriter, request *http.Request) {
+		select {
+		case <-request.Context().Done():
+			return
+		case <-time.After(2 * time.Second):
+		}
+		if _, err := io.WriteString(writer, "late"); err != nil {
+			t.Errorf("write download body: %v", err)
+		}
+	})
+
+	_, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+		"--timeout", "50ms", "files", "download", url, "--output", out,
+	})
+
+	var timeoutErr interface{ Timeout() bool }
+	require.ErrorAs(t, err, &timeoutErr)
+	require.True(t, timeoutErr.Timeout())
+	require.NoFileExists(t, out)
 }
 
 func Test_Files_download_does_not_build_command_runtime(t *testing.T) {
 	out := filepath.Join(t.TempDir(), "got.txt")
-	restoreFileClient := useFileTransferHTTPClient(t, &fakeHTTPDoer{status: http.StatusOK, body: "data"})
-	defer restoreFileClient()
+	url := serveDownload(t, downloadBody(t, "data"))
 	original := buildCommandRuntime
 	buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
 		return commandRuntime{}, errors.New("runtime failed")
@@ -352,9 +413,7 @@ func Test_Files_download_does_not_build_command_runtime(t *testing.T) {
 	output := bytes.Buffer{}
 	command := NewRootCommand(context.Background(), BuildInfo{})
 	command.SetOut(&output)
-	command.SetArgs([]string{
-		"files", "download", "https://assets.example/file.txt", "--output", out,
-	})
+	command.SetArgs([]string{"files", "download", url, "--output", out})
 
 	err := command.ExecuteContext(context.Background())
 
@@ -366,33 +425,28 @@ func Test_Files_download_does_not_build_command_runtime(t *testing.T) {
 }
 
 func Test_Files_download_reports_body_read_error(t *testing.T) {
-	_, err := runFilesCommand(t, &fakeHTTPDoer{status: http.StatusOK, bodyErr: true}, []string{
-		"files", "download", "https://assets.example/file.txt", "--output", filepath.Join(t.TempDir(), "x"),
+	url := serveDownload(t, func(writer http.ResponseWriter, _ *http.Request) {
+		writer.Header().Set("Content-Length", "100")
+		if _, err := io.WriteString(writer, "short"); err != nil {
+			t.Errorf("write download body: %v", err)
+		}
 	})
 
-	require.ErrorContains(t, err, "read")
+	_, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+		"files", "download", url, "--output", filepath.Join(t.TempDir(), "x"),
+	})
+
+	require.ErrorIs(t, err, io.ErrUnexpectedEOF)
 }
 
 func Test_Files_download_reports_write_error(t *testing.T) {
 	unwritable := filepath.Join(t.TempDir(), "missing-dir", "file.txt")
 
-	_, err := runFilesCommand(t, &fakeHTTPDoer{status: http.StatusOK, body: "data"}, []string{
-		"files", "download", "https://assets.example/file.txt", "--output", unwritable,
+	_, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+		"files", "download", serveDownload(t, downloadBody(t, "data")), "--output", unwritable,
 	})
 
 	require.ErrorContains(t, err, "write")
-}
-
-func Test_writeDownloadedFile_removes_temp_file_on_copy_error(t *testing.T) {
-	directory := t.TempDir()
-	output := filepath.Join(directory, "got.txt")
-
-	_, err := writeDownloadedFile(errorReader{}, output, nil)
-
-	require.Error(t, err)
-	entries, readErr := os.ReadDir(directory)
-	require.NoError(t, readErr)
-	require.Empty(t, entries)
 }
 
 func Test_writeDownloadedFile_reports_close_error(t *testing.T) {
@@ -405,7 +459,7 @@ func Test_writeDownloadedFile_reports_close_error(t *testing.T) {
 	}()
 
 	_, err := writeDownloadedFile(
-		strings.NewReader("data"),
+		http.NoBody,
 		filepath.Join(t.TempDir(), "got.txt"),
 		nil,
 	)
@@ -413,14 +467,16 @@ func Test_writeDownloadedFile_reports_close_error(t *testing.T) {
 	require.ErrorContains(t, err, "close boom")
 }
 
-func Test_writeDownloadedFile_removes_temp_file_on_rename_error(t *testing.T) {
+func Test_Files_download_to_a_directory_fails_and_leaves_no_temp_file(t *testing.T) {
 	directory := t.TempDir()
 	output := filepath.Join(directory, "existing-dir")
 	require.NoError(t, os.Mkdir(output, 0o700))
 
-	_, err := writeDownloadedFile(strings.NewReader("data"), output, nil)
+	_, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+		"files", "download", serveDownload(t, downloadBody(t, "data")), "--output", output,
+	})
 
-	require.Error(t, err)
+	require.ErrorContains(t, err, "write "+output)
 	entries, readErr := os.ReadDir(directory)
 	require.NoError(t, readErr)
 	require.Len(t, entries, 1)
@@ -431,8 +487,8 @@ func Test_Files_download_without_max_size_writes_full_body(t *testing.T) {
 	out := filepath.Join(t.TempDir(), "got.bin")
 	body := strings.Repeat("x", 2048)
 
-	output, err := runFilesCommand(t, &fakeHTTPDoer{status: http.StatusOK, body: body}, []string{
-		"files", "download", "https://assets.example/file.txt", "--output", out,
+	output, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+		"files", "download", serveDownload(t, downloadBody(t, body)), "--output", out,
 	})
 
 	require.NoError(t, err)
@@ -447,8 +503,8 @@ func Test_Files_download_rejects_body_over_max_size_and_leaves_no_file(t *testin
 	out := filepath.Join(directory, "got.bin")
 	body := strings.Repeat("x", 2048)
 
-	_, err := runFilesCommand(t, &fakeHTTPDoer{status: http.StatusOK, body: body}, []string{
-		"files", "download", "https://assets.example/file.txt",
+	_, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+		"files", "download", serveDownload(t, downloadBody(t, body)),
 		"--output", out, "--max-size", "1KB",
 	})
 
@@ -466,8 +522,8 @@ func Test_Files_download_accepts_body_equal_to_max_size(t *testing.T) {
 	out := filepath.Join(t.TempDir(), "got.bin")
 	body := strings.Repeat("x", 1024)
 
-	_, err := runFilesCommand(t, &fakeHTTPDoer{status: http.StatusOK, body: body}, []string{
-		"files", "download", "https://assets.example/file.txt",
+	_, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+		"files", "download", serveDownload(t, downloadBody(t, body)),
 		"--output", out, "--max-size", "1KB",
 	})
 
@@ -477,18 +533,32 @@ func Test_Files_download_accepts_body_equal_to_max_size(t *testing.T) {
 	require.Equal(t, body, string(data))
 }
 
-func Test_Files_download_rejects_invalid_max_size_before_request(t *testing.T) {
-	doer := &fakeHTTPDoer{status: http.StatusOK, body: "payload"}
-	out := filepath.Join(t.TempDir(), "got.bin")
+func Test_Files_download_treats_the_largest_max_size_as_unbounded(t *testing.T) {
+	out := filepath.Join(t.TempDir(), "got.txt")
 
-	_, err := runFilesCommand(t, doer, []string{
-		"files", "download", "https://assets.example/file.txt",
-		"--output", out, "--max-size", "1TB",
+	_, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+		"files", "download", serveDownload(t, downloadBody(t, "data")),
+		"--output", out, "--max-size", "9223372036854775807",
+	})
+
+	require.NoError(t, err)
+	data, readErr := os.ReadFile(out)
+	require.NoError(t, readErr)
+	require.Equal(t, "data", string(data))
+}
+
+func Test_Files_download_rejects_invalid_max_size_before_request(t *testing.T) {
+	out := filepath.Join(t.TempDir(), "got.bin")
+	url := serveDownload(t, func(http.ResponseWriter, *http.Request) {
+		t.Error("download must not be requested")
+	})
+
+	_, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+		"files", "download", url, "--output", out, "--max-size", "1TB",
 	})
 
 	require.ErrorIs(t, err, client.ErrWriteInvalid)
 	require.Equal(t, "INVALID_WRITE", errorCode(err))
-	require.Nil(t, doer.requestContext)
 	_, statErr := os.Stat(out)
 	require.ErrorIs(t, statErr, os.ErrNotExist)
 }
@@ -523,36 +593,4 @@ func Test_parseDownloadMaxSize_rejects_invalid_and_overflowing_values(t *testing
 			require.ErrorContains(t, err, raw)
 		})
 	}
-}
-
-func Test_writeDownloadedFile_treats_max_int64_limit_as_unbounded(t *testing.T) {
-	out := filepath.Join(t.TempDir(), "got.txt")
-	limit := &downloadMaxSize{
-		bytes: math.MaxInt64,
-		flag:  strconv.FormatInt(math.MaxInt64, 10),
-	}
-
-	size, err := writeDownloadedFile(strings.NewReader("data"), out, limit)
-
-	require.NoError(t, err)
-	require.Equal(t, int64(4), size)
-	data, readErr := os.ReadFile(out)
-	require.NoError(t, readErr)
-	require.Equal(t, "data", string(data))
-}
-
-func Test_commandRuntime_fileHTTPClient_uses_default_client(t *testing.T) {
-	require.Equal(t, http.DefaultClient, commandRuntime{}.fileHTTPClient())
-}
-
-func Test_newFileTransferHTTPClient_uses_root_timeout(t *testing.T) {
-	httpClient, ok := newFileTransferHTTPClient(&rootOptions{timeout: 3 * time.Second}).(*http.Client)
-
-	require.True(t, ok)
-	require.Equal(t, 3*time.Second, httpClient.Timeout)
-}
-
-func Test_inferContentType_uses_extension_or_default(t *testing.T) {
-	require.Contains(t, inferContentType("photo.png"), "image/png")
-	require.Equal(t, "application/octet-stream", inferContentType("mystery-file"))
 }

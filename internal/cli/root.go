@@ -110,13 +110,7 @@ func validateLimitFlag(command *cobra.Command) error {
 }
 
 func validateOrderFlag(command *cobra.Command) error {
-	if command.Flags().Lookup("order") == nil {
-		return nil
-	}
-	order, err := command.Flags().GetString("order")
-	if err != nil {
-		return fmt.Errorf("read --order: %w", err)
-	}
+	order := command.Flags().Lookup("order").Value.String()
 	if order != "asc" && order != "desc" {
 		return fmt.Errorf("invalid sort order %q: use asc or desc", order)
 	}

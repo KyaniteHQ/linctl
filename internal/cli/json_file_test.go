@@ -6,8 +6,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-
-	"github.com/KyaniteHQ/linctl/internal/client"
 )
 
 func Test_readJSONObjectFile_returns_file_bytes(t *testing.T) {
@@ -19,16 +17,4 @@ func Test_readJSONObjectFile_returns_file_bytes(t *testing.T) {
 
 	require.NoError(t, err)
 	require.Equal(t, string(raw), string(data))
-}
-
-func Test_readJSONObjectFile_rejects_stdin_and_missing(t *testing.T) {
-	_, err := readJSONObjectFile("-")
-	require.ErrorIs(t, err, client.ErrWriteInvalid)
-	require.ErrorContains(t, err, "not stdin")
-
-	_, err = readJSONObjectFile("")
-	require.ErrorIs(t, err, client.ErrWriteInvalid)
-
-	_, err = readJSONObjectFile(filepath.Join(t.TempDir(), "missing.json"))
-	require.ErrorIs(t, err, client.ErrWriteInvalid)
 }

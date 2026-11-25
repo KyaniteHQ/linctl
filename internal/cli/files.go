@@ -51,12 +51,6 @@ var createDownloadTempFile = func(directory string, pattern string) (downloadTem
 	return os.CreateTemp(directory, pattern)
 }
 
-var newFileTransferHTTPClient = func(options *rootOptions) httpDoer {
-	return &http.Client{Timeout: options.timeout}
-}
-
-var openUploadFile = os.Open
-
 func addFilesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	filesCommand := newGroupCommand("files", "Upload and download Linear file assets")
 	addFilesUploadCommand(ctx, filesCommand, options)
@@ -100,7 +94,7 @@ func runFileUpload(
 		return fmt.Errorf("read %s: not a regular file", path)
 	}
 	//nolint:gosec // G304: the upload command's purpose is to read the user-named file.
-	file, err := openUploadFile(path)
+	file, err := os.Open(path)
 	if err != nil {
 		return fmt.Errorf("read %s: %w", path, err)
 	}
@@ -119,7 +113,7 @@ func runFileUpload(
 	if err != nil {
 		return err
 	}
-	if err := putFileContents(ctx, runtime.fileHTTPClient(), upload, file, info.Size()); err != nil {
+	if err := putFileContents(ctx, runtime.fileClient, upload, file, info.Size()); err != nil {
 		return err
 	}
 
@@ -206,7 +200,7 @@ func runFileDownload(
 	if err != nil {
 		return err
 	}
-	response, err := newFileTransferHTTPClient(options).Do(request)
+	response, err := (&http.Client{Timeout: options.timeout}).Do(request)
 	if err != nil {
 		return fmt.Errorf("download %s: %w", url, err)
 	}
@@ -220,14 +214,6 @@ func runFileDownload(
 	}
 
 	return writeDownloadResult(command, options, output, size)
-}
-
-func (runtime commandRuntime) fileHTTPClient() httpDoer {
-	if runtime.fileClient != nil {
-		return runtime.fileClient
-	}
-
-	return http.DefaultClient
 }
 
 // downloadMaxSize is the opt-in byte cap for files download. A nil
