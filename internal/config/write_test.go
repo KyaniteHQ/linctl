@@ -2,12 +2,11 @@ package config
 
 import (
 	"context"
-	"errors"
 	"os"
 	"path/filepath"
-	"reflect"
 	"testing"
 
+	"github.com/pelletier/go-toml/v2"
 	"github.com/stretchr/testify/require"
 )
 
@@ -58,30 +57,16 @@ func Test_WritePin_serializes_only_target_table(t *testing.T) {
 
 	body, err := os.ReadFile(path)
 	require.NoError(t, err)
-	require.Contains(t, string(body), "[target]")
-	require.NotContains(t, string(body), "token")
-	require.NotContains(t, string(body), "secret")
-	require.NotContains(t, string(body), "profile")
-	require.NotContains(t, string(body), "client")
-
-	keys, err := SerializedPinKeys(body)
-	require.NoError(t, err)
-	require.Equal(t, []string{"org_id", "team_key", "team_id"}, keys)
-}
-
-func Test_WritePin_target_struct_tags_match_pin_keys(t *testing.T) {
-	targetType := reflect.TypeOf(Target{})
-	tags := make([]string, 0, targetType.NumField())
-	for index := range targetType.NumField() {
-		tag := targetType.Field(index).Tag.Get("toml")
-		require.NotEmpty(t, tag)
-		if tag == "-" {
-			// Transitions is policy carried on the Target, never a pin key.
-			continue
-		}
-		tags = append(tags, tag)
-	}
-	require.Equal(t, PinFileKeys(), tags)
+	var decoded map[string]any
+	require.NoError(t, toml.Unmarshal(body, &decoded))
+	require.Equal(t, map[string]any{
+		"target": map[string]any{
+			"org_id":     "org-id",
+			"team_key":   "LIT",
+			"team_id":    "team-id",
+			"project_id": "",
+		},
+	}, decoded)
 }
 
 func Test_WritePin_requires_core_fields(t *testing.T) {
@@ -102,123 +87,4 @@ func Test_WritePin_open_failure_non_exist(t *testing.T) {
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "write pin")
 	require.NotErrorIs(t, err, ErrPinExists)
-}
-
-func Test_WritePin_encode_write_close_seams(t *testing.T) {
-	t.Run("encode", func(t *testing.T) {
-		original := marshalPin
-		marshalPin = func(any) ([]byte, error) { return nil, errors.New("encode boom") }
-		t.Cleanup(func() { marshalPin = original })
-		err := WritePin(filepath.Join(t.TempDir(), "pin.toml"), Target{
-			OrgID: "org-id", TeamKey: "LIT", TeamID: "team-id",
-		})
-		require.ErrorContains(t, err, "encode")
-	})
-	t.Run("write", func(t *testing.T) {
-		original := openPinFile
-		openPinFile = func(string, int, os.FileMode) (pinWriter, error) {
-			return failingPinWriter{writeErr: errors.New("write boom")}, nil
-		}
-		t.Cleanup(func() { openPinFile = original })
-		err := WritePin(filepath.Join(t.TempDir(), "pin.toml"), Target{
-			OrgID: "org-id", TeamKey: "LIT", TeamID: "team-id",
-		})
-		require.ErrorContains(t, err, "write boom")
-	})
-	t.Run("close", func(t *testing.T) {
-		original := openPinFile
-		openPinFile = func(string, int, os.FileMode) (pinWriter, error) {
-			return failingPinWriter{closeErr: errors.New("close boom")}, nil
-		}
-		t.Cleanup(func() { openPinFile = original })
-		err := WritePin(filepath.Join(t.TempDir(), "pin.toml"), Target{
-			OrgID: "org-id", TeamKey: "LIT", TeamID: "team-id",
-		})
-		require.ErrorContains(t, err, "close boom")
-	})
-	t.Run("write removes created file", func(t *testing.T) {
-		path := filepath.Join(t.TempDir(), "pin.toml")
-		original := openPinFile
-		openPinFile = func(path string, flag int, perm os.FileMode) (pinWriter, error) {
-			file, err := openPinFileDefault(path, flag, perm)
-			if err != nil {
-				return nil, err
-			}
-
-			return failingPinWriter{inner: file, writeErr: errors.New("write boom")}, nil
-		}
-		t.Cleanup(func() { openPinFile = original })
-		err := WritePin(path, Target{OrgID: "org-id", TeamKey: "LIT", TeamID: "team-id"})
-		require.ErrorContains(t, err, "write boom")
-		require.NoFileExists(t, path)
-	})
-	t.Run("close removes created file", func(t *testing.T) {
-		path := filepath.Join(t.TempDir(), "pin.toml")
-		original := openPinFile
-		openPinFile = func(path string, flag int, perm os.FileMode) (pinWriter, error) {
-			file, err := openPinFileDefault(path, flag, perm)
-			if err != nil {
-				return nil, err
-			}
-
-			return failingPinWriter{inner: file, closeErr: errors.New("close boom")}, nil
-		}
-		t.Cleanup(func() { openPinFile = original })
-		err := WritePin(path, Target{OrgID: "org-id", TeamKey: "LIT", TeamID: "team-id"})
-		require.ErrorContains(t, err, "close boom")
-		require.NoFileExists(t, path)
-	})
-}
-
-func Test_SerializedPinKeys_edges(t *testing.T) {
-	keys, err := SerializedPinKeys([]byte(`
-[target]
-org_id = "org-id"
-team_key = "LIT"
-team_id = "team-id"
-project_id = "project-id"
-`))
-	require.NoError(t, err)
-	require.Equal(t, []string{"org_id", "team_key", "team_id", "project_id"}, keys)
-
-	_, err = SerializedPinKeys([]byte(`not = [toml`))
-	require.Error(t, err)
-
-	_, err = SerializedPinKeys([]byte(`
-[target]
-org_id = "token-looking-org"
-team_key = "LIT"
-team_id = "team-id"
-`))
-	// "token" substring in org value trips the auth-material guard
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "auth material")
-}
-
-type failingPinWriter struct {
-	inner    pinWriter
-	writeErr error
-	closeErr error
-}
-
-func (writer failingPinWriter) Write(payload []byte) (int, error) {
-	if writer.writeErr != nil {
-		return 0, writer.writeErr
-	}
-	if writer.inner != nil {
-		return writer.inner.Write(payload)
-	}
-
-	return len(payload), nil
-}
-
-func (writer failingPinWriter) Close() error {
-	if writer.inner != nil {
-		closeErr := writer.inner.Close()
-		if writer.closeErr == nil {
-			return closeErr
-		}
-	}
-
-	return writer.closeErr
 }

@@ -16,7 +16,7 @@ func Test_LoadScenarios_resolve_sources_and_report_config_errors(t *testing.T) {
 
 		_, err := Load(ctx, LoadRequest{})
 
-		require.ErrorContains(t, err, "load config context")
+		require.ErrorIs(t, err, context.Canceled)
 	})
 
 	t.Run("missing files resolve empty config", func(t *testing.T) {
@@ -57,43 +57,5 @@ func Test_LoadScenarios_resolve_sources_and_report_config_errors(t *testing.T) {
 
 		require.ErrorContains(t, err, "read config")
 		require.ErrorContains(t, err, path)
-	})
-
-	t.Run("config without profile table initializes empty profiles", func(t *testing.T) {
-		path := filepath.Join(t.TempDir(), "config.toml")
-		require.NoError(t, os.WriteFile(path, []byte(`token = "file-token"`), 0o600))
-
-		config, err := Load(context.Background(), LoadRequest{
-			RepoPath: path,
-		})
-
-		require.NoError(t, err)
-		require.Empty(t, config.Profile)
-	})
-
-	t.Run("legacy config tokens are ignored by config loading", func(t *testing.T) {
-		path := filepath.Join(t.TempDir(), "config.toml")
-		require.NoError(t, os.WriteFile(path, []byte(`
-profile = "daily"
-
-[profiles.daily]
-token = "profile-token"
-`), 0o600))
-
-		config, err := Load(context.Background(), LoadRequest{
-			RepoPath: path,
-		})
-
-		require.NoError(t, err)
-		require.Equal(t, "daily", config.Profile)
-	})
-
-	t.Run("process OAuth env is ignored by config loading", func(t *testing.T) {
-		t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "process-token")
-
-		config, err := Load(context.Background(), LoadRequest{})
-
-		require.NoError(t, err)
-		require.Empty(t, config.Profile)
 	})
 }

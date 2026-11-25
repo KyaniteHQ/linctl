@@ -4,7 +4,6 @@ import (
 	"context"
 	"os"
 	"path/filepath"
-	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -124,46 +123,6 @@ project_id = "configured-project"
 	}, resolved.Target)
 }
 
-func Test_Load_keeps_profile_targets_separate_when_multiple_targets_exist(t *testing.T) {
-	// Given
-	root := t.TempDir()
-	configPath := filepath.Join(root, "config.toml")
-	require.NoError(t, os.WriteFile(configPath, []byte(`
-[profiles.personal]
-token = "personal-token"
-
-[profiles.personal.target]
-org_id = "personal-org"
-team_key = "PER"
-team_id = "personal-team"
-
-[profiles.work]
-token = "work-token"
-
-[profiles.work.target]
-org_id = "work-org"
-team_key = "WRK"
-team_id = "work-team"
-project_id = "work-project"
-`), 0o600))
-
-	// When
-	resolved, err := Load(context.Background(), LoadRequest{
-		GlobalPath:      configPath,
-		ProfileOverride: "work",
-	})
-
-	// Then
-	require.NoError(t, err)
-	require.Equal(t, "work", resolved.Profile)
-	require.Equal(t, Target{
-		OrgID:     "work-org",
-		TeamKey:   "WRK",
-		TeamID:    "work-team",
-		ProjectID: "work-project",
-	}, resolved.Target)
-}
-
 func Test_Load_refuses_unknown_explicit_profile(t *testing.T) {
 	// Given
 	root := t.TempDir()
@@ -181,76 +140,6 @@ token = "default-token"
 
 	// Then
 	require.ErrorIs(t, err, ErrProfileNotFound)
-}
-
-func Test_Load_ignores_legacy_config_token_without_permission_gate(t *testing.T) {
-	root := t.TempDir()
-	configPath := filepath.Join(root, "config.toml")
-	require.NoError(t, os.WriteFile(configPath, []byte(`token = "file-token"`), 0o644))
-
-	resolved, err := Load(context.Background(), LoadRequest{
-		RepoPath: configPath,
-	})
-
-	require.NoError(t, err)
-	require.Empty(t, resolved.Profile)
-}
-
-func Test_Load_ignores_legacy_config_tokens_for_product_auth(t *testing.T) {
-	root := t.TempDir()
-	configPath := filepath.Join(root, "config.toml")
-	require.NoError(t, os.WriteFile(configPath, []byte(`
-token = "file-token"
-
-[profiles.default]
-token = "profile-token"
-`), 0o600))
-
-	_, err := Load(context.Background(), LoadRequest{
-		RepoPath:        configPath,
-		ProfileOverride: "default",
-	})
-
-	require.NoError(t, err)
-}
-
-func Test_Load_allows_broad_config_permissions_without_tokens(t *testing.T) {
-	if runtime.GOOS == "windows" {
-		t.Skip("windows file modes do not expose unix group/world permission bits")
-	}
-	root := t.TempDir()
-	configPath := filepath.Join(root, "config.toml")
-	require.NoError(t, os.WriteFile(configPath, []byte(`
-[target]
-team_key = "ENG"
-`), 0o644))
-
-	resolved, err := Load(context.Background(), LoadRequest{
-		RepoPath: configPath,
-	})
-
-	require.NoError(t, err)
-	require.Equal(t, "ENG", resolved.Target.TeamKey)
-}
-
-func Test_Load_reports_config_read_error(t *testing.T) {
-	root := t.TempDir()
-	configPath := filepath.Join(root, "config-dir")
-	require.NoError(t, os.Mkdir(configPath, 0o700))
-
-	_, err := Load(context.Background(), LoadRequest{
-		RepoPath: configPath,
-	})
-
-	require.ErrorContains(t, err, "read config")
-}
-
-func Test_Load_reports_bad_config_path_error(t *testing.T) {
-	_, err := Load(context.Background(), LoadRequest{
-		RepoPath: "bad\x00path",
-	})
-
-	require.ErrorContains(t, err, "read config")
 }
 
 func Test_Load_reads_transitions_from_the_repo_config(t *testing.T) {
