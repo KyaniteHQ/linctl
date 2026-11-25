@@ -44,6 +44,7 @@ func Test_CommandRuntime_logout_wins_over_in_flight_refresh(t *testing.T) {
 		CredentialKind: auth.CredentialKindAuthorizationCode,
 		App:            app,
 		Store:          store,
+		Logger:         discardLogger,
 		OAuthClient:    fakeOAuth,
 		NewClient:      (&recordingRuntimeClientFactory{}).newClient,
 	})
@@ -103,6 +104,7 @@ func Test_CommandRuntime_concurrent_refreshes_exchange_once_and_adopt(t *testing
 			CredentialKind: auth.CredentialKindAuthorizationCode,
 			App:            app,
 			Store:          store,
+			Logger:         discardLogger,
 			OAuthClient:    fakeOAuth,
 			NewClient:      (&recordingRuntimeClientFactory{}).newClient,
 		}),
@@ -111,6 +113,7 @@ func Test_CommandRuntime_concurrent_refreshes_exchange_once_and_adopt(t *testing
 			CredentialKind: auth.CredentialKindAuthorizationCode,
 			App:            app,
 			Store:          store,
+			Logger:         discardLogger,
 			OAuthClient:    fakeOAuth,
 			NewClient:      (&recordingRuntimeClientFactory{}).newClient,
 		}),
@@ -162,6 +165,7 @@ func Test_CommandRuntime_shared_client_survives_concurrent_requests_under_race_d
 		CredentialKind: auth.CredentialKindAuthorizationCode,
 		App:            app,
 		Store:          store,
+		Logger:         discardLogger,
 		OAuthClient:    fakeOAuth,
 		NewClient:      func(string) graphql.Client { return graphqlClient },
 	})
