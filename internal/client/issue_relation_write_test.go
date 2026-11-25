@@ -281,7 +281,6 @@ func Test_CreateIssueRelation_rejects_self_relation_when_identifier_and_uuid_nam
 	}
 }
 
-
 func Test_CreateIssueRelation_rejects_unknown_type(t *testing.T) {
 	_, err := CreateIssueRelation(
 		context.Background(), issueWriteFakeClient(map[string]string{}), matchingTarget(),
