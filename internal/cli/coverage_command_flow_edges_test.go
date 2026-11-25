@@ -3,6 +3,7 @@ package cli
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"strings"
 	"testing"
@@ -141,13 +142,36 @@ func Test_CommandFlows_cover_issue_list_filter_validation(t *testing.T) {
 	}
 }
 
-func Test_IssueList_accepts_combined_team_scoped_filters(t *testing.T) {
-	restore := useCommandRuntime(t, graphqlPayloadOverride{
-		inner: commandFlowFakeClient{},
-		payloads: map[string]string{
-			"IssuesByTeamFiltered": `{"issues":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
-		},
-	})
+type issueListFilterCapture struct {
+	filter string
+}
+
+func (capture *issueListFilterCapture) MakeRequest(
+	ctx context.Context,
+	request *graphql.Request,
+	response *graphql.Response,
+) error {
+	if request.OpName != "IssuesByTeamFiltered" {
+		return commandFlowFakeClient{}.MakeRequest(ctx, request, response)
+	}
+	payload, err := json.Marshal(request.Variables)
+	if err != nil {
+		return err
+	}
+	var variables struct {
+		Filter json.RawMessage `json:"filter"`
+	}
+	if err := json.Unmarshal(payload, &variables); err != nil {
+		return err
+	}
+	capture.filter = string(variables.Filter)
+
+	return json.Unmarshal([]byte(`{"data":{"issues":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`), response)
+}
+
+func Test_IssueList_sends_every_combined_team_scoped_filter(t *testing.T) {
+	capture := &issueListFilterCapture{}
+	restore := useCommandRuntime(t, capture)
 	defer restore()
 	command := NewRootCommand(context.Background(), BuildInfo{})
 	command.SetOut(&bytes.Buffer{})
@@ -169,6 +193,18 @@ func Test_IssueList_accepts_combined_team_scoped_filters(t *testing.T) {
 	err := command.ExecuteContext(context.Background())
 
 	require.NoError(t, err)
+	require.JSONEq(t, `{
+		"team":{"id":{"eq":"team-id"}},
+		"state":{"type":{"eq":"started"}},
+		"project":{"id":{"eq":"project-id"}},
+		"assignee":{"id":{"eq":"user-id"}},
+		"labels":{"some":{"id":{"eq":"label-id"}}},
+		"cycle":{"id":{"eq":"cycle-id"}},
+		"createdAt":{"gte":"2026-06-01","lte":"2026-06-30"},
+		"updatedAt":{"gte":"2026-07-01","lte":"2026-07-30"},
+		"hasBlockedByRelations":{"eq":true},
+		"hasBlockingRelations":{"eq":true}
+	}`, capture.filter)
 }
 
 func Test_CommandFlows_cover_issue_current_error_branches(t *testing.T) {

@@ -22,8 +22,7 @@ const (
 )
 
 // CommandWriteEffect names what a write-classified command changes. Safety says
-// a command writes; the effect says where the change lands, so generated
-// documentation never has to infer it from prose.
+// a command writes; the effect says where the change lands.
 type CommandWriteEffect string
 
 // Write effect values used by the command metadata inventory.
@@ -178,8 +177,7 @@ func commandUseAlias(command *cobra.Command) string {
 	return strings.TrimSpace(use)
 }
 
-// addCommandWithSafety registers a command with an explicit safety class so
-// the static inventory never falls back to the prose heuristic for it.
+// addCommandWithSafety registers a command with an explicit safety class.
 func addCommandWithSafety(root *cobra.Command, safety CommandSafety, command *cobra.Command) {
 	annotateCommand(command, commandSafetyAnnotation, string(safety))
 	root.AddCommand(command)
@@ -239,9 +237,6 @@ func commandIrreversible(command *cobra.Command) bool {
 	return command.Annotations[commandIrreversibleAnnotation] == "true"
 }
 
-// commandSafety reads the safety class stamped at registration. Every linctl
-// command carries the annotation, so the prose of a Short string can never
-// reclassify a command.
 func commandSafety(command *cobra.Command) CommandSafety {
 	if safety, stamped := command.Annotations[commandSafetyAnnotation]; stamped {
 		return CommandSafety(safety)

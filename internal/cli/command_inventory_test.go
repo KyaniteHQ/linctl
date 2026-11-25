@@ -194,7 +194,8 @@ func Test_CommandInventory_reports_unannotated_commands_as_unknown(t *testing.T)
 	root := &cobra.Command{Use: "linctl"}
 	group := &cobra.Command{Use: "issue"}
 	root.AddCommand(group)
-	addCommandWithSafety(group, CommandSafetyWrite, &cobra.Command{Use: "create", Short: "Create issue", Run: run})
+	addCommandWithSafety(group, CommandSafetyWrite, &cobra.Command{Use: "archive", Short: "Archive issue", Run: run})
+	group.AddCommand(&cobra.Command{Use: "create", Short: "Create issue", Run: run})
 	group.AddCommand(&cobra.Command{Use: "get", Short: "Get issue", Run: run})
 	group.AddCommand(&cobra.Command{Use: "sync", Short: "Synchronize issue", Run: run})
 
@@ -206,10 +207,11 @@ func Test_CommandInventory_reports_unannotated_commands_as_unknown(t *testing.T)
 	}
 
 	require.Equal(t, map[string]CommandSafety{
-		"issue":        CommandSafetyUnknown,
-		"issue create": CommandSafetyWrite,
-		"issue get":    CommandSafetyUnknown,
-		"issue sync":   CommandSafetyUnknown,
+		"issue":         CommandSafetyUnknown,
+		"issue archive": CommandSafetyWrite,
+		"issue create":  CommandSafetyUnknown,
+		"issue get":     CommandSafetyUnknown,
+		"issue sync":    CommandSafetyUnknown,
 	}, safetyByPath)
 }
 
