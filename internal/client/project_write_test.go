@@ -30,7 +30,7 @@ func Test_CreateProject_returns_created_project_when_target_matches(t *testing.T
 	require.NoError(t, err)
 	require.Equal(t, "project-id", project.ID)
 	require.Equal(t, "created", project.Name)
-	require.True(t, projectHasTeam(project, "team-id", "LIT"))
+	require.Equal(t, []ProjectTeam{{ID: "team-id", Key: "LIT", Name: "linctl-it"}}, project.Teams)
 	require.JSONEq(t, `{
 		"input": {
 			"name": "created",
@@ -63,9 +63,7 @@ func Test_UpdateProject_refuses_when_pinned_project_differs(t *testing.T) {
 }
 
 func Test_UpdateProject_refuses_when_project_lacks_pinned_team(t *testing.T) {
-	// Given: the resolved project id matches the pinned project, but the project
-	// belongs to a different team. This isolates requireProject's projectHasTeam
-	// branch (write_guard.go) from the project-id mismatch branch above it.
+	// Given
 	graphqlClient := projectWriteFakeClient(map[string]string{
 		"project": `{"project":` + projectJSONWithTeam(projectFixture{
 			ID:     "project-id",

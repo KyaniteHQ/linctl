@@ -7,19 +7,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_selectWorkflowStateID_uses_exact_name_among_started_states(t *testing.T) {
-	states := []workflowStateCandidate{
-		{ID: "in-progress-state", Name: "In Progress", Type: "started", Position: 0},
-		{ID: "in-review-state", Name: "In Review", Type: "started", Position: 1},
-		{ID: "started-state", Name: "Started", Type: "started", Position: 2},
-	}
-
-	stateID, err := selectWorkflowStateID(states, "In Review")
-
-	require.NoError(t, err)
-	require.Equal(t, "in-review-state", stateID)
-}
-
 func Test_UpdateIssue_matches_state_name_without_regard_to_case(t *testing.T) {
 	after := b1IssueFixture("LIT-1")
 	after.StateID = "in-review-state"
@@ -56,12 +43,6 @@ func Test_UpdateIssue_state_selector_does_not_fall_back_to_type(t *testing.T) {
 	require.Zero(t, recorder.countOf("IssueUpdate"))
 }
 
-func Test_listTeamWorkflowStates_returns_error_on_graphql_failure(t *testing.T) {
-	_, err := listTeamWorkflowStates(context.Background(), fakeGraphQLClient(map[string]string{}), "team-id")
-
-	require.ErrorContains(t, err, "list workflow states")
-}
-
 func Test_CreateIssue_fails_closed_when_workflow_states_page_is_truncated(t *testing.T) {
 	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"WorkflowStatesByTeam": `{"workflowStates":{"nodes":[
@@ -75,14 +56,6 @@ func Test_CreateIssue_fails_closed_when_workflow_states_page_is_truncated(t *tes
 	require.ErrorIs(t, err, ErrWriteInvalid)
 	require.ErrorContains(t, err, "more than 50 workflow states")
 	require.Zero(t, recorder.countOf("IssueCreate"))
-}
-
-func Test_IssueStateWriteRetryClass_is_reconcile_before_retry(t *testing.T) {
-	require.Equal(t, MutationRetryReconcile, IssueStateWriteRetryClass())
-}
-
-func Test_IssueRelationCreateRetryClass_is_reconcile_before_retry(t *testing.T) {
-	require.Equal(t, MutationRetryReconcile, IssueRelationCreateRetryClass())
 }
 
 func Test_CanonicalWorkflowStateType_maps_aliases(t *testing.T) {

@@ -156,8 +156,10 @@ func Test_AddProjectTeam_merges_destination_without_dropping_existing(t *testing
 	})
 
 	require.NoError(t, err)
-	require.True(t, projectHasTeam(project, "team-id", "LIT"))
-	require.True(t, projectHasTeam(project, "ops-team-id", "OPS"))
+	require.Equal(t, []ProjectTeam{
+		{ID: "team-id", Key: "LIT", Name: "linctl-it"},
+		{ID: "ops-team-id", Key: "OPS", Name: "OPS"},
+	}, project.Teams)
 	require.JSONEq(t, `{
 		"id": "project-id",
 		"input": {"teamIds": ["team-id", "ops-team-id"]}
@@ -179,7 +181,7 @@ func Test_AddProjectTeam_is_idempotent_when_team_already_attached(t *testing.T) 
 	})
 
 	require.NoError(t, err)
-	require.True(t, projectHasTeam(project, "ops-team-id", "OPS"))
+	require.Contains(t, project.Teams, ProjectTeam{ID: "ops-team-id", Key: "OPS", Name: "OPS"})
 	require.False(t, recorder.sentOperation("ProjectUpdate"))
 }
 
@@ -241,7 +243,7 @@ func Test_AddProjectTeam_resolves_destination_by_key(t *testing.T) {
 	})
 
 	require.NoError(t, err)
-	require.True(t, projectHasTeam(project, "ops-team-id", "OPS"))
+	require.Contains(t, project.Teams, ProjectTeam{ID: "ops-team-id", Key: "OPS", Name: "OPS"})
 	require.JSONEq(t, `{
 		"id": "project-id",
 		"input": {"teamIds": ["team-id", "ops-team-id"]}
@@ -695,7 +697,7 @@ func Test_AddProjectTeam_pages_team_list_when_destination_is_not_on_first_page(t
 	})
 
 	require.NoError(t, err)
-	require.True(t, projectHasTeam(project, "ops-team-id", "OPS"))
+	require.Contains(t, project.Teams, ProjectTeam{ID: "ops-team-id", Key: "OPS", Name: "OPS"})
 }
 
 func Test_AddProjectTeam_fails_when_team_list_page_has_no_end_cursor(t *testing.T) {
