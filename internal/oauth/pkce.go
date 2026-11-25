@@ -4,12 +4,9 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
-	"fmt"
 )
 
 const pkceVerifierBytes = 32
-
-var randRead = rand.Read
 
 // PKCE carries the verifier and S256 challenge used by OAuth login.
 type PKCE struct {
@@ -21,9 +18,7 @@ type PKCE struct {
 // GeneratePKCE returns a fresh PKCE verifier and S256 challenge.
 func GeneratePKCE() (PKCE, error) {
 	random := make([]byte, pkceVerifierBytes)
-	if _, err := randRead(random); err != nil {
-		return PKCE{}, fmt.Errorf("generate pkce verifier: %w", err)
-	}
+	_, _ = rand.Read(random)
 
 	verifier := base64.RawURLEncoding.EncodeToString(random)
 
