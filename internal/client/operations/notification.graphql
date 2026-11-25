@@ -16,10 +16,6 @@ query notification($id: String!) {
   }
 }
 
-query notificationsUnreadCount {
-  notificationsUnreadCount
-}
-
 query notificationSubscriptions($first: Int, $after: String, $includeArchived: Boolean) {
   notificationSubscriptions(first: $first, after: $after, includeArchived: $includeArchived) {
     nodes {
@@ -42,10 +38,6 @@ fragment NotificationSummaryFields on Notification {
   id
   type
   category
-  title
-  subtitle
-  url
-  inboxUrl
   createdAt
   updatedAt
   archivedAt
@@ -63,6 +55,31 @@ fragment NotificationSummaryFields on Notification {
   }
   externalUserActor {
     id
+  }
+  ... on IssueNotification {
+    issue {
+      id
+      identifier
+      title
+      url
+    }
+  }
+  ... on ProjectNotification {
+    project {
+      id
+      name
+      url
+    }
+  }
+  ... on InitiativeNotification {
+    initiative {
+      id
+      name
+      url
+    }
+  }
+  ... on DocumentNotification {
+    documentId
   }
 }
 

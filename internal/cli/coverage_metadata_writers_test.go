@@ -66,7 +66,7 @@ func Test_CliRenderHelpers_write_issue_child_metadata_output(t *testing.T) {
 
 func Test_CliRenderHelpers_write_issue_utility_output(t *testing.T) {
 	priorityValues := []client.IssuePriorityValue{{Priority: 1, Label: "Urgent"}}
-	titleSuggestion := client.IssueTitleSuggestion{Title: "Improve exports", LogID: "title-log-id"}
+	titleSuggestion := client.IssueTitleSuggestion{Title: "Improve exports"}
 
 	textOutput := bytes.Buffer{}
 	textCommand := &cobra.Command{}
@@ -74,7 +74,7 @@ func Test_CliRenderHelpers_write_issue_utility_output(t *testing.T) {
 	require.NoError(t, writeIssuePriorityValues(textCommand, &rootOptions{}, priorityValues))
 	require.NoError(t, writeIssueTitleSuggestion(textCommand, &rootOptions{}, titleSuggestion))
 	require.Contains(t, textOutput.String(), "1 Urgent")
-	require.Contains(t, textOutput.String(), `log_id=title-log-id title=Improve exports`)
+	require.Contains(t, textOutput.String(), "title=Improve exports")
 
 	jsonOutput := bytes.Buffer{}
 	jsonCommand := &cobra.Command{}
@@ -89,9 +89,4 @@ func Test_CliRenderHelpers_write_issue_utility_output(t *testing.T) {
 	require.Error(t, writeIssuePriorityValues(errorCommand, &rootOptions{}, priorityValues))
 	require.Error(t, writeIssueFilterSuggestion(errorCommand, &rootOptions{}, client.IssueFilterSuggestion{LogID: "issue-filter-log-id"}))
 	require.Error(t, writeIssueTitleSuggestion(errorCommand, &rootOptions{}, titleSuggestion))
-	require.Error(t, writeProjectStatusProjectCount(
-		errorCommand,
-		&rootOptions{},
-		client.ProjectStatusProjectCount{ProjectStatusID: "project-status-id", Count: 12},
-	))
 }

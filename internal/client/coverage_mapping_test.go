@@ -39,13 +39,11 @@ func Test_SummaryMappingScenarios_preserve_reference_domain_variants(t *testing.
 	graphqlClient := fakeGraphQLClient{
 		"document": `{"document":{
 			"id":"document-id",
-			"title":"Cycle spec",
-			"slugId":"cycle-spec",
+			"title":"Issue spec",
+			"slugId":"issue-spec",
 			"archivedAt":"2026-06-19T12:00:00Z",
 			"project":{"id":"project-id","name":"Pinned project"},
-			"team":{"id":"team-id","key":"LIT","name":"linctl"},
-			"issue":{"id":"issue-id","identifier":"LIT-1","title":"Issue"},
-			"cycle":{"id":"cycle-id","number":7,"name":"Planning"}
+			"issue":{"id":"issue-id","identifier":"LIT-1","title":"Issue"}
 		}}`,
 		"team": `{"team":{
 			"id":"team-id",
@@ -66,8 +64,8 @@ func Test_SummaryMappingScenarios_preserve_reference_domain_variants(t *testing.
 	document, err := GetDocumentByID(context.Background(), graphqlClient, "document-id")
 	require.NoError(t, err)
 	require.Equal(t, "2026-06-19T12:00:00Z", document.ArchivedAt)
-	require.Equal(t, "cycle", document.ParentType)
-	require.Equal(t, "Planning", document.ParentName)
+	require.Equal(t, "issue", document.ParentType)
+	require.Equal(t, "LIT-1", document.ParentName)
 	require.Empty(t, document.Content)
 
 	team, err := GetTeamByID(context.Background(), graphqlClient, "team-id")

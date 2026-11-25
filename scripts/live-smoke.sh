@@ -334,11 +334,7 @@ PY
   if [[ -n "$project_update_id" ]]; then
     "$binary" project-update comments "$project_update_id" --json --limit 5 >/dev/null
   fi
-  project_status_json="$("$binary" project-status list --json --limit 5)"
-  project_status_id="$(first_item_field project_statuses <<<"$project_status_json")"
-  if [[ -n "$project_status_id" ]]; then
-    run_allow_forbidden project-status-count "$binary" project-status project-count "$project_status_id" --json
-  fi
+  "$binary" project-status list --json --limit 5 >/dev/null
   "$binary" project-label list --json --limit 5 >/dev/null
   "$binary" project-relation list --json --limit 5 >/dev/null
   document_json="$("$binary" document list --json --limit 5)"

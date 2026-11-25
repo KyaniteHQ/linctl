@@ -124,9 +124,9 @@ Only `audit-entry types` is implemented in the current CLI. Audit entry listing 
 Schema backing:
 
 - Types: `Notification`, `NotificationConnection`, `NotificationSubscription`, `NotificationSubscriptionConnection`
-- Reads: `Query.notifications`, `Query.notification`, `Query.notificationsUnreadCount`, `Query.notificationSubscriptions`, `Query.notificationSubscription`
+- Reads: `Query.notifications`, `Query.notification`, `Query.notificationSubscriptions`, `Query.notificationSubscription`
 - Writes: `Mutation.notificationArchive`, `Mutation.notificationArchiveAll`, `Mutation.notificationUpdate`, `Mutation.notificationMarkReadAll`, `Mutation.notificationMarkUnreadAll`, `Mutation.notificationSnoozeAll`, `Mutation.notificationUnsnoozeAll`, `Mutation.notificationCategoryChannelSubscriptionUpdate`, `Mutation.notificationSubscriptionCreate`, `Mutation.notificationSubscriptionUpdate`, `Mutation.notificationSubscriptionDelete`
-- Relevant fields: `Notification.id`, `Notification.type`, `Notification.category`, `Notification.title`, `Notification.subtitle`, `Notification.url`, `Notification.inboxUrl`, `Notification.user`, `Notification.actor`, `NotificationSubscription.id`, `NotificationSubscription.active`, `NotificationSubscription.subscriber`, target entity fields
+- Relevant fields: `Notification.id`, `Notification.type`, `Notification.category`, `Notification.user`, `Notification.actor`, `IssueNotification.issue`, `ProjectNotification.project`, `InitiativeNotification.initiative`, `DocumentNotification.documentId`, `NotificationSubscription.id`, `NotificationSubscription.active`, `NotificationSubscription.subscriber`, target entity fields
 
 Planned commands:
 
@@ -134,7 +134,6 @@ Planned commands:
 | --- | --- | --- |
 | `notification list` | `Query.notifications` | Read-only |
 | `notification get` | `Query.notification` | Read-only |
-| `notification unread-count` | `Query.notificationsUnreadCount` | Read-only |
 | `notification subscription list` | `Query.notificationSubscriptions` | Read-only |
 | `notification subscription get` | `Query.notificationSubscription` | Read-only |
 | `notification mark-read` | `Mutation.notificationUpdate` with `NotificationUpdateInput.readAt` only | Viewer-Scoped Write: recipient `Notification.user.id` must match the authenticated viewer |
@@ -427,13 +426,12 @@ Planned commands:
 | --- | --- | --- |
 | `project-status list` | `Query.projectStatuses` | Read-only |
 | `project-status get` | `Query.projectStatus` | Read-only |
-| `project-status project-count` | `Query.projectStatusProjectCount` | Read-only count payload |
 | `project-status create` | `Mutation.projectStatusCreate` | Blocked: organization project status configuration needs an explicit admin safety model |
 | `project-status update` | `Mutation.projectStatusUpdate` | Blocked: update must resolve and compare the owning organization before mutation |
 | `project-status archive` | `Mutation.projectStatusArchive` | Blocked: destructive command needs explicit safety semantics |
 | `project-status unarchive` | `Mutation.projectStatusUnarchive` | Blocked: restore semantics need an explicit admin safety model |
 
-Only `project-status list`, `project-status get`, and `project-status project-count` are implemented in the current CLI. ProjectStatus writes are deferred as organization/admin configuration surface.
+Only `project-status list` and `project-status get` are implemented in the current CLI. ProjectStatus writes are deferred as organization/admin configuration surface.
 
 ## ProjectLabel
 
@@ -559,7 +557,7 @@ Schema backing:
 - Reads: `Query.documents`, `Query.document`, `Document.comments`, `Project.documents`, `Team.documents`, `Issue.documents`, `Cycle.documents`
 - Writes: `Mutation.documentCreate`, `Mutation.documentUpdate`, `Mutation.documentDelete`
 - Inputs: `DocumentCreateInput`, `DocumentUpdateInput`
-- Relevant fields: `Document.id`, `Document.title`, `Document.slugId`, `Document.archivedAt`, `Document.project`, `Document.team`, `Document.issue`, `Document.cycle`
+- Relevant fields: `Document.id`, `Document.title`, `Document.slugId`, `Document.archivedAt`, `Document.project`, `Document.issue`
 
 Planned commands:
 
@@ -568,11 +566,11 @@ Planned commands:
 | `document list` | `Query.documents` | Read-only |
 | `document get` | `Query.document` | Read-only |
 | `document comments` | `Document.comments` | Read-only, body-free metadata |
-| `document create` | `Mutation.documentCreate` with `DocumentCreateInput.teamId` from the resolved team and optional `projectId` from the pinned project; `--content` (or `--content-file`, or `--content -` for stdin) | Team-scoped unless a `project_id` is pinned |
-| `document update` | `Mutation.documentUpdate`; resolves the existing document via `Query.document` and compares its `team` (and pinned `project`) before mutating | Resource-scoped, compare team and pinned project |
+| `document create` | `Mutation.documentCreate` with `DocumentCreateInput.projectId` from the pinned project; `--content` (or `--content-file`, or `--content -` for stdin) | Requires a pinned `project_id` |
+| `document update` | `Mutation.documentUpdate`; resolves the existing document via `Query.document` and compares its `project` with the pinned project before mutating | Resource-scoped, requires and compares the pinned project |
 | `document delete` | `Mutation.documentDelete` | Blocked: destructive command needs explicit safety semantics |
 
-`document list`, `document get`, `document comments`, `document create`, and `document update` are implemented in the current CLI. Document comment reads omit comment body content by default. `document create` is a team-scoped guarded write (carrying the pinned project when set); `document update` resolves the existing document and fails closed unless its team — and the pinned project, when configured — match. Document delete stays deferred.
+`document list`, `document get`, `document comments`, `document create`, and `document update` are implemented in the current CLI. Document comment reads omit comment body content by default. Linear's public schema has no `Document.team` and no `DocumentCreateInput.teamId`, so the pinned project is the only parent a document write can prove: `document create` and `document update` refuse before any Linear request when `.linctl.toml` pins no `project_id`, `document create` places the document in the pinned project, and `document update` fails closed unless the existing document belongs to the pinned project. Document delete stays deferred.
 
 ## Label
 

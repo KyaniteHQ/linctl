@@ -162,23 +162,10 @@ func documentSummary(document gql.DocumentSummaryFields) DocumentSummary {
 		summary.ParentID = document.Project.Id
 		summary.ParentName = document.Project.Name
 	}
-	if document.Team != nil {
-		summary.ParentType = "team"
-		summary.ParentID = document.Team.Id
-		summary.ParentName = document.Team.Name
-	}
 	if document.Issue != nil {
 		summary.ParentType = "issue"
 		summary.ParentID = document.Issue.Id
 		summary.ParentName = document.Issue.Identifier
-	}
-	if document.Cycle != nil {
-		summary.ParentType = "cycle"
-		summary.ParentID = document.Cycle.Id
-		summary.ParentName = fmt.Sprintf("Cycle %.0f", document.Cycle.Number)
-		if document.Cycle.Name != nil && *document.Cycle.Name != "" {
-			summary.ParentName = *document.Cycle.Name
-		}
 	}
 
 	return summary

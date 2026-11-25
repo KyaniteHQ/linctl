@@ -74,12 +74,6 @@ func renderWriterCases() []renderWriterCase {
 		Type:  "backlog",
 		Color: "#bec2c8",
 	}
-	projectStatusProjectCount := client.ProjectStatusProjectCount{
-		ProjectStatusID:   "project-status-id",
-		Count:             12,
-		PrivateCount:      2,
-		ArchivedTeamCount: 1,
-	}
 	projectLabel := client.ProjectLabelSummary{
 		ID:         "project-label-id",
 		Name:       "Roadmap",
@@ -347,10 +341,12 @@ func renderWriterCases() []renderWriterCase {
 		SourceType: "github",
 	}
 	notification := client.NotificationSummary{
-		ID:       "notification-id",
-		Type:     "issueMention",
-		Category: "mentions",
-		Title:    "Mentioned you",
+		ID:         "notification-id",
+		Type:       "issueMention",
+		Category:   "mentions",
+		TargetType: "issue",
+		TargetID:   "issue-id",
+		TargetName: "LIT-1 Mentioned you",
 	}
 	notificationSubscription := client.NotificationSubscriptionSummary{
 		ID:         "notification-subscription-id",
@@ -472,13 +468,6 @@ func renderWriterCases() []renderWriterCase {
 				return writeProjectStatus(command, options, projectStatus)
 			},
 			text: "project-status-id Backlog [backlog] #bec2c8\n",
-		},
-		{
-			name: "ProjectStatusProjectCount",
-			write: func(command *cobra.Command, options *rootOptions) error {
-				return writeProjectStatusProjectCount(command, options, projectStatusProjectCount)
-			},
-			text: "project-status-id count 12 private 2 archived_team 1\n",
 		},
 		{
 			name: "ProjectLabel",
@@ -797,7 +786,7 @@ func renderWriterCases() []renderWriterCase {
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeNotification(command, options, notification)
 			},
-			text: "notification-id issueMention [mentions] Mentioned you\n",
+			text: "notification-id issueMention [mentions] LIT-1 Mentioned you\n",
 		},
 		{
 			name: "NotificationSubscription",

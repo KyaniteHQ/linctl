@@ -17,7 +17,6 @@ func projectLabelWithOrgJSON(orgID string) string {
 		"color":"#000000",
 		"isGroup":false,
 		"lastAppliedAt":null,
-		"retiredAt":null,
 		"archivedAt":null,
 		"createdAt":"2026-06-20T00:00:00Z",
 		"updatedAt":"2026-06-20T00:00:00Z",

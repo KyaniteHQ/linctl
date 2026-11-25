@@ -36,7 +36,7 @@ func addDocumentCreateCommand(ctx context.Context, root *cobra.Command, options 
 	contentFile := ""
 	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.DocumentSummary]{
 		Use:   "create",
-		Short: "Create a document in the pinned target",
+		Short: "Create a document in the pinned project",
 		Args:  cobra.NoArgs,
 		Configure: func(command *cobra.Command) {
 			command.Flags().StringVar(&request.Title, "title", "", "document title")

@@ -131,10 +131,10 @@ func writeIssueTitleSuggestion(
 	options *rootOptions,
 	suggestion client.IssueTitleSuggestion,
 ) error {
-	return writeItemLine(
-		command, options, suggestion, suggestion.LogID,
-		"log_id=%s title=%s", emptyDash(suggestion.LogID), emptyDash(suggestion.Title),
-	)
+	return writeItemNoID(command, options, suggestion,
+		func(command *cobra.Command, _ *rootOptions, suggestion client.IssueTitleSuggestion) error {
+			return render.WriteLine(command.OutOrStdout(), "title=%s", emptyDash(suggestion.Title))
+		})
 }
 
 func writeIssues(command *cobra.Command, options *rootOptions, issues []client.IssueSummary) error {

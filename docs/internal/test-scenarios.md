@@ -920,239 +920,230 @@ Success is pass/fail:
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_status_get`;
      `go test ./internal/client`, `Test_ClientReadIssueAndProjectScenarios_return_compact_lists_details_and_members`.
 
-168. ProjectStatus project count
-   - Success: `linctl project-status project-count PROJECT_STATUS_ID` reads project counts for one ProjectStatus without exposing project records.
-   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_status_project_count`;
-     `go test ./internal/client`, `Test_ClientReadIssueAndProjectScenarios_return_compact_lists_details_and_members`.
-
-169. ProjectLabel list
+168. ProjectLabel list
    - Success: `linctl project-label list --limit N` lists visible ProjectLabels through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_label_list`;
      `go test ./internal/client`, `Test_ClientReadIssueAndProjectScenarios_return_compact_lists_details_and_members`.
 
-170. ProjectLabel get
+169. ProjectLabel get
    - Success: `linctl project-label get PROJECT_LABEL_ID` reads one ProjectLabel by id.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_label_get`;
      `go test ./internal/client`, `Test_ClientReadIssueAndProjectScenarios_return_compact_lists_details_and_members`.
 
-171. ProjectLabel children
+170. ProjectLabel children
    - Success: `linctl project-label children PROJECT_LABEL_ID --limit N` lists child ProjectLabels without exposing unrelated project data.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_label_children`;
      `go test ./internal/client`, `Test_ClientReadIssueAndProjectScenarios_return_compact_lists_details_and_members`.
 
-172. ProjectLabel projects
+171. ProjectLabel projects
    - Success: `linctl project-label projects PROJECT_LABEL_ID --limit N` lists projects associated with one ProjectLabel.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_label_projects`;
      `go test ./internal/client`, `Test_ClientReadIssueAndProjectScenarios_return_compact_lists_details_and_members`.
 
-173. ProjectRelation list
+172. ProjectRelation list
    - Success: `linctl project-relation list --limit N` lists visible ProjectRelations through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_relation_list`;
      `go test ./internal/client`, `Test_ClientReadIssueAndProjectScenarios_return_compact_lists_details_and_members`.
 
-174. ProjectRelation get
+173. ProjectRelation get
    - Success: `linctl project-relation get PROJECT_RELATION_ID` reads one ProjectRelation by id.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_relation_get`;
      `go test ./internal/client`, `Test_ClientReadIssueAndProjectScenarios_return_compact_lists_details_and_members`.
 
-175. TeamMembership list
+174. TeamMembership list
    - Success: `linctl team-membership list --limit N` lists visible TeamMemberships through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_membership_list`;
      `go test ./internal/client`, `Test_ClientReadCoreSearchReleaseScenarios_return_compact_lists_details_and_members`.
 
-176. TeamMembership get
+175. TeamMembership get
    - Success: `linctl team-membership get TEAM_MEMBERSHIP_ID` reads one TeamMembership by id.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_membership_get`;
      `go test ./internal/client`, `Test_ClientReadCoreSearchReleaseScenarios_return_compact_lists_details_and_members`.
 
-177. RoadmapToProject list
+176. RoadmapToProject list
    - Success: `linctl roadmap-to-project list --limit N` lists visible RoadmapToProjects through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/roadmap_to_project_list`;
      `go test ./internal/client`, `Test_ClientReadPlanningAdjacentScenarios_return_compact_lists_details_and_members`.
 
-178. RoadmapToProject get
+177. RoadmapToProject get
    - Success: `linctl roadmap-to-project get ROADMAP_TO_PROJECT_ID` reads one RoadmapToProject by id.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/roadmap_to_project_get`;
      `go test ./internal/client`, `Test_ClientReadPlanningAdjacentScenarios_return_compact_lists_details_and_members`.
 
-179. IssueRelation list
+178. IssueRelation list
    - Success: `linctl issue-relation list --limit N` lists visible IssueRelations through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/issue_relation_list`;
      `go test ./internal/client`, `Test_ClientReadCoreSearchReleaseScenarios_return_compact_lists_details_and_members`.
 
-180. IssueRelation get
+179. IssueRelation get
    - Success: `linctl issue-relation get ISSUE_RELATION_ID` reads one IssueRelation by id.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/issue_relation_get`;
      `go test ./internal/client`, `Test_ClientReadCoreSearchReleaseScenarios_return_compact_lists_details_and_members`.
 
-181. IssueToRelease list
+180. IssueToRelease list
    - Success: `linctl issue-to-release list --limit N` lists visible IssueToReleases through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/issue_to_release_list`;
      `go test ./internal/client`, `Test_ClientReadCoreSearchReleaseScenarios_return_compact_lists_details_and_members`.
 
-182. IssueToRelease get
+181. IssueToRelease get
    - Success: `linctl issue-to-release get ISSUE_TO_RELEASE_ID` reads one IssueToRelease by id.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/issue_to_release_get`;
      `go test ./internal/client`, `Test_ClientReadCoreSearchReleaseScenarios_return_compact_lists_details_and_members`.
 
-183. ExternalUser list
+182. ExternalUser list
    - Success: `linctl external-user list --limit N` lists visible Linear ExternalUsers without selecting email through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/external_user_list`;
      `go test ./internal/client`, `Test_ClientReadCoreSearchReleaseScenarios_return_compact_lists_details_and_members`.
 
-184. ExternalUser get
+183. ExternalUser get
    - Success: `linctl external-user get EXTERNAL_USER_ID` reads one Linear ExternalUser by id without selecting email.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/external_user_get`;
      `go test ./internal/client`, `Test_ClientReadCoreSearchReleaseScenarios_return_compact_lists_details_and_members`.
 
-185. Team cycles
+184. Team cycles
    - Success: `linctl team cycles TEAM_ID --limit N` lists Cycles associated with one Team through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_cycles`;
      `go test ./internal/client`, `Test_ClientReadCoreSearchReleaseScenarios_return_compact_lists_details_and_members`.
 
-186. Team issues
+185. Team issues
    - Success: `linctl team issues TEAM_ID --limit N` lists Issues associated with one Team through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_issues`;
      `go test ./internal/client`, `Test_ClientReadCoreSearchReleaseScenarios_return_compact_lists_details_and_members`.
 
-187. Team labels
+186. Team labels
    - Success: `linctl team labels TEAM_ID --limit N` lists IssueLabels associated with one Team through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_labels`;
      `go test ./internal/client`, `Test_ClientReadCoreSearchReleaseScenarios_return_compact_lists_details_and_members`.
 
-188. Team memberships
+187. Team memberships
    - Success: `linctl team memberships TEAM_ID --limit N` lists TeamMemberships associated with one Team through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_memberships`;
      `go test ./internal/client`, `Test_ClientReadCoreSearchReleaseScenarios_return_compact_lists_details_and_members`.
 
-189. Team projects
+188. Team projects
    - Success: `linctl team projects TEAM_ID --limit N` lists Projects associated with one Team through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_projects`;
      `go test ./internal/client`, `Test_ClientReadCoreSearchReleaseScenarios_return_compact_lists_details_and_members`.
 
-190. Team release pipelines
+189. Team release pipelines
    - Success: `linctl team release-pipelines TEAM_ID --limit N` lists ReleasePipelines associated with one Team through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_release_pipelines`;
      `go test ./internal/client`, `Test_ClientReadCoreSearchReleaseScenarios_return_compact_lists_details_and_members`.
 
-191. Team states
+190. Team states
    - Success: `linctl team states TEAM_ID --limit N` lists WorkflowStates associated with one Team through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_states`;
      `go test ./internal/client`, `Test_ClientReadCoreSearchReleaseScenarios_return_compact_lists_details_and_members`.
 
-192. Team Git automation states
+191. Team Git automation states
    - Success: `linctl team git-automation-states TEAM_ID --limit N` lists Git automation rule metadata for one Team without exposing source, secret, or write payloads.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_git_automation_states`;
      `go test ./internal/client`, `Test_ClientReadCoreSearchReleaseScenarios_return_compact_lists_details_and_members`.
 
-193. Team templates
+192. Team templates
    - Success: `linctl team templates TEAM_ID --limit N` lists Templates associated with one Team through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_templates`;
      `go test ./internal/client`, `Test_ClientReadCoreSearchReleaseScenarios_return_compact_lists_details_and_members`.
 
-194. Simple child metadata reads
+193. Simple child metadata reads
    - Success: `linctl roadmap projects ROADMAP_ID --limit N`, `linctl workflow-state issues WORKFLOW_STATE_ID --limit N`, and `linctl customer-need project-attachment CUSTOMER_NEED_ID` expose safe child metadata without body, blob, metadata/source JSON, or secret fields by default.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/roadmap_projects`, `Test_CommandFlows_execute_read_and_write_commands/workflow_state_issues`, `Test_CommandFlows_execute_read_and_write_commands/customer_need_project_attachment`;
      `go test ./internal/client`, `Test_ClientReadPlanningAdjacentScenarios_return_compact_lists_details_and_members`.
 
-195. Project child reads
+194. Project child reads
    - Success: `linctl project attachments|documents|external-links|history|initiative-links|initiatives|inverse-relations|issues|comments|labels|needs|relations|teams PROJECT_ID --limit N` lists safe child resources for one Project through the public CLI and JSON output controls without selecting draft, body, blob, secret, source, or metadata payload fields by default.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_attachments`, `Test_CommandFlows_execute_read_and_write_commands/project_documents`, `Test_CommandFlows_execute_read_and_write_commands/project_external_links`, `Test_CommandFlows_execute_read_and_write_commands/project_history`, `Test_CommandFlows_execute_read_and_write_commands/project_initiative_links`, `Test_CommandFlows_execute_read_and_write_commands/project_initiatives`, `Test_CommandFlows_execute_read_and_write_commands/project_inverse_relations`, `Test_CommandFlows_execute_read_and_write_commands/project_issues`, `Test_CommandFlows_execute_read_and_write_commands/project_comments`, `Test_CommandFlows_execute_read_and_write_commands/project_labels`, `Test_CommandFlows_execute_read_and_write_commands/project_needs`, `Test_CommandFlows_execute_read_and_write_commands/project_relations`, `Test_CommandFlows_execute_read_and_write_commands/project_teams`.
 
-196. Release child reads
+195. Release child reads
    - Success: `linctl release documents|issues RELEASE_ID --limit N` and `linctl release-pipeline teams RELEASE_PIPELINE_ID --limit N` list safe child resources for one Release or ReleasePipeline through the public CLI and JSON output controls without selecting body, blob, secret, archive payload, or document-content fields by default.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/release_documents`, `Test_CommandFlows_execute_read_and_write_commands/release_issues`, `Test_CommandFlows_execute_read_and_write_commands/release_pipeline_teams`; `go test ./internal/client`, `Test_ClientReadCoreSearchReleaseScenarios_return_compact_lists_details_and_members`.
 
-197. Issue child reads
+196. Issue child reads
    - Success: `linctl issue attachments|bot-actor|children|documents|former-attachments|former-needs|history|inverse-relations|labels|needs|relations|releases|shared-access|state-history|subscribers ISSUE_ID --limit N` lists safe child resources for one Issue through the public CLI and JSON output controls without selecting body, blob, secret, shared user details, raw change, or customer-need content fields by default.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/issue_attachments`, `Test_CommandFlows_execute_read_and_write_commands/issue_bot_actor`, `Test_CommandFlows_execute_read_and_write_commands/issue_children`, `Test_CommandFlows_execute_read_and_write_commands/issue_documents`, `Test_CommandFlows_execute_read_and_write_commands/issue_former_attachments`, `Test_CommandFlows_execute_read_and_write_commands/issue_history`, `Test_CommandFlows_execute_read_and_write_commands/issue_inverse_relations`, `Test_CommandFlows_execute_read_and_write_commands/issue_labels`, `Test_CommandFlows_execute_read_and_write_commands/issue_relations`, `Test_CommandFlows_execute_read_and_write_commands/issue_releases`, `Test_CommandFlows_execute_read_and_write_commands/issue_state_history`, `Test_CommandFlows_execute_read_and_write_commands/issue_subscribers`; `go test ./internal/client`, `Test_ClientReadIssueAndProjectScenarios_return_compact_lists_details_and_members`.
 
-198. Issue VCS branch search projections
+197. Issue VCS branch search projections
    - Success: `linctl issue vcs-branch-search get|attachments|bot-actor|children|comments|documents|former-attachments|former-needs|history|inverse-relations|labels|needs|relations|releases|shared-access|state-history|subscribers BRANCH_NAME --limit N` reads safe metadata for the Issue matched by a VCS branch without selecting comment body, customer-need content, shared user details, blob, source, or secret fields by default.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/issue_vcs_branch_*`;
      `go test ./internal/client`, `Test_ClientReadIssueAndProjectScenarios_return_compact_lists_details_and_members`.
 
-199. AgentSession list
+198. AgentSession list
    - Success: `linctl agent-session list --limit N` lists visible AgentSessions with status and issue identity metadata.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/agent_session_list`;
      `go test ./internal/client`, `Test_ListAgentSessions_returns_compact_sessions`.
 
-200. AgentSession get
+199. AgentSession get
    - Success: `linctl agent-session get AGENT_SESSION_ID` reads one AgentSession by id without selecting activity-stream, plan, or `sourceMetadata` payloads.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/agent_session_get`;
      `go test ./internal/client`, `Test_GetAgentSessionByID_returns_session_without_creator_or_issue`.
 
-201. Issue URL link
+200. Issue URL link
    - Success: `linctl issue link URL ISSUE_ID --title TITLE --subtitle SUBTITLE` creates a Linear Attachment URL on an Issue only after resolving the Issue and comparing the pinned target.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/issue_link`;
      `go test ./internal/client`, `Test_LinkIssueAttachment_attaches_url_when_target_matches`.
 
-202. OAuth app auth setup and readiness
+201. OAuth app auth setup and readiness
    - Success: `linctl auth configure` stores OAuth app configuration without creating token state; `linctl auth app` exchanges client credentials, verifies app actor readiness and pinned target before saving token state; `linctl auth status` performs a live readiness check, refreshes expired authorization-code tokens, reacquires expired app tokens, recovers a saved unexpired token once when Linear rejects it, and reports `AUTH_REAUTH_REQUIRED` when Linear also rejects the recovered token or rejects an injected token, without printing tokens or client secrets.
    - Evidence: `go test ./internal/auth ./internal/cli`, `Test_Store_saves_app_config_without_creating_token_state`, `Test_Store_saves_token_state_without_rewriting_app_config`, `Test_AuthConfigure_saves_oauth_app_config_without_token_state`, `Test_AuthApp_obtains_app_actor_token_after_live_readiness`, `Test_AuthApp_does_not_save_token_when_readiness_fails`, `Test_AuthApp_reports_missing_scope_without_saving_token`, `Test_AuthStatus_recovers_an_unusable_token_once_and_reports_the_new_token`, `Test_AuthStatus_reports_reauth_required_when_linear_keeps_rejecting_the_token`, `LINCTL_LIVE_OAUTH_RECOVERY=1 go tool task live-oauth-infisical` (a client-credentials exchange with other scopes in a second auth state makes Linear reject the first token, then `auth status` replaces it; an invalid injected token reports `AUTH_REAUTH_REQUIRED`).
 
-203. OAuth browser login with PKCE
+202. OAuth browser login with PKCE
    - Success: `linctl auth login` builds a Linear authorization URL with PKCE S256, Linear re-consent, and `actor=app` by default, supports `--actor user`, validates callback state before token exchange, accepts a pasted callback URL or raw code through the same exchange path, verifies auth readiness before saving token state, and does not print access tokens, refresh tokens, or client secrets.
    - Evidence: `go test ./internal/cli`, `Test_AuthLogin_builds_authorization_url_with_app_actor_by_default`, `Test_AuthLogin_builds_authorization_url_with_user_actor`, `Test_AuthLogin_state_mismatch_refuses_exchange_and_save`, `Test_AuthLogin_callback_url_exchanges_and_saves_after_readiness`, `Test_AuthLogin_raw_code_fallback_uses_authorization_code_exchange`, `Test_AuthLogin_reads_manual_callback_from_stdin_with_same_state`.
 
-204. OAuth runtime token recovery
+203. OAuth runtime token recovery
    - Success: runtime refreshes expired authorization-code tokens once, reacquires expired or rejected client-credentials app tokens once, persists rotated token state only through local auth state, retries the original GraphQL request once, emits redacted debug diagnostics for recovery start/success/failure, and returns `AUTH_REFRESH_FAILED` or `AUTH_REAUTH_REQUIRED` without retry loops when recovery fails.
    - Evidence: `go test ./internal/client ./internal/cli`, `Test_Transport_returns_typed_auth_error_for_401`, `Test_CommandRuntime_refreshes_expired_authorization_code_token_and_retries_once`, `Test_CommandRuntime_reacquires_expired_client_credentials_token_and_retries_once`, `Test_CommandRuntime_reacquires_client_credentials_token_after_401_once`, `Test_CommandRuntime_logs_expired_token_recovery_without_secrets`, `Test_CommandRuntime_logs_auth_failure_token_recovery_without_secrets`, `Test_CommandRuntime_logs_token_recovery_failure_without_error_details`, `Test_CommandRuntime_returns_AUTH_REAUTH_REQUIRED_when_retried_token_is_rejected`, `Test_CommandRuntime_returns_AUTH_REFRESH_FAILED_when_refresh_fails_without_retry_loop`, `Test_CommandRuntime_returns_AUTH_REAUTH_REQUIRED_when_app_reacquire_fails_without_retry_loop`.
 
-205. OAuth-only product auth direction
+204. OAuth-only product auth direction
    - Success: user-facing setup docs describe OAuth app auth setup, runtime missing-auth errors point to `linctl auth configure` followed by `linctl auth app` or `linctl auth login`, legacy API-key env vars and config token fields remain ignored by product auth, and stale API-key setup guidance is absent from public docs.
    - Evidence: `go test ./internal/cli ./internal/config`, `Test_CommandRuntime_loads_config_and_requires_token` (legacy `LINCTL_TOKEN` is refused), `Test_Load_resolves_repo_profile_when_present` (configs that still hold a `token` field load); `rg -n "LINEAR_OAUTH|LINCTL_TOKEN|LINEAR_API_KEY|lin_api_|Credential precedence|personal API|API key" README.md CLAUDE.md skills/linctl/SKILL.md`.
 
-206. OAuth live gate
+205. OAuth live gate
    - Success: `task live-oauth` requires the dedicated OAuth fixture env, runs `linctl auth configure`, `linctl auth app`, and `linctl auth status` against the pinned target, asserts app actor readiness, and reports only redacted auth status. Push CI runs the same `live-oauth` gate when the fixture secrets are present, and the scheduled/manual integration workflow runs `live-oauth`, integration tests, and live smoke. `task live-smoke` bootstraps temporary OAuth auth state through the same harness before the live smoke commands. GitHub Actions skips live steps when OAuth fixture env is absent.
    - Evidence: `env -u LINCTL_OAUTH_CLIENT_ID -u LINCTL_OAUTH_CLIENT_SECRET -u LINCTL_OAUTH_REDIRECT_URI -u LINCTL_OAUTH_SCOPES -u LINCTL_OAUTH_EXPECTED_ACTOR bash scripts/live-oauth.sh`; fake-binary live OAuth harness check; `go test ./internal/client ./internal/cli ./internal/config -count=1`; `go test -tags=integration ./internal/client` skips without OAuth fixture env; `.github/workflows/ci.yml`; `.github/workflows/integration.yml`.
 
-207. OAuth explicit refresh and logout
+206. OAuth explicit refresh and logout
    - Success: `linctl auth status` and `linctl auth refresh` check target readiness and emit redacted debug diagnostics for readiness mismatch. `linctl auth refresh` rotates authorization-code token state or reacquires client-credentials app token state, persists the new state only after readiness succeeds, and redacts token material. `linctl auth logout` revokes refresh/access tokens when Linear accepts revocation, logs redacted failed-revocation diagnostics under `--debug`, removes local token state even when revocation fails, keeps app config by default, and removes app config only with `--forget-app`.
    - Evidence: `go test ./internal/oauth ./internal/auth ./internal/cli`, `Test_Client_revokes_token_with_token_form_field`, `Test_Client_revoke_error_redacts_secret_values`, `Test_AuthStatus_debug_logs_readiness_mismatch_without_secrets`, `Test_AuthRefresh_rotates_authorization_code_token_and_checks_readiness`, `Test_AuthRefresh_reacquires_client_credentials_token`, `Test_AuthRefresh_debug_logs_readiness_mismatch_without_secrets`, `Test_AuthLogout_revokes_tokens_and_clears_token_state_while_keeping_app`, `Test_AuthLogout_forgets_app_and_clears_state_when_revocation_fails`.
 
-208. OAuth browser login deterministic non-live harness check
+207. OAuth browser login deterministic non-live harness check
    - Success: `task browser-login-smoke-check` runs without Linear secrets, a real browser, or network writes; verifies missing fixture env exits 2; proves the localhost callback listener accepts a valid callback path; and checks redaction sentinels are not printed.
    - Evidence: `bash -n scripts/browser-login-smoke.sh`; `shellcheck scripts/browser-login-smoke.sh`; `go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke-check`.
 
-209. OAuth browser login manual smoke
+208. OAuth browser login manual smoke
    - Success: `task browser-login-smoke` runs repeatable user-actor browser PKCE login in isolated temp auth state, prints the Linear authorization URL, captures the localhost callback through a one-shot listener without printing the callback URL, shows a browser success page, validates redacted login/status JSON, removes local token state, and reports only actor, target readiness, token status, and scope readiness. Running `task browser-login-smoke -- app` covers the app-actor browser install path only when the Linear fixture app is not already installed; repeatable app-actor coverage stays in `task live-oauth`.
    - Evidence: `go test ./internal/cli`, `Test_AuthLogin_builds_authorization_url_with_app_actor_by_default`, `Test_AuthLogin_builds_authorization_url_with_user_actor`, `Test_AuthLogin_state_mismatch_refuses_exchange_and_save`, `Test_AuthLogin_callback_url_exchanges_and_saves_after_readiness`, `Test_AuthLogin_raw_code_fallback_uses_authorization_code_exchange`, `Test_AuthLogin_reads_manual_callback_from_stdin_with_same_state`; `go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke`; `go run github.com/go-task/task/v3/cmd/task@latest live-oauth`.
 
-210. ProjectMilestone delete
+209. ProjectMilestone delete
    - Success: `linctl project-milestone delete PROJECT_MILESTONE_ID` hard deletes a ProjectMilestone only after resolving the ProjectMilestone's project and comparing the pinned target; the command takes exactly one ProjectMilestone id with no bulk form, `--force`, or confirmation prompt, and human output states the deletion cannot be undone via linctl.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_milestone_delete`, `Test_TaxonomyDirectWriteCommandFlows_forward_exact_mutation_variables/project_milestone_delete`, `Test_TaxonomyDirectWriteCommandFlows_propagate_mutation_errors/project_milestone_delete`;
      `go test ./internal/client`, `Test_DeleteProjectMilestone_removes_milestone_when_target_matches`, `Test_DeleteProjectMilestone_refuses_when_pinned_project_differs`, `Test_DeleteProjectMilestone_refuses_when_project_team_differs`.
-211. Label taxonomy and issue/project label association writes
+210. Label taxonomy and issue/project label association writes
    - Success: `label create` sends the resolved team's id as `teamId` by default (Team-Scoped Write) and omits it under `--org-wide` (Org-Scoped Write), never sends `replaceTeamLabels: true`, and requires a `--parent` label to share the same effective scope; `label update`/`retire`/`restore` resolve the existing label and compare its team, refusing an organization-wide label (null team) unless `--org-wide` is passed and refusing `--org-wide` on a team-scoped label; `issue add-label`/`remove-label` resolve the issue through `requireIssue` and accept a label only when its team matches or it is organization-wide; `project add-label`/`remove-label` resolve the project through `requireProject` and the ProjectLabel through `requireOrganization`, proceeding even when a `project_id` is pinned. Every refusal sends no mutation.
    - Evidence: `go test ./internal/client`, `Test_CreateLabel_creates_team_scoped_label_with_resolved_team_id`, `Test_CreateLabel_org_wide_omits_team_id`, `Test_UpdateLabel_refuses_organization_wide_label_without_org_wide_flag`, `Test_UpdateLabel_refuses_org_wide_flag_on_team_scoped_label`, `Test_UpdateLabel_updates_team_scoped_label_when_team_matches`, `Test_AddIssueLabel_attaches_organization_wide_label`, `Test_AddProjectLabel_refuses_when_label_organization_differs`; `go test ./internal/cli`, `Test_LabelUpdate_rejects_org_wide_flag_on_a_team_scoped_label`, `Test_LabelUpdate_emits_stable_target_mismatch_output`, `Test_LabelFamilyCommands_have_no_bypass_flags`.
 
-212. ProjectLabel taxonomy writes
+211. ProjectLabel taxonomy writes
    - Success: `project-label create`/`update`/`retire`/`restore` are Org-Scoped Writes; ProjectLabel has no team scope, so `--org-wide` is required and every command refuses to run without it, naming the flag in the error. `update`/`retire`/`restore` resolve the existing ProjectLabel through `requireProjectLabel` and compare its organization, failing closed as Target Mismatch when the resolved label belongs to a different organization. A pinned `project_id` does not block these writes. No command exposes `--force` or `--confirm`.
    - Evidence: `go test ./internal/client`, `Test_CreateProjectLabel_refuses_without_org_wide`, `Test_CreateProjectLabel_creates_label_when_org_wide_passed`, `Test_UpdateProjectLabel_refuses_when_organization_differs`, `Test_RetireProjectLabel_refuses_without_org_wide`, `Test_RestoreProjectLabel_refuses_when_organization_differs`; `go test ./internal/cli`, `Test_ProjectLabelFamilyCommands_require_org_wide`, `Test_ProjectLabelUpdate_emits_stable_target_mismatch_output`, `Test_ProjectLabelFamilyCommands_have_no_bypass_flags`.
 
-213. Comment thread resolve and unresolve
+212. Comment thread resolve and unresolve
    - Success: `linctl comment resolve COMMENT_ID` and `linctl comment unresolve COMMENT_ID` resolve the comment, compare the pinned team through its parent issue, refuse non-issue or mismatched comments without sending a mutation, and render the returned Comment summary through standard human and machine output controls.
    - Evidence: `go test ./internal/client`, `Test_ResolveComment_resolves_comment_when_target_matches`, `Test_ResolveComment_refuses_comment_without_an_issue_without_mutating`, `Test_UnresolveComment_unresolves_comment_when_target_matches`, `Test_UnresolveComment_refuses_when_issue_team_differs_without_mutating`; `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/comment_resolve`, `Test_CommandFlows_execute_read_and_write_commands/comment_unresolve`.
 
-214. Initiative label reads
+213. Initiative label reads
    - Success: `linctl initiative-label list --limit N` and `linctl initiative-label get INITIATIVE_LABEL_ID` map organization-level InitiativeLabel responses into compact models, preserve parent-group metadata and organization id, and support standard human and machine output controls.
    - Evidence: `go test ./internal/client ./internal/cli`, `Test_InitiativeLabelReads_return_compact_models`, `Test_InitiativeLabelReads_wrap_errors`, `Test_InitiativeLabelCommandFlows_list_get_and_project_fields`, `Test_WriteInitiativeLabel_covers_human_and_machine_modes`.
 
-215. InitiativeLabel taxonomy writes
+214. InitiativeLabel taxonomy writes
    - Success: `initiative-label retire`/`restore` are Org-Scoped Writes; InitiativeLabel has no team scope, so `--org-wide` is required and every command refuses to run without it, naming the flag in the error. Both commands resolve the existing InitiativeLabel through `requireInitiativeLabel` and compare its organization, failing closed as Target Mismatch when the resolved label belongs to a different organization. A pinned `project_id` does not block these writes. No command exposes `--force` or `--confirm`.
    - Evidence: `go test ./internal/client`, `Test_RetireInitiativeLabel_refuses_without_org_wide`, `Test_RetireInitiativeLabel_refuses_when_organization_differs`, `Test_RetireInitiativeLabel_retires_label_when_organization_matches`, `Test_RestoreInitiativeLabel_refuses_without_org_wide`, `Test_RestoreInitiativeLabel_refuses_when_organization_differs`; `go test ./internal/cli`, `Test_InitiativeLabelFamilyCommands_require_org_wide`, `Test_InitiativeLabelRetire_emits_stable_target_mismatch_output`, `Test_InitiativeLabelFamilyCommands_have_no_bypass_flags`.
 
-216. Notification unread count
-   - Success: `linctl notification unread-count` prints the authenticated user's unread notification count as a bare integer, supports `--json` and `--quiet`, and returns operation failures without changing exit-code semantics.
-   - Evidence: `go test ./internal/client ./internal/cli`, `Test_GetNotificationsUnreadCount_returns_fake_response`, `Test_GetNotificationsUnreadCount_wraps_operation_errors`, `Test_NotificationUnreadCount_command_outputs_supported_modes`, `Test_NotificationUnreadCount_command_returns_operation_errors`, `Test_NotificationUnreadCount_command_returns_runtime_errors`.
-
-217. Project export
+215. Project export
    - Success: `linctl project export PROJECT_ID DIR` writes a local markdown file with the project content body and attachment URLs. Compact `project get --json` still omits `content`.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_project_export_writes_document`, `Test_CommandFlows_project_export_honors_output_flags`, `Test_CommandFlows_project_export_notes_truncation`;
      `go test ./internal/client`, `Test_ClientReadIssueAndProjectScenarios_return_compact_lists_details_and_members`.
 
-218. Exact workflow-state name
+216. Exact workflow-state name
    - Success: `linctl issue update ISSUE --state "In Review"` selects that started state when the team has several started states, then reads the issue back. `--state started` does not fall back to a type. `issue import` uses the same exact name. `issue start` and `issue close` pick the lowest-position state of that type, except that `[states] close` names the state `issue close` uses (scenario 230).
    - Evidence: `go test ./internal/client`, `Test_UpdateIssue_selects_exact_started_state_name`,
      `Test_UpdateIssue_refuses_when_readback_state_does_not_match`,
@@ -1162,7 +1153,7 @@ Success is pass/fail:
      `go test ./internal/cli`, `Test_CommandFlows_issue_import_refuses_a_state_type_as_a_state_name`,
      `Test_CommandFlows_issue_import_selects_exact_state_name`.
 
-219. Cross-project related relation
+217. Cross-project related relation
    - Success: `linctl issue relate A B --type related --allowed-project P1 --allowed-project P2` links two same-team issues in those projects and keeps each issue in its original project. A pinned project stays in the allowed set. Different projects without `--allowed-project` fail before mutation. `issue unrelate` uses the same organization, team, and allowed-project boundary.
    - Evidence: `go test ./internal/client`, `Test_CreateIssueRelation_links_issues_in_explicit_allowed_projects`,
      `Test_CreateIssueRelation_keeps_pinned_project_in_allowlist_union`,
@@ -1174,19 +1165,19 @@ Success is pass/fail:
      `Test_DeleteIssueRelation_refuses_cross_project_without_allowlist`,
      `Test_DeleteIssueRelation_refuses_project_outside_allowlist`.
 
-220. Relation readback
+218. Relation readback
    - Success: a successful relate returns both issues and the relation after a follow-up read.
    - Evidence: `go test ./internal/client`, `Test_CreateIssueRelation_links_issues_when_target_matches`,
      `Test_CreateIssueRelation_links_issues_in_explicit_allowed_projects`.
 
-221. Ambiguous mutation reconcile
+219. Ambiguous mutation reconcile
    - Success: a timed-out state write, issue create, or relation create reads observed state and does not replay the mutation when the desired result is already present.
    - Evidence: `go test ./internal/client`, `Test_UpdateIssue_reconciles_ambiguous_state_write_without_replay`,
      `Test_CreateIssue_reconciles_ambiguous_create_without_replay`,
      `Test_CreateIssueRelation_reconciles_ambiguous_create_without_replay`,
      `Test_CreateIssueRelation_reconciles_existing_relation_without_create`.
 
-222. WorkflowState create
+220. WorkflowState create
    - Success: `linctl workflow-state create` sends the caller-supplied UUID v4 and the resolved team id. It accepts only `backlog`, `unstarted`, `started`, `completed`, or `canceled`. Optional description and position are omitted unless the flags change. Exact readback includes description and team.
    - Evidence: `go test ./internal/client`, `Test_CreateWorkflowState_sends_caller_id_and_resolved_team`,
      `Test_CreateWorkflowState_omits_optional_fields_and_keeps_observed_defaults`,
@@ -1194,27 +1185,27 @@ Success is pass/fail:
      `Test_CreateWorkflowState_rejects_disallowed_types`;
      `go test ./internal/cli`, `Test_WorkflowStateWriteCommandFlows_cover_output_modes`.
 
-223. WorkflowState update
+221. WorkflowState update
    - Success: `linctl workflow-state update` resolves the state first. It compares team id and key. It preserves explicit empty descriptions and zero positions. It rejects empty names and colors. It does not expose type.
    - Evidence: `go test ./internal/client`, `Test_UpdateWorkflowState_updates_changed_fields_with_presence`,
      `Test_UpdateWorkflowState_omits_unchanged_fields`,
      `Test_UpdateWorkflowState_refuses_wrong_team_before_mutation`;
      `go test ./internal/cli`, `Test_WorkflowStateWriteCommands_have_no_bypass_or_team_flags`.
 
-224. Issue template create
+222. Issue template create
    - Success: `linctl template create` sends the caller-supplied UUID v4, type `issue`, and the resolved team id. It reads object-shaped JSON from a local `--data-file`. It rejects stdin, arrays, scalars, and `null` with zero mutation calls.
    - Evidence: `go test ./internal/client`, `Test_CreateTemplate_sends_caller_id_issue_type_and_team`,
      `Test_CreateTemplate_rejects_non_issue_types`;
      `go test ./internal/cli`, `Test_TemplateCreate_rejects_data_file_failures_before_mutation`.
 
-225. Issue template update
+223. Issue template update
    - Success: `linctl template update` resolves the template first. It requires type `issue`, a non-null team, and an empty pipeline. It never sends `teamId` or type. Organization, pipeline, and wrong-team templates fail before mutation.
    - Evidence: `go test ./internal/client`, `Test_UpdateTemplate_omits_team_and_type`,
      `Test_UpdateTemplate_refuses_organization_template_before_mutation`,
      `Test_UpdateTemplate_refuses_pipeline_template_before_mutation`,
      `Test_UpdateTemplate_refuses_wrong_team_before_mutation`.
 
-226. Exact template content read
+224. Exact template content read
    - Success: `linctl template content` returns canonical template data, type, team, and pipeline. Ordinary `template list` and `template get` stay data-free.
    - Evidence: `go test ./internal/client`, `Test_GetTemplateDetail_returns_canonical_data_and_scope`,
      `Test_CanonicalTemplateData_ignores_whitespace_and_key_order`,
@@ -1222,7 +1213,7 @@ Success is pass/fail:
      `go test ./internal/cli`, `Test_TemplateGet_stays_data_free`,
      `Test_TemplateWriteCommandFlows_cover_output_modes`.
 
-227. Template and WorkflowState recovery
+225. Template and WorkflowState recovery
    - Success: GraphQL errors, `success: false`, timeouts, and decode failures record one mutation and one exact-id read. Matching readback succeeds. Different fields return `CONFLICT`. When the mutation returned an error, such as Linear's `FORBIDDEN`, each reconcile error keeps its own code and appends that error as text, so an auth error from the mutation cannot replace `CONFLICT`. A missing id returns the original mutation error. Wrong-team readback returns `TARGET_MISMATCH`. The writer does not replay.
    - Evidence: `go test ./internal/client`, `Test_CreateWorkflowState_reconciles_ambiguous_create_without_replay`,
      `Test_CreateWorkflowState_returns_conflict_when_reconciled_fields_differ`,
@@ -1234,18 +1225,18 @@ Success is pass/fail:
      `go test ./internal/cli`, `Test_WorkflowStateCreate_emits_conflict_without_replaying`,
      `Test_WorkflowStateUpdate_keeps_conflict_code_when_the_mutation_failed_with_an_auth_error`.
 
-228. Project pin on team administration writes
+226. Project pin on team administration writes
    - Success: a missing or mismatched pinned project stops target resolution before mutation. A valid pinned project still allows the team-owned WorkflowState or issue template write.
    - Evidence: `go test ./internal/client`, `Test_CreateWorkflowState_refuses_when_pinned_project_is_missing`,
      `Test_CreateWorkflowState_sends_caller_id_and_resolved_team`,
      `Test_CreateWorkflowState_allows_team_only_pin`.
 
-229. Attachment delete
+227. Attachment delete
    - Success: `linctl attachment delete ATTACHMENT_ID` hard deletes an issue attachment only after resolving the attachment's issue and comparing the pinned target. The command takes exactly one attachment id with no bulk form, `--force`, or confirmation prompt. A missing issue or a mismatched issue team sends no mutation. Human output states the deletion cannot be undone via linctl.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/attachment_delete`, `Test_DirectWriteCommandFlows_forward_request_variables/attachment_delete_id`;
      `go test ./internal/client`, `Test_DeleteAttachment_removes_attachment_when_target_matches`, `Test_DeleteAttachment_refuses_attachment_without_an_issue_without_mutating`, `Test_DeleteAttachment_refuses_when_issue_team_differs_without_mutating`.
 
-230. Configured close state
+228. Configured close state
    - Success: with `close = "Done"` under `[states]`, `linctl issue close ISSUE` and `linctl done` move the issue to the team's completed state named `Done` even when a completed state with a lower position exists, and a `[transitions]` allowlist still applies to that state. Without the setting, close picks the lowest-position completed state. A profile's `[profiles.NAME.states]` replaces the file-level value, and an empty overlay keeps the base. A name missing from the team, or naming a state that is not completed, fails with `ErrWriteInvalid` before any mutation.
    - Evidence: `go test ./internal/config`, `Test_Load_reads_the_close_state_from_the_repo_config`,
      `Test_Load_lets_a_profile_close_state_replace_the_file_close_state`,
@@ -1258,15 +1249,24 @@ Success is pass/fail:
      `Test_CloseIssue_applies_the_transitions_allowlist_to_the_configured_state`;
      `go test -tags=integration ./internal/client` (compile check only locally), `Test_Integration_issueClose_whenCloseStateConfigured`.
 
-231. AgentActivity create
+229. AgentActivity create
    - Success: `linctl agent-activity create AGENT_SESSION_ID --type TYPE ...` emits one typed AgentActivity only after resolving the AgentSession's issue and comparing the pinned target, and refuses an unknown type before any request.
    - Evidence: `go test ./internal/cli`, `Test_AgentActivityCreate_writes_the_created_activity`, `Test_AgentActivityCreate_refuses_an_unknown_type`;
      `go test ./internal/client`, `Test_CreateAgentActivity_emits_a_thought_into_a_pinned_session`, `Test_CreateAgentActivity_refuses_a_session_on_another_teams_issue`.
 
-232. AgentSession create
+230. AgentSession create
    - Success: `linctl agent-session create --issue ISSUE` starts an AgentSession on an Issue only after resolving the Issue and comparing the pinned team and project, and sends the resolved Issue id as the only input field.
    - Evidence: `go test ./internal/cli`, `Test_AgentSessionCreate_writes_the_created_session`, `Test_CommandFlows_print_json_for_read_and_comment_commands`;
      `go test ./internal/client`, `Test_CreateAgentSessionOnIssue_sends_the_resolved_issue_id`, `Test_CreateAgentSessionOnIssue_refuses_an_issue_outside_the_pinned_target`.
+
+231. Document writes require a pinned project
+   - Success: `linctl document create` and `linctl document update` refuse before any Linear request when `.linctl.toml` pins no `project_id`, naming `project_id` in the error. `document create` sends the pinned project as `projectId` and no team id; `document update` fails closed as Target Mismatch unless the existing document belongs to the pinned project, including a document with no project.
+   - Evidence: `go test ./internal/client`, `Test_DocumentWrites_require_a_pinned_project_before_linear_access`, `Test_CreateDocument_returns_created_document_when_target_matches`, `Test_UpdateDocument_refuses_when_project_differs`, `Test_UpdateDocument_refuses_a_document_outside_any_project`.
+
+232. Notification targets
+   - Success: `linctl notification list` and `notification get` report the issue, project, initiative, or document a notification points to as `target_type`, `target_id`, `target_name`, and `target_url`, read from Linear's public notification subtypes. A notification without a public target reports none.
+   - Evidence: `go test ./internal/client`, `Test_GetNotificationByID_reports_the_public_target_of_each_notification_type`, `Test_ClientReadCoreSearchReleaseScenarios_return_compact_lists_details_and_members`;
+     `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/notification_list`.
 
 ## Current Outcome
 

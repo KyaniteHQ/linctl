@@ -62,7 +62,7 @@ func commandFlowProjectReadPayload(operation string, fake commandFlowFakeClient)
 		return `{"project":{"id":"project-id","name":"Detail project","documents":{"nodes":[` +
 			commandDocumentJSON(
 				"Spec",
-				`"project":{"id":"project-id","name":"Pinned project"},"team":null,"issue":null,"cycle":null`,
+				`"project":{"id":"project-id","name":"Pinned project"},"issue":null`,
 			) +
 			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "project_externalLinks":
@@ -161,8 +161,6 @@ func commandFlowProjectStatusPayload(operation string) (string, bool) {
 			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "projectStatus":
 		return `{"projectStatus":` + commandProjectStatusJSON() + `}`, true
-	case "projectStatusProjectCount":
-		return `{"projectStatusProjectCount":{"count":12,"privateCount":2,"archivedTeamCount":1}}`, true
 	default:
 		return "", false
 	}
@@ -177,7 +175,7 @@ func commandFlowProjectLabelPayload(operation string, fake commandFlowFakeClient
 	case "projectLabel":
 		if fake.otherOrgProjectLabel {
 			return `{"projectLabel":{"id":"project-label-id","name":"Roadmap","description":"Project label",` +
-				`"color":"#f2c94c","isGroup":false,"lastAppliedAt":"2026-06-19T12:00:00Z","retiredAt":null,` +
+				`"color":"#f2c94c","isGroup":false,"lastAppliedAt":"2026-06-19T12:00:00Z",` +
 				`"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z",` +
 				`"organization":{"id":"other-org"},"parent":null}}`, true
 		}

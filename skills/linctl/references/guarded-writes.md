@@ -59,7 +59,7 @@ Two notes appear in the tables:
 
 | Command | Description | Notes |
 | --- | --- | --- |
-| `linctl document create` | Create a document in the pinned target | — |
+| `linctl document create` | Create a document in the pinned project | — |
 | `linctl document update` | Update a document after pinned-target comparison | — |
 
 ### initiative

@@ -1053,7 +1053,7 @@ Flags:
 
 ### linctl document create
 
-Create a document in the pinned target
+Create a document in the pinned project
 
 ```
 linctl document create [flags]
@@ -2715,14 +2715,6 @@ Flags:
       --limit int   maximum notification subscriptions to return (default 50)
 ```
 
-### linctl notification unread-count
-
-Show the number of unread notifications for the authenticated user
-
-```
-linctl notification unread-count
-```
-
 ### linctl organization
 
 Read Linear organization metadata
@@ -3450,14 +3442,6 @@ Flags:
 
 ```
       --limit int   maximum project statuses to return (default 50)
-```
-
-### linctl project-status project-count
-
-Show the project counts of one project status
-
-```
-linctl project-status project-count PROJECT_STATUS_ID
 ```
 
 ### linctl project-update

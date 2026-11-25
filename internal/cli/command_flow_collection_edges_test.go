@@ -554,9 +554,9 @@ func Test_CommandFlows_typed_search_emits_json(t *testing.T) {
 				"title":"Search spec",
 				"slug_id":"search-spec",
 				"url":"https://linear.app/kyanite/document/search-spec",
-				"parent_type":"team",
-				"parent_id":"team-id",
-				"parent_name":"linctl"
+				"parent_type":"project",
+				"parent_id":"project-id",
+				"parent_name":"Pinned project"
 			}],"total_count":1,"has_next_page":false}`,
 		},
 		{
