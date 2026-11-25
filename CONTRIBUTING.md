@@ -68,9 +68,11 @@ own with `operations`, `ledger`, `drift`, or `all`:
 LINCTL_LINEAR_SDK_UPSTREAM=/path/to/linear bash scripts/upstream-check.sh operations
 ```
 
-GitHub runs three checks outside `go tool task ci`. Dependency review runs only on a pull
-request. Coverage stays in `go tool task coverage`. The live OAuth check and the integration
-check need disposable fixture credentials.
+`ci.yml` also runs four checks outside `go tool task ci`. Dependency review runs only on a
+pull request. Coverage runs `go tool task coverage`. The release snapshot runs
+`go tool task release-snapshot`. The live OAuth check needs disposable fixture credentials and
+skips when they are absent. The nightly `integration.yml` workflow runs the integration tests
+and the live smoke with the same fixture.
 
 Run a live integration test only with a disposable OAuth app fixture:
 
@@ -189,3 +191,13 @@ Create and push the release tag only after the preflight passes:
 ```bash
 git tag -a vX.Y.Z -m "vX.Y.Z" && git push origin vX.Y.Z
 ```
+
+To roll back a bad release `vBAD` to the previous release `vGOOD`:
+
+1. Point the GitHub `latest` release back at the previous one:
+   `gh release edit vBAD --prerelease && gh release edit vGOOD --latest`.
+2. Revert the cask commit that GoReleaser pushed for `vBAD` in `KyaniteHQ/homebrew-linctl`, so
+   `brew upgrade` installs `vGOOD` again.
+3. Fix forward: add `retract vBAD` to `go.mod`, land the fix on `master`, and tag the next
+   patch version. `go install ...@latest` resolves the highest tag that is not retracted, so
+   only the retraction moves `go install` users off `vBAD`.

@@ -27,16 +27,8 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/go-setup
-      - name: Verify generated client
-        run: go tool task generated-client-check
-      - name: Verify generated command references
-        run: |
-          go run scripts/gen-skill.go
-          git diff --exit-code -- \
-            skills/linctl/references/commands.md \
-            skills/linctl/references/guarded-writes.md
-      - name: Verify GraphQL operations and coverage ledger against upstream Linear
-        run: go tool task upstream-schema-checks
+      - name: Verify generated client, command references, and upstream schema checks
+        run: go tool task generate-check
 
   test:
     name: test / ${{ matrix.os }}
@@ -58,31 +50,13 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/go-setup
       - name: Vet
-        run: go vet $(bash scripts/go-packages.sh)
+        run: go tool task vet
       - name: Test
         run: go test ${{ matrix.race }} -shuffle=on -count=1 -timeout 180s $(bash scripts/go-packages.sh)
       - name: Build
         run: go build $(bash scripts/go-packages.sh)
       - name: Smoke run
-        run: |
-          bin="./linctl-bin$(go env GOEXE)"
-          go build -o "$bin" ./cmd/linctl
-          "$bin" --version
-          "$bin" --help
-          "$bin" usage
-          "$bin" issue usage
-
-  test-windows:
-    name: test-windows
-    runs-on: windows-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - uses: ./.github/actions/go-setup
-      - name: Test Windows auth lock
-        run: go test -shuffle=on -count=1 -timeout 180s ./internal/auth
+        run: go tool task smoke-run
 
   coverage:
     name: coverage
@@ -108,9 +82,9 @@ jobs:
       - name: golangci-lint
         run: go tool task lint
       - name: Shellcheck
-        run: shellcheck scripts/*.sh
+        run: go tool task shellcheck
       - name: Domain language
-        run: bash scripts/domain-language-check.sh
+        run: go tool task domain-language-check
       - name: Actionlint
         run: go tool task actionlint
 
