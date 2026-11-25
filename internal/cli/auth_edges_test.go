@@ -482,11 +482,7 @@ func Test_AuthStatus_acquires_client_credentials_when_token_state_is_missing(t *
 }
 
 func Test_AuthStatus_reports_save_error_after_refresh_or_acquire(t *testing.T) {
-	root := t.TempDir()
-	paths := auth.Paths{
-		AppConfigPath: filepath.Join(root, "auth-app.json"),
-		TokenPath:     filepath.Join(root, "auth-token.json"),
-	}
+	paths := cliAuthTestPaths(t)
 	require.NoError(t, auth.NewStore(paths).SaveAppConfig(context.Background(), "", auth.AppConfig{
 		ClientID:     "client-id",
 		ClientSecret: "client-secret",
@@ -502,7 +498,7 @@ func Test_AuthStatus_reports_save_error_after_refresh_or_acquire(t *testing.T) {
 	restore := useAuthCommandHooks(t, paths, fakeOAuth, &fakeAuthReadinessChecker{
 		report: readyAuthReport("app"),
 		beforeReturn: func() {
-			require.NoError(t, os.Mkdir(paths.TokenPath, 0o700))
+			require.NoError(t, os.MkdirAll(paths.TokenPath, 0o700))
 		},
 	})
 	defer restore()

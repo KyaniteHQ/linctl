@@ -20,6 +20,7 @@ type linearGraphQLRoundTripper struct {
 	payloads       map[string]string
 	urls           []string
 	savedTokenSent []bool
+	authorizations []string
 }
 
 func (linear *linearGraphQLRoundTripper) RoundTrip(request *http.Request) (*http.Response, error) {
@@ -31,6 +32,7 @@ func (linear *linearGraphQLRoundTripper) RoundTrip(request *http.Request) (*http
 	}
 	linear.urls = append(linear.urls, request.URL.String())
 	linear.savedTokenSent = append(linear.savedTokenSent, request.Header.Get("Authorization") == "Bearer saved-access-token")
+	linear.authorizations = append(linear.authorizations, request.Header.Get("Authorization"))
 	response := `{"errors":[{"message":"viewer unavailable"}]}`
 	if payload, ok := linear.payloads[body.OperationName]; ok {
 		response = `{"data":` + payload + `}`

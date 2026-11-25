@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"testing"
 	"time"
 
@@ -42,7 +43,7 @@ project_id = "project-id"
 		&graphql.Request{OpName: "Viewer", Query: "query Viewer { viewer { id } }"},
 		&graphql.Response{},
 	))
-	require.Equal(t, []string{"Bearer test-token"}, linear.authorizations)
+	require.True(t, slices.Equal([]string{"Bearer test-token"}, linear.authorizations), "unexpected Authorization header")
 }
 
 func Test_CommandRuntime_reads_oauth_token_from_local_auth_state(t *testing.T) {
@@ -72,7 +73,7 @@ project_id = "project-id"
 		&graphql.Request{OpName: "Viewer", Query: "query Viewer { viewer { id } }"},
 		&graphql.Response{},
 	))
-	require.Equal(t, []string{"Bearer local-oauth-token"}, linear.authorizations)
+	require.True(t, slices.Equal([]string{"Bearer local-oauth-token"}, linear.authorizations), "unexpected Authorization header")
 }
 
 func Test_CommandRuntime_reports_auth_default_paths_error(t *testing.T) {
@@ -190,7 +191,7 @@ func Test_CommandRuntime_does_not_load_local_auth_state_for_env_token(t *testing
 		&graphql.Request{OpName: "Viewer", Query: "query Viewer { viewer { id } }"},
 		&graphql.Response{},
 	))
-	require.Equal(t, []string{"Bearer env-oauth-token"}, linear.authorizations)
+	require.True(t, slices.Equal([]string{"Bearer env-oauth-token"}, linear.authorizations), "unexpected Authorization header")
 }
 
 func Test_CommandRuntime_reports_local_auth_state_load_error_without_env_token(t *testing.T) {
