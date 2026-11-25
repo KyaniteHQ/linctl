@@ -25,7 +25,10 @@ golangci-lint and GoReleaser the same way CI does. The go command downloads that
 once if the host lacks it.
 
 `go tool task coverage` is separate from `ci`, and it enforces 100% statement coverage on
-hand-written code. Run it on its own after a change to product code.
+hand-written code. Run it on its own after a change to product code. The 100% target holds on
+Linux as a non-root user, which is how the CI `coverage` job runs. Some tests reach an error
+branch through a real file system state, such as an unreadable file or a removed working
+directory, and skip on other platforms or as root, so the total drops below 100% there.
 
 ```bash
 go tool task coverage

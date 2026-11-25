@@ -2,8 +2,6 @@ package cli
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"reflect"
 
 	"github.com/Khan/genqlient/graphql"
@@ -242,58 +240,32 @@ func writePageJSON[Page any, Item any](
 	page Page,
 	items []Item,
 ) error {
-	reflectedPage, err := pageWithItems(page, items)
-	if err != nil {
-		return err
-	}
-
-	return writeJSONValue(command, options, reflectedPage)
+	return writeJSONValue(command, options, pageWithItems(page, items))
 }
 
-func pageWithItems[Page any, Item any](page Page, items []Item) (Page, error) {
-	var zero Page
+func pageWithItems[Page any, Item any](page Page, items []Item) Page {
+	field := mustCollectionFieldForList[Page, Item]()
+	var result Page
 	pageValue := reflect.ValueOf(page)
-	if !pageValue.IsValid() {
-		return zero, errors.New("list page value is invalid")
-	}
-
 	pageType := pageValue.Type()
-	field, err := pageCollectionField(pageType)
-	if err != nil {
-		return zero, err
-	}
-	itemsValue := reflect.ValueOf(items)
-	if field.Type != itemsValue.Type() {
-		return zero, fmt.Errorf(
-			"list page %s collection field %q has type %s, not %s",
-			pageType,
-			field.Name,
-			field.Type,
-			itemsValue.Type(),
-		)
-	}
-
 	var structValue reflect.Value
 	if pageType.Kind() == reflect.Struct {
 		structValue = reflect.New(pageType).Elem()
 		structValue.Set(pageValue)
 	} else {
-		if pageValue.IsNil() {
-			return zero, fmt.Errorf("list page %s must not be nil", pageType)
-		}
 		structValue = reflect.New(pageType.Elem()).Elem()
 		structValue.Set(pageValue.Elem())
 	}
-	structValue.FieldByIndex(field.Index).Set(itemsValue)
+	structValue.FieldByIndex(field.Index).Set(reflect.ValueOf(items))
 	if pageType.Kind() == reflect.Pointer {
-		result := reflect.New(pageType.Elem())
-		result.Elem().Set(structValue)
-		reflect.ValueOf(&zero).Elem().Set(result)
-		return zero, nil
+		pointer := reflect.New(pageType.Elem())
+		pointer.Elem().Set(structValue)
+		reflect.ValueOf(&result).Elem().Set(pointer)
+		return result
 	}
 
-	reflect.ValueOf(&zero).Elem().Set(structValue)
-	return zero, nil
+	reflect.ValueOf(&result).Elem().Set(structValue)
+	return result
 }
 
 // pageItems reads the collection field that pageWithItems writes. It is the

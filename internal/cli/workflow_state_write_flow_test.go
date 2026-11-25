@@ -79,14 +79,15 @@ func Test_WorkflowStateWriteCommandFlows_cover_output_modes(t *testing.T) {
 	}
 	updateArgs := []string{"workflow-state", "update", cliWorkflowStateID, "--name", "Ready"}
 	tests := []struct {
-		name string
-		args []string
-		want string
+		name  string
+		args  []string
+		want  string
+		quiet bool
 	}{
 		{name: "create human", args: createArgs, want: cliWorkflowStateID + " Ready [unstarted]\n"},
 		{name: "create json", args: append([]string{"--json", "--compact"}, createArgs...), want: `"id":"` + cliWorkflowStateID + `"`},
 		{name: "create id-only", args: append([]string{"--id-only"}, createArgs...), want: cliWorkflowStateID + "\n"},
-		{name: "create quiet", args: append([]string{"--quiet"}, createArgs...), want: ""},
+		{name: "create quiet", args: append([]string{"--quiet"}, createArgs...), quiet: true},
 		{name: "update human", args: updateArgs, want: cliWorkflowStateID + " Ready [unstarted]\n"},
 		{
 			name: "update optional flags",
@@ -107,6 +108,10 @@ func Test_WorkflowStateWriteCommandFlows_cover_output_modes(t *testing.T) {
 			err := execute(context.Background(), BuildInfo{}, strings.NewReader(""), &stdout, &bytes.Buffer{}, test.args)
 
 			require.NoError(t, err)
+			if test.quiet {
+				require.Empty(t, stdout.String())
+				return
+			}
 			require.Contains(t, stdout.String(), test.want)
 		})
 	}

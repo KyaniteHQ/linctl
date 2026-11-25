@@ -248,20 +248,17 @@ func Test_CycleCommandFlows_get_current_sprint_full_format(t *testing.T) {
 }
 
 func Test_CycleCommandFlows_empty_format_renders_compact(t *testing.T) {
+	output := bytes.Buffer{}
 	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{})
 	defer restore()
-	run := func(format string) string {
-		output := bytes.Buffer{}
-		command := NewRootCommand(context.Background(), BuildInfo{})
-		command.SetOut(&output)
-		command.SetArgs([]string{"--format", format, "sprint", "current"})
-		require.NoError(t, command.ExecuteContext(context.Background()))
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"--format", "", "sprint", "current"})
 
-		return output.String()
-	}
+	err := command.ExecuteContext(context.Background())
 
-	require.Equal(t, run("compact"), run(""))
-	require.NotContains(t, run(""), "starts_at=")
+	require.NoError(t, err)
+	require.Equal(t, "cycle-id Cycle 12 [active]\n", output.String())
 }
 
 func Test_CycleCommandFlows_get_current_sprint_json(t *testing.T) {

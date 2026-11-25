@@ -3,6 +3,7 @@ package cli
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"io"
 	"math"
@@ -58,6 +59,18 @@ func runFilesCommand(t *testing.T, doer httpDoer, args []string) (string, error)
 	t.Helper()
 	restore := useCommandRuntimeWithFiles(t, commandFlowFakeClient{}, doer)
 	defer restore()
+	output := bytes.Buffer{}
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs(args)
+
+	err := command.ExecuteContext(context.Background())
+
+	return output.String(), err
+}
+
+func runDownloadCommand(t *testing.T, args []string) (string, error) {
+	t.Helper()
 	output := bytes.Buffer{}
 	command := NewRootCommand(context.Background(), BuildInfo{})
 	command.SetOut(&output)
@@ -190,12 +203,18 @@ func Test_Files_upload_refuses_an_unreadable_file_before_any_upload(t *testing.T
 	}
 	path := writeUploadFile(t)
 	require.NoError(t, os.Chmod(path, 0o000))
+	graphqlClient := &recordingGraphQLClient{client: commandFlowFakeClient{}}
 	doer := &fakeHTTPDoer{status: http.StatusOK}
+	restore := useCommandRuntimeWithFiles(t, graphqlClient, doer)
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetArgs([]string{"files", "upload", path})
 
-	_, err := runFilesCommand(t, doer, []string{"files", "upload", path})
+	err := command.ExecuteContext(context.Background())
 
 	require.ErrorIs(t, err, os.ErrPermission)
 	require.ErrorContains(t, err, "read "+path)
+	require.Empty(t, graphqlClient.calls)
 	require.False(t, doer.requested)
 }
 
@@ -268,12 +287,12 @@ func Test_putFileContents_reports_request_build_error(t *testing.T) {
 func Test_Files_download_writes_file(t *testing.T) {
 	out := filepath.Join(t.TempDir(), "got.txt")
 
-	output, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+	output, err := runDownloadCommand(t, []string{
 		"files", "download", serveDownload(t, downloadBody(t, "payload bytes")), "--output", out,
 	})
 
 	require.NoError(t, err)
-	require.Contains(t, output, out)
+	require.Equal(t, out+" 13 bytes\n", output)
 	data, readErr := os.ReadFile(out)
 	require.NoError(t, readErr)
 	require.Equal(t, "payload bytes", string(data))
@@ -283,13 +302,15 @@ func Test_Files_download_honors_output_flags(t *testing.T) {
 	out := filepath.Join(t.TempDir(), "got.txt")
 	url := serveDownload(t, downloadBody(t, "data"))
 
-	jsonOut, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+	jsonOut, err := runDownloadCommand(t, []string{
 		"--json", "files", "download", url, "--output", out,
 	})
 	require.NoError(t, err)
-	require.Contains(t, jsonOut, `"path"`)
+	var result map[string]any
+	require.NoError(t, json.Unmarshal([]byte(jsonOut), &result))
+	require.Equal(t, map[string]any{"path": out, "bytes": float64(4)}, result)
 
-	quiet, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+	quiet, err := runDownloadCommand(t, []string{
 		"--quiet", "files", "download", url, "--output", out,
 	})
 	require.NoError(t, err)
@@ -297,7 +318,7 @@ func Test_Files_download_honors_output_flags(t *testing.T) {
 }
 
 func Test_Files_download_requires_output(t *testing.T) {
-	_, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+	_, err := runDownloadCommand(t, []string{
 		"files", "download", "https://assets.example/file.txt",
 	})
 
@@ -305,7 +326,7 @@ func Test_Files_download_requires_output(t *testing.T) {
 }
 
 func Test_Files_download_reports_bad_url(t *testing.T) {
-	_, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+	_, err := runDownloadCommand(t, []string{
 		"files", "download", "://bad", "--output", filepath.Join(t.TempDir(), "x"),
 	})
 
@@ -317,7 +338,7 @@ func Test_Files_download_reports_http_status(t *testing.T) {
 		writer.WriteHeader(http.StatusNotFound)
 	})
 
-	_, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+	_, err := runDownloadCommand(t, []string{
 		"files", "download", url, "--output", filepath.Join(t.TempDir(), "x"),
 	})
 
@@ -329,7 +350,7 @@ func Test_Files_download_reports_transport_error(t *testing.T) {
 	url := server.URL + "/file.txt"
 	server.Close()
 
-	_, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+	_, err := runDownloadCommand(t, []string{
 		"files", "download", url, "--output", filepath.Join(t.TempDir(), "x"),
 	})
 
@@ -349,7 +370,7 @@ func Test_Files_download_stops_at_the_timeout_flag(t *testing.T) {
 		}
 	})
 
-	_, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+	_, err := runDownloadCommand(t, []string{
 		"--timeout", "50ms", "files", "download", url, "--output", out,
 	})
 
@@ -377,7 +398,7 @@ func Test_Files_download_does_not_build_command_runtime(t *testing.T) {
 	err := command.ExecuteContext(context.Background())
 
 	require.NoError(t, err)
-	require.Contains(t, output.String(), out)
+	require.Equal(t, out+" 4 bytes\n", output.String())
 	data, readErr := os.ReadFile(out)
 	require.NoError(t, readErr)
 	require.Equal(t, "data", string(data))
@@ -391,7 +412,7 @@ func Test_Files_download_reports_body_read_error(t *testing.T) {
 		}
 	})
 
-	_, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+	_, err := runDownloadCommand(t, []string{
 		"files", "download", url, "--output", filepath.Join(t.TempDir(), "x"),
 	})
 
@@ -401,7 +422,7 @@ func Test_Files_download_reports_body_read_error(t *testing.T) {
 func Test_Files_download_reports_write_error(t *testing.T) {
 	unwritable := filepath.Join(t.TempDir(), "missing-dir", "file.txt")
 
-	_, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+	_, err := runDownloadCommand(t, []string{
 		"files", "download", serveDownload(t, downloadBody(t, "data")), "--output", unwritable,
 	})
 
@@ -413,7 +434,7 @@ func Test_Files_download_to_a_directory_fails_and_leaves_no_temp_file(t *testing
 	output := filepath.Join(directory, "existing-dir")
 	require.NoError(t, os.Mkdir(output, 0o700))
 
-	_, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+	_, err := runDownloadCommand(t, []string{
 		"files", "download", serveDownload(t, downloadBody(t, "data")), "--output", output,
 	})
 
@@ -424,16 +445,36 @@ func Test_Files_download_to_a_directory_fails_and_leaves_no_temp_file(t *testing
 	require.Equal(t, "existing-dir", entries[0].Name())
 }
 
+func Test_writeFileAtomically_reports_a_failed_close_and_leaves_no_file(t *testing.T) {
+	directory := t.TempDir()
+	path := filepath.Join(directory, "out.txt")
+
+	err := writeFileAtomically(path, func(writer io.Writer) error {
+		if _, err := io.WriteString(writer, "payload"); err != nil {
+			return err
+		}
+		closer, ok := writer.(io.Closer)
+		require.True(t, ok)
+
+		return closer.Close()
+	})
+
+	require.ErrorIs(t, err, os.ErrClosed)
+	entries, readErr := os.ReadDir(directory)
+	require.NoError(t, readErr)
+	require.Empty(t, entries)
+}
+
 func Test_Files_download_without_max_size_writes_full_body(t *testing.T) {
 	out := filepath.Join(t.TempDir(), "got.bin")
 	body := strings.Repeat("x", 2048)
 
-	output, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+	output, err := runDownloadCommand(t, []string{
 		"files", "download", serveDownload(t, downloadBody(t, body)), "--output", out,
 	})
 
 	require.NoError(t, err)
-	require.Contains(t, output, out)
+	require.Equal(t, out+" 2048 bytes\n", output)
 	data, readErr := os.ReadFile(out)
 	require.NoError(t, readErr)
 	require.Equal(t, body, string(data))
@@ -444,7 +485,7 @@ func Test_Files_download_rejects_body_over_max_size_and_leaves_no_file(t *testin
 	out := filepath.Join(directory, "got.bin")
 	body := strings.Repeat("x", 2048)
 
-	_, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+	_, err := runDownloadCommand(t, []string{
 		"files", "download", serveDownload(t, downloadBody(t, body)),
 		"--output", out, "--max-size", "1KB",
 	})
@@ -463,7 +504,7 @@ func Test_Files_download_accepts_body_equal_to_max_size(t *testing.T) {
 	out := filepath.Join(t.TempDir(), "got.bin")
 	body := strings.Repeat("x", 1024)
 
-	_, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+	_, err := runDownloadCommand(t, []string{
 		"files", "download", serveDownload(t, downloadBody(t, body)),
 		"--output", out, "--max-size", "1KB",
 	})
@@ -477,7 +518,7 @@ func Test_Files_download_accepts_body_equal_to_max_size(t *testing.T) {
 func Test_Files_download_treats_the_largest_max_size_as_unbounded(t *testing.T) {
 	out := filepath.Join(t.TempDir(), "got.txt")
 
-	_, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+	_, err := runDownloadCommand(t, []string{
 		"files", "download", serveDownload(t, downloadBody(t, "data")),
 		"--output", out, "--max-size", "9223372036854775807",
 	})
@@ -494,7 +535,7 @@ func Test_Files_download_rejects_invalid_max_size_before_request(t *testing.T) {
 		t.Error("download must not be requested")
 	})
 
-	_, err := runFilesCommand(t, &fakeHTTPDoer{}, []string{
+	_, err := runDownloadCommand(t, []string{
 		"files", "download", url, "--output", out, "--max-size", "1TB",
 	})
 

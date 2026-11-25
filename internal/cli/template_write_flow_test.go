@@ -77,14 +77,15 @@ func Test_TemplateWriteCommandFlows_cover_output_modes(t *testing.T) {
 	updateArgs := []string{"template", "update", cliTemplateID, "--name", "Bug report"}
 	contentArgs := []string{"template", "content", cliTemplateID}
 	tests := []struct {
-		name string
-		args []string
-		want string
+		name  string
+		args  []string
+		want  string
+		quiet bool
 	}{
 		{name: "create human", args: createArgs, want: cliTemplateID + " Bug report [issue] team LIT\n"},
 		{name: "create json", args: append([]string{"--json", "--compact"}, createArgs...), want: `"data":{"title":"Bug"}`},
 		{name: "create id-only", args: append([]string{"--id-only"}, createArgs...), want: cliTemplateID + "\n"},
-		{name: "create quiet", args: append([]string{"--quiet"}, createArgs...), want: ""},
+		{name: "create quiet", args: append([]string{"--quiet"}, createArgs...), quiet: true},
 		{name: "update human", args: updateArgs, want: cliTemplateID + " Bug report [issue] team LIT\n"},
 		{
 			name: "update data-file",
@@ -102,6 +103,10 @@ func Test_TemplateWriteCommandFlows_cover_output_modes(t *testing.T) {
 			err := execute(context.Background(), BuildInfo{}, strings.NewReader(""), &stdout, &bytes.Buffer{}, test.args)
 
 			require.NoError(t, err)
+			if test.quiet {
+				require.Empty(t, stdout.String())
+				return
+			}
 			require.Contains(t, stdout.String(), test.want)
 		})
 	}
