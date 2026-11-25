@@ -54,6 +54,7 @@ printf '%s\n' "$sha" > "$repo_root/.linear-sdk-ref"
 printf 'pinned the Linear SDK ref to %s\n' "$sha" >&2
 
 go generate ./...
+go run scripts/linear_input_binding_check.go
 
 LINCTL_LINEAR_SDK_UPSTREAM="$upstream" LINCTL_LINEAR_SDK_OFFLINE=1 LINCTL_LINEAR_SDK_REF="$sha" \
   go run scripts/linear_api_coverage*.go --upstream "$upstream" --output docs/internal/linear-api-coverage.md

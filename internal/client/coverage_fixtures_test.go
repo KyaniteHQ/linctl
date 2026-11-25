@@ -54,15 +54,18 @@ func projectJSONWithContent(project projectFixture, content string) string {
 }
 
 func notificationJSON() string {
+	return notificationJSONWithTarget(
+		"IssueNotification",
+		`"issue":{"id":"issue-id","identifier":"LIT-1","title":"Mentioned you","url":"https://linear.app/kyanite/issue/LIT-1"}`,
+	)
+}
+
+func notificationJSONWithTarget(typename string, target string) string {
 	return `{
-		"__typename":"IssueNotification",
+		"__typename":"` + typename + `",
 		"id":"notification-id",
 		"type":"issueMention",
 		"category":"mentions",
-		"title":"Mentioned you",
-		"subtitle":"LIT-1",
-		"url":"https://linear.app/kyanite/issue/LIT-1",
-		"inboxUrl":"https://linear.app/kyanite/inbox/notification-id",
 		"createdAt":"2026-06-19T12:00:00Z",
 		"updatedAt":"2026-06-19T12:01:00Z",
 		"archivedAt":null,
@@ -72,7 +75,8 @@ func notificationJSON() string {
 		"unsnoozedAt":null,
 		"user":{"id":"user-id","displayName":"Omer"},
 		"actor":{"id":"actor-id","displayName":"Ada"},
-		"externalUserActor":{"id":"external-user-id"}
+		"externalUserActor":{"id":"external-user-id"},
+		` + target + `
 	}`
 }
 
@@ -441,7 +445,7 @@ func searchDocumentJSON() string {
 	return searchDocumentJSONWithParent(
 		"search-document-id",
 		"Search spec",
-		`"project":null,"initiative":null,"team":{"id":"team-id","key":"LIT","name":"linctl"},"issue":null,"release":null,"cycle":null`,
+		`"project":null,"initiative":null,"issue":null,"release":null`,
 	)
 }
 
@@ -684,7 +688,6 @@ func projectLabelJSON(id string, name string) string {
 		"color":"#f2c94c",
 		"isGroup":false,
 		"lastAppliedAt":"2026-06-19T12:00:00Z",
-		"retiredAt":null,
 		"archivedAt":null,
 		"createdAt":"2026-06-19T12:00:00Z",
 		"updatedAt":"2026-06-19T12:00:00Z",

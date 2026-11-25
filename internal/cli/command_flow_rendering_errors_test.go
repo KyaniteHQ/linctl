@@ -202,7 +202,6 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "project update comments", args: []string{"project-update", "comments", "project-update-id"}, operation: "projectUpdate_comments", contains: "list project update comments project-update-id"},
 		{name: "project update create", args: []string{"project-update", "create", "project-id", "--health", "on-track", "--body", "Posted update"}, operation: "ProjectUpdateCreate", contains: "create project update"},
 		{name: "project milestone all", args: []string{"project-milestone", "all"}, operation: "projectMilestones", contains: "list project milestones"},
-		{name: "project status project count", args: []string{"project-status", "project-count", "project-status-id"}, operation: "projectStatusProjectCount", contains: "get project status project count project-status-id"},
 		{name: "project milestone list", args: []string{"project-milestone", "list", "project-id"}, operation: "project_projectMilestones", contains: "list project milestones project-id"},
 		{name: "project milestone get", args: []string{"project-milestone", "get", "project-milestone-id"}, operation: "projectMilestone", contains: "get project milestone project-milestone-id"},
 		{name: "project milestone issues", args: []string{"project-milestone", "issues", "project-milestone-id"}, operation: "projectMilestone_issues", contains: "list project milestone issues project-milestone-id"},

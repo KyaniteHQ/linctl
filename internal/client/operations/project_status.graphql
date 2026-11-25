@@ -27,11 +27,3 @@ query projectStatus($id: String!) {
     ...ProjectStatusSummaryFields
   }
 }
-
-query projectStatusProjectCount($id: String!) {
-  projectStatusProjectCount(id: $id) {
-    count
-    privateCount
-    archivedTeamCount
-  }
-}

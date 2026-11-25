@@ -100,7 +100,6 @@ func GetIssueTitleSuggestionFromCustomerRequest(
 
 	return IssueTitleSuggestion{
 		Title: suggestion.IssueTitleSuggestionFromCustomerRequest.Title,
-		LogID: stringValue(suggestion.IssueTitleSuggestionFromCustomerRequest.LogId),
 	}, nil
 }
 

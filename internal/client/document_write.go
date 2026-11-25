@@ -23,7 +23,7 @@ type DocumentUpdateRequest struct {
 	Content string
 }
 
-// CreateDocument creates a document in the resolved team after target comparison.
+// CreateDocument creates a document in the pinned project after target comparison.
 func CreateDocument(
 	ctx context.Context,
 	graphqlClient graphql.Client,
@@ -32,6 +32,9 @@ func CreateDocument(
 ) (DocumentSummary, error) {
 	if request.Title == "" {
 		return DocumentSummary{}, requiredFieldError("title")
+	}
+	if err := RequireDocumentProjectPin(expected); err != nil {
+		return DocumentSummary{}, err
 	}
 
 	guard, err := newGuardedClient(ctx, graphqlClient, expected)
@@ -47,12 +50,9 @@ func (guard *guardedClient) createDocument(
 	request DocumentCreateRequest,
 ) (DocumentSummary, error) {
 	input := LinearDocumentCreateInput{
-		Title:   request.Title,
-		Content: optionalString(request.Content),
-		TeamID:  stringPtr(guard.target.Team.ID),
-	}
-	if guard.target.Project != nil {
-		input.ProjectID = stringPtr(guard.target.Project.ID)
+		Title:     request.Title,
+		Content:   optionalString(request.Content),
+		ProjectID: stringPtr(guard.target.Project.ID),
 	}
 	created, err := gql.DocumentCreate(ctx, guard.graphqlClient, input)
 	if err != nil {
@@ -78,6 +78,9 @@ func UpdateDocument(
 	if request.Title == "" && request.Content == "" {
 		return DocumentSummary{}, requiredFieldError("title or content")
 	}
+	if err := RequireDocumentProjectPin(expected); err != nil {
+		return DocumentSummary{}, err
+	}
 
 	guard, err := newGuardedClient(ctx, graphqlClient, expected)
 	if err != nil {
@@ -91,7 +94,7 @@ func (guard *guardedClient) updateDocument(
 	ctx context.Context,
 	request DocumentUpdateRequest,
 ) (DocumentSummary, error) {
-	if err := guard.requireDocumentTarget(ctx, request.ID); err != nil {
+	if err := guard.requireDocumentInPinnedProject(ctx, request.ID); err != nil {
 		return DocumentSummary{}, err
 	}
 
@@ -109,9 +112,21 @@ func (guard *guardedClient) updateDocument(
 	return documentSummary(updated.DocumentUpdate.Document.DocumentSummaryFields), nil
 }
 
-// guardDocumentTarget fails closed unless the document belongs to the pinned team
-// (and pinned project when configured), mirroring the resource-scoped issue guard.
-func (guard *guardedClient) requireDocumentTarget(
+// RequireDocumentProjectPin refuses document writes without a pinned project:
+// Linear's public schema exposes no team on a document, so the pinned project
+// is the only parent the guard can prove.
+func RequireDocumentProjectPin(expected config.Target) error {
+	if expected.ProjectID == "" {
+		return fmt.Errorf(
+			"%w: document writes require a pinned project (set project_id in the config or pass --project)",
+			ErrWriteInvalid,
+		)
+	}
+
+	return nil
+}
+
+func (guard *guardedClient) requireDocumentInPinnedProject(
 	ctx context.Context,
 	documentID string,
 ) error {
@@ -119,23 +134,9 @@ func (guard *guardedClient) requireDocumentTarget(
 	if err != nil {
 		return fmt.Errorf("get document %s: %w", documentID, err)
 	}
-	fields := result.Document.DocumentSummaryFields
-	if fields.Team == nil || fields.Team.Id != guard.target.Team.ID || fields.Team.Key != guard.target.Team.Key {
-		return fmt.Errorf(
-			"%w: expected team_id=%s team_key=%s",
-			ErrTargetMismatch,
-			guard.target.Team.ID,
-			guard.target.Team.Key,
-		)
-	}
-	if guard.target.Project != nil {
-		if fields.Project == nil || fields.Project.Id != guard.target.Project.ID {
-			return fmt.Errorf(
-				"%w: expected project_id=%s",
-				ErrTargetMismatch,
-				guard.target.Project.ID,
-			)
-		}
+	project := result.Document.Project
+	if project == nil || project.Id != guard.target.Project.ID {
+		return fmt.Errorf("%w: expected project_id=%s", ErrTargetMismatch, guard.target.Project.ID)
 	}
 
 	return nil

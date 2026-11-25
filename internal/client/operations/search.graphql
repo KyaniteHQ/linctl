@@ -68,11 +68,6 @@ fragment SearchDocumentSummaryFields on DocumentSearchResult {
     id
     name
   }
-  team {
-    id
-    key
-    name
-  }
   issue {
     id
     identifier
@@ -80,11 +75,6 @@ fragment SearchDocumentSummaryFields on DocumentSearchResult {
   }
   release {
     id
-    name
-  }
-  cycle {
-    id
-    number
     name
   }
 }

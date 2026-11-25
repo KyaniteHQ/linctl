@@ -1,12 +1,12 @@
 package cli
 
 import (
+	"cmp"
 	"context"
 
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addNotificationCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -26,25 +26,6 @@ func addNotificationCommand(ctx context.Context, root *cobra.Command, options *r
 			WriteItem: writeNotification,
 		},
 	)
-	addCommandWithSafety(parentCommand, CommandSafetyRead, &cobra.Command{
-		Use:   "unread-count",
-		Short: "Show the number of unread notifications for the authenticated user",
-		Long: "Print the authenticated user's unread notification count. " +
-			"For polling, test the value explicitly, for example: test \"$(linctl notification unread-count)\" -gt 0.",
-		Args: cobra.NoArgs,
-		RunE: func(command *cobra.Command, _ []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			count, err := client.GetNotificationsUnreadCount(ctx, runtime.graphqlClient)
-			if err != nil {
-				return err
-			}
-
-			return writeNotificationUnreadCount(command, options, count)
-		},
-	})
 	addNotificationMarkReadCommand(ctx, parentCommand, options)
 	addNotificationArchiveCommand(ctx, parentCommand, options)
 
@@ -64,18 +45,6 @@ func addNotificationCommand(ctx context.Context, root *cobra.Command, options *r
 			WriteItem: writeNotificationSubscription,
 		},
 	)
-}
-
-type notificationUnreadCountOutput struct {
-	UnreadCount int `json:"unread_count"`
-}
-
-func writeNotificationUnreadCount(command *cobra.Command, options *rootOptions, count int) error {
-	output := notificationUnreadCountOutput{UnreadCount: count}
-	return writeItemNoID(command, options, output,
-		func(command *cobra.Command, _ *rootOptions, output notificationUnreadCountOutput) error {
-			return render.WriteLine(command.OutOrStdout(), "%d", output.UnreadCount)
-		})
 }
 
 func addNotificationMarkReadCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -109,7 +78,8 @@ func addNotificationArchiveCommand(ctx context.Context, root *cobra.Command, opt
 func writeNotification(command *cobra.Command, options *rootOptions, notification client.NotificationSummary) error {
 	return writeItemLine(
 		command, options, notification, notification.ID,
-		"%s %s [%s] %s", notification.ID, notification.Type, notification.Category, notification.Title,
+		"%s %s [%s] %s %s", notification.ID, notification.Type, notification.Category,
+		emptyDash(notification.TargetType), emptyDash(cmp.Or(notification.TargetName, notification.TargetID)),
 	)
 }
 

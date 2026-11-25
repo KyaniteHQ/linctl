@@ -169,11 +169,6 @@ func searchDocumentSummary(fields gql.SearchDocumentSummaryFields) SearchDocumen
 		summary.ParentID = fields.Initiative.Id
 		summary.ParentName = fields.Initiative.Name
 	}
-	if fields.Team != nil {
-		summary.ParentType = "team"
-		summary.ParentID = fields.Team.Id
-		summary.ParentName = fields.Team.Name
-	}
 	if fields.Issue != nil {
 		summary.ParentType = "issue"
 		summary.ParentID = fields.Issue.Id
@@ -183,14 +178,6 @@ func searchDocumentSummary(fields gql.SearchDocumentSummaryFields) SearchDocumen
 		summary.ParentType = "release"
 		summary.ParentID = fields.Release.Id
 		summary.ParentName = fields.Release.Name
-	}
-	if fields.Cycle != nil {
-		summary.ParentType = "cycle"
-		summary.ParentID = fields.Cycle.Id
-		summary.ParentName = fmt.Sprintf("Cycle %.0f", fields.Cycle.Number)
-		if fields.Cycle.Name != nil && *fields.Cycle.Name != "" {
-			summary.ParentName = *fields.Cycle.Name
-		}
 	}
 
 	return summary

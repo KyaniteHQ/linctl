@@ -650,10 +650,6 @@ func XNotifications(ctx_ context.Context, client_ graphql.Client, first *int, af
 
 type XNotificationsNotificationsNotificationConnectionNodesNotification = notificationsNotificationsNotificationConnectionNodesNotification
 
-func XNotificationsUnreadCount(ctx_ context.Context, client_ graphql.Client) (data_ *notificationsUnreadCountResponse, err_ error) {
-	return notificationsUnreadCount(ctx_, client_)
-}
-
 func XOrganizationExists(ctx_ context.Context, client_ graphql.Client, urlKey string) (data_ *organizationExistsResponse, err_ error) {
 	return organizationExists(ctx_, client_, urlKey)
 }
@@ -746,10 +742,6 @@ type XProjectRelationsProjectRelationsProjectRelationConnectionNodesProjectRelat
 
 func XProjectStatus(ctx_ context.Context, client_ graphql.Client, id string) (data_ *projectStatusResponse, err_ error) {
 	return projectStatus(ctx_, client_, id)
-}
-
-func XProjectStatusProjectCount(ctx_ context.Context, client_ graphql.Client, id string) (data_ *projectStatusProjectCountResponse, err_ error) {
-	return projectStatusProjectCount(ctx_, client_, id)
 }
 
 func XProjectStatuses(ctx_ context.Context, client_ graphql.Client, first *int, after *string, includeArchived *bool) (data_ *projectStatusesResponse, err_ error) {

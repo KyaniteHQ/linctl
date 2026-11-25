@@ -95,6 +95,12 @@ tasks:
           exit 1
         fi
         git diff --exit-code -- "${generated[@]}"
+      - task: input-binding-check
+
+  input-binding-check:
+    desc: Verify the Go structs bound to Linear input types send only fields the vendored schema defines
+    cmds:
+      - go run scripts/linear_input_binding_check.go
 
   generate-check:
     desc: Regenerate the GraphQL client and command reference and verify they are committed

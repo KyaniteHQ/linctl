@@ -14,10 +14,6 @@ type NotificationSummary struct {
 	ID                  string `json:"id"`
 	Type                string `json:"type"`
 	Category            string `json:"category"`
-	Title               string `json:"title"`
-	Subtitle            string `json:"subtitle"`
-	URL                 string `json:"url"`
-	InboxURL            string `json:"inbox_url"`
 	CreatedAt           string `json:"created_at"`
 	UpdatedAt           string `json:"updated_at"`
 	ArchivedAt          string `json:"archived_at,omitempty"`
@@ -30,6 +26,10 @@ type NotificationSummary struct {
 	ActorID             string `json:"actor_id,omitempty"`
 	ActorDisplayName    string `json:"actor_display_name,omitempty"`
 	ExternalUserActorID string `json:"external_user_actor_id,omitempty"`
+	TargetType          string `json:"target_type,omitempty"`
+	TargetID            string `json:"target_id,omitempty"`
+	TargetName          string `json:"target_name,omitempty"`
+	TargetURL           string `json:"target_url,omitempty"`
 }
 
 // NotificationList is a page of Linear notifications.
@@ -99,16 +99,6 @@ func GetNotificationByID(ctx context.Context, graphqlClient graphql.Client, id s
 	}
 
 	return notificationSummary(result.Notification), nil
-}
-
-// GetNotificationsUnreadCount returns the authenticated user's unread notification count.
-func GetNotificationsUnreadCount(ctx context.Context, graphqlClient graphql.Client) (int, error) {
-	result, err := gql.XNotificationsUnreadCount(ctx, graphqlClient)
-	if err != nil {
-		return 0, fmt.Errorf("get notifications unread count: %w", err)
-	}
-
-	return result.NotificationsUnreadCount, nil
 }
 
 // ListNotificationSubscriptions returns the authenticated user's notification subscriptions.
@@ -191,10 +181,6 @@ func notificationSummary(fields gql.NotificationSummaryFields) NotificationSumma
 		ID:              fields.GetId(),
 		Type:            fields.GetType(),
 		Category:        string(fields.GetCategory()),
-		Title:           fields.GetTitle(),
-		Subtitle:        fields.GetSubtitle(),
-		URL:             fields.GetUrl(),
-		InboxURL:        fields.GetInboxUrl(),
 		CreatedAt:       fields.GetCreatedAt(),
 		UpdatedAt:       fields.GetUpdatedAt(),
 		ArchivedAt:      stringValue(fields.GetArchivedAt()),
@@ -212,8 +198,42 @@ func notificationSummary(fields gql.NotificationSummaryFields) NotificationSumma
 	if actor := fields.GetExternalUserActor(); actor != nil {
 		summary.ExternalUserActorID = actor.Id
 	}
+	setNotificationTarget(&summary, fields)
 
 	return summary
+}
+
+func setNotificationTarget(summary *NotificationSummary, fields gql.NotificationSummaryFields) {
+	switch notification := fields.(type) {
+	case interface {
+		GetIssue() gql.NotificationSummaryFieldsIssue
+	}:
+		issue := notification.GetIssue()
+		summary.TargetType = "issue"
+		summary.TargetID = issue.Id
+		summary.TargetName = issue.Identifier + " " + issue.Title
+		summary.TargetURL = issue.Url
+	case interface {
+		GetProject() gql.NotificationSummaryFieldsProject
+	}:
+		project := notification.GetProject()
+		summary.TargetType = "project"
+		summary.TargetID = project.Id
+		summary.TargetName = project.Name
+		summary.TargetURL = project.Url
+	case interface {
+		GetInitiative() *gql.NotificationSummaryFieldsInitiative
+	}:
+		if initiative := notification.GetInitiative(); initiative != nil {
+			summary.TargetType = "initiative"
+			summary.TargetID = initiative.Id
+			summary.TargetName = initiative.Name
+			summary.TargetURL = initiative.Url
+		}
+	case interface{ GetDocumentId() string }:
+		summary.TargetType = "document"
+		summary.TargetID = notification.GetDocumentId()
+	}
 }
 
 func notificationSubscriptionSummary(fields gql.NotificationSubscriptionSummaryFields) NotificationSubscriptionSummary {

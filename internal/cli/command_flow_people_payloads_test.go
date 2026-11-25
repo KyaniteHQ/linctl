@@ -52,24 +52,22 @@ func commandFlowPeopleAndReferencePayload(operation string, fake commandFlowFake
 	case "Documents":
 		return `{"documents":{"nodes":[` + commandDocumentJSON(
 			"Spec",
-			`"project":{"id":"project-id","name":"Pinned project"},"team":null,"issue":null,"cycle":null`,
+			`"project":{"id":"project-id","name":"Pinned project"},"issue":null`,
 		) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "document":
 		return `{"document":` + commandDocumentJSON(
-			"Team note",
-			`"project":{"id":"project-id","name":"Pinned project"},`+
-				`"team":{"id":"team-id","key":"LIT","name":"linctl"},"issue":null,"cycle":null,`+
-				`"content":"# Team note\n\nBody line."`,
+			"Project note",
+			`"project":{"id":"project-id","name":"Pinned project"},"issue":null,"content":"# Project note\n\nBody line."`,
 		) + `}`, true
 	case "DocumentCreate":
 		return `{"documentCreate":{"success":true,"document":` + commandDocumentJSON(
 			"Created doc",
-			`"project":null,"team":{"id":"team-id","key":"LIT","name":"linctl"},"issue":null,"cycle":null`,
+			`"project":{"id":"project-id","name":"Pinned project"},"issue":null`,
 		) + `}}`, true
 	case "DocumentUpdate":
 		return `{"documentUpdate":{"success":true,"document":` + commandDocumentJSON(
 			"Updated doc",
-			`"project":null,"team":{"id":"team-id","key":"LIT","name":"linctl"},"issue":null,"cycle":null`,
+			`"project":{"id":"project-id","name":"Pinned project"},"issue":null`,
 		) + `}}`, true
 	case "ProjectUpdateCreate":
 		return `{"projectUpdateCreate":{"success":true,"projectUpdate":` + commandProjectUpdateJSON() + `}}`, true

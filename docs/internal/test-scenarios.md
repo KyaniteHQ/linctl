@@ -920,11 +920,6 @@ Success is pass/fail:
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_status_get`;
      `go test ./internal/client`, `Test_ClientReadIssueAndProjectScenarios_return_compact_lists_details_and_members`.
 
-168. ProjectStatus project count
-   - Success: `linctl project-status project-count PROJECT_STATUS_ID` reads project counts for one ProjectStatus without exposing project records.
-   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_status_project_count`;
-     `go test ./internal/client`, `Test_ClientReadIssueAndProjectScenarios_return_compact_lists_details_and_members`.
-
 169. ProjectLabel list
    - Success: `linctl project-label list --limit N` lists visible ProjectLabels through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_label_list`;
@@ -1143,10 +1138,6 @@ Success is pass/fail:
    - Success: `initiative-label retire`/`restore` are Org-Scoped Writes; InitiativeLabel has no team scope, so `--org-wide` is required and every command refuses to run without it, naming the flag in the error. Both commands resolve the existing InitiativeLabel through `requireInitiativeLabel` and compare its organization, failing closed as Target Mismatch when the resolved label belongs to a different organization. A pinned `project_id` does not block these writes. No command exposes `--force` or `--confirm`.
    - Evidence: `go test ./internal/client`, `Test_RetireInitiativeLabel_refuses_without_org_wide`, `Test_RetireInitiativeLabel_refuses_when_organization_differs`, `Test_RetireInitiativeLabel_retires_label_when_organization_matches`, `Test_RestoreInitiativeLabel_refuses_without_org_wide`, `Test_RestoreInitiativeLabel_refuses_when_organization_differs`; `go test ./internal/cli`, `Test_InitiativeLabelFamilyCommands_require_org_wide`, `Test_InitiativeLabelRetire_emits_stable_target_mismatch_output`, `Test_InitiativeLabelFamilyCommands_have_no_bypass_flags`.
 
-216. Notification unread count
-   - Success: `linctl notification unread-count` prints the authenticated user's unread notification count as a bare integer, supports `--json` and `--quiet`, and returns operation failures without changing exit-code semantics.
-   - Evidence: `go test ./internal/client ./internal/cli`, `Test_GetNotificationsUnreadCount_returns_fake_response`, `Test_GetNotificationsUnreadCount_wraps_operation_errors`, `Test_NotificationUnreadCount_command_outputs_supported_modes`, `Test_NotificationUnreadCount_command_returns_operation_errors`, `Test_NotificationUnreadCount_command_returns_runtime_errors`.
-
 217. Project export
    - Success: `linctl project export PROJECT_ID DIR` writes a local markdown file with the project content body and attachment URLs. Compact `project get --json` still omits `content`.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_project_export_writes_document`, `Test_CommandFlows_project_export_honors_output_flags`, `Test_CommandFlows_project_export_notes_truncation`;
@@ -1267,6 +1258,16 @@ Success is pass/fail:
    - Success: `linctl agent-session create --issue ISSUE` starts an AgentSession on an Issue only after resolving the Issue and comparing the pinned team and project, and sends the resolved Issue id as the only input field.
    - Evidence: `go test ./internal/cli`, `Test_AgentSessionCreate_writes_the_created_session`, `Test_CommandFlows_print_json_for_read_and_comment_commands`;
      `go test ./internal/client`, `Test_CreateAgentSessionOnIssue_sends_the_resolved_issue_id`, `Test_CreateAgentSessionOnIssue_refuses_an_issue_outside_the_pinned_target`.
+
+233. Document writes require a pinned project
+   - Success: `linctl document create` and `linctl document update` refuse before reading `--content` input and before any Linear request when the effective pinned target (config file, profile, or `--project`) has no project id, naming `project_id` in the error. `document create` sends the pinned project as `projectId` and no team id. `document update` reads and updates the requested document id, and fails closed as Target Mismatch without updating unless that document belongs to the pinned project, including a document with no project.
+   - Evidence: `go test ./internal/cli`, `Test_DocumentWrites_refuse_without_a_pinned_project_before_reading_content`;
+     `go test ./internal/client`, `Test_DocumentWrites_require_a_pinned_project_before_linear_access`, `Test_CreateDocument_returns_created_document_when_target_matches`, `Test_UpdateDocument_checks_and_updates_the_requested_document`, `Test_UpdateDocument_refuses_when_project_differs`, `Test_UpdateDocument_refuses_a_document_outside_any_project`.
+
+234. Notification targets
+   - Success: `linctl notification list`, `notification get`, `notification mark-read`, and `notification archive` report what a notification points to, read from Linear's public notification subtypes. Issue, project, and initiative notifications report `target_type`, `target_id`, `target_name`, and `target_url`. A document notification reports `target_type` and `target_id` only. A notification without a public target reports none. The human line prints the target type and its name, or its id when it has no name.
+   - Evidence: `go test ./internal/client`, `Test_GetNotificationByID_reports_the_public_target_of_each_notification_type`, `Test_MarkNotificationRead_sets_readAt_when_viewer_matches`, `Test_ArchiveNotification_returns_summary_when_viewer_matches`;
+     `go test ./internal/cli`, `Test_CommandFlows_notification_ack_writes_report_the_target`, `Test_CliRenderHelpers_write_text_output`.
 
 ## Current Outcome
 

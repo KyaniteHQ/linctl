@@ -62,7 +62,6 @@ type IssueFilterSuggestion struct {
 // IssueTitleSuggestion is an AI-generated issue title suggestion.
 type IssueTitleSuggestion struct {
 	Title string `json:"title"`
-	LogID string `json:"log_id,omitempty"`
 }
 
 // IssueHistorySummary is compact issue history metadata without raw change payloads.

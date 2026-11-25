@@ -290,7 +290,6 @@ func machineOutputCases() []machineOutputCase {
 		ID:       "notification-id",
 		Type:     "issueMention",
 		Category: "mentions",
-		Title:    "Mentioned you",
 	}
 	notificationSubscription := client.NotificationSubscriptionSummary{
 		ID:         "notification-subscription-id",
@@ -915,7 +914,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 		require.NoError(t, writeIssueTitleSuggestion(
 			quietCommand,
 			&rootOptions{quiet: true},
-			client.IssueTitleSuggestion{Title: "Improve exports", LogID: "log-id"},
+			client.IssueTitleSuggestion{Title: "Improve exports"},
 		))
 		require.NoError(t, writeAuditEntryTypes(
 			quietCommand,

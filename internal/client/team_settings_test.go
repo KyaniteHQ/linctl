@@ -26,14 +26,13 @@ func Test_UpdateTeamSettings_sends_every_setting_it_was_given(t *testing.T) {
 	recorder := &recordingGraphQLClient{inner: projectWriteFakeClient(teamSettingsPayloads())}
 
 	team, err := UpdateTeamSettings(context.Background(), recorder, matchingTarget(), TeamSettingsRequest{
-		ID: "ops-team-id", Triage: boolPtr(true), DefaultStateID: "triage-state", Inherit: boolPtr(false),
-		OrgWide: true,
+		ID: "ops-team-id", Triage: boolPtr(true), DefaultStateID: "triage-state", OrgWide: true,
 	})
 
 	require.NoError(t, err)
 	require.Equal(t, "ops-team-id", team.ID)
 	require.JSONEq(t, `{"id": "ops-team-id", "input": {
-		"triageEnabled": true, "defaultIssueStateId": "triage-state", "inheritWorkflowStatuses": false
+		"triageEnabled": true, "defaultIssueStateId": "triage-state"
 	}}`, string(recorder.variablesFor(t, "TeamSettingsUpdate")))
 }
 

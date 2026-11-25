@@ -1,6 +1,6 @@
 # Linear API coverage ledger
 
-Generated from current local sources and upstream Linear SDK commit `9ba7b29`.
+Generated from current local sources and upstream Linear SDK commit `2440c73`.
 
 Sources (paths relative to the upstream Linear SDK checkout):
 
@@ -16,11 +16,11 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 
 | Surface | Total | Covered/exposed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods with generated local operations | 481 | 165 | 481 |
-| Upstream Query root fields used by generated local operations | 183 | 115 | 183 |
-| Upstream Mutation root fields used by generated local operations | 391 | 52 | 391 |
-| Local generated Go operations declared in GraphQL files | 320 | 320 | 320 |
-| Public CLI commands from command inventory | 444 | 335 | 444 |
+| Upstream SDK root methods with generated local operations | 491 | 165 | 491 |
+| Upstream Query root fields used by generated local operations | 160 | 113 | 160 |
+| Upstream Mutation root fields used by generated local operations | 339 | 52 | 339 |
+| Local generated Go operations declared in GraphQL files | 318 | 318 | 318 |
+| Domain-map command entries, planned and blocked included (Covered/exposed: implemented) | 438 | 333 | 438 |
 
 ## Upstream SDK Root Methods
 
@@ -67,6 +67,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `attachmentLinkSlack` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `attachmentLinkURL` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `attachmentLinkZendesk` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `attachmentSources` | method | safe_candidate | read operation may fit future CLI coverage |
 | `attachmentSyncToSlack` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `attachments` | method | generated_operation | local GraphQL operation uses this root |
 | `attachmentsForURL` | method | generated_operation | local GraphQL operation uses this root |
@@ -169,6 +170,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `deleteEmoji` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteEntityExternalLink` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteFavorite` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
+| `deleteFileUploadDangerously` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteGitAutomationState` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteGitAutomationTargetBranch` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteInitiative` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
@@ -212,6 +214,10 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `dependencyPackageMetadata` | method | safe_candidate | read operation may fit future CLI coverage |
 | `document` | method | generated_operation | local GraphQL operation uses this root |
 | `documentContentHistory` | method | blocked_needs_design | content, thread, and archive payload reads can expose body/blob data; needs explicit opt-in projection before CLI exposure |
+| `documentShare` | method | blocked_needs_design | document sharing changes access state and needs target-pinned guard semantics |
+| `documentUnshare` | method | blocked_needs_design | document unsharing changes access state and needs target-pinned guard semantics |
+| `documentUpdateGeneralAccess` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `documentUpdateWorkspaceAccess` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `documents` | method | generated_operation | local GraphQL operation uses this root |
 | `emailIntakeAddress` | method | intentionally_excluded | email intake administration sits outside the ordinary agent CLI read surface |
 | `emailIntakeAddressRefreshSesDomainStatus` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -324,6 +330,9 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `issueUnsubscribe` | method | blocked_needs_design | issue unsubscribe changes notification state and needs target-pinned guard semantics |
 | `issueVcsBranchSearch` | method | generated_operation | local GraphQL operation uses this root |
 | `issues` | method | generated_operation | local GraphQL operation uses this root |
+| `jiraProject` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `jiraProjectBatchMigrate` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `jiraProjects` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `latestReleaseByAccessKey` | getter | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the auth-scoped agent CLI |
 | `logout` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `logoutAllSessions` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -355,6 +364,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `projectLabelRetire` | method | generated_operation | local GraphQL operation uses this root |
 | `projectLabels` | method | generated_operation | local GraphQL operation uses this root |
 | `projectMilestone` | method | generated_operation | local GraphQL operation uses this root |
+| `projectMilestoneMove` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectMilestones` | method | generated_operation | local GraphQL operation uses this root |
 | `projectRelation` | method | generated_operation | local GraphQL operation uses this root |
 | `projectRelations` | method | generated_operation | local GraphQL operation uses this root |
@@ -517,14 +527,11 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `agentActivities` | `AgentActivityConnection!` | generated_operation | root field used by local GraphQL operation |
 | `agentActivity` | `AgentActivity!` | generated_operation | root field used by local GraphQL operation |
 | `agentSession` | `AgentSession!` | generated_operation | root field used by local GraphQL operation |
-| `agentSessionSandbox` | `CodingAgentSandboxPayload` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `agentSessionSshAddress` | `String` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSessions` | `AgentSessionConnection!` | generated_operation | root field used by local GraphQL operation |
 | `agentSkill` | `AgentSkill!` | generated_operation | root field used by local GraphQL operation |
 | `agentSkills` | `AgentSkillConnection!` | generated_operation | root field used by local GraphQL operation |
 | `applicationInfo` | `Application!` | generated_operation | root field used by local GraphQL operation |
 | `archivedIntegrations` | `[ArchivedIntegrationPayload!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `archivedTeams` | `[Team!]!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `attachment` | `Attachment!` | generated_operation | root field used by local GraphQL operation |
 | `attachmentIssue` | `Issue!` | generated_operation | root field used by local GraphQL operation |
 | `attachmentSources` | `AttachmentSourcesPayload!` | safe_candidate | read operation may fit future CLI coverage |
@@ -532,13 +539,11 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `attachmentsForURL` | `AttachmentConnection!` | generated_operation | root field used by local GraphQL operation |
 | `auditEntries` | `AuditEntryConnection!` | blocked_needs_design | audit logs can expose actor, IP, country, and request metadata; needs explicit admin/security output model |
 | `auditEntryTypes` | `[AuditEntryType!]!` | generated_operation | root field used by local GraphQL operation |
-| `auditLogWebhookFailureEvents` | `[WebhookFailureEvent!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `authenticationSessions` | `[AuthenticationSessionResponse!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `availableUsers` | `AuthResolverResponse!` | intentionally_excluded | available-user picker enumeration is a specialized product resolver; `user list` is the supported user read surface |
 | `comment` | `Comment!` | generated_operation | root field used by local GraphQL operation |
 | `comments` | `CommentConnection!` | generated_operation | root field used by local GraphQL operation |
 | `customView` | `CustomView!` | generated_operation | root field used by local GraphQL operation |
-| `customViewDetailsSuggestion` | `CustomViewSuggestionPayload!` | safe_candidate | read operation may fit future CLI coverage |
 | `customViewHasSubscribers` | `CustomViewHasSubscribersPayload!` | generated_operation | root field used by local GraphQL operation |
 | `customViews` | `CustomViewConnection!` | generated_operation | root field used by local GraphQL operation |
 | `customer` | `Customer!` | generated_operation | root field used by local GraphQL operation |
@@ -552,11 +557,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `cycle` | `Cycle!` | generated_operation | root field used by local GraphQL operation |
 | `cycles` | `CycleConnection!` | generated_operation | root field used by local GraphQL operation |
 | `dependencyPackageMetadata` | `[DependencyPackageMetadataResult!]!` | safe_candidate | read operation may fit future CLI coverage |
-| `diff` | `Diff!` | safe_candidate | read operation may fit future CLI coverage |
 | `document` | `Document!` | generated_operation | root field used by local GraphQL operation |
 | `documentContentHistory` | `DocumentContentHistoryPayload!` | blocked_needs_design | content, thread, and archive payload reads can expose body/blob data; needs explicit opt-in projection before CLI exposure |
-| `documentContentHistoryEntries` | `DocumentContentHistoryPayload!` | blocked_needs_design | content, thread, and archive payload reads can expose body/blob data; needs explicit opt-in projection before CLI exposure |
-| `documentContentHistoryTimeline` | `DocumentContentHistoryTimelinePayload!` | blocked_needs_design | content, thread, and archive payload reads can expose body/blob data; needs explicit opt-in projection before CLI exposure |
 | `documents` | `DocumentConnection!` | generated_operation | root field used by local GraphQL operation |
 | `emailIntakeAddress` | `EmailIntakeAddress!` | intentionally_excluded | email intake administration sits outside the ordinary agent CLI read surface |
 | `emailIntakeAddresses` | `EmailIntakeAddressConnection!` | intentionally_excluded | email intake administration sits outside the ordinary agent CLI read surface |
@@ -565,7 +567,6 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `entityExternalLink` | `EntityExternalLink!` | generated_operation | root field used by local GraphQL operation |
 | `externalUser` | `ExternalUser!` | generated_operation | root field used by local GraphQL operation |
 | `externalUsers` | `ExternalUserConnection!` | generated_operation | root field used by local GraphQL operation |
-| `failuresForOauthWebhooks` | `[WebhookFailureEvent!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `favorite` | `Favorite!` | generated_operation | root field used by local GraphQL operation |
 | `favorites` | `FavoriteConnection!` | generated_operation | root field used by local GraphQL operation |
 | `inboxNotifications` | `NotificationConnection!` | safe_candidate | read operation may fit future CLI coverage |
@@ -573,7 +574,6 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `initiativeFilterSuggestion` | `InitiativeFilterSuggestionPayload!` | safe_candidate | read operation may fit future CLI coverage |
 | `initiativeLabel` | `InitiativeLabel!` | generated_operation | root field used by local GraphQL operation |
 | `initiativeLabels` | `InitiativeLabelConnection!` | generated_operation | root field used by local GraphQL operation |
-| `initiativeLeadTeamChangeImpact` | `InitiativeLeadTeamChangeImpact!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `initiativeRelation` | `InitiativeRelation!` | generated_operation | root field used by local GraphQL operation |
 | `initiativeRelations` | `InitiativeRelationConnection!` | generated_operation | root field used by local GraphQL operation |
 | `initiativeToProject` | `InitiativeToProject!` | generated_operation | root field used by local GraphQL operation |
@@ -583,9 +583,6 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `initiatives` | `InitiativeConnection!` | generated_operation | root field used by local GraphQL operation |
 | `integration` | `Integration!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationHasScopes` | `IntegrationHasScopesPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `integrationJiraProjectStatuses` | `JiraProjectStatusesPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `integrationJiraSyncHealthCheck` | `JiraSyncHealthCheckPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `integrationSyncResourceIds` | `[String!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationTemplate` | `IntegrationTemplate!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationTemplates` | `IntegrationTemplateConnection!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrations` | `IntegrationConnection!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -608,30 +605,21 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `issueToReleases` | `IssueToReleaseConnection!` | generated_operation | root field used by local GraphQL operation |
 | `issueVcsBranchSearch` | `Issue` | generated_operation | root field used by local GraphQL operation |
 | `issues` | `IssueConnection!` | generated_operation | root field used by local GraphQL operation |
+| `jiraProject` | `JiraProject!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `jiraProjects` | `JiraProjectConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `latestReleaseByAccessKey` | `AccessKeyRelease` | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the auth-scoped agent CLI |
-| `microsoftTeamsChannels` | `MicrosoftTeamsChannelsPayload!` | intentionally_excluded | Microsoft Teams channel enumeration exposes chat integration metadata outside the default Linear work CLI surface |
 | `notification` | `Notification!` | generated_operation | root field used by local GraphQL operation |
 | `notificationSubscription` | `NotificationSubscription!` | generated_operation | root field used by local GraphQL operation |
 | `notificationSubscriptions` | `NotificationSubscriptionConnection!` | generated_operation | root field used by local GraphQL operation |
 | `notifications` | `NotificationConnection!` | generated_operation | root field used by local GraphQL operation |
-| `notificationsUnreadCount` | `Int!` | generated_operation | root field used by local GraphQL operation |
 | `oauthApplication` | `OAuthApplication!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `oauthApplicationCodingSessionTrustedSource` | `OAuthApplicationCodingSessionTrustedSource!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `oauthApplications` | `[OAuthApplication!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `organization` | `Organization!` | generated_operation | root field used by local GraphQL operation |
-| `organizationCodingInferenceKeys` | `[CodingInferenceKey!]!` | intentionally_excluded | workspace inference credential configuration sits outside the ordinary agent CLI read surface |
-| `organizationDomainClaimRequest` | `OrganizationDomainClaimPayload!` | intentionally_excluded | organization domain claim requests expose org-admin domain-verification metadata outside the ordinary agent CLI surface |
 | `organizationExists` | `OrganizationExistsPayload!` | generated_operation | root field used by local GraphQL operation |
 | `organizationInvite` | `OrganizationInvite!` | intentionally_excluded | organization invite reads can expose invitee and admin metadata outside an agent-safe CLI surface |
 | `organizationInviteDetails` | `OrganizationInviteDetailsPayload!` | intentionally_excluded | organization invite reads can expose invitee and admin metadata outside an agent-safe CLI surface |
 | `organizationInvites` | `OrganizationInviteConnection!` | intentionally_excluded | organization invite reads can expose invitee and admin metadata outside an agent-safe CLI surface |
-| `organizationMeta` | `OrganizationMeta` | safe_candidate | read operation may fit future CLI coverage |
-| `originInstallUrl` | `OriginInstallUrlPayload!` | safe_candidate | read operation may fit future CLI coverage |
-| `originInstallation` | `OriginInstallationDetails!` | safe_candidate | read operation may fit future CLI coverage |
-| `originPendingInstallations` | `[OriginInstallationDetails!]!` | safe_candidate | read operation may fit future CLI coverage |
-| `partnerOfferDetails` | `PartnerOfferDetailsPayload` | safe_candidate | read operation may fit future CLI coverage |
-| `partnerOfferWorkspaces` | `PartnerOfferWorkspacesPayload` | safe_candidate | read operation may fit future CLI coverage |
-| `partnerProgramPartners` | `[PartnerProgramPartnerPayload!]!` | safe_candidate | read operation may fit future CLI coverage |
 | `project` | `Project!` | generated_operation | root field used by local GraphQL operation |
 | `projectFilterSuggestion` | `ProjectFilterSuggestionPayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectLabel` | `ProjectLabel!` | generated_operation | root field used by local GraphQL operation |
@@ -641,7 +629,6 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `projectRelation` | `ProjectRelation!` | generated_operation | root field used by local GraphQL operation |
 | `projectRelations` | `ProjectRelationConnection!` | generated_operation | root field used by local GraphQL operation |
 | `projectStatus` | `ProjectStatus!` | generated_operation | root field used by local GraphQL operation |
-| `projectStatusProjectCount` | `ProjectStatusCountPayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectStatuses` | `ProjectStatusConnection!` | generated_operation | root field used by local GraphQL operation |
 | `projectUpdate` | `ProjectUpdate!` | generated_operation | root field used by local GraphQL operation |
 | `projectUpdates` | `ProjectUpdateConnection!` | generated_operation | root field used by local GraphQL operation |
@@ -701,13 +688,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Field | Return type | Status | Evidence |
 | --- | --- | --- | --- |
 | `agentActivityCreate` | `AgentActivityPayload!` | generated_operation | root field used by local GraphQL operation |
-| `agentActivityCreatePrompt` | `AgentActivityPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `agentActivityDeleteQueued` | `AgentActivityPayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `agentActivitySendQueued` | `AgentActivityPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `agentSessionCreate` | `AgentSessionPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSessionCreateOnComment` | `AgentSessionPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSessionCreateOnIssue` | `AgentSessionPayload!` | generated_operation | root field used by local GraphQL operation |
-| `agentSessionRestartWithDefaultModel` | `AgentSessionPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSessionUpdate` | `AgentSessionPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSessionUpdateExternalUrl` | `AgentSessionPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSkillCreate` | `AgentSkillPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -735,10 +717,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `commentUnresolve` | `CommentPayload!` | generated_operation | root field used by local GraphQL operation |
 | `commentUpdate` | `CommentPayload!` | generated_operation | root field used by local GraphQL operation |
 | `contactCreate` | `ContactPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `contactSalesCreate` | `ContactPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createCsvExportReport` | `CreateCsvExportReportPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createInitiativeUpdateReminder` | `InitiativeUpdateReminderPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `createOrganizationFromOnboarding` | `CreateOrJoinOrganizationResponse!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createProjectUpdateReminder` | `ProjectUpdateReminderPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `customViewCreate` | `CustomViewPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `customViewDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
@@ -772,8 +752,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `documentUnarchive` | `DocumentArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `documentUnshare` | `DocumentPayload!` | blocked_needs_design | document unsharing changes access state and needs target-pinned guard semantics |
 | `documentUpdate` | `DocumentPayload!` | generated_operation | root field used by local GraphQL operation |
-| `documentUpdateCollaboratorRole` | `DocumentPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `documentUpdateGeneralAccess` | `DocumentPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `documentUpdateWorkspaceAccess` | `DocumentPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `emailIntakeAddressCreate` | `EmailIntakeAddressPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `emailIntakeAddressDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `emailIntakeAddressRefreshSesDomainStatus` | `EmailIntakeAddressRefreshSesDomainStatusPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -811,7 +791,6 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `initiativeLabelRestore` | `InitiativeLabelPayload!` | generated_operation | root field used by local GraphQL operation |
 | `initiativeLabelRetire` | `InitiativeLabelPayload!` | generated_operation | root field used by local GraphQL operation |
 | `initiativeLabelUpdate` | `InitiativeLabelPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `initiativeLeadTeamUpdate` | `InitiativeLeadTeamUpdatePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `initiativeRelationCreate` | `InitiativeRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `initiativeRelationDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `initiativeRelationUpdate` | `InitiativeRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -827,9 +806,6 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `initiativeUpdateUpdate` | `InitiativeUpdatePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `integrationArchive` | `DeletePayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationAsksConnectChannel` | `AsksChannelConnectPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `integrationCustomerDataAttributesRefresh` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `integrationDatadogConnect` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `integrationDatadogEnvironments` | `IntegrationDatadogEnvironmentsPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `integrationDiscord` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationFigma` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -847,49 +823,29 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `integrationGitlabUpdateRotationSettings` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationGitlabUpdateToken` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationGong` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `integrationGoogleCalendarPersonalConnect` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationGoogleSheets` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationIntercom` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationIntercomDelete` | `IntegrationPayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `integrationIntercomSettingsUpdate` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `integrationJiraFetchProjectStatuses` | `JiraFetchProjectStatusesPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationJiraPersonal` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `integrationJiraUpdate` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `integrationLaunchDarklyConnect` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `integrationLaunchDarklyPersonalConnect` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationLoom` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `integrationMcpServerConnect` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `integrationMcpServerPersonalConnect` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationMicrosoftPersonalConnect` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationMicrosoftTeams` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `integrationMicrosoftTeamsProjectPost` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `integrationOpsgenieConnect` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `integrationOpsgenieRefreshScheduleMappings` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `integrationOriginConnect` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `integrationOriginConnectInstallation` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `integrationPagerDutyConnect` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `integrationPagerDutyRefreshScheduleMappings` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationRequest` | `IntegrationRequestPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationSalesforce` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `integrationSalesforceMetadataRefresh` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationSentryConnect` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `integrationSettingsUpdate` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationSlack` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationSlackAsks` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationSlackCustomViewNotifications` | `SlackChannelConnectPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationSlackCustomerChannelLink` | `SuccessPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationSlackImportEmojis` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `integrationSlackInitiativePost` | `SlackChannelConnectPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationSlackOrAsksUpdateSlackTeamName` | `IntegrationSlackWorkspaceNamePayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `integrationSlackOrgInitiativeUpdatesPost` | `SlackChannelConnectPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationSlackOrgProjectUpdatesPost` | `SlackChannelConnectPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationSlackPersonal` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationSlackPost` | `SlackChannelConnectPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationSlackProjectPost` | `SlackChannelConnectPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `integrationSlackWorkflowAccessUpdate` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationTemplateCreate` | `IntegrationTemplatePayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationTemplateDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `integrationUpdate` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationZendesk` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationsSettingsCreate` | `IntegrationsSettingsPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationsSettingsUpdate` | `IntegrationsSettingsPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -899,14 +855,12 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `issueBatchUpdate` | `IssueBatchPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `issueCreate` | `IssuePayload!` | generated_operation | root field used by local GraphQL operation |
 | `issueDelete` | `IssueArchivePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `issueDescriptionUpdateFromFront` | `IssuePayload!` | blocked_needs_design | Front-origin description updates mutate issue content through integration state; needs explicit integration guard semantics |
 | `issueExternalSyncDisable` | `IssuePayload!` | blocked_needs_design | issue external-sync disable changes integration state and needs explicit integration guard semantics |
 | `issueImportCreateAsana` | `IssueImportPayload!` | blocked_needs_design | Asana issue import creation starts external import workflow state and needs explicit integration guard semantics |
 | `issueImportCreateCSVJira` | `IssueImportPayload!` | blocked_needs_design | CSV/Jira issue import creation starts external import workflow state and needs explicit integration guard semantics |
 | `issueImportCreateClubhouse` | `IssueImportPayload!` | blocked_needs_design | Clubhouse issue import creation starts external import workflow state and needs explicit integration guard semantics |
 | `issueImportCreateGithub` | `IssueImportPayload!` | blocked_needs_design | GitHub issue import creation starts external import workflow state and needs explicit integration guard semantics |
 | `issueImportCreateJira` | `IssueImportPayload!` | blocked_needs_design | Jira issue import creation starts external import workflow state and needs explicit integration guard semantics |
-| `issueImportCreateLinearV2` | `IssueImportPayload!` | blocked_needs_design | Linear v2 issue import creation starts import workflow state and needs explicit import guard semantics |
 | `issueImportDelete` | `IssueImportDeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `issueImportProcess` | `IssueImportPayload!` | blocked_needs_design | issue import processing advances external import workflow state and needs explicit integration guard semantics |
 | `issueImportUpdate` | `IssueImportPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -920,7 +874,6 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `issueRelationUpdate` | `IssueRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `issueReminder` | `IssuePayload!` | blocked_needs_design | issue reminder mutation changes notification state and needs target-pinned guard semantics |
 | `issueRemoveLabel` | `IssuePayload!` | generated_operation | root field used by local GraphQL operation |
-| `issueRequestSolubilityPrediction` | `SuccessPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `issueShare` | `IssuePayload!` | blocked_needs_design | issue sharing changes access state and needs target-pinned guard semantics |
 | `issueSubscribe` | `IssuePayload!` | blocked_needs_design | issue subscription changes notification state and needs target-pinned guard semantics |
 | `issueToReleaseCreate` | `IssueToReleasePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -930,9 +883,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `issueUnshare` | `IssuePayload!` | blocked_needs_design | issue unsharing changes access state and needs target-pinned guard semantics |
 | `issueUnsubscribe` | `IssuePayload!` | blocked_needs_design | issue unsubscribe changes notification state and needs target-pinned guard semantics |
 | `issueUpdate` | `IssuePayload!` | generated_operation | root field used by local GraphQL operation |
-| `jiraIntegrationConnect` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `joinOrganizationFromOnboarding` | `CreateOrJoinOrganizationResponse!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `leaveOrganization` | `CreateOrJoinOrganizationResponse!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `jiraProjectBatchMigrate` | `JiraProjectBatchMigratePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `logout` | `LogoutResponse!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `logoutAllSessions` | `LogoutResponse!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `logoutOtherSessions` | `LogoutResponse!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -955,33 +906,19 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `oauthApplicationRotateWebhookSecret` | `OAuthApplicationRotateWebhookSecretPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `oauthApplicationUpdate` | `OAuthApplicationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `organizationCancelDelete` | `OrganizationCancelDeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `organizationCodingInferenceKeyDelete` | `OrganizationPayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `organizationCodingInferenceKeyTest` | `CodingInferenceKeyTestPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `organizationCodingInferenceKeyUpdate` | `OrganizationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `organizationDelete` | `OrganizationDeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `organizationDeleteChallenge` | `OrganizationDeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `organizationDomainClaim` | `OrganizationDomainSimplePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `organizationDomainCreate` | `OrganizationDomainPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `organizationDomainDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `organizationDomainUpdate` | `OrganizationDomainPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `organizationDomainVerify` | `OrganizationDomainPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `organizationInviteCreate` | `OrganizationInvitePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `organizationInviteDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `organizationInviteUpdate` | `OrganizationInvitePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `organizationStartTrial` | `OrganizationStartTrialPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `organizationStartTrialForPlan` | `OrganizationStartTrialPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `organizationUpdate` | `OrganizationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `originInstallationCancel` | `OriginInstallationCancelPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `partnerApplicationCreate` | `ContactPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `partnerOfferRedeem` | `PartnerOfferRedeemPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `passkeyLoginFinish` | `AuthResolverResponse!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `passkeyLoginStart` | `PasskeyLoginStartResponse!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectAddLabel` | `ProjectPayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectArchive` | `ProjectArchivePayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectCreate` | `ProjectPayload!` | generated_operation | root field used by local GraphQL operation |
-| `projectCreateSlackChannel` | `ProjectPayload!` | blocked_needs_design | project Slack channel creation mutates chat integration state and needs explicit integration guard semantics |
 | `projectDelete` | `ProjectArchivePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `projectDismissSlackChannelCreationFailure` | `ProjectPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectExternalSyncDisable` | `ProjectPayload!` | blocked_needs_design | project external-sync disable changes integration state and needs explicit integration guard semantics |
 | `projectLabelCreate` | `ProjectLabelPayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectLabelDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
@@ -992,7 +929,6 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `projectMilestoneDelete` | `DeletePayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectMilestoneMove` | `ProjectMilestoneMovePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectMilestoneUpdate` | `ProjectMilestonePayload!` | generated_operation | root field used by local GraphQL operation |
-| `projectReassignStatus` | `SuccessPayload!` | blocked_needs_design | project status reassignment mutates project workflow state and needs target-pinned guard semantics |
 | `projectRelationCreate` | `ProjectRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectRelationDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `projectRelationUpdate` | `ProjectRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -1068,7 +1004,6 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `triageResponsibilityCreate` | `TriageResponsibilityPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `triageResponsibilityDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `triageResponsibilityUpdate` | `TriageResponsibilityPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `updateIntegrationSlackScopes` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `userChangeRole` | `UserAdminPayload!` | intentionally_excluded | user role changes are organization administration outside the ordinary agent CLI surface |
 | `userDiscordConnect` | `UserPayload!` | intentionally_excluded | Discord account connection belongs to user auth/integration setup, not work CLI reads |
 | `userExternalUserDisconnect` | `UserPayload!` | intentionally_excluded | external-user disconnection is identity integration administration outside the ordinary agent CLI surface |
@@ -1297,7 +1232,6 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `notificationSubscription` | query | `notificationSubscription` | generated | `internal/client/internal/gql/generated.go` |
 | `notificationSubscriptions` | query | `notificationSubscriptions` | generated | `internal/client/internal/gql/generated.go` |
 | `notifications` | query | `notifications` | generated | `internal/client/internal/gql/generated.go` |
-| `notificationsUnreadCount` | query | `notificationsUnreadCount` | generated | `internal/client/internal/gql/generated.go` |
 | `organizationExists` | query | `organizationExists` | generated | `internal/client/internal/gql/generated.go` |
 | `organization_labels` | query | `organization` | generated | `internal/client/internal/gql/generated.go` |
 | `organization_projectLabels` | query | `organization` | generated | `internal/client/internal/gql/generated.go` |
@@ -1316,7 +1250,6 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `projectRelation` | query | `projectRelation` | generated | `internal/client/internal/gql/generated.go` |
 | `projectRelations` | query | `projectRelations` | generated | `internal/client/internal/gql/generated.go` |
 | `projectStatus` | query | `projectStatus` | generated | `internal/client/internal/gql/generated.go` |
-| `projectStatusProjectCount` | query | `projectStatusProjectCount` | generated | `internal/client/internal/gql/generated.go` |
 | `projectStatuses` | query | `projectStatuses` | generated | `internal/client/internal/gql/generated.go` |
 | `projectUpdate` | query | `projectUpdate` | generated | `internal/client/internal/gql/generated.go` |
 | `projectUpdate_comments` | query | `projectUpdate` | generated | `internal/client/internal/gql/generated.go` |
@@ -1436,13 +1369,11 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | AgentActivity | `agent-activity list` | `Query.agentActivities` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | AgentActivity | `agent-activity get` | `Query.agentActivity` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | AgentActivity | `agent-activity create` | `Mutation.agentActivityCreate` | Resource-Scoped Write, additive only: the AgentSession is resolved, must be attached to an issue, and that issue is compared against the pinned team and pinned project, failing closed on mismatch. Content is one of Linear's typed activity payloads (thought, elicitation, response, error, action); prompt activities stay blocked | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
-| AgentActivity | `agent-activity update` | `Mutation.agentActivityUpdate` | Blocked: update must resolve the agent session and activity scope before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
-| AgentActivity | `agent-activity archive` | `Mutation.agentActivityArchive` | Blocked: destructive command needs explicit AgentActivity safety semantics | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
 | AgentSkill | `agent-skill list` | `Query.agentSkills` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | AgentSkill | `agent-skill get` | `Query.agentSkill` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | AgentSkill | `agent-skill create` | `Mutation.agentSkillCreate` | Blocked: create can expose reusable agent instructions and needs explicit team/owner guard semantics | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
 | AgentSkill | `agent-skill update` | `Mutation.agentSkillUpdate` | Blocked: update must resolve the AgentSkill's team and ownership scope before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
-| AgentSkill | `agent-skill archive` | `Mutation.agentSkillArchive` | Blocked: destructive command needs explicit AgentSkill safety semantics | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
+| AgentSkill | `agent-skill delete` | `Mutation.agentSkillDelete` | Blocked: destructive command needs explicit AgentSkill safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | AgentSession | `agent-session list` | `Query.agentSessions` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | AgentSession | `agent-session get` | `Query.agentSession` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | AgentSession | `agent-session create` | `Mutation.agentSessionCreateOnIssue` | Resource-Scoped Write, additive only: the issue is resolved and compared against the pinned team and pinned project, failing closed on mismatch; a session started with an app actor token belongs to the app user and carries no creator | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
@@ -1452,7 +1383,6 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | AuditEntry | `audit-entry list` | `Query.auditEntries` | Blocked: audit log entries can expose actor, IP, country, and request metadata; needs an explicit admin/security output model | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
 | Notification | `notification list` | `Query.notifications` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Notification | `notification get` | `Query.notification` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
-| Notification | `notification unread-count` | `Query.notificationsUnreadCount` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Notification | `notification subscription list` | `Query.notificationSubscriptions` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Notification | `notification subscription get` | `Query.notificationSubscription` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Notification | `notification mark-read` | `Mutation.notificationUpdate` with `NotificationUpdateInput.readAt` only | Viewer-Scoped Write: recipient `Notification.user.id` must match the authenticated viewer | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
@@ -1505,17 +1435,15 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Release | `release sync` | `Mutation.releaseSync`, `Mutation.releaseSyncByAccessKey` | Blocked: sync mutates release associations and needs explicit guard semantics | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
 | Release | `release-note create` | `Mutation.releaseNoteCreate` | Blocked: create must resolve release pipeline and release range semantics before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
 | Release | `release-note update` | `Mutation.releaseNoteUpdate` | Blocked: update must resolve covered releases and pipeline before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
-| Release | `release-note archive` | `Mutation.releaseNoteArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
 | Release | `release-note delete` | `Mutation.releaseNoteDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Release | `issue-to-release create` | `Mutation.issueToReleaseCreate` | Blocked: association write must compare issue and release scope before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
-| Release | `issue-to-release update` | `Mutation.issueToReleaseUpdate` | Blocked: association update must compare issue and release scope before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
 | Release | `issue-to-release delete` | `Mutation.issueToReleaseDelete` | Blocked: destructive association command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Issue | `issue list` | `Query.issues` with one composed `IssueFilter`: `Issue.team.id` plus any combination of `Issue.state.type` (`--state`, with `--status` as an alias; human state names are normalized to the schema state type before filtering), `Issue.project.id`, `Issue.assignee.id`, `Issue.labels.some.id`, `Issue.cycle.id`, `Issue.createdAt.gte` (`--created-after` / `--created-since`), `Issue.createdAt.lte`, `Issue.updatedAt.gte` (`--updated-after`), `Issue.updatedAt.lte` (`--updated-before`), `Issue.hasBlockedByRelations.eq`, and `Issue.hasBlockingRelations.eq`; `--blocked-by ISSUE` traverses `Issue.relations` with `IssueRelation.type == "blocks"` and returns matching `IssueRelation.relatedIssue`, and combines only with `--limit`; `--all-teams` omits the filter entirely | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Issue | `issue search` | `Query.issues`, filtered by `Issue.team.id` and a case-insensitive `contains` on `Issue.title` or `Issue.description` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Issue | `issue figma-file-key-search` | `Query.issueFigmaFileKeySearch`; returns compact issue summaries for a Figma file key | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Issue | `issue priority-values` | `Query.issuePriorityValues` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Issue | `issue filter-suggestion` | `Query.issueFilterSuggestion`; returns the suggested filter JSON plus log id only | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
-| Issue | `issue title-suggestion` | `Query.issueTitleSuggestionFromCustomerRequest`; returns the suggested title plus log id only | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
+| Issue | `issue title-suggestion` | `Query.issueTitleSuggestionFromCustomerRequest`; returns the suggested title only | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Issue | `issue get` | `Query.issue` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Issue | `issue deps` | `Query.issue`, `Issue.parent`, `Issue.children`, `Issue.relations`, `Issue.inverseRelations`; `IssueRelation.type == "blocks"` separates blocked issues from blockers | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Issue | `issue attachments` | `Issue.attachments` via `Query.issue` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
@@ -1622,7 +1550,6 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | ProjectUpdate | `project-update archive` | `Mutation.projectUpdateArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
 | ProjectStatus | `project-status list` | `Query.projectStatuses` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | ProjectStatus | `project-status get` | `Query.projectStatus` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
-| ProjectStatus | `project-status project-count` | `Query.projectStatusProjectCount` | Read-only count payload | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | ProjectStatus | `project-status create` | `Mutation.projectStatusCreate` | Blocked: organization project status configuration needs an explicit admin safety model | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
 | ProjectStatus | `project-status update` | `Mutation.projectStatusUpdate` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
 | ProjectStatus | `project-status archive` | `Mutation.projectStatusArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
@@ -1660,8 +1587,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Document | `document list` | `Query.documents` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Document | `document get` | `Query.document` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Document | `document comments` | `Document.comments` | Read-only, body-free metadata | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Document | `document create` | `Mutation.documentCreate` with `DocumentCreateInput.teamId` from the resolved team and optional `projectId` from the pinned project; `--content` (or `--content-file`, or `--content -` for stdin) | Team-scoped unless a `project_id` is pinned | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
-| Document | `document update` | `Mutation.documentUpdate`; resolves the existing document via `Query.document` and compares its `team` (and pinned `project`) before mutating | Resource-scoped, compare team and pinned project | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
+| Document | `document create` | `Mutation.documentCreate` with `DocumentCreateInput.projectId` from the pinned project; `--content` (or `--content-file`, or `--content -` for stdin) | Requires a pinned `project_id` | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
+| Document | `document update` | `Mutation.documentUpdate`; resolves the existing document via `Query.document` and compares its `project` with the pinned project before mutating | Resource-scoped, requires and compares the pinned project | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Document | `document delete` | `Mutation.documentDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Label | `label list` | `Query.issueLabels` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Label | `label get` | `Query.issueLabel` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
@@ -1674,9 +1601,9 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Label | `label delete` | `Mutation.issueLabelDelete` | Blocked: hard delete stays excluded; retire/restore is the supported lifecycle | blocked_needs_design | destructive command needs explicit safety semantics |
 | Team | `team list` | `Query.teams` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Team | `team get` | `Query.team` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
-| Team | `team create` | `Mutation.teamCreate` | Org-Scoped Write, additive only: `--org-wide` required, and the created Team's organization is compared against the Resolved Target's organization, failing closed on mismatch. A Team is what a pin names, so there is no team comparison to make. `--parent` resolves the parent and compares its organization, and the created Team's parent is compared against the request; `--inherit-workflow-states` (a field Linear marks internal in its schema) and `--triage` ride on the same create. Membership and metadata writes stay blocked | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
+| Team | `team create` | `Mutation.teamCreate` | Org-Scoped Write, additive only: `--org-wide` required, and the created Team's organization is compared against the Resolved Target's organization, failing closed on mismatch. A Team is what a pin names, so there is no team comparison to make. `--parent` resolves the parent and compares its organization, and the created Team's parent is compared against the request; `--triage` rides on the same create. Membership and metadata writes stay blocked | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Team | `team update` | `Mutation.teamUpdate` | Blocked: team metadata writes need stronger authority checks than ordinary target comparison | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
-| Team | `team settings` | `Mutation.teamUpdate` with `triageEnabled`, `defaultIssueStateId`, `inheritWorkflowStatuses` only | Org-Scoped Write: `--org-wide` required, the Team is resolved and its organization compared against the Resolved Target's organization, and a default state must belong to the Team or to the parent it inherits from. Name, key, and description are not reachable | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
+| Team | `team settings` | `Mutation.teamUpdate` with `triageEnabled` and `defaultIssueStateId` only | Org-Scoped Write: `--org-wide` required, the Team is resolved and its organization compared against the Resolved Target's organization, and a default state must belong to the Team or to the parent it inherits from. Name, key, and description are not reachable | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Team | `team delete` | `Mutation.teamDelete` | Org-Scoped Write, irreversible: `--org-wide` required, the Team is resolved and its organization compared against the Resolved Target's organization, and the pinned Team itself is refused. Linear archives the Team and schedules its data for deletion; linctl has no restore path | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Team | `team cycles` | `Team.cycles` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
 | Team | `team issues` | `Team.issues` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
@@ -1756,8 +1683,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Initiative | `initiative documents` | `Initiative.documents` via `Query.initiative` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Initiative | `initiative projects` | `Initiative.projects` via `Query.initiative` | Read-only direct projects | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Initiative | `initiative create` | `Mutation.initiativeCreate` | Org-Scoped Write, additive only: `--org-wide` required, and the created Initiative's organization is compared against the Resolved Target's organization, failing closed on mismatch. An Initiative sits above every team, so there is no team comparison to make; update and archive stay blocked | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
-| Initiative | `initiative update` | `Mutation.updateInitiative` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
-| Initiative | `initiative archive` | `Mutation.archiveInitiative` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
+| Initiative | `initiative update` | `Mutation.initiativeUpdate` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
+| Initiative | `initiative archive` | `Mutation.initiativeArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
 | InitiativeLabel | `initiative-label list` | `Query.initiativeLabels` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | InitiativeLabel | `initiative-label get` | `Query.initiativeLabel` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | InitiativeLabel | `initiative-label create` | `Mutation.initiativeLabelCreate` | Blocked: create needs an explicit organization-scoped safety model | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
@@ -1797,17 +1724,17 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | CustomView | `custom-view list` | `Query.customViews` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | CustomView | `custom-view subscribers` | `Query.customViewHasSubscribers` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | CustomView | `custom-view get` | `Query.customView` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
-| CustomView | `custom-view initiatives` | `Query.customView_initiatives` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL operation/root |
-| CustomView | `custom-view issues` | `Query.customView_issues` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL operation/root |
-| CustomView | `custom-view organization-preferences` | `Query.customView_organizationViewPreferences` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL operation/root |
-| CustomView | `custom-view organization-preferences values` | `Query.customView_organizationViewPreferences_preferences` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL operation/root |
-| CustomView | `custom-view projects` | `Query.customView_projects` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL operation/root |
-| CustomView | `custom-view user-preferences` | `Query.customView_userViewPreferences` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL operation/root |
-| CustomView | `custom-view user-preferences values` | `Query.customView_userViewPreferences_preferences` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL operation/root |
-| CustomView | `custom-view preference-values` | `Query.customView_viewPreferencesValues` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL operation/root |
-| CustomView | `custom-view create` | `Mutation.createCustomView` | Blocked: custom view create needs an explicit organization-scoped safety model | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
-| CustomView | `custom-view update` | `Mutation.updateCustomView` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
-| CustomView | `custom-view delete` | `Mutation.deleteCustomView` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
+| CustomView | `custom-view initiatives` | `CustomView.initiatives` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| CustomView | `custom-view issues` | `CustomView.issues` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| CustomView | `custom-view organization-preferences` | `CustomView.organizationViewPreferences` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| CustomView | `custom-view organization-preferences values` | `ViewPreferences.preferences` via `CustomView.organizationViewPreferences` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| CustomView | `custom-view projects` | `CustomView.projects` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| CustomView | `custom-view user-preferences` | `CustomView.userViewPreferences` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| CustomView | `custom-view user-preferences values` | `ViewPreferences.preferences` via `CustomView.userViewPreferences` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| CustomView | `custom-view preference-values` | `CustomView.viewPreferencesValues` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| CustomView | `custom-view create` | `Mutation.customViewCreate` | Blocked: custom view create needs an explicit organization-scoped safety model | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
+| CustomView | `custom-view update` | `Mutation.customViewUpdate` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
+| CustomView | `custom-view delete` | `Mutation.customViewDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Customer | `customer list` | `Query.customers` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Customer | `customer get` | `Query.customer` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Customer | `customer-need list` | `Query.customerNeeds` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
@@ -1819,7 +1746,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Customer | `customer-tier get` | `Query.customerTier` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Customer | `customer create` | `Mutation.customerCreate` | Blocked: customer create needs an explicit organization-scoped safety model | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
 | Customer | `customer update` | `Mutation.customerUpdate` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
-| Customer | `customer archive` | `Mutation.customerArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
+| Customer | `customer delete` | `Mutation.customerDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Customer | `customer-need create` | `Mutation.customerNeedCreate` | Blocked: need creation must prove the linked issue, project, or customer target before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
 | Customer | `customer-need update` | `Mutation.customerNeedUpdate` | Blocked: update must resolve the need and compare the linked issue or project target before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
 | Customer | `customer-need archive` | `Mutation.customerNeedArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
@@ -1833,13 +1760,13 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Favorite | `favorite list` | `Query.favorites` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Favorite | `favorite children` | `Favorite.children` via `Query.favorite` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Favorite | `favorite get` | `Query.favorite` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
-| Favorite | `favorite create` | `Mutation.createFavorite` | Blocked: favorite create needs an explicit viewer-scoped safety model | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
-| Favorite | `favorite update` | `Mutation.updateFavorite` | Blocked: update must resolve and compare the owning viewer before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
-| Favorite | `favorite delete` | `Mutation.deleteFavorite` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
+| Favorite | `favorite create` | `Mutation.favoriteCreate` | Blocked: favorite create needs an explicit viewer-scoped safety model | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
+| Favorite | `favorite update` | `Mutation.favoriteUpdate` | Blocked: update must resolve and compare the owning viewer before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
+| Favorite | `favorite delete` | `Mutation.favoriteDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Emoji | `emoji list` | `Query.emojis` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Emoji | `emoji get` | `Query.emoji` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
-| Emoji | `emoji create` | `Mutation.createEmoji` | Blocked: emoji create needs an explicit organization-scoped safety model | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
-| Emoji | `emoji delete` | `Mutation.deleteEmoji` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
+| Emoji | `emoji create` | `Mutation.emojiCreate` | Blocked: emoji create needs an explicit organization-scoped safety model | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
+| Emoji | `emoji delete` | `Mutation.emojiDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | File | `files upload` | Target resolution, `Mutation.fileUpload`, then an HTTP PUT of the bytes to the pre-signed URL | Guarded by the pinned target before upload preparation; prints the asset URL for a later guarded attachment write | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | File | `files download` | Plain HTTP GET of the asset URL to a local path | Read-only, no API; no auth header is attached so a user-supplied URL never receives the Linear token | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
 | Attachment | `attachment list` | `Query.attachments` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |

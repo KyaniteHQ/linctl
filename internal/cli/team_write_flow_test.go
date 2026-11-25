@@ -159,8 +159,7 @@ func Test_TeamCreate_writes_a_sub_team(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 	err := execute(context.Background(), BuildInfo{}, strings.NewReader(""), &stdout, &stderr,
 		[]string{
-			"team", "create", "--name", "case", "--parent", "team-id", "--inherit-workflow-states",
-			"--triage", "--org-wide",
+			"team", "create", "--name", "case", "--parent", "team-id", "--triage", "--org-wide",
 		})
 
 	require.NoError(t, err)
@@ -220,8 +219,7 @@ func Test_TeamSettings_writes_the_settings(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 	err := execute(context.Background(), BuildInfo{}, strings.NewReader(""), &stdout, &stderr,
 		[]string{
-			"team", "settings", "team-id", "--triage=false", "--default-state", "workflow-state-id",
-			"--inherit-workflow-states", "--org-wide",
+			"team", "settings", "team-id", "--triage=false", "--default-state", "workflow-state-id", "--org-wide",
 		})
 
 	require.NoError(t, err)

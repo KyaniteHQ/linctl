@@ -41,7 +41,7 @@ func commandFlowAttachmentIssuePayload(operation string) (string, bool) {
 		return `{"attachmentIssue":{"documents":{"nodes":[` +
 			commandDocumentJSON(
 				"Spec",
-				`"project":null,"team":null,"issue":{"id":"issue-id","identifier":"LIT-1","title":"Detail issue"},"cycle":null`,
+				`"project":null,"issue":{"id":"issue-id","identifier":"LIT-1","title":"Detail issue"}`,
 			) +
 			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "attachmentIssue_formerAttachments":
@@ -116,7 +116,7 @@ func commandFlowIssueVCSBranchPayload(operation string) (string, bool) {
 		return `{"issueVcsBranchSearch":{"documents":{"nodes":[` +
 			commandDocumentJSON(
 				"Spec",
-				`"project":null,"team":null,"issue":{"id":"issue-id","identifier":"LIT-1","title":"Detail issue"},"cycle":null`,
+				`"project":null,"issue":{"id":"issue-id","identifier":"LIT-1","title":"Detail issue"}`,
 			) +
 			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "issueVcsBranchSearch_formerAttachments":
@@ -268,7 +268,7 @@ func commandFlowIssueUtilityPayload(operation string, fake commandFlowFakeClient
 	case "issueFilterSuggestion":
 		return `{"issueFilterSuggestion":{"filter":{"state":{"type":{"eq":"started"}}},"logId":"issue-filter-log-id"}}`, true
 	case "issueTitleSuggestionFromCustomerRequest":
-		return `{"issueTitleSuggestionFromCustomerRequest":{"title":"Improve exports","logId":"title-log-id"}}`, true
+		return `{"issueTitleSuggestionFromCustomerRequest":{"title":"Improve exports"}}`, true
 	default:
 		return "", false
 	}
@@ -292,7 +292,7 @@ func commandFlowIssueChildPayload(operation string, fake commandFlowFakeClient) 
 		return `{"issue":{"documents":{"nodes":[` +
 			commandDocumentJSON(
 				"Spec",
-				`"project":null,"team":null,"issue":{"id":"issue-id","identifier":"LIT-1","title":"Detail issue"},"cycle":null`,
+				`"project":null,"issue":{"id":"issue-id","identifier":"LIT-1","title":"Detail issue"}`,
 			) +
 			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "issue_formerAttachments":

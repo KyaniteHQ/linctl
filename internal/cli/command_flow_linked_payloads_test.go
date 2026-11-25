@@ -76,7 +76,7 @@ func commandFlowInitiativePayload(operation string, fake commandFlowFakeClient) 
 	case "initiative_documents":
 		return `{"initiative":{"documents":{"nodes":[` + commandDocumentJSON(
 			"Spec",
-			`"project":{"id":"project-id","name":"Pinned project"},"team":null,"issue":null,"cycle":null`,
+			`"project":{"id":"project-id","name":"Pinned project"},"issue":null`,
 		) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "initiative_projects":
 		return `{"initiative":{"projects":{"nodes":[` +
@@ -220,7 +220,7 @@ func commandFlowExtraReadPayload(operation string, fake commandFlowFakeClient) (
 		return `{"release":{"documents":{"nodes":[` +
 			commandDocumentJSON(
 				"Spec",
-				`"project":{"id":"project-id","name":"Pinned project"},"team":null,"issue":null,"cycle":null`,
+				`"project":{"id":"project-id","name":"Pinned project"},"issue":null`,
 			) +
 			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "release_issues":

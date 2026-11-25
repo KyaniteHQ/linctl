@@ -174,7 +174,6 @@ query issueFilterSuggestion($prompt: String!, $teamId: String, $projectId: Strin
 query issueTitleSuggestionFromCustomerRequest($request: String!) {
   issueTitleSuggestionFromCustomerRequest(request: $request) {
     title
-    logId
   }
 }
 

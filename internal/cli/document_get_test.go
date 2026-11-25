@@ -17,13 +17,13 @@ func Test_writeDocumentDetail_prints_only_the_line_without_content(t *testing.T)
 	out := &bytes.Buffer{}
 	command.SetOut(out)
 	document := client.DocumentDetail{
-		DocumentSummary: client.DocumentSummary{ID: "document-id", Title: "Team note", ParentType: "team"},
+		DocumentSummary: client.DocumentSummary{ID: "document-id", Title: "Project note", ParentType: "project"},
 	}
 
 	err := writeDocumentDetail(command, &rootOptions{}, document)
 
 	require.NoError(t, err)
-	require.Equal(t, "document-id Team note [team]\n", out.String())
+	require.Equal(t, "document-id Project note [project]\n", out.String())
 }
 
 func Test_DocumentGet_surfaces_stdout_write_errors(t *testing.T) {

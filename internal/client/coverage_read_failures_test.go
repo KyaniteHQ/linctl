@@ -103,10 +103,6 @@ func Test_ClientReadFailureScenarios_wrap_graphql_errors(t *testing.T) {
 		{"ListProjects", func() error { _, err := ListProjects(ctx, graphqlClient, 1); return err }, "list projects"},
 		{"ListProjectStatuses", func() error { _, err := ListProjectStatuses(ctx, graphqlClient, 1); return err }, "list project statuses"},
 		{"GetProjectStatusByID", func() error { _, err := GetProjectStatusByID(ctx, graphqlClient, "project-status-id"); return err }, "get project status project-status-id"},
-		{"GetProjectStatusProjectCount", func() error {
-			_, err := GetProjectStatusProjectCount(ctx, graphqlClient, "project-status-id")
-			return err
-		}, "get project status project count project-status-id"},
 		{"ListProjectLabels", func() error { _, err := ListProjectLabels(ctx, graphqlClient, 1); return err }, "list project labels"},
 		{"GetProjectLabelByID", func() error { _, err := GetProjectLabelByID(ctx, graphqlClient, "project-label-id"); return err }, "get project label project-label-id"},
 		{"ListProjectLabelChildren", func() error {

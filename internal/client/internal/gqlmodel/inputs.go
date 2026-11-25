@@ -47,7 +47,6 @@ type LinearCycleUpdateInput struct {
 type LinearDocumentCreateInput struct {
 	Title     string  `json:"title"`
 	Content   *string `json:"content,omitempty"`
-	TeamID    *string `json:"teamId,omitempty"`
 	ProjectID *string `json:"projectId,omitempty"`
 }
 
@@ -252,21 +251,18 @@ type LinearAgentSessionCreateOnIssueInput struct {
 
 // LinearTeamCreateInput is the sparse Linear teamCreate payload linctl supports.
 type LinearTeamCreateInput struct {
-	Name                    string  `json:"name"`
-	Key                     *string `json:"key,omitempty"`
-	Description             *string `json:"description,omitempty"`
-	Private                 *bool   `json:"private,omitempty"`
-	ParentID                *string `json:"parentId,omitempty"`
-	InheritWorkflowStatuses *bool   `json:"inheritWorkflowStatuses,omitempty"`
-	TriageEnabled           *bool   `json:"triageEnabled,omitempty"`
+	Name          string  `json:"name"`
+	Key           *string `json:"key,omitempty"`
+	Description   *string `json:"description,omitempty"`
+	ParentID      *string `json:"parentId,omitempty"`
+	TriageEnabled *bool   `json:"triageEnabled,omitempty"`
 }
 
 // LinearTeamSettingsInput is the sparse Linear teamUpdate payload linctl supports:
 // team settings only, never name, key, or description.
 type LinearTeamSettingsInput struct {
-	TriageEnabled           *bool   `json:"triageEnabled,omitempty"`
-	DefaultIssueStateID     *string `json:"defaultIssueStateId,omitempty"`
-	InheritWorkflowStatuses *bool   `json:"inheritWorkflowStatuses,omitempty"`
+	TriageEnabled       *bool   `json:"triageEnabled,omitempty"`
+	DefaultIssueStateID *string `json:"defaultIssueStateId,omitempty"`
 }
 
 // LinearTemplateCreateInput is the sparse Linear templateCreate payload linctl supports.

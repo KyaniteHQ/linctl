@@ -22,11 +22,8 @@ func addTeamCreateCommand(ctx context.Context, root *cobra.Command, options *roo
 			command.Flags().StringVar(&request.Key, "key", "",
 				"team key, which Linear derives from the name when you do not set it")
 			command.Flags().StringVar(&request.Description, "description", "", "team description")
-			command.Flags().BoolVar(&request.Private, "private", false, "create the team as a private team")
 			command.Flags().StringVar(&request.ParentID, "parent", "",
 				"parent team id, which makes the new team a sub-team")
-			command.Flags().BoolVar(&request.Inherit, "inherit-workflow-states", false,
-				"inherit workflow states from the parent team; needs --parent")
 			command.Flags().BoolVar(&request.Triage, "triage", false, "enable triage on the new team")
 			command.Flags().BoolVar(&request.OrgWide, "org-wide", false, orgWideTeamHelp)
 		},
@@ -75,18 +72,16 @@ const orgWideTeamSettingsHelp = "required: a Team is organization-owned and is w
 	"write changes a team's settings in the organization"
 
 func addTeamSettingsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	var triage, inherit bool
+	var triage bool
 	request := client.TeamSettingsRequest{}
 	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.TeamSummary]{
 		Use:   "settings TEAM_ID",
-		Short: "Change a team's triage, default state, or inherited states with --org-wide",
+		Short: "Change a team's triage or default state with --org-wide",
 		Args:  cobra.ExactArgs(1),
 		Configure: func(command *cobra.Command) {
 			command.Flags().BoolVar(&triage, "triage", false, "enable triage; pass --triage=false to disable it")
 			command.Flags().StringVar(&request.DefaultStateID, "default-state", "",
 				"workflow state id that new issues start in; must belong to the team or its parent")
-			command.Flags().BoolVar(&inherit, "inherit-workflow-states", false,
-				"inherit workflow states from the parent team; pass =false to stop inheriting")
 			command.Flags().BoolVar(&request.OrgWide, "org-wide", false, orgWideTeamSettingsHelp)
 		},
 		Run: func(
@@ -95,9 +90,6 @@ func addTeamSettingsCommand(ctx context.Context, root *cobra.Command, options *r
 			request.ID = args[0]
 			if command.Flags().Changed("triage") {
 				request.Triage = &triage
-			}
-			if command.Flags().Changed("inherit-workflow-states") {
-				request.Inherit = &inherit
 			}
 
 			return client.UpdateTeamSettings(ctx, runtime.graphqlClient, runtime.config.Target, request)

@@ -21,7 +21,6 @@ type InitiativeLabelSummary struct {
 	ParentName    string `json:"parent_name,omitempty"`
 	ParentColor   string `json:"parent_color,omitempty"`
 	LastAppliedAt string `json:"last_applied_at,omitempty"`
-	RetiredAt     string `json:"retired_at,omitempty"`
 	ArchivedAt    string `json:"archived_at,omitempty"`
 	CreatedAt     string `json:"created_at"`
 	UpdatedAt     string `json:"updated_at"`
@@ -90,7 +89,6 @@ func initiativeLabelSummary(fields gql.InitiativeLabelSummaryFields) InitiativeL
 		IsGroup:       fields.IsGroup,
 		OrgID:         fields.Organization.Id,
 		LastAppliedAt: stringValue(fields.LastAppliedAt),
-		RetiredAt:     stringValue(fields.RetiredAt),
 		ArchivedAt:    stringValue(fields.ArchivedAt),
 		CreatedAt:     fields.CreatedAt,
 		UpdatedAt:     fields.UpdatedAt,

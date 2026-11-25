@@ -5,7 +5,6 @@ fragment ProjectLabelSummaryFields on ProjectLabel {
   color
   isGroup
   lastAppliedAt
-  retiredAt
   archivedAt
   createdAt
   updatedAt

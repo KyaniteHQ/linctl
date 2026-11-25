@@ -25,10 +25,6 @@ func commandNotificationJSON() string {
 		"id":"notification-id",
 		"type":"issueMention",
 		"category":"mentions",
-		"title":"Mentioned you",
-		"subtitle":"LIT-1",
-		"url":"https://linear.app/kyanite/issue/LIT-1",
-		"inboxUrl":"https://linear.app/kyanite/inbox/notification-id",
 		"createdAt":"2026-06-19T12:00:00Z",
 		"updatedAt":"2026-06-19T12:01:00Z",
 		"archivedAt":null,
@@ -38,7 +34,8 @@ func commandNotificationJSON() string {
 		"unsnoozedAt":null,
 		"user":{"id":"user-id","displayName":"Omer"},
 		"actor":{"id":"actor-id","displayName":"Ada"},
-		"externalUserActor":null
+		"externalUserActor":null,
+		"issue":{"id":"issue-id","identifier":"LIT-1","title":"Mentioned you","url":"https://linear.app/kyanite/issue/LIT-1"}
 	}`
 }
 
@@ -106,12 +103,10 @@ func commandSearchDocumentJSON() string {
 		"title":"Search spec",
 		"slugId":"search-spec",
 		"url":"https://linear.app/kyanite/document/search-spec",
-		"project":null,
+		"project":{"id":"project-id","name":"Pinned project"},
 		"initiative":null,
-		"team":{"id":"team-id","key":"LIT","name":"linctl"},
 		"issue":null,
-		"release":null,
-		"cycle":null
+		"release":null
 	}`
 }
 

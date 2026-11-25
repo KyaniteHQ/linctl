@@ -16,10 +16,6 @@ func notificationWriteJSON(userID string, readAt string) string {
 		"id":"notification-id",
 		"type":"issueAssignedToYou",
 		"category":"assignments",
-		"title":"Assigned",
-		"subtitle":"LIT-1",
-		"url":"https://linear.app/n/notification-id",
-		"inboxUrl":"https://linear.app/inbox",
 		"createdAt":"2026-06-19T12:00:00Z",
 		"updatedAt":"2026-06-19T12:00:00Z",
 		"archivedAt":null,
@@ -29,7 +25,8 @@ func notificationWriteJSON(userID string, readAt string) string {
 		"unsnoozedAt":null,
 		"user":{"id":"` + userID + `","displayName":"Omer"},
 		"actor":null,
-		"externalUserActor":null
+		"externalUserActor":null,
+		"issue":{"id":"issue-id","identifier":"LIT-1","title":"Assigned","url":"https://linear.app/kyanite/issue/LIT-1"}
 	}`
 }
 
@@ -56,6 +53,10 @@ func Test_MarkNotificationRead_sets_readAt_when_viewer_matches(t *testing.T) {
 	require.Equal(t, "notification-id", notification.ID)
 	require.Equal(t, "user-id", notification.UserID)
 	require.NotEmpty(t, notification.ReadAt)
+	require.Equal(t, "issue", notification.TargetType)
+	require.Equal(t, "issue-id", notification.TargetID)
+	require.Equal(t, "LIT-1 Assigned", notification.TargetName)
+	require.Equal(t, "https://linear.app/kyanite/issue/LIT-1", notification.TargetURL)
 	vars := map[string]any{}
 	require.NoError(t, json.Unmarshal(recorder.variablesFor(t, "NotificationUpdate"), &vars))
 	require.Equal(t, "notification-id", vars["id"])
@@ -88,6 +89,10 @@ func Test_ArchiveNotification_returns_summary_when_viewer_matches(t *testing.T) 
 
 	require.NoError(t, err)
 	require.Equal(t, "notification-id", notification.ID)
+	require.Equal(t, "issue", notification.TargetType)
+	require.Equal(t, "issue-id", notification.TargetID)
+	require.Equal(t, "LIT-1 Assigned", notification.TargetName)
+	require.Equal(t, "https://linear.app/kyanite/issue/LIT-1", notification.TargetURL)
 	require.JSONEq(t, `{"id":"notification-id"}`, string(recorder.variablesFor(t, "NotificationArchive")))
 }
 
