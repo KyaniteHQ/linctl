@@ -2,7 +2,7 @@
 # shellcheck shell=bash
 set -euo pipefail
 
-if (( $# > 0 )); then
+if [[ -n ${1:-} ]]; then
   profile="$1"
 else
   profile_dir="$(mktemp -d)"
