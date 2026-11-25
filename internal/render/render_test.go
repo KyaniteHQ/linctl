@@ -17,5 +17,5 @@ func Test_WriteJSON_writes_indented_json_when_value_is_structured(t *testing.T) 
 
 	// Then
 	require.NoError(t, err)
-	require.JSONEq(t, `{"org_id":"org-id"}`, buffer.String())
+	require.Equal(t, "{\n  \"org_id\": \"org-id\"\n}\n", buffer.String())
 }
