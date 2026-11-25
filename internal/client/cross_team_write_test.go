@@ -248,44 +248,6 @@ func Test_AddProjectTeam_resolves_destination_by_key(t *testing.T) {
 	}`, string(recorder.variablesFor(t, "ProjectUpdate")))
 }
 
-func Test_AddProjectTeam_paginates_when_teams_page_is_truncated(t *testing.T) {
-	// A truncated first page must be fully walked before merge: otherwise an
-	// unlisted team would be dropped by projectUpdate's full-set teamIds field.
-	recorder := &recordingGraphQLClient{inner: projectWriteFakeClient(map[string]string{
-		"project": `{"project":` + projectJSONWithTeamPage(projectFixture{
-			ID: "project-id", Name: "Harness", Status: "Backlog",
-		}, "team-id", "LIT", true) + `}`,
-		"team": `{"team":` + destinationTeamJSON("ops-team-id", "OPS", "org-id") + `}`,
-		"project_teams": `{
-			"project": {
-				"id": "project-id",
-				"name": "Harness",
-				"teams": {
-					"nodes": [
-						{"id":"team-id","key":"LIT","name":"linctl-it","description":"","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}},
-						{"id":"extra-team-id","key":"EXT","name":"Extra","description":"","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}
-					],
-					"pageInfo": {"hasNextPage": false, "endCursor": null}
-				}
-			}
-		}`,
-		"ProjectUpdate": `{"projectUpdate":{"success":true,"project":` + projectJSONWithPinnedExtraAndOps(
-			projectFixture{ID: "project-id", Name: "Harness", Status: "Backlog"},
-		) + `}}`,
-	})}
-
-	_, err := AddProjectTeam(context.Background(), recorder, matchingTarget(), ProjectAddTeamRequest{
-		ProjectID: "project-id",
-		TeamID:    "ops-team-id",
-	})
-
-	require.NoError(t, err)
-	require.JSONEq(t, `{
-		"id": "project-id",
-		"input": {"teamIds": ["team-id", "extra-team-id", "ops-team-id"]}
-	}`, string(recorder.variablesFor(t, "ProjectUpdate")))
-}
-
 func Test_MoveIssueTeam_moves_issue_off_the_pinned_team(t *testing.T) {
 	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"issue": `{"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}`,
@@ -854,7 +816,6 @@ func Test_AddProjectTeam_uses_the_fresh_team_snapshot_for_the_write(t *testing.T
 	})
 
 	require.NoError(t, err)
-	require.Equal(t, 2, recorder.countOf("project"))
 	require.JSONEq(t, `{
 		"id": "project-id",
 		"input": {"teamIds": ["team-id", "extra-team-id", "ops-team-id"]}

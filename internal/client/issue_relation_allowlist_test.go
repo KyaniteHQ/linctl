@@ -111,7 +111,6 @@ func Test_CreateIssueRelation_refuses_cross_organization_relation(t *testing.T) 
 
 	require.ErrorIs(t, err, ErrCrossOrganizationRelation)
 	require.ErrorIs(t, err, ErrTargetMismatch)
-	require.ErrorIs(t, ErrCrossOrganizationRelation, ErrTargetMismatch)
 	require.False(t, recorder.sentOperation("IssueRelationCreate"))
 }
 
@@ -263,7 +262,6 @@ func Test_CreateIssueRelation_refuses_unreadable_allowed_project(t *testing.T) {
 		AllowedProjectIDs: []string{"missing-project"},
 	})
 
-	require.Error(t, err)
 	require.ErrorContains(t, err, "get project")
 }
 
@@ -301,16 +299,16 @@ func Test_CreateIssueRelation_reconcile_returns_write_error_when_relation_missin
 		Type:           "related",
 	})
 
-	require.Error(t, err)
 	require.ErrorContains(t, err, "injected IssueRelationCreate failure")
 }
 
-func Test_requireIssueOnTeam_fails_closed_when_org_is_absent(t *testing.T) {
-	issueBody := `{
-		"id":"issue-id",
-		"identifier":"LIT-1",
-		"title":"First",
-		"url":"https://linear.app/kyanite/issue/LIT-1",
+func Test_CreateIssueRelation_refuses_related_issue_without_an_organization(t *testing.T) {
+	first := relationIssueJSON("issue-id", "LIT-1", "project-id", "fixture")
+	second := `{
+		"id":"related-issue-id",
+		"identifier":"LIT-2",
+		"title":"LIT-2",
+		"url":"https://linear.app/kyanite/issue/LIT-2",
 		"priority":0,
 		"priorityLabel":"No priority",
 		"team":{"id":"team-id","key":"LIT","name":"linctl-it"},
@@ -318,15 +316,23 @@ func Test_requireIssueOnTeam_fails_closed_when_org_is_absent(t *testing.T) {
 		"assignee":null,
 		"project":{"id":"project-id","name":"fixture"}
 	}`
-	guard, err := newGuardedClient(context.Background(), issueWriteFakeClient(map[string]string{
-		"issue": `{"issue":` + issueBody + `}`,
-	}), matchingTarget())
-	require.NoError(t, err)
+	recorder := &mutationRecordingClient{inner: issueLookupFake{
+		byID: map[string]string{
+			"LIT-1": first, "issue-id": first,
+			"LIT-2": second, "related-issue-id": second,
+		},
+		inner: issueWriteFakeClient(map[string]string{}),
+	}}
 
-	_, err = guard.requireIssueOnTeam(context.Background(), "LIT-1")
+	_, err := CreateIssueRelation(context.Background(), recorder, matchingTarget(), IssueRelationCreateRequest{
+		IssueID:        "LIT-1",
+		RelatedIssueID: "LIT-2",
+		Type:           "related",
+	})
 
 	require.ErrorIs(t, err, ErrCrossOrganizationRelation)
 	require.ErrorIs(t, err, ErrTargetMismatch)
+	require.False(t, recorder.sentOperation("IssueRelationCreate"))
 }
 
 func Test_CreateIssueRelation_returns_readback_error_when_relation_get_fails(t *testing.T) {
@@ -342,7 +348,6 @@ func Test_CreateIssueRelation_returns_readback_error_when_relation_get_fails(t *
 		Type:           "related",
 	})
 
-	require.Error(t, err)
 	require.ErrorContains(t, err, "injected issueRelation failure")
 }
 
@@ -356,7 +361,6 @@ func Test_CreateIssueRelation_wraps_relation_scan_error(t *testing.T) {
 		Type:           "related",
 	})
 
-	require.Error(t, err)
 	require.ErrorContains(t, err, "injected issue_relations failure")
 }
 
@@ -377,7 +381,6 @@ func Test_CreateIssueRelation_reconcile_returns_write_error_when_readback_fails(
 		Type:           "related",
 	})
 
-	require.Error(t, err)
 	require.ErrorContains(t, err, "injected issueRelation failure")
 	require.ErrorContains(t, err, "injected IssueRelationCreate failure")
 }
@@ -394,7 +397,6 @@ func Test_CreateIssueRelation_refuses_unreadable_allowed_issue(t *testing.T) {
 		AllowedProjectIDs: []string{"project-id"},
 	})
 
-	require.Error(t, err)
 	require.ErrorContains(t, err, "get issue")
 }
 
@@ -412,7 +414,6 @@ func Test_CreateIssueRelation_returns_error_when_endpoint_readback_fails(t *test
 		Type:           "related",
 	})
 
-	require.Error(t, err)
 	require.ErrorContains(t, err, "injected issue failure")
 }
 
@@ -430,7 +431,6 @@ func Test_CreateIssueRelation_returns_error_when_related_readback_fails(t *testi
 		Type:           "related",
 	})
 
-	require.Error(t, err)
 	require.ErrorContains(t, err, "injected issue failure")
 }
 
