@@ -127,34 +127,44 @@ func Test_ResolveTarget_refuses_scanned_team_with_matching_key_and_other_id(t *t
 }
 
 func Test_ResolveTarget_refuses_when_pinned_project_resolves_to_another_id(t *testing.T) {
-	graphqlClient := &strictTargetGraphQLClient{fixtures: []strictTargetFixture{
-		{operation: "Viewer", variables: "null", payload: targetViewerFixture},
-		directTeamLookupFixture("team-id"),
-		targetProjectFixture("null", "other-project-id", `[{"id": "team-id", "key": "LIT", "name": "linctl-it"}]`, false),
-	}}
+	for name, resolvedProjectID := range map[string]string{"empty id": "", "other id": "other-project-id"} {
+		t.Run(name, func(t *testing.T) {
+			graphqlClient := &strictTargetGraphQLClient{fixtures: []strictTargetFixture{
+				{operation: "Viewer", variables: "null", payload: targetViewerFixture},
+				directTeamLookupFixture("team-id"),
+				targetProjectFixture(
+					"null", resolvedProjectID, `[{"id": "team-id", "key": "LIT", "name": "linctl-it"}]`, false,
+				),
+			}}
 
-	_, err := ResolveTarget(context.Background(), graphqlClient, matchingTarget())
+			_, err := ResolveTarget(context.Background(), graphqlClient, matchingTarget())
 
-	require.ErrorIs(t, err, ErrTargetMismatch)
-	require.ErrorContains(t, err, "expected project_id=project-id resolved project_id=other-project-id")
-	require.Equal(t, len(graphqlClient.fixtures), graphqlClient.next)
+			require.ErrorIs(t, err, ErrTargetMismatch)
+			require.EqualError(t, err, "target mismatch: expected project_id=project-id resolved project_id="+resolvedProjectID)
+			require.Equal(t, len(graphqlClient.fixtures), graphqlClient.next)
+		})
+	}
 }
 
 func Test_ResolveTarget_refuses_when_later_project_page_resolves_to_another_id(t *testing.T) {
-	graphqlClient := &strictTargetGraphQLClient{fixtures: []strictTargetFixture{
-		{operation: "Viewer", variables: "null", payload: targetViewerFixture},
-		directTeamLookupFixture("team-id"),
-		targetProjectFixture("null", "project-id", `[]`, true),
-		targetProjectFixture(
-			`"project-cursor-1"`, "other-project-id", `[{"id": "team-id", "key": "LIT", "name": "linctl-it"}]`, false,
-		),
-	}}
+	for name, resolvedProjectID := range map[string]string{"empty id": "", "other id": "other-project-id"} {
+		t.Run(name, func(t *testing.T) {
+			graphqlClient := &strictTargetGraphQLClient{fixtures: []strictTargetFixture{
+				{operation: "Viewer", variables: "null", payload: targetViewerFixture},
+				directTeamLookupFixture("team-id"),
+				targetProjectFixture("null", "project-id", `[]`, true),
+				targetProjectFixture(
+					`"project-cursor-1"`, resolvedProjectID, `[{"id": "team-id", "key": "LIT", "name": "linctl-it"}]`, false,
+				),
+			}}
 
-	_, err := ResolveTarget(context.Background(), graphqlClient, matchingTarget())
+			_, err := ResolveTarget(context.Background(), graphqlClient, matchingTarget())
 
-	require.ErrorIs(t, err, ErrTargetMismatch)
-	require.ErrorContains(t, err, "expected project_id=project-id resolved project_id=other-project-id")
-	require.Equal(t, len(graphqlClient.fixtures), graphqlClient.next)
+			require.ErrorIs(t, err, ErrTargetMismatch)
+			require.EqualError(t, err, "target mismatch: expected project_id=project-id resolved project_id="+resolvedProjectID)
+			require.Equal(t, len(graphqlClient.fixtures), graphqlClient.next)
+		})
+	}
 }
 
 func Test_requireTargetMatch_rejects_unresolved_pinned_project(t *testing.T) {

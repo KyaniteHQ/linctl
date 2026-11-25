@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -87,10 +88,14 @@ func Test_ListProjects_reports_ErrGraphQL_when_next_page_has_no_end_cursor(t *te
 }
 
 func Test_ListProjects_rejects_non_positive_limit_before_any_request(t *testing.T) {
-	graphqlClient := &strictTargetGraphQLClient{}
+	for _, limit := range []int{0, -1} {
+		t.Run(strconv.Itoa(limit), func(t *testing.T) {
+			recorder := &mutationRecordingClient{inner: fakeGraphQLClient{}}
 
-	_, err := ListProjects(context.Background(), graphqlClient, 0)
+			_, err := ListProjects(context.Background(), recorder, limit)
 
-	require.ErrorContains(t, err, "list projects: limit must be positive")
-	require.Zero(t, graphqlClient.next)
+			require.ErrorContains(t, err, "list projects: limit must be positive")
+			require.Empty(t, recorder.sent)
+		})
+	}
 }
