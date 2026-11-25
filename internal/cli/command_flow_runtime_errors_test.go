@@ -134,40 +134,37 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 		}
 	})
 
-	t.Run("issue list returns writer errors", func(t *testing.T) {
-		restore := useCommandRuntime(t, commandFlowFakeClient{})
-		defer restore()
-		command := NewRootCommand(context.Background(), BuildInfo{})
-		command.SetOut(commandFailingWriter{})
-		command.SetArgs([]string{"issue", "list"})
+	t.Run("writer error returns from command", func(t *testing.T) {
+		commands := [][]string{
+			{"issue", "list"},
+			{"doctor"},
+			{"project", "list"},
+			{"project", "members", "project-id"},
+			{"project", "updates", "project-id"},
+			{"project-milestone", "list", "project-id"},
+			{"release", "search", "mobile"},
+			{"semantic-search", "agent search"},
+			{"search", "documents", "agent search"},
+			{"search", "issues", "agent search"},
+			{"search", "projects", "agent search"},
+			{"issue", "history", "LIT-1"},
+			{"issue", "comments", "LIT-1"},
+			{"document", "list"},
+			{"sla-configuration", "list", "team-id"},
+		}
+		for _, args := range commands {
+			t.Run(strings.Join(args, " "), func(t *testing.T) {
+				restore := useCommandRuntime(t, commandFlowFakeClient{})
+				defer restore()
+				command := NewRootCommand(context.Background(), BuildInfo{})
+				command.SetOut(commandFailingWriter{})
+				command.SetArgs(args)
 
-		err := command.ExecuteContext(context.Background())
+				err := command.ExecuteContext(context.Background())
 
-		require.ErrorContains(t, err, "write line")
-	})
-
-	t.Run("doctor returns writer errors", func(t *testing.T) {
-		restore := useCommandRuntime(t, commandFlowFakeClient{})
-		defer restore()
-		command := NewRootCommand(context.Background(), BuildInfo{})
-		command.SetOut(commandFailingWriter{})
-		command.SetArgs([]string{"doctor"})
-
-		err := command.ExecuteContext(context.Background())
-
-		require.ErrorContains(t, err, "write line")
-	})
-
-	t.Run("project list returns writer errors", func(t *testing.T) {
-		restore := useCommandRuntime(t, commandFlowFakeClient{})
-		defer restore()
-		command := NewRootCommand(context.Background(), BuildInfo{})
-		command.SetOut(commandFailingWriter{})
-		command.SetArgs([]string{"project", "list"})
-
-		err := command.ExecuteContext(context.Background())
-
-		require.ErrorContains(t, err, "write line")
+				require.ErrorContains(t, err, "write line")
+			})
+		}
 	})
 
 	t.Run("project all reports sort errors", func(t *testing.T) {
@@ -198,18 +195,6 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 		err := command.ExecuteContext(context.Background())
 
 		require.ErrorContains(t, err, "use only one of --team-id or --project-id")
-	})
-
-	t.Run("SLA configuration list returns writer errors", func(t *testing.T) {
-		restore := useCommandRuntime(t, commandFlowFakeClient{})
-		defer restore()
-		command := NewRootCommand(context.Background(), BuildInfo{})
-		command.SetOut(commandFailingWriter{})
-		command.SetArgs([]string{"sla-configuration", "list", "team-id"})
-
-		err := command.ExecuteContext(context.Background())
-
-		require.ErrorContains(t, err, "write line")
 	})
 
 	t.Run("SLA configuration list reports sort errors", func(t *testing.T) {

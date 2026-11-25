@@ -19,7 +19,7 @@ import (
 type linearGraphQLRoundTripper struct {
 	payloads       map[string]string
 	urls           []string
-	authorizations []string
+	savedTokenSent []bool
 }
 
 func (linear *linearGraphQLRoundTripper) RoundTrip(request *http.Request) (*http.Response, error) {
@@ -30,7 +30,7 @@ func (linear *linearGraphQLRoundTripper) RoundTrip(request *http.Request) (*http
 		return nil, err
 	}
 	linear.urls = append(linear.urls, request.URL.String())
-	linear.authorizations = append(linear.authorizations, request.Header.Get("Authorization"))
+	linear.savedTokenSent = append(linear.savedTokenSent, request.Header.Get("Authorization") == "Bearer saved-access-token")
 	response := `{"errors":[{"message":"viewer unavailable"}]}`
 	if payload, ok := linear.payloads[body.OperationName]; ok {
 		response = `{"data":` + payload + `}`
@@ -140,10 +140,10 @@ func Test_AuthStatus_checks_readiness_against_linear(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			t.Chdir(t.TempDir())
+			paths := cliAuthTestPaths(t)
 			if test.injectedToken != "" {
 				t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", test.injectedToken)
 			}
-			paths := cliAuthTestPaths(t)
 			require.NoError(t, auth.NewStore(paths).Save(context.Background(), auth.State{
 				App:   auth.AppConfig{ClientID: "client-id", ClientSecret: "client-secret", Scopes: []string{"read"}},
 				Token: test.token,
@@ -212,7 +212,7 @@ func Test_AuthStatus_sends_the_saved_token_to_linear_and_logs_the_resolved_proje
 	require.NotEmpty(t, linear.urls)
 	for index, requestURL := range linear.urls {
 		require.Equal(t, "https://api.linear.app/graphql", requestURL)
-		require.Equal(t, "Bearer saved-access-token", linear.authorizations[index])
+		require.True(t, linear.savedTokenSent[index])
 	}
 	succeeded := ""
 	for line := range strings.Lines(stderr.String()) {

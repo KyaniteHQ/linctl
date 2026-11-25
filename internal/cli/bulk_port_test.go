@@ -13,10 +13,6 @@ import (
 	"github.com/KyaniteHQ/linctl/internal/client"
 )
 
-// fakeBulkCreator is an in-memory bulkIssueCreator: it records each request and
-// can fail at a chosen row, so the import create loop's accumulation and
-// per-row error wrapping are tested without canned GraphQL JSON or a real
-// batch target resolution.
 type fakeBulkCreator struct {
 	results []client.IssueSummary
 	failAt  int // 1-based row to fail at; 0 never fails
@@ -105,7 +101,7 @@ func Test_createImportedIssues_surfaces_stdout_write_errors(t *testing.T) {
 	}
 	requests := []client.IssueCreateRequest{{Title: "First"}}
 
-	err := createImportedIssues(context.Background(), command, &rootOptions{format: "compact"}, creator, requests)
+	err := createImportedIssues(context.Background(), command, &rootOptions{}, creator, requests)
 
 	require.ErrorContains(t, err, "stdout closed")
 }
@@ -120,7 +116,7 @@ func Test_createImportedIssues_surfaces_stderr_write_errors_for_failures(t *test
 	}
 	requests := []client.IssueCreateRequest{{Title: "First"}}
 
-	err := createImportedIssues(context.Background(), command, &rootOptions{format: "compact"}, creator, requests)
+	err := createImportedIssues(context.Background(), command, &rootOptions{}, creator, requests)
 
 	require.ErrorContains(t, err, "stderr closed")
 }
@@ -138,7 +134,7 @@ func Test_createImportedIssues_reports_rows_created_around_a_failed_row(t *testi
 	}
 	requests := []client.IssueCreateRequest{{Title: "First"}, {Title: "Second"}, {Title: "Third"}}
 
-	err := createImportedIssues(context.Background(), command, &rootOptions{format: "compact"}, creator, requests)
+	err := createImportedIssues(context.Background(), command, &rootOptions{}, creator, requests)
 
 	require.ErrorContains(t, err, "import completed with 1 failed rows")
 	require.ErrorContains(t, err, `import row 2 "Second"`)
@@ -153,7 +149,7 @@ func Test_createImportedIssues_surfaces_batch_resolution_error(t *testing.T) {
 	creator := &failingBatchCreator{err: client.ErrTargetMismatch}
 	requests := []client.IssueCreateRequest{{Title: "First"}}
 
-	err := createImportedIssues(context.Background(), command, &rootOptions{format: "compact"}, creator, requests)
+	err := createImportedIssues(context.Background(), command, &rootOptions{}, creator, requests)
 
 	require.ErrorIs(t, err, client.ErrTargetMismatch)
 }

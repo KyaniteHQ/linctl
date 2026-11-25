@@ -12,21 +12,32 @@ import (
 )
 
 func Test_CommandFlows_issue_bulk_export_reports_a_failed_write_and_leaves_no_file(t *testing.T) {
-	dir := t.TempDir()
-	var original syscall.Rlimit
-	require.NoError(t, syscall.Getrlimit(syscall.RLIMIT_FSIZE, &original))
-	limited := original
-	limited.Cur = 0
-	require.NoError(t, syscall.Setrlimit(syscall.RLIMIT_FSIZE, &limited))
-	restore := func() { require.NoError(t, syscall.Setrlimit(syscall.RLIMIT_FSIZE, &original)) }
-	t.Cleanup(restore)
+	tests := []struct {
+		name    string
+		message string
+	}{
+		{name: "issues.csv", message: "encode csv export"},
+		{name: "issues.json", message: "write json"},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			dir := t.TempDir()
+			var original syscall.Rlimit
+			require.NoError(t, syscall.Getrlimit(syscall.RLIMIT_FSIZE, &original))
+			limited := original
+			limited.Cur = 0
+			require.NoError(t, syscall.Setrlimit(syscall.RLIMIT_FSIZE, &limited))
+			restore := func() { require.NoError(t, syscall.Setrlimit(syscall.RLIMIT_FSIZE, &original)) }
+			t.Cleanup(restore)
 
-	_, err := runBulkFlow(t, commandFlowFakeClient{}, []string{"issue", "bulk-export", filepath.Join(dir, "issues.csv")})
-	restore()
+			_, err := runBulkFlow(t, commandFlowFakeClient{}, []string{"issue", "bulk-export", filepath.Join(dir, test.name)})
+			restore()
 
-	require.ErrorIs(t, err, syscall.EFBIG)
-	require.ErrorContains(t, err, "encode csv export")
-	entries, readErr := os.ReadDir(dir)
-	require.NoError(t, readErr)
-	require.Empty(t, entries)
+			require.ErrorIs(t, err, syscall.EFBIG)
+			require.ErrorContains(t, err, test.message)
+			entries, readErr := os.ReadDir(dir)
+			require.NoError(t, readErr)
+			require.Empty(t, entries)
+		})
+	}
 }

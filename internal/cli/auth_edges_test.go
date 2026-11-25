@@ -827,6 +827,8 @@ func Test_AuthRefresh_reports_missing_scope_without_saving_token(t *testing.T) {
 
 func cliAuthTestPaths(t *testing.T) auth.Paths {
 	t.Helper()
+	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "")
+	t.Setenv("LINCTL_DEBUG_JSON", "")
 	root := t.TempDir()
 	return auth.Paths{
 		AppConfigPath: filepath.Join(root, "config", "linctl", "auth-app.json"),

@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/Khan/genqlient/graphql"
@@ -68,13 +69,38 @@ func Test_CommandFlows_issue_import_accepts_an_uppercase_extension(t *testing.T)
 	require.Equal(t, "LIT-2 Created issue [Todo]\n", stdout)
 }
 
+type importTitleCaptureClient struct {
+	mu     sync.Mutex
+	titles []string
+}
+
+func (capture *importTitleCaptureClient) MakeRequest(
+	ctx context.Context,
+	request *graphql.Request,
+	response *graphql.Response,
+) error {
+	if request.OpName == "IssueCreate" {
+		title, err := requestVariable[string](request, "input", "title")
+		if err != nil {
+			return err
+		}
+		capture.mu.Lock()
+		capture.titles = append(capture.titles, title)
+		capture.mu.Unlock()
+	}
+
+	return commandFlowFakeClient{}.MakeRequest(ctx, request, response)
+}
+
 func Test_CommandFlows_issue_import_creates_from_json(t *testing.T) {
 	path := writeImportFile(t, "rows.json", `[{"title":"First"},{"team":"LIT","title":"Second"}]`)
+	capture := &importTitleCaptureClient{}
 
-	stdout, err := runBulkFlow(t, commandFlowFakeClient{}, []string{"issue", "import", path})
+	stdout, err := runBulkFlow(t, capture, []string{"issue", "import", path})
 
 	require.NoError(t, err)
 	require.Equal(t, "LIT-2 Created issue [Todo]\nLIT-2 Created issue [Todo]\n", stdout)
+	require.ElementsMatch(t, []string{"First", "Second"}, capture.titles)
 }
 
 func Test_CommandFlows_issue_import_creates_from_csv(t *testing.T) {
@@ -272,12 +298,14 @@ func Test_CommandFlows_issue_import_surfaces_input_errors(t *testing.T) {
 	}
 }
 
-func Test_importRowToRequest_does_not_map_state_name_to_type(t *testing.T) {
-	request, err := importRowToRequest(issueImportRow{Title: "First", State: "started"}, "LIT")
+func Test_CommandFlows_issue_import_refuses_a_state_type_as_a_state_name(t *testing.T) {
+	path := writeImportFile(t, "rows.json", `[{"title":"First","state":"completed"}]`)
 
-	require.NoError(t, err)
-	require.Equal(t, "started", request.StateSelector)
-	require.Empty(t, request.StateType)
+	stdout, err := runBulkFlow(t, commandFlowFakeClient{}, []string{"issue", "import", path})
+
+	require.ErrorContains(t, err, `unknown workflow state "completed"`)
+	require.Equal(t, "INVALID_WRITE", errorCode(err))
+	require.Empty(t, stdout)
 }
 
 func Test_CommandFlows_issue_import_selects_exact_state_name(t *testing.T) {
@@ -367,8 +395,12 @@ func Test_CommandFlows_issue_bulk_export_writes_file(t *testing.T) {
 
 	csvData, err := os.ReadFile(csvPath) //nolint:gosec // G304: test-controlled temp path.
 	require.NoError(t, err)
-	require.Contains(t, string(csvData), "identifier,title,state,priority,assignee,project,url")
-	require.Contains(t, string(csvData), "LIT-1,Listed issue,Todo")
+	records, err := csv.NewReader(bytes.NewReader(csvData)).ReadAll()
+	require.NoError(t, err)
+	require.Equal(t, [][]string{
+		{"identifier", "title", "state", "priority", "assignee", "project", "url"},
+		{"LIT-1", "Listed issue", "Todo", "No priority", "", "Pinned project", "https://linear.app/kyanite/issue/LIT-1"},
+	}, records)
 }
 
 func Test_CommandFlows_issue_bulk_export_honors_output_flags(t *testing.T) {

@@ -23,8 +23,8 @@ import (
 )
 
 func Test_AuthLogin_builds_authorization_url_with_app_actor_by_default(t *testing.T) {
-	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "injected-access-token")
 	paths := cliAuthTestPaths(t)
+	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "injected-access-token")
 	saveAuthLoginApp(t, paths)
 	restorePaths := useAuthPaths(t, paths)
 	defer restorePaths()

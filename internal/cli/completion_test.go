@@ -126,6 +126,8 @@ func Test_ProjectGet_completes_only_the_first_argument(t *testing.T) {
 
 func completeCommand(t *testing.T, args []string) string {
 	t.Helper()
+	t.Setenv("LINCTL_COMPLETION_DESCRIPTIONS", "true")
+	t.Setenv("COBRA_COMPLETION_DESCRIPTIONS", "true")
 	stdout := bytes.Buffer{}
 	command := NewRootCommand(context.Background(), BuildInfo{})
 	command.SetOut(&stdout)
