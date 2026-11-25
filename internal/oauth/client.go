@@ -2,7 +2,6 @@
 package oauth
 
 import (
-	"cmp"
 	"context"
 	"encoding/json"
 	"errors"
@@ -17,24 +16,18 @@ import (
 )
 
 const (
-	defaultTokenEndpoint      = "https://api.linear.app/oauth/token" //nolint:gosec // endpoint URL, not a credential.
-	defaultRevocationEndpoint = "https://api.linear.app/oauth/revoke"
+	linearTokenEndpoint      = "https://api.linear.app/oauth/token" //nolint:gosec // endpoint URL, not a credential.
+	linearRevocationEndpoint = "https://api.linear.app/oauth/revoke"
 )
 
 // ClientConfig configures a Linear OAuth token client.
 type ClientConfig struct {
-	Endpoint           string
-	RevocationEndpoint string
-	HTTPClient         *http.Client
-	Now                func() time.Time
+	HTTPClient *http.Client
 }
 
 // Client exchanges OAuth grants with Linear.
 type Client struct {
-	endpoint           string
-	revocationEndpoint string
-	httpClient         *http.Client
-	now                func() time.Time
+	httpClient *http.Client
 }
 
 // AuthorizationCodeRequest describes a PKCE authorization-code token exchange.
@@ -72,17 +65,8 @@ func NewClient(config ClientConfig) *Client {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
 	}
-	now := config.Now
-	if now == nil {
-		now = time.Now
-	}
 
-	return &Client{
-		endpoint:           cmp.Or(config.Endpoint, defaultTokenEndpoint),
-		revocationEndpoint: cmp.Or(config.RevocationEndpoint, defaultRevocationEndpoint),
-		httpClient:         httpClient,
-		now:                now,
-	}
+	return &Client{httpClient: httpClient}
 }
 
 // ExchangeAuthorizationCode exchanges a PKCE authorization code for tokens.
@@ -142,7 +126,7 @@ func (client *Client) RevokeToken(ctx context.Context, request RevocationRequest
 		form.Set("token_type_hint", request.TokenTypeHint)
 	}
 
-	_, err := client.postForm(ctx, client.revocationEndpoint, form, "revoke")
+	_, err := client.postForm(ctx, linearRevocationEndpoint, form, "revoke")
 
 	return err
 }
@@ -188,7 +172,7 @@ func (client *Client) postForm(
 }
 
 func (client *Client) exchange(ctx context.Context, form url.Values) (auth.TokenState, error) {
-	body, err := client.postForm(ctx, client.endpoint, form, "token")
+	body, err := client.postForm(ctx, linearTokenEndpoint, form, "token")
 	if err != nil {
 		return auth.TokenState{}, err
 	}
@@ -198,7 +182,7 @@ func (client *Client) exchange(ctx context.Context, form url.Values) (auth.Token
 		return auth.TokenState{}, fmt.Errorf("decode oauth token response: %w", err)
 	}
 
-	return response.tokenState(client.now()), nil
+	return response.tokenState(time.Now()), nil
 }
 
 const maxTokenResponseBytes = 1 << 20
