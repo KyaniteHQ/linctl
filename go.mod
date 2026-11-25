@@ -1,6 +1,6 @@
 module github.com/KyaniteHQ/linctl
 
-go 1.27.3
+go 1.27.4
 
 require (
 	github.com/Khan/genqlient v0.8.1
