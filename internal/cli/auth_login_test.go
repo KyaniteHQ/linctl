@@ -327,7 +327,7 @@ func Test_AuthLogin_stops_waiting_for_the_callback_when_cancelled(t *testing.T) 
 	restore := useAuthCommandHooks(t, paths, fakeOAuth, &fakeAuthReadinessChecker{report: readyAuthReport("app")})
 	defer restore()
 	stdin, stdinWriter := io.Pipe()
-	defer stdinWriter.Close()
+	defer func() { require.NoError(t, stdinWriter.Close()) }()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	prompted := &signalingWriter{written: make(chan struct{})}
