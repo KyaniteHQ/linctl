@@ -117,7 +117,9 @@ func (guard *guardedClient) updateDocument(
 // is the only parent the guard can prove.
 func requireDocumentProjectPin(expected config.Target) error {
 	if expected.ProjectID == "" {
-		return fmt.Errorf("%w: document writes require a pinned project (set project_id in .linctl.toml)", ErrWriteInvalid)
+		return fmt.Errorf(
+			"%w: document writes require a pinned project (set project_id in .linctl.toml)", ErrWriteInvalid,
+		)
 	}
 
 	return nil
