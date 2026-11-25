@@ -467,4 +467,3 @@ func Test_CommandFlows_issue_bulk_export_neutralizes_csv_formula_cells(t *testin
 		{"'=CMD", `'=HYPERLINK("http://evil/","click")`, "'+cmd", "'-1+1", "'@SUM(1)", "'\tTAB", "'\rCR"},
 	}, records)
 }
-
