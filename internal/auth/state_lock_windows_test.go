@@ -44,7 +44,9 @@ func Test_lockStateFile_waits_for_a_held_lock_until_release_or_cancel(t *testing
 	time.AfterFunc(50*time.Millisecond, func() {
 		released <- unlockStateFile(holder)
 	})
-	require.NoError(t, lockStateFile(context.Background(), waiter))
+	acquireCtx, cancelAcquire := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancelAcquire()
+	require.NoError(t, lockStateFile(acquireCtx, waiter))
 	require.NoError(t, <-released)
 	require.NoError(t, unlockStateFile(waiter))
 }

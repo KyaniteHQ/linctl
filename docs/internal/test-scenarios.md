@@ -1101,7 +1101,7 @@ Success is pass/fail:
 
 205. OAuth-only product auth direction
    - Success: user-facing setup docs describe OAuth app auth setup, runtime missing-auth errors point to `linctl auth configure` followed by `linctl auth app` or `linctl auth login`, legacy API-key env vars and config token fields remain ignored by product auth, and stale API-key setup guidance is absent from public docs.
-   - Evidence: `go test ./internal/cli`, `Test_CommandRuntime_loads_config_and_requires_token`; `rg -n "LINEAR_OAUTH|LINCTL_TOKEN|LINEAR_API_KEY|lin_api_|Credential precedence|personal API|API key" README.md CLAUDE.md skills/linctl/SKILL.md`.
+   - Evidence: `go test ./internal/cli ./internal/config`, `Test_CommandRuntime_loads_config_and_requires_token` (legacy `LINCTL_TOKEN` is refused), `Test_Load_resolves_repo_profile_when_present` (configs that still hold a `token` field load); `rg -n "LINEAR_OAUTH|LINCTL_TOKEN|LINEAR_API_KEY|lin_api_|Credential precedence|personal API|API key" README.md CLAUDE.md skills/linctl/SKILL.md`.
 
 206. OAuth live gate
    - Success: `task live-oauth` requires the dedicated OAuth fixture env, runs `linctl auth configure`, `linctl auth app`, and `linctl auth status` against the pinned target, asserts app actor readiness, and reports only redacted auth status. Push CI runs the same `live-oauth` gate when the fixture secrets are present, and the scheduled/manual integration workflow runs `live-oauth`, integration tests, and live smoke. `task live-smoke` bootstraps temporary OAuth auth state through the same harness before the live smoke commands. GitHub Actions skips live steps when OAuth fixture env is absent.
