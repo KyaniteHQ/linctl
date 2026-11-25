@@ -50,7 +50,7 @@ func Test_AuthLogin_builds_authorization_url_with_app_actor_by_default(t *testin
 	require.Equal(t, "http://127.0.0.1:8484/callback", query.Get("redirect_uri"))
 	require.Equal(t, "read,write", query.Get("scope"))
 	require.Equal(t, "state-123", query.Get("state"))
-	require.Equal(t, "challenge-123", query.Get("code_challenge"))
+	require.Regexp(t, `^[A-Za-z0-9_-]{43}$`, query.Get("code_challenge"))
 	require.Equal(t, "S256", query.Get("code_challenge_method"))
 	require.Equal(t, "app", query.Get("actor"))
 	require.Equal(t, "consent", query.Get("prompt"))
@@ -232,27 +232,6 @@ func Test_AuthLogin_reports_app_configuration_errors(t *testing.T) {
 	})
 }
 
-func Test_AuthLogin_reports_pkce_generation_error(t *testing.T) {
-	paths := cliAuthTestPaths(t)
-	saveAuthLoginApp(t, paths)
-	restorePaths := useAuthPaths(t, paths)
-	defer restorePaths()
-	originalPKCE := generateAuthLoginPKCE
-	generateAuthLoginPKCE = func() (oauth.PKCE, error) {
-		return oauth.PKCE{}, errors.New("pkce failed")
-	}
-	defer func() {
-		generateAuthLoginPKCE = originalPKCE
-	}()
-
-	err := execute(context.Background(), BuildInfo{}, nil, &bytes.Buffer{}, &bytes.Buffer{}, []string{
-		"auth",
-		"login",
-	})
-
-	require.ErrorContains(t, err, "pkce failed")
-}
-
 func Test_AuthLogin_state_mismatch_refuses_exchange_and_save(t *testing.T) {
 	paths := cliAuthTestPaths(t)
 	saveAuthLoginApp(t, paths)
@@ -320,13 +299,15 @@ func Test_AuthLogin_callback_url_exchanges_and_saves_after_readiness(t *testing.
 
 	require.NoError(t, err)
 	require.Equal(t, 1, fakeOAuth.authorizationCodeCalls)
+	exchange := fakeOAuth.authorizationCodeRequest
+	require.Regexp(t, `^[A-Za-z0-9_-]{43}$`, exchange.CodeVerifier)
+	exchange.CodeVerifier = ""
 	require.Equal(t, oauth.AuthorizationCodeRequest{
 		Code:         "code-123",
 		RedirectURI:  "http://127.0.0.1:8484/callback",
 		ClientID:     "client-id",
 		ClientSecret: "client-secret",
-		CodeVerifier: "verifier-123",
-	}, fakeOAuth.authorizationCodeRequest)
+	}, exchange)
 	require.Equal(t, "oauth-access-token", fakeReadiness.accessToken)
 	require.Equal(t, "app", fakeReadiness.expectedActor)
 	require.Equal(t, []string{"read", "write"}, fakeReadiness.requiredScopes)
@@ -408,8 +389,11 @@ func Test_AuthLogin_reads_manual_callback_from_stdin_with_same_state(t *testing.
 	require.NoError(t, err)
 	require.Equal(t, 1, fakeOAuth.authorizationCodeCalls)
 	require.Equal(t, "stdin-code", fakeOAuth.authorizationCodeRequest.Code)
-	require.Equal(t, "verifier-123", fakeOAuth.authorizationCodeRequest.CodeVerifier)
-	require.Contains(t, stderr.String(), "state-123")
+	authorizeURL := authLoginAuthorizeURL(t, strings.TrimSpace(stderr.String()))
+	require.Equal(t, "state-123", authorizeURL.Query().Get("state"))
+	require.Equal(t,
+		oauth.CodeChallengeS256(fakeOAuth.authorizationCodeRequest.CodeVerifier),
+		authorizeURL.Query().Get("code_challenge"))
 	require.NotContains(t, stdout.String(), "oauth-access-token")
 	require.NotContains(t, stdout.String(), "oauth-refresh-token")
 	require.NotContains(t, stderr.String(), "client-secret")
@@ -631,22 +615,13 @@ func saveAuthLoginApp(t *testing.T, paths auth.Paths) {
 
 func useAuthLoginGeneratedValues(t *testing.T) func() {
 	t.Helper()
-	originalPKCE := generateAuthLoginPKCE
 	originalState := generateAuthLoginState
-	generateAuthLoginPKCE = func() (oauth.PKCE, error) {
-		return oauth.PKCE{
-			CodeVerifier:        "verifier-123",
-			CodeChallenge:       "challenge-123",
-			CodeChallengeMethod: "S256",
-		}, nil
-	}
 	generateAuthLoginState = func() string {
 		return "state-123"
 	}
 
 	return func() {
 		generateAuthLoginState = originalState
-		generateAuthLoginPKCE = originalPKCE
 	}
 }
 

@@ -22,10 +22,7 @@ const (
 	userActor               = "user"
 )
 
-var (
-	generateAuthLoginPKCE  = oauth.GeneratePKCE
-	generateAuthLoginState = rand.Text
-)
+var generateAuthLoginState = rand.Text
 
 type authLoginFlags struct {
 	actor    string
@@ -78,10 +75,8 @@ func runAuthLogin(
 	if err != nil {
 		return err
 	}
-	pkce, state, err := newAuthLoginProof()
-	if err != nil {
-		return err
-	}
+	pkce := oauth.GeneratePKCE()
+	state := generateAuthLoginState()
 	scopes := requiredScopes(app, actor)
 	report := newAuthLoginStartReport(app, actor, scopes, state, pkce)
 	callback, err := authLoginCallback(command, options, strings.TrimSpace(flags.callback), report)
@@ -127,15 +122,6 @@ func authLoginApp(authContext authCommandContext) (auth.AppConfig, error) {
 	}
 
 	return app, nil
-}
-
-func newAuthLoginProof() (oauth.PKCE, string, error) {
-	pkce, err := generateAuthLoginPKCE()
-	if err != nil {
-		return oauth.PKCE{}, "", err
-	}
-
-	return pkce, generateAuthLoginState(), nil
 }
 
 func newAuthLoginStartReport(

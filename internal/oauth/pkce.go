@@ -16,7 +16,7 @@ type PKCE struct {
 }
 
 // GeneratePKCE returns a fresh PKCE verifier and S256 challenge.
-func GeneratePKCE() (PKCE, error) {
+func GeneratePKCE() PKCE {
 	random := make([]byte, pkceVerifierBytes)
 	_, _ = rand.Read(random)
 
@@ -26,7 +26,7 @@ func GeneratePKCE() (PKCE, error) {
 		CodeVerifier:        verifier,
 		CodeChallenge:       CodeChallengeS256(verifier),
 		CodeChallengeMethod: "S256",
-	}, nil
+	}
 }
 
 // CodeChallengeS256 returns the RFC 7636 S256 challenge for a verifier.

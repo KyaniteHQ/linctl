@@ -11,9 +11,8 @@ import (
 func Test_GeneratePKCE_always_returns_s256_challenge(t *testing.T) {
 	t.Parallel()
 
-	pkce, err := oauth.GeneratePKCE()
+	pkce := oauth.GeneratePKCE()
 
-	require.NoError(t, err)
 	require.Len(t, pkce.CodeVerifier, 43)
 	require.NotEqual(t, pkce.CodeVerifier, pkce.CodeChallenge)
 	require.Equal(t, "S256", pkce.CodeChallengeMethod)
