@@ -92,6 +92,7 @@ func Test_AuthStatus_checks_readiness_against_linear(t *testing.T) {
 		viewerDown    bool
 		args          []string
 		wantActor     string
+		wantUnpinned  bool
 		wantError     string
 		wantErrorCode string
 	}{
@@ -118,10 +119,25 @@ func Test_AuthStatus_checks_readiness_against_linear(t *testing.T) {
 			wantErrorCode: "MISSING_SCOPE",
 		},
 		{
-			name:          "no pinned target",
+			name:         "no pinned target proves the actor and reports the target as not configured",
+			token:        appToken,
+			viewerIsApp:  true,
+			args:         []string{"--json"},
+			wantActor:    "app",
+			wantUnpinned: true,
+		},
+		{
+			name:          "a pin without a team key",
 			token:         appToken,
 			viewerIsApp:   true,
-			args:          []string{"--json"},
+			args:          []string{"--json", "--org", "org-id"},
+			wantErrorCode: "AUTH_TARGET_NOT_CONFIGURED",
+		},
+		{
+			name:          "a pin with only a project",
+			token:         appToken,
+			viewerIsApp:   true,
+			args:          []string{"--json", "--project", "project-id"},
 			wantErrorCode: "AUTH_TARGET_NOT_CONFIGURED",
 		},
 		{
@@ -175,6 +191,10 @@ func Test_AuthStatus_checks_readiness_against_linear(t *testing.T) {
 			var report authStatusReport
 			require.NoError(t, json.Unmarshal(stdout.Bytes(), &report))
 			require.Equal(t, test.wantActor, report.Actor)
+			if test.wantUnpinned {
+				require.Equal(t, authTargetStatusReport{Status: "not_configured"}, report.Target)
+				return
+			}
 			require.Equal(t, "ready", report.Target.Status)
 			require.Equal(t, "team-id", report.Target.Resolved["team_id"])
 		})

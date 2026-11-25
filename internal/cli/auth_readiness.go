@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Khan/genqlient/graphql"
+
 	"github.com/KyaniteHQ/linctl/internal/auth"
 	"github.com/KyaniteHQ/linctl/internal/client"
 	"github.com/KyaniteHQ/linctl/internal/config"
@@ -101,12 +103,28 @@ func defaultCheckAuthReadiness(ctx context.Context, request authReadinessRequest
 		Token:   client.OAuthAccessToken(request.AccessToken),
 		Timeout: request.Timeout,
 	})
-	target, err := client.ResolveTarget(ctx, graphqlClient, request.ExpectedTarget)
+	target, err := resolveReadinessTarget(ctx, graphqlClient, request.ExpectedTarget)
 	if err != nil {
 		return authReadinessReport{}, err
 	}
 
 	return authReadinessReport{Actor: actorFromViewer(target.Viewer), Target: target}, nil
+}
+
+func resolveReadinessTarget(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	expected config.Target,
+) (client.ResolvedTarget, error) {
+	if targetUnpinned(expected) {
+		return client.ResolveViewer(ctx, graphqlClient)
+	}
+
+	return client.ResolveTarget(ctx, graphqlClient, expected)
+}
+
+func targetUnpinned(target config.Target) bool {
+	return target.OrgID == "" && target.TeamKey == "" && target.TeamID == "" && target.ProjectID == ""
 }
 
 func actorFromViewer(viewer client.TargetViewer) string {
@@ -131,7 +149,7 @@ func mapAuthReadinessError(err error) error {
 	case errors.Is(err, client.ErrTargetNotConfigured):
 		return auth.WrapError(
 			auth.ErrorCodeTargetNotConfigured,
-			"no pinned target is configured: set org_id, team_key, and team_id in .linctl.toml",
+			"the pinned target is incomplete: set org_id and team_key in .linctl.toml",
 			err,
 		)
 	case errors.Is(err, client.ErrTargetMismatch):

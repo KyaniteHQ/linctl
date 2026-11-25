@@ -71,7 +71,8 @@ linctl auth status
 
 The output shows the actor, the granted scopes, and an expiry. linctl checks this against Linear
 live, so a good status means that the credential really works. It does not only mean that a file
-exists on disk.
+exists on disk. Until you pin a target in the next step, the status reports the target as
+`not_configured`, and every write refuses.
 
 linctl never prints a secret. The auth output reports each secret as `set` or `missing`.
 

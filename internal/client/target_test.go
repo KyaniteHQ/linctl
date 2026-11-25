@@ -383,6 +383,36 @@ func Test_ResolveTarget_refuses_when_project_next_page_fetch_fails(t *testing.T)
 	require.ErrorContains(t, err, "resolve project")
 }
 
+func Test_ResolveViewer_reports_viewer_and_organization_without_confirming_a_target(t *testing.T) {
+	graphqlClient := fakeGraphQLClient{
+		"Viewer": `{
+			"viewer": {
+				"id": "app-user-id",
+				"name": "linctl",
+				"displayName": "linctl",
+				"email": "app@example.com",
+				"app": true,
+				"organization": {"id": "org-id", "name": "Kyanite", "urlKey": "kyanite"}
+			}
+		}`,
+	}
+
+	target, err := ResolveViewer(context.Background(), graphqlClient)
+
+	require.NoError(t, err)
+	require.Equal(t, "app-user-id", target.Viewer.ID)
+	require.True(t, target.Viewer.App)
+	require.Equal(t, TargetOrg{ID: "org-id", Name: "Kyanite", URLKey: "kyanite"}, target.Org)
+	require.Empty(t, target.Team)
+	require.False(t, target.Confirmed)
+}
+
+func Test_ResolveViewer_wraps_a_failed_viewer_query(t *testing.T) {
+	_, err := ResolveViewer(context.Background(), fakeGraphQLClient{})
+
+	require.ErrorContains(t, err, "resolve viewer: missing fake response for Viewer")
+}
+
 type fakeGraphQLClient map[string]string
 
 func (client fakeGraphQLClient) MakeRequest(

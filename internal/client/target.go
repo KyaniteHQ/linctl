@@ -122,6 +122,17 @@ func ResolveTarget(ctx context.Context, graphqlClient graphql.Client, expected c
 	return newResolvedTarget(viewer.Viewer, resolvedTeam, project, hasProject, expected, resolved), nil
 }
 
+// ResolveViewer resolves the viewer and organization of the active credential when no
+// target is pinned. The result is not Confirmed, because it proves no team or project.
+func ResolveViewer(ctx context.Context, graphqlClient graphql.Client) (ResolvedTarget, error) {
+	viewer, err := gql.Viewer(ctx, graphqlClient)
+	if err != nil {
+		return ResolvedTarget{}, fmt.Errorf("resolve viewer: %w", err)
+	}
+
+	return ResolvedTarget{Viewer: targetViewer(viewer.Viewer), Org: targetOrg(viewer.Viewer)}, nil
+}
+
 // requireExpectedTarget rejects a target that names no team at all. team_id is
 // optional: a team key is unique inside an organization, so org_id plus team_key
 // already identifies the team, and the id is resolved from the active credential.
@@ -225,19 +236,8 @@ func newResolvedTarget(
 	resolved config.Target,
 ) ResolvedTarget {
 	return ResolvedTarget{
-		Viewer: TargetViewer{
-			ID:          viewer.Id,
-			Name:        viewer.Name,
-			DisplayName: viewer.DisplayName,
-			Email:       viewer.Email,
-			App:         viewer.App,
-			Assignable:  viewer.IsAssignable,
-		},
-		Org: TargetOrg{
-			ID:     viewer.Organization.Id,
-			Name:   viewer.Organization.Name,
-			URLKey: viewer.Organization.UrlKey,
-		},
+		Viewer: targetViewer(viewer),
+		Org:    targetOrg(viewer),
 		Team: TargetTeam{
 			ID:   team.Id,
 			Key:  team.Key,
@@ -247,6 +247,25 @@ func newResolvedTarget(
 		Expected:  expected,
 		Resolved:  resolved,
 		Confirmed: true,
+	}
+}
+
+func targetViewer(viewer gql.ViewerViewerUser) TargetViewer {
+	return TargetViewer{
+		ID:          viewer.Id,
+		Name:        viewer.Name,
+		DisplayName: viewer.DisplayName,
+		Email:       viewer.Email,
+		App:         viewer.App,
+		Assignable:  viewer.IsAssignable,
+	}
+}
+
+func targetOrg(viewer gql.ViewerViewerUser) TargetOrg {
+	return TargetOrg{
+		ID:     viewer.Organization.Id,
+		Name:   viewer.Organization.Name,
+		URLKey: viewer.Organization.UrlKey,
 	}
 }
 

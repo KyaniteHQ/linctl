@@ -56,7 +56,7 @@ The stable auth command surface is:
 
 The app actor is the default OAuth actor. Browser login sends `actor=app` unless the user passes `--actor user`. User attribution remains available, but it is explicit.
 
-Setup and status commands must prove readiness before reporting success. Saving token bytes is not enough. linctl must verify the expected actor when available from the readiness path, required scopes from token state, and the Resolved Target before treating auth as usable.
+Setup and status commands must prove readiness before reporting success. Saving token bytes is not enough. linctl must verify the expected actor when available from the readiness path, required scopes from token state, and, when a Pinned Target is set, the Resolved Target before treating auth as usable. With no pinned target at all, readiness proves actor and scopes and reports the target as not configured, so a first login can precede `linctl init`; guarded writes still refuse without a pin.
 
 ### 5. Browser Login Uses PKCE And A Pasted Callback
 

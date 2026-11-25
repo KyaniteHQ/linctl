@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/auth"
+	"github.com/KyaniteHQ/linctl/internal/client"
 	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
@@ -83,11 +84,19 @@ func newAuthStatusReport(
 		Scopes:    slices.Clone(token.Scopes),
 		ExpiresAt: token.ExpiresAt,
 		TokenType: token.TokenType,
-		Target: authTargetStatusReport{
-			Status:   "ready",
-			Expected: targetMap(readiness.Target.Expected),
-			Resolved: targetMap(readiness.Target.Resolved),
-		},
+		Target:    authTargetStatus(readiness.Target),
+	}
+}
+
+func authTargetStatus(target client.ResolvedTarget) authTargetStatusReport {
+	if !target.Confirmed {
+		return authTargetStatusReport{Status: "not_configured"}
+	}
+
+	return authTargetStatusReport{
+		Status:   "ready",
+		Expected: targetMap(target.Expected),
+		Resolved: targetMap(target.Resolved),
 	}
 }
 
