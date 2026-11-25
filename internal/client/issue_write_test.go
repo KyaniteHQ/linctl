@@ -76,6 +76,41 @@ func Test_UpdateIssue_refuses_label_from_another_team(t *testing.T) {
 	require.False(t, recorder.sentOperation("IssueUpdate"))
 }
 
+func Test_UpdateIssue_refuses_when_issue_team_differs_from_pin(t *testing.T) {
+	testCases := []struct {
+		name    string
+		teamID  string
+		teamKey string
+	}{
+		{name: "pinned team id with another key", teamID: "team-id", teamKey: "ABC"},
+		{name: "pinned team key with another id", teamID: "other-team", teamKey: "LIT"},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			recorder := &mutationRecordingClient{inner: issueWriteFakeClient(map[string]string{
+				"issue": `{"issue":` + issueJSONWithTeam(issueFixture{
+					Identifier: "LIT-3",
+					Title:      "wrong team",
+					ProjectID:  "project-id",
+					Project:    "fixture",
+					StateID:    "state-id",
+					State:      "Todo",
+					StateType:  "unstarted",
+				}, testCase.teamID, testCase.teamKey) + `}`,
+			})}
+
+			_, err := UpdateIssue(context.Background(), recorder, matchingTarget(), IssueUpdateRequest{
+				ID:    "LIT-3",
+				Title: "new title",
+			})
+
+			require.ErrorIs(t, err, ErrTargetMismatch)
+			require.False(t, recorder.sentOperation("IssueUpdate"))
+		})
+	}
+}
+
 func Test_UpdateIssue_refuses_when_issue_project_does_not_match_pinned_project(t *testing.T) {
 	// Given
 	graphqlClient := issueWriteFakeClient(map[string]string{
@@ -698,7 +733,7 @@ func Test_CreateIssue_sets_assignee_label_and_due_date(t *testing.T) {
 	// When
 	issue, err := CreateIssue(context.Background(), recorder, matchingTarget(), IssueCreateRequest{
 		Title:      "b1",
-		AssigneeID: "user-id",
+		AssigneeID: "teammate-id",
 		LabelIDs:   []string{"label-id"},
 		DueDate:    "2026-07-01",
 	})
@@ -711,7 +746,7 @@ func Test_CreateIssue_sets_assignee_label_and_due_date(t *testing.T) {
 			"title": "b1",
 			"teamId": "team-id",
 			"projectId": "project-id",
-			"assigneeId": "user-id",
+			"assigneeId": "teammate-id",
 			"labelIds": ["label-id"],
 			"dueDate": "2026-07-01"
 		}
@@ -744,7 +779,7 @@ func Test_UpdateIssue_sets_assignee_label_and_due_date(t *testing.T) {
 	// When
 	issue, err := UpdateIssue(context.Background(), recorder, matchingTarget(), IssueUpdateRequest{
 		ID:         "LIT-1",
-		AssigneeID: "user-id",
+		AssigneeID: "teammate-id",
 		LabelIDs:   []string{"label-id"},
 		DueDate:    "2026-07-01",
 	})
@@ -755,7 +790,7 @@ func Test_UpdateIssue_sets_assignee_label_and_due_date(t *testing.T) {
 	require.JSONEq(t, `{
 		"id": "LIT-1",
 		"input": {
-			"assigneeId": "user-id",
+			"assigneeId": "teammate-id",
 			"labelIds": ["label-id"],
 			"dueDate": "2026-07-01"
 		}
@@ -1007,9 +1042,13 @@ func Test_CreateIssues_defaults_and_clamps_concurrency(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(strconv.Itoa(test.concurrency), func(t *testing.T) {
-			graphqlClient := &inFlightIssueCreateClient{inner: issueWriteFakeClient(map[string]string{
-				"IssueCreate": `{"issueCreate":{"success":true,"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}}`,
-			})}
+			graphqlClient := &inFlightIssueCreateClient{
+				inner: issueWriteFakeClient(map[string]string{
+					"IssueCreate": `{"issueCreate":{"success":true,"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}}`,
+				}),
+				want:     test.maxInFlight,
+				released: make(chan struct{}),
+			}
 			requests := make([]IssueCreateRequest, 16)
 			for index := range requests {
 				requests[index] = IssueCreateRequest{Title: "row"}
@@ -1022,17 +1061,20 @@ func Test_CreateIssues_defaults_and_clamps_concurrency(t *testing.T) {
 			for _, outcome := range outcomes {
 				require.NoError(t, outcome.Err)
 			}
-			require.LessOrEqual(t, graphqlClient.peak, test.maxInFlight)
+			require.Equal(t, test.maxInFlight, graphqlClient.peak)
 		})
 	}
 }
 
 type inFlightIssueCreateClient struct {
-	inner graphql.Client
+	inner    graphql.Client
+	want     int
+	released chan struct{}
 
-	mu       sync.Mutex
-	inFlight int
-	peak     int
+	mu          sync.Mutex
+	inFlight    int
+	peak        int
+	releaseOnce sync.Once
 }
 
 func (client *inFlightIssueCreateClient) MakeRequest(
@@ -1046,13 +1088,25 @@ func (client *inFlightIssueCreateClient) MakeRequest(
 	client.mu.Lock()
 	client.inFlight++
 	client.peak = max(client.peak, client.inFlight)
+	overshoot := client.inFlight > client.want
 	client.mu.Unlock()
-	time.Sleep(20 * time.Millisecond)
+	if overshoot {
+		client.release()
+	}
+	select {
+	case <-client.released:
+	case <-time.After(200 * time.Millisecond):
+		client.release()
+	}
 	client.mu.Lock()
 	client.inFlight--
 	client.mu.Unlock()
 
 	return client.inner.MakeRequest(ctx, request, response)
+}
+
+func (client *inFlightIssueCreateClient) release() {
+	client.releaseOnce.Do(func() { close(client.released) })
 }
 
 func Test_CreateIssues_returns_error_when_target_resolution_fails(t *testing.T) {

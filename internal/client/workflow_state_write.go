@@ -162,7 +162,6 @@ func (guard *guardedClient) finishWorkflowStateWrite(
 	}
 
 	return finishReconciledWrite(
-		WorkflowStateWriteRetryClass(),
 		observed,
 		readErr,
 		writeErr,

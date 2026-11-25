@@ -198,7 +198,7 @@ func (guard *guardedClient) finishIssueCreate(
 		return guard.finishStateWrite(ctx, issueID, stateID, &created.IssueCreate.Issue.IssueSummaryFields, writeErr)
 	}
 	if writeErr != nil {
-		return applyMutationRetryClass(IssueStateWriteRetryClass(), IssueSummary{}, false, writeErr)
+		return IssueSummary{}, writeErr
 	}
 
 	return createdIssueSummary(created), nil
@@ -219,13 +219,13 @@ func (guard *guardedClient) reconcileMissingCreate(
 		return IssueSummary{}, writeErr
 	}
 	if !ok {
-		return applyMutationRetryClass(IssueStateWriteRetryClass(), IssueSummary{}, false, writeErr)
+		return IssueSummary{}, writeErr
 	}
 	if stateSet {
 		return guard.finishStateWrite(ctx, found.ID, stateID, nil, writeErr)
 	}
 
-	return applyMutationRetryClass(IssueStateWriteRetryClass(), found, true, writeErr)
+	return found, nil
 }
 
 func (guard *guardedClient) findCreatedIssue(

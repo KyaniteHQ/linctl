@@ -10,25 +10,17 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Khan/genqlient/graphql"
 	"github.com/stretchr/testify/require"
 )
 
 func Test_Transport_rejects_a_success_status_with_a_body_that_is_not_json(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
-		_, err := writer.Write([]byte("not json"))
-		if err != nil {
-			t.Errorf("write response: %v", err)
-		}
+		writeTestBody(t, writer, "not json")
 	}))
 	defer server.Close()
 	transport := NewTransport(TransportConfig{Endpoint: server.URL, Timeout: 2 * time.Second})
 
-	err := transport.MakeRequest(
-		context.Background(),
-		&graphql.Request{Query: "query Test { viewer { id } }"},
-		&graphql.Response{Data: &testGraphQLData{}},
-	)
+	err := requestViewer(transport, &testGraphQLData{})
 
 	require.ErrorContains(t, err, "decode graphql response")
 }
@@ -53,6 +45,12 @@ func Test_Transport_does_not_retry_responses_that_are_not_rate_limits(t *testing
 			want:       "graphql http status 400",
 		},
 		{
+			name:       "400 with valid json and no code",
+			statusCode: http.StatusBadRequest,
+			body:       `{"errors":[{"message":"private detail"}]}`,
+			want:       "graphql http status 400",
+		},
+		{
 			name:       "500 with a RATELIMITED code",
 			statusCode: http.StatusInternalServerError,
 			body:       `{"errors":[{"message":"rate limit exceeded","extensions":{"code":"RATELIMITED"}}]}`,
@@ -66,21 +64,15 @@ func Test_Transport_does_not_retry_responses_that_are_not_rate_limits(t *testing
 			server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
 				requests.Add(1)
 				writer.WriteHeader(test.statusCode)
-				_, err := writer.Write([]byte(test.body))
-				if err != nil {
-					t.Errorf("write response: %v", err)
-				}
+				writeTestBody(t, writer, test.body)
 			}))
 			defer server.Close()
 			transport := NewTransport(TransportConfig{Endpoint: server.URL, Timeout: 2 * time.Second, MaxRetries: 1})
 
-			err := transport.MakeRequest(
-				context.Background(),
-				&graphql.Request{Query: "query Test { viewer { id } }"},
-				&graphql.Response{Data: &testGraphQLData{}},
-			)
+			err := requestViewer(transport, &testGraphQLData{})
 
 			require.EqualError(t, err, test.want)
+			require.NotContains(t, err.Error(), "private detail")
 			require.NotErrorIs(t, err, ErrRateLimited)
 			require.Equal(t, int32(1), requests.Load())
 		})
@@ -95,10 +87,7 @@ func Test_Transport_does_not_retry_at_once_when_retry_after_overflows_a_duration
 			writer.WriteHeader(http.StatusTooManyRequests)
 			return
 		}
-		_, err := writer.Write([]byte(`{"data":{"viewer":{"id":"user-id"}}}`))
-		if err != nil {
-			t.Errorf("write response: %v", err)
-		}
+		writeTestBody(t, writer, `{"data":{"viewer":{"id":"user-id"}}}`)
 	}))
 	defer server.Close()
 	transport := NewTransport(TransportConfig{
@@ -107,11 +96,7 @@ func Test_Transport_does_not_retry_at_once_when_retry_after_overflows_a_duration
 		MaxRetries: 1,
 	})
 
-	err := transport.MakeRequest(
-		context.Background(),
-		&graphql.Request{Query: "query Test { viewer { id } }"},
-		&graphql.Response{Data: &testGraphQLData{}},
-	)
+	err := requestViewer(transport, &testGraphQLData{})
 
 	require.ErrorIs(t, err, context.DeadlineExceeded)
 	require.ErrorContains(t, err, "wait for retry")
@@ -120,20 +105,13 @@ func Test_Transport_does_not_retry_at_once_when_retry_after_overflows_a_duration
 
 func Test_NewTransport_without_a_timeout_still_completes_requests(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
-		_, err := writer.Write([]byte(`{"data":{"viewer":{"id":"user-id"}}}`))
-		if err != nil {
-			t.Errorf("write response: %v", err)
-		}
+		writeTestBody(t, writer, `{"data":{"viewer":{"id":"user-id"}}}`)
 	}))
 	defer server.Close()
 	transport := NewTransport(TransportConfig{Endpoint: server.URL})
 	data := &testGraphQLData{}
 
-	err := transport.MakeRequest(
-		context.Background(),
-		&graphql.Request{Query: "query Test { viewer { id } }"},
-		&graphql.Response{Data: data},
-	)
+	err := requestViewer(transport, data)
 
 	require.NoError(t, err)
 	require.Equal(t, "user-id", data.Viewer.ID)

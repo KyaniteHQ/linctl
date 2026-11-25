@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"testing"
 
@@ -174,14 +175,16 @@ func Test_DeleteProjectMilestone_refuses_when_project_team_differs(t *testing.T)
 }
 
 func Test_DeleteProjectMilestone_wraps_mutation_error(t *testing.T) {
+	operationErr := errors.New("linear unavailable")
 	graphqlClient := projectWriteFakeClient(map[string]string{
 		"projectMilestone": `{"projectMilestone":` +
 			projectMilestoneJSON("Launch milestone", "next", "project-id") + `}`,
-	})
+	}).withError(operationErr)
 
 	_, err := DeleteProjectMilestone(context.Background(), graphqlClient, matchingTarget(), "project-milestone-id")
 
-	require.Error(t, err)
+	require.ErrorIs(t, err, operationErr)
+	require.ErrorContains(t, err, "delete project milestone project-milestone-id")
 	require.NotErrorIs(t, err, ErrTargetMismatch)
 }
 

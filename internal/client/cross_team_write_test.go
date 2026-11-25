@@ -899,7 +899,8 @@ func Test_AddProjectTeam_continues_project_teams_pagination(t *testing.T) {
 				"name": "Harness",
 				"teams": {
 					"nodes": [
-						{"id":"team-id","key":"LIT","name":"linctl-it","description":"","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}
+						{"id":"team-id","key":"LIT","name":"linctl-it","description":"","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}},
+						{"id":"design-team-id","key":"DES","name":"Design","description":"","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}
 					],
 					"pageInfo": {"hasNextPage": true, "endCursor": "teams-cursor-1"}
 				}
@@ -917,8 +918,12 @@ func Test_AddProjectTeam_continues_project_teams_pagination(t *testing.T) {
 				}
 			}
 		}`,
-		"ProjectUpdate": `{"projectUpdate":{"success":true,"project":` + projectJSONWithPinnedExtraAndOps(
+		"ProjectUpdate": `{"projectUpdate":{"success":true,"project":` + projectJSONWithTeamNodes(
 			projectFixture{ID: "project-id", Name: "Harness", Status: "Backlog"},
+			`{"id":"team-id","key":"LIT","name":"linctl-it"}`,
+			`{"id":"design-team-id","key":"DES","name":"Design"}`,
+			`{"id":"extra-team-id","key":"EXT","name":"Extra"}`,
+			`{"id":"ops-team-id","key":"OPS","name":"OPS"}`,
 		) + `}}`,
 	})
 	recorder := &recordingGraphQLClient{inner: client}
@@ -931,7 +936,7 @@ func Test_AddProjectTeam_continues_project_teams_pagination(t *testing.T) {
 	require.NoError(t, err)
 	require.JSONEq(t, `{
 		"id": "project-id",
-		"input": {"teamIds": ["team-id", "extra-team-id", "ops-team-id"]}
+		"input": {"teamIds": ["team-id", "design-team-id", "extra-team-id", "ops-team-id"]}
 	}`, string(recorder.variablesFor(t, "ProjectUpdate")))
 }
 

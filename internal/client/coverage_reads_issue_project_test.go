@@ -373,3 +373,21 @@ func Test_ClientReadIssueAndProjectScenarios_return_compact_lists_details_and_me
 	require.Equal(t, "issue-to-release-id", issueToRelease.ID)
 	require.Equal(t, "release-id", issueToRelease.ReleaseID)
 }
+
+func Test_GetIssueDependencies_returns_no_parent_for_a_top_level_issue(t *testing.T) {
+	graphqlClient := fakeGraphQLClient{
+		"IssueDependencies": `{"issue":{
+			"id":"issue-id",
+			"identifier":"LIT-1",
+			"parent":null,
+			"children":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+			"relations":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+			"inverseRelations":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}
+		}}`,
+	}
+
+	dependencies, err := GetIssueDependencies(context.Background(), graphqlClient, "LIT-1", 2)
+
+	require.NoError(t, err)
+	require.Nil(t, dependencies.Parent)
+}

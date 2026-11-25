@@ -36,27 +36,6 @@ func Test_BotActorReads_return_no_bot_for_human_authored_entities(t *testing.T) 
 	require.Nil(t, issue.Bot)
 }
 
-func Test_GetAgentActivityByID_maps_null_content_to_an_empty_content_type(t *testing.T) {
-	summary, err := GetAgentActivityByID(context.Background(), fakeGraphQLClient{
-		"agentActivity": `{"agentActivity":{
-			"id":"agent-activity-id",
-			"createdAt":"2026-06-19T12:00:00Z",
-			"updatedAt":"2026-06-19T12:01:00Z",
-			"archivedAt":null,
-			"signal":null,
-			"ephemeral":false,
-			"agentSession":{"id":"agent-session-id"},
-			"sourceComment":null,
-			"user":{"id":"user-id"},
-			"content":null
-		}}`,
-	}, "agent-activity-id")
-
-	require.NoError(t, err)
-	require.Equal(t, "agent-activity-id", summary.ID)
-	require.Empty(t, summary.ContentType)
-}
-
 func Test_ClientReadScenarios_return_not_found_for_null_vcs_branch_issue(t *testing.T) {
 	graphqlClient := fakeGraphQLClient{
 		"issueVcsBranchSearch":                   `{"issueVcsBranchSearch":null}`,

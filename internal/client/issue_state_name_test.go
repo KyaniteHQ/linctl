@@ -255,10 +255,14 @@ func Test_UpdateIssue_returns_readback_error_when_issue_vanishes(t *testing.T) {
 		Identifier: "LIT-1", Title: "job", ProjectID: "project-id", Project: "fixture",
 		StateID: "todo-state", State: "Todo", StateType: "unstarted",
 	}
+	written := before
+	written.StateID = "in-review-state"
+	written.State = "In Review"
+	written.StateType = "started"
 	inner := issueWriteFakeClient(map[string]string{
 		"issue":                `{"issue":` + issueJSON(before) + `}`,
 		"WorkflowStatesByTeam": multipleStartedStatesJSON(),
-		"IssueUpdate":          `{"issueUpdate":{"success":true,"issue":` + issueJSON(before) + `}}`,
+		"IssueUpdate":          `{"issueUpdate":{"success":true,"issue":` + issueJSON(written) + `}}`,
 	})
 	sequenced := newSequentialOpClient(inner)
 	sequenced.failAt["issue"] = 2

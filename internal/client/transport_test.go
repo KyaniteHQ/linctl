@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"sync"
 	"testing"
 	"time"
 
@@ -195,48 +196,82 @@ func Test_Transport_returns_typed_auth_error_for_401(t *testing.T) {
 	require.NotContains(t, err.Error(), "expired-token")
 }
 
+func requestViewer(transport *Transport, data *testGraphQLData) error {
+	return transport.MakeRequest(
+		context.Background(),
+		&graphql.Request{Query: "query Test { viewer { id } }"},
+		&graphql.Response{Data: data},
+	)
+}
+
+func writeTestBody(t *testing.T, writer http.ResponseWriter, body string) {
+	t.Helper()
+
+	if _, err := writer.Write([]byte(body)); err != nil {
+		t.Errorf("write response: %v", err)
+	}
+}
+
 func Test_Transport_retries_429_with_retry_after_when_present(t *testing.T) {
-	// Given
-	logs := bytes.Buffer{}
-	requests := 0
-	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
-		requests++
-		if requests == 1 {
-			writer.Header().Set("Retry-After", "0")
-			writer.WriteHeader(http.StatusTooManyRequests)
-			return
-		}
-		writer.Header().Set("Content-Type", "application/json")
-		_, err := writer.Write([]byte(`{"data":{"viewer":{"id":"user-id"}}}`))
-		if err != nil {
-			t.Errorf("write response: %v", err)
-		}
-	}))
-	defer server.Close()
-	transport := NewTransport(TransportConfig{
-		DiagnosticWriter: &logs,
-		Endpoint:         server.URL,
-		Token:            OAuthAccessToken("test-token"),
-		Timeout:          2 * time.Second,
-		MaxRetries:       1,
-	})
-	response := graphql.Response{Data: &testGraphQLData{}}
+	tests := []struct {
+		name       string
+		retryAfter string
+		minimumGap time.Duration
+	}{
+		{name: "Retry-After seconds", retryAfter: "1", minimumGap: time.Second},
+		{name: "no Retry-After", retryAfter: "", minimumGap: 100 * time.Millisecond},
+		{name: "Retry-After zero falls back to backoff", retryAfter: "0", minimumGap: 100 * time.Millisecond},
+	}
 
-	// When
-	err := transport.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &response)
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			// Given
+			logs := bytes.Buffer{}
+			var mu sync.Mutex
+			var arrivals []time.Time
+			server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
+				mu.Lock()
+				arrivals = append(arrivals, time.Now())
+				requests := len(arrivals)
+				mu.Unlock()
+				if requests == 1 {
+					if test.retryAfter != "" {
+						writer.Header().Set("Retry-After", test.retryAfter)
+					}
+					writer.WriteHeader(http.StatusTooManyRequests)
+					return
+				}
+				writer.Header().Set("Content-Type", "application/json")
+				writeTestBody(t, writer, `{"data":{"viewer":{"id":"user-id"}}}`)
+			}))
+			defer server.Close()
+			transport := NewTransport(TransportConfig{
+				DiagnosticWriter: &logs,
+				Endpoint:         server.URL,
+				Token:            OAuthAccessToken("test-token"),
+				Timeout:          3 * time.Second,
+				MaxRetries:       1,
+			})
+			data := &testGraphQLData{}
 
-	// Then
-	require.NoError(t, err)
-	require.Equal(t, 2, requests)
-	data, ok := response.Data.(*testGraphQLData)
-	require.True(t, ok)
-	require.Equal(t, "user-id", data.Viewer.ID)
-	require.Contains(t, logs.String(), "graphql_request attempt=1")
-	require.Contains(t, logs.String(), "graphql_response attempt=1 status=429")
-	require.Contains(t, logs.String(), "graphql_retry attempt=1 status=429")
-	require.Contains(t, logs.String(), "graphql_request_ok attempt=2 status=200")
-	require.NotContains(t, logs.String(), "test-token")
-	require.NotContains(t, logs.String(), "user-id")
+			// When
+			err := requestViewer(transport, data)
+
+			// Then
+			require.NoError(t, err)
+			require.Equal(t, "user-id", data.Viewer.ID)
+			mu.Lock()
+			defer mu.Unlock()
+			require.Len(t, arrivals, 2)
+			require.GreaterOrEqual(t, arrivals[1].Sub(arrivals[0]), test.minimumGap)
+			require.Contains(t, logs.String(), "graphql_request attempt=1")
+			require.Contains(t, logs.String(), "graphql_response attempt=1 status=429")
+			require.Contains(t, logs.String(), "graphql_retry attempt=1 status=429")
+			require.Contains(t, logs.String(), "graphql_request_ok attempt=2 status=200")
+			require.NotContains(t, logs.String(), "test-token")
+			require.NotContains(t, logs.String(), "user-id")
+		})
+	}
 }
 
 func Test_Transport_retries_ratelimited_400_then_succeeds(t *testing.T) {
