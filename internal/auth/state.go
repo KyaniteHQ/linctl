@@ -9,7 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
-	"runtime"
 	"slices"
 	"sync"
 	"time"
@@ -20,15 +19,7 @@ const (
 	tokenFileName     = "auth-token.json" //nolint:gosec // File name, not a hardcoded credential.
 )
 
-var (
-	runtimeGOOS    = runtime.GOOS
-	chmodFile      = os.Chmod
-	writeTempFile  = (*os.File).Write
-	syncTempFile   = (*os.File).Sync
-	closeTempFile  = (*os.File).Close
-	lockAuthFile   = lockStateFile
-	unlockAuthFile = unlockStateFile
-)
+var lockAuthFile = lockStateFile
 
 var authFileLocks = struct {
 	sync.Mutex
@@ -459,7 +450,7 @@ func withAuthFileLock(
 		return fmt.Errorf("acquire %s lock %s: %w", label, lockPath, err)
 	}
 	defer func() {
-		err = errors.Join(err, unlockAuthFile(lockFile))
+		err = errors.Join(err, unlockStateFile(lockFile))
 	}()
 	if err := ctx.Err(); err != nil {
 		return fmt.Errorf("%s context: %w", operation, err)
@@ -523,61 +514,6 @@ func (env osEnv) Lookup(key string) (string, bool) {
 	return os.LookupEnv(key)
 }
 
-func userConfigDir(env Env) (string, error) {
-	activeEnv := activeEnv(env)
-	if runtimeGOOS == "windows" {
-		return requiredEnv(activeEnv, "APPDATA")
-	}
-	if runtimeGOOS == "darwin" {
-		home, err := requiredEnv(activeEnv, "HOME")
-		if err != nil {
-			return "", err
-		}
-
-		return filepath.Join(home, "Library", "Application Support"), nil
-	}
-	if configHome, ok := activeEnv.Lookup("XDG_CONFIG_HOME"); ok && configHome != "" {
-		if !filepath.IsAbs(configHome) {
-			return "", errors.New("XDG_CONFIG_HOME must be absolute")
-		}
-
-		return configHome, nil
-	}
-	home, err := requiredEnv(activeEnv, "HOME")
-	if err != nil {
-		return "", err
-	}
-
-	return filepath.Join(home, ".config"), nil
-}
-
-func userStateDir(env Env) (string, error) {
-	activeEnv := activeEnv(env)
-	if runtimeGOOS == "windows" {
-		if localAppData, ok := activeEnv.Lookup("LOCALAPPDATA"); ok && localAppData != "" {
-			return localAppData, nil
-		}
-
-		return requiredEnv(activeEnv, "APPDATA")
-	}
-	if runtimeGOOS == "darwin" {
-		return userConfigDir(env)
-	}
-	if stateHome, ok := activeEnv.Lookup("XDG_STATE_HOME"); ok && stateHome != "" {
-		if !filepath.IsAbs(stateHome) {
-			return "", errors.New("XDG_STATE_HOME must be absolute")
-		}
-
-		return stateHome, nil
-	}
-	home, err := requiredEnv(activeEnv, "HOME")
-	if err != nil {
-		return "", err
-	}
-
-	return filepath.Join(home, ".local", "state"), nil
-}
-
 func activeEnv(env Env) Env {
 	if env != nil {
 		return env
@@ -629,13 +565,6 @@ func writeJSON(path string, value any, label string) error {
 	}
 	data = append(data, '\n')
 
-	if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
-		return fmt.Errorf("create %s directory: %w", label, err)
-	}
-	if err := chmodIfSupported(filepath.Dir(path), 0o700); err != nil {
-		return fmt.Errorf("secure %s directory: %w", label, err)
-	}
-
 	tmp, err := os.CreateTemp(filepath.Dir(path), filepath.Base(path)+".tmp-*")
 	if err != nil {
 		return fmt.Errorf("write %s %s: %w", label, path, err)
@@ -647,26 +576,12 @@ func writeJSON(path string, value any, label string) error {
 		}
 	}()
 
-	if err = chmodIfSupported(tmpPath, 0o600); err != nil {
-		_ = tmp.Close() //nolint:errcheck // the original error is still returned.
-		return fmt.Errorf("secure %s %s: %w", label, tmpPath, err)
-	}
-	if _, err = writeTempFile(tmp, data); err != nil {
-		_ = tmp.Close() //nolint:errcheck // the original error is still returned.
-		return fmt.Errorf("write %s %s: %w", label, path, err)
-	}
-	if err = syncTempFile(tmp); err != nil {
-		_ = tmp.Close() //nolint:errcheck // the original error is still returned.
-		return fmt.Errorf("write %s %s: %w", label, path, err)
-	}
-	if err = closeTempFile(tmp); err != nil {
+	_, writeErr := tmp.Write(data)
+	if err = errors.Join(writeErr, tmp.Sync(), tmp.Close()); err != nil {
 		return fmt.Errorf("write %s %s: %w", label, path, err)
 	}
 	if err = os.Rename(tmpPath, path); err != nil {
 		return fmt.Errorf("write %s %s: %w", label, path, err)
-	}
-	if err = chmodIfSupported(path, 0o600); err != nil {
-		return fmt.Errorf("secure %s %s: %w", label, path, err)
 	}
 
 	return nil
@@ -744,12 +659,4 @@ func mergeFiles(appState appConfigFile, tokenState tokenFile) State {
 	}
 
 	return state
-}
-
-func chmodIfSupported(path string, mode os.FileMode) error {
-	if runtimeGOOS == "windows" {
-		return nil
-	}
-
-	return chmodFile(path, mode)
 }

@@ -36,7 +36,7 @@ func Test_GitContextScenarios_resolve_or_report_issue_references(t *testing.T) {
 		require.Equal(t, "LIT-77", identifier)
 	})
 
-	t.Run("empty git branch and empty jj description are reported", func(t *testing.T) {
+	t.Run("git branch without issue and empty jj description are reported", func(t *testing.T) {
 		dir := t.TempDir()
 		runGit(t, dir, "init", "--initial-branch=master")
 		jjPath := filepath.Join(dir, "jj")

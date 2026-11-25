@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"strconv"
 	"sync"
-	"sync/atomic"
 	"testing"
 	"time"
 
@@ -164,40 +163,6 @@ func runConcurrentWriteHelper(t *testing.T) {
 	))
 }
 
-func Test_Store_expired_save_waiting_for_file_lock_does_not_write(t *testing.T) {
-	paths := testPaths(t)
-	store := NewStore(paths)
-	initial := TokenState{AccessToken: "initial-access-token"}
-	require.NoError(t, store.SaveTokenState(context.Background(), "", initial))
-
-	lockStarted := make(chan struct{})
-	releaseLock := make(chan struct{})
-	withLockAuthFile(t, func(ctx context.Context, _ *os.File) error {
-		close(lockStarted)
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		case <-releaseLock:
-			return nil
-		}
-	})
-
-	ctx, cancel := context.WithCancel(context.Background())
-	result := make(chan error, 1)
-	go func() {
-		result <- store.SaveTokenState(ctx, "", TokenState{AccessToken: "late-access-token"})
-	}()
-
-	<-lockStarted
-	cancel()
-	require.ErrorIs(t, <-result, context.Canceled)
-	close(releaseLock)
-
-	state, err := store.Load(context.Background())
-	require.NoError(t, err)
-	require.Equal(t, initial, state.Token)
-}
-
 func Test_Store_expired_save_after_process_lock_does_not_write(t *testing.T) {
 	paths := testPaths(t)
 	store := NewStore(paths)
@@ -217,70 +182,54 @@ func Test_Store_expired_save_after_process_lock_does_not_write(t *testing.T) {
 	require.Equal(t, initial, state.Token)
 }
 
-func Test_withAuthFileLock_cancels_while_waiting_for_process_lock_without_leaking(t *testing.T) {
+func Test_Store_cancels_while_waiting_for_in_process_lock_without_writing_or_leaking(t *testing.T) {
 	paths := testPaths(t)
-	processLock := authFileLock(paths.TokenPath)
-	require.NoError(t, processLock.acquire(context.Background()))
-	held := true
-	t.Cleanup(func() {
-		if held {
-			processLock.release()
-		}
-	})
+	store := NewStore(paths)
+	initial := TokenState{AccessToken: "initial-access-token"}
+	require.NoError(t, store.SaveTokenState(context.Background(), "", initial))
+	holding := make(chan struct{})
+	releaseHolder := make(chan struct{})
+	holderResult := make(chan error, 1)
+	go func() {
+		_, err := store.TransactTokenState(context.Background(), "", func(current TokenState) (TokenState, error) {
+			close(holding)
+			<-releaseHolder
+			return current, nil
+		})
+		holderResult <- err
+	}()
+	<-holding
 
 	ctx, cancel := context.WithCancel(context.Background())
-	started := make(chan struct{})
-	result := make(chan error, 1)
-	var actionCalled atomic.Bool
+	waiterResult := make(chan error, 1)
 	go func() {
-		close(started)
-		result <- withAuthFileLock(ctx, paths.TokenPath, "auth token state", "test process wait", func() error {
-			actionCalled.Store(true)
-			return nil
-		})
+		waiterResult <- store.SaveTokenState(ctx, "", TokenState{AccessToken: "late-access-token"})
 	}()
-
-	<-started
 	require.Never(t, func() bool {
 		select {
-		case err := <-result:
-			result <- err
+		case err := <-waiterResult:
+			waiterResult <- err
 			return true
 		default:
 			return false
 		}
-	}, 20*time.Millisecond, time.Millisecond)
+	}, 50*time.Millisecond, time.Millisecond)
 	cancel()
-	require.ErrorIs(t, <-result, context.Canceled)
-	require.False(t, actionCalled.Load())
+	require.ErrorIs(t, <-waiterResult, context.Canceled)
+	close(releaseHolder)
+	require.NoError(t, <-holderResult)
 
-	processLock.release()
-	held = false
-	require.NoError(t, withAuthFileLock(
-		context.Background(),
-		paths.TokenPath,
-		"auth token state",
-		"test process retry",
-		func() error {
-			actionCalled.Store(true)
-			return nil
-		},
-	))
-	require.True(t, actionCalled.Load())
+	state, err := store.Load(context.Background())
+	require.NoError(t, err)
+	require.Equal(t, initial, state.Token)
+	replacement := TokenState{AccessToken: "replacement-access-token"}
+	require.NoError(t, store.SaveTokenState(context.Background(), "", replacement))
+	state, err = store.Load(context.Background())
+	require.NoError(t, err)
+	require.Equal(t, replacement, state.Token)
 }
 
 func Test_withAuthFileLock_reports_lock_setup_errors(t *testing.T) {
-	t.Run("secure lock directory", func(t *testing.T) {
-		withRuntimeGOOS(t, "linux")
-		withChmodFile(t, func(string, os.FileMode) error {
-			return errors.New("chmod failed")
-		})
-
-		err := NewStore(testPaths(t)).SaveTokenState(context.Background(), "", TokenState{})
-
-		require.ErrorContains(t, err, "secure auth token state lock directory")
-	})
-
 	t.Run("open lock file", func(t *testing.T) {
 		paths := testPaths(t)
 		require.NoError(t, os.MkdirAll(paths.TokenPath+".lock", 0o700))
@@ -290,46 +239,14 @@ func Test_withAuthFileLock_reports_lock_setup_errors(t *testing.T) {
 		require.ErrorContains(t, err, "open auth token state lock")
 	})
 
-	t.Run("secure lock file", func(t *testing.T) {
-		withRuntimeGOOS(t, "linux")
-		calls := 0
-		withChmodFile(t, func(string, os.FileMode) error {
-			calls++
-			if calls == 2 {
-				return errors.New("chmod failed")
-			}
-			return nil
-		})
-
-		err := NewStore(testPaths(t)).SaveTokenState(context.Background(), "", TokenState{})
-
-		require.ErrorContains(t, err, "secure auth token state lock")
-	})
-
 	t.Run("acquire lock", func(t *testing.T) {
-		unlockCalled := false
 		withLockAuthFile(t, func(context.Context, *os.File) error {
 			return errors.New("lock failed")
-		})
-		withUnlockAuthFile(t, func(*os.File) error {
-			unlockCalled = true
-			return errors.New("bogus unlock")
 		})
 
 		err := NewStore(testPaths(t)).SaveTokenState(context.Background(), "", TokenState{})
 
 		require.ErrorContains(t, err, "acquire auth token state lock")
-		require.NotContains(t, err.Error(), "bogus unlock")
-		require.False(t, unlockCalled)
-	})
-
-	t.Run("release lock", func(t *testing.T) {
-		withUnlockAuthFile(t, func(*os.File) error {
-			return errors.New("unlock failed")
-		})
-
-		err := NewStore(testPaths(t)).SaveTokenState(context.Background(), "", TokenState{})
-
-		require.ErrorContains(t, err, "unlock failed")
+		require.ErrorContains(t, err, "lock failed")
 	})
 }

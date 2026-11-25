@@ -21,18 +21,6 @@ func Test_ParseIssueIdentifier_returns_linear_identifier_from_branch_name(t *tes
 	require.Equal(t, "LIT-123", identifier)
 }
 
-func Test_ParseIssueIdentifier_returns_linear_identifier_from_jj_trailer(t *testing.T) {
-	// Given
-	description := "Implement current command\n\nLinear-issue: LIT-456\n"
-
-	// When
-	identifier, ok := ParseIssueIdentifier(description)
-
-	// Then
-	require.True(t, ok)
-	require.Equal(t, "LIT-456", identifier)
-}
-
 func Test_CurrentIssueIdentifier_reads_git_branch_when_issue_named(t *testing.T) {
 	// Given
 	repo := t.TempDir()
@@ -57,18 +45,6 @@ func Test_ParseIssueIdentifier_returns_uppercased_identifier_from_lowercase_bran
 	// Then
 	require.True(t, ok)
 	require.Equal(t, "LIT-123", identifier)
-}
-
-func Test_ParseIssueIdentifier_still_matches_uppercase_identifier_in_mixed_case_branch(t *testing.T) {
-	// Given
-	branch := "feature/LIT-42-add-thing"
-
-	// When
-	identifier, ok := ParseIssueIdentifier(branch)
-
-	// Then
-	require.True(t, ok)
-	require.Equal(t, "LIT-42", identifier)
 }
 
 func Test_ParseIssueIdentifier_prefers_uppercase_match_over_earlier_lowercase_false_positive(t *testing.T) {

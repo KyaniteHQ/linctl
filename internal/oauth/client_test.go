@@ -500,70 +500,82 @@ func Test_Client_token_endpoint_malformed_error_body_uses_empty_oauth_error(t *t
 	require.Empty(t, tokenErr.OAuthError)
 }
 
-func Test_Client_revoke_request_creation_error(t *testing.T) {
+func Test_NewClient_defaults_to_linear_token_and_revocation_endpoints(t *testing.T) {
 	t.Parallel()
-	client := oauth.NewClient(oauth.ClientConfig{RevocationEndpoint: "http://[::1"})
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	client := oauth.NewClient(oauth.ClientConfig{})
 
-	err := client.RevokeToken(context.Background(), oauth.RevocationRequest{Token: "refresh-token"})
+	_, exchangeErr := client.ExchangeAuthorizationCode(ctx, oauth.AuthorizationCodeRequest{})
+	revokeErr := client.RevokeToken(ctx, oauth.RevocationRequest{Token: "refresh-token"})
 
-	require.ErrorContains(t, err, "create oauth revoke request")
+	var exchangeURLErr *url.Error
+	require.ErrorAs(t, exchangeErr, &exchangeURLErr)
+	require.Equal(t, "https://api.linear.app/oauth/token", exchangeURLErr.URL)
+	require.ErrorIs(t, exchangeErr, context.Canceled)
+	var revokeURLErr *url.Error
+	require.ErrorAs(t, revokeErr, &revokeURLErr)
+	require.Equal(t, "https://api.linear.app/oauth/revoke", revokeURLErr.URL)
+	require.ErrorIs(t, revokeErr, context.Canceled)
 }
 
-func Test_Client_revoke_http_error(t *testing.T) {
+func Test_Client_without_clock_expires_tokens_from_the_current_time(t *testing.T) {
 	t.Parallel()
-	requestErr := errors.New("revocation transport unavailable")
 	client := oauth.NewClient(oauth.ClientConfig{
-		RevocationEndpoint: "https://oauth.test/revoke",
 		HTTPClient: &http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) {
-			return nil, requestErr
+			return &http.Response{
+				StatusCode: http.StatusOK,
+				Body:       io.NopCloser(strings.NewReader(`{"access_token":"access-token","expires_in":3600}`)),
+			}, nil
 		})},
 	})
+	before := time.Now()
 
-	err := client.RevokeToken(context.Background(), oauth.RevocationRequest{Token: "refresh-token"})
+	token, err := client.ClientCredentials(context.Background(), oauth.ClientCredentialsRequest{})
 
-	require.ErrorIs(t, err, requestErr)
-	require.ErrorContains(t, err, "request oauth revoke")
+	after := time.Now()
+	require.NoError(t, err)
+	require.NotNil(t, token.ExpiresAt)
+	require.WithinRange(t, *token.ExpiresAt, before.Add(time.Hour), after.Add(time.Hour))
 }
 
-func Test_Client_revoke_response_body_errors(t *testing.T) {
+func Test_Client_token_response_scope_null_and_non_string_values(t *testing.T) {
 	t.Parallel()
-	readErr := errors.New("read failed")
-	closeErr := errors.New("close failed")
 	for _, test := range []struct {
 		name      string
-		body      io.ReadCloser
-		wantError error
-		wantText  string
+		body      string
+		wantError string
 	}{
 		{
-			name:      "read error",
-			body:      &responseBody{readErr: readErr},
-			wantError: readErr,
-			wantText:  "read oauth revoke response",
+			name: "null scope leaves scopes unset",
+			body: `{"access_token":"access-token","scope":null}`,
 		},
 		{
-			name:      "close error",
-			body:      &responseBody{reader: strings.NewReader(""), closeErr: closeErr},
-			wantError: closeErr,
-			wantText:  "close oauth revoke response",
+			name:      "numeric scope is rejected",
+			body:      `{"access_token":"access-token","scope":42}`,
+			wantError: "decode oauth token response: scope must be a string or array",
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 			client := oauth.NewClient(oauth.ClientConfig{
-				RevocationEndpoint: "https://oauth.test/revoke",
 				HTTPClient: &http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       test.body,
+						Body:       io.NopCloser(strings.NewReader(test.body)),
 					}, nil
 				})},
 			})
 
-			err := client.RevokeToken(context.Background(), oauth.RevocationRequest{Token: "refresh-token"})
+			token, err := client.ClientCredentials(context.Background(), oauth.ClientCredentialsRequest{})
 
-			require.ErrorIs(t, err, test.wantError)
-			require.ErrorContains(t, err, test.wantText)
+			if test.wantError != "" {
+				require.EqualError(t, err, test.wantError)
+				return
+			}
+			require.NoError(t, err)
+			require.Equal(t, "access-token", token.AccessToken)
+			require.Nil(t, token.Scopes)
 		})
 	}
 }

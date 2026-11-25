@@ -12,14 +12,12 @@ import (
 
 const authFileLockRetryInterval = 10 * time.Millisecond
 
-var flockFile = syscall.Flock
-
 func lockStateFile(ctx context.Context, file *os.File) error {
 	for {
 		if err := ctx.Err(); err != nil {
 			return err
 		}
-		err := flockFile(int(file.Fd()), syscall.LOCK_EX|syscall.LOCK_NB)
+		err := syscall.Flock(int(file.Fd()), syscall.LOCK_EX|syscall.LOCK_NB)
 		if err == nil {
 			return nil
 		}
@@ -39,4 +37,8 @@ func lockStateFile(ctx context.Context, file *os.File) error {
 
 func unlockStateFile(file *os.File) error {
 	return syscall.Flock(int(file.Fd()), syscall.LOCK_UN)
+}
+
+func chmodIfSupported(path string, mode os.FileMode) error {
+	return os.Chmod(path, mode)
 }
