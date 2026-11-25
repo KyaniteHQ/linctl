@@ -318,22 +318,6 @@ func Test_CommandFlows_cover_issue_comments_operation_error(t *testing.T) {
 }
 
 func Test_CommandFlows_cover_comment_child_error_branches(t *testing.T) {
-	t.Run("project filter suggestion runtime error", func(t *testing.T) {
-		original := buildCommandRuntime
-		buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
-			return commandRuntime{}, errors.New("runtime failed")
-		}
-		defer func() {
-			buildCommandRuntime = original
-		}()
-		command := NewRootCommand(context.Background(), BuildInfo{})
-		command.SetArgs([]string{"project", "filter-suggestion", "started projects"})
-
-		err := command.ExecuteContext(context.Background())
-
-		require.ErrorContains(t, err, "runtime failed")
-	})
-
 	t.Run("issue vcs branch search operation error", func(t *testing.T) {
 		restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: "issueVcsBranchSearch"})
 		defer restore()

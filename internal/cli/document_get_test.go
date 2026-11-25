@@ -2,6 +2,7 @@ package cli
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"testing"
 
@@ -25,15 +26,14 @@ func Test_writeDocumentDetail_prints_only_the_line_without_content(t *testing.T)
 	require.Equal(t, "document-id Team note [team]\n", out.String())
 }
 
-func Test_writeDocumentDetail_surfaces_stdout_write_errors(t *testing.T) {
-	command := &cobra.Command{}
+func Test_DocumentGet_surfaces_stdout_write_errors(t *testing.T) {
+	restore := useCommandRuntime(t, commandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
 	command.SetOut(failingWriter{err: errors.New("stdout closed")})
-	document := client.DocumentDetail{
-		DocumentSummary: client.DocumentSummary{ID: "document-id", Title: "Team note"},
-		Content:         "body",
-	}
+	command.SetArgs([]string{"document", "get", "document-id"})
 
-	err := writeDocumentDetail(command, &rootOptions{}, document)
+	err := command.ExecuteContext(context.Background())
 
 	require.ErrorContains(t, err, "stdout closed")
 }

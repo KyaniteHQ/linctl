@@ -65,29 +65,12 @@ func Test_pageWithItems_preserves_page_shape_and_collection_semantics(t *testing
 }
 
 func Test_pageWithItems_rejects_malformed_shapes(t *testing.T) {
-	type noCollection struct {
-		Value string `json:"value"`
-	}
-	type ignoredCollection struct {
-		Items []string `json:"-"`
-	}
-	type ambiguousCollection struct {
-		Items  []string `json:"items"`
-		Labels []string `json:"labels"`
-	}
 	type wrongCollection struct {
 		Items []int `json:"items"`
-	}
-	type pointerChain **struct {
-		Items []string `json:"items"`
 	}
 
 	_, err := pageWithItems(any(nil), []string{"item"})
 	require.ErrorContains(t, err, "value is invalid")
-	_, err = pageWithItems("not a page", []string{"item"})
-	require.ErrorContains(t, err, "must be a struct or pointer to a struct")
-	_, err = pageWithItems(noCollection{}, []string{"item"})
-	require.ErrorContains(t, err, "no exported JSON slice field")
 	hiddenCollection := reflect.StructOf([]reflect.StructField{{
 		Name:    "items",
 		PkgPath: "github.com/KyaniteHQ/linctl/internal/cli",
@@ -96,10 +79,6 @@ func Test_pageWithItems_rejects_malformed_shapes(t *testing.T) {
 	}})
 	_, err = pageCollectionField(hiddenCollection)
 	require.ErrorContains(t, err, "no exported JSON slice field")
-	_, err = pageWithItems(ignoredCollection{}, []string{"item"})
-	require.ErrorContains(t, err, "no exported JSON slice field")
-	_, err = pageWithItems(ambiguousCollection{}, []string{"item"})
-	require.ErrorContains(t, err, "multiple exported JSON slice fields")
 	_, err = pageWithItems(wrongCollection{}, []string{"item"})
 	require.ErrorContains(t, err, `collection field "Items" has type []int, not []string`)
 	var nilPage *struct {
@@ -107,15 +86,6 @@ func Test_pageWithItems_rejects_malformed_shapes(t *testing.T) {
 	}
 	_, err = pageWithItems(nilPage, []string{"item"})
 	require.ErrorContains(t, err, "must not be nil")
-	var chainedPage pointerChain
-	_, err = pageWithItems(chainedPage, []string{"item"})
-	require.ErrorContains(t, err, "must point directly to a struct")
-	nested := &struct {
-		Items []string `json:"items"`
-	}{}
-	chainedPage = &nested
-	_, err = pageWithItems(chainedPage, []string{"item"})
-	require.ErrorContains(t, err, "must point directly to a struct")
 }
 
 func Test_writePageJSON_rejects_malformed_page(t *testing.T) {

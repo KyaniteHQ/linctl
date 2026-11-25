@@ -110,6 +110,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"issue", "import", "rows.json"},
 			{"issue", "bulk-export", "out.json"},
 			{"project", "export", "project-id", "."},
+			{"project", "filter-suggestion", "started projects"},
 			{"project", "open", "project-id"},
 			{"user", "me"},
 			{"sla-configuration", "list", "team-id"},

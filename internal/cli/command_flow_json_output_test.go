@@ -332,6 +332,7 @@ func Test_CommandFlows_suppress_success_output_when_quiet_flag_is_set(t *testing
 		{"--quiet", "agent-session", "get", "agent-session-id"},
 		{"--quiet", "team", "git-automation-states", "team-id"},
 		{"--quiet", "customer-need", "project-attachment", "customer-need-id"},
+		{"--quiet", "project", "filter-suggestion", "started projects"},
 	}
 
 	for _, args := range tests {
