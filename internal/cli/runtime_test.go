@@ -208,12 +208,13 @@ func Test_CommandRuntime_refreshes_expired_authorization_code_token_and_retries_
 	)}
 	factory := &recordingRuntimeClientFactory{}
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
-		Token:       token,
-		App:         app,
-		Store:       store,
-		Logger:      discardLogger,
-		OAuthClient: fakeOAuth,
-		NewClient:   factory.newClient,
+		CredentialKind: auth.CredentialKindAuthorizationCode,
+		Token:          token,
+		App:            app,
+		Store:          store,
+		Logger:         discardLogger,
+		OAuthClient:    fakeOAuth,
+		NewClient:      factory.newClient,
 	})
 
 	err := runtimeClient.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &graphql.Response{})
@@ -253,12 +254,13 @@ func Test_CommandRuntime_reacquires_expired_client_credentials_token_and_retries
 	)}
 	factory := &recordingRuntimeClientFactory{}
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
-		Token:       token,
-		App:         app,
-		Store:       store,
-		Logger:      discardLogger,
-		OAuthClient: fakeOAuth,
-		NewClient:   factory.newClient,
+		CredentialKind: auth.CredentialKindClientCredentials,
+		Token:          token,
+		App:            app,
+		Store:          store,
+		Logger:         discardLogger,
+		OAuthClient:    fakeOAuth,
+		NewClient:      factory.newClient,
 	})
 
 	err := runtimeClient.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &graphql.Response{})
@@ -292,12 +294,13 @@ func Test_CommandRuntime_returns_non_auth_error_after_pre_request_recovery(t *te
 	boom := errors.New("linear unavailable")
 	factory := &recordingRuntimeClientFactory{errors: []error{boom}}
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
-		Token:       token,
-		App:         app,
-		Store:       persistedRuntimeStore(t, "", token),
-		Logger:      discardLogger,
-		OAuthClient: fakeOAuth,
-		NewClient:   factory.newClient,
+		CredentialKind: auth.CredentialKindClientCredentials,
+		Token:          token,
+		App:            app,
+		Store:          persistedRuntimeStore(t, "", token),
+		Logger:         discardLogger,
+		OAuthClient:    fakeOAuth,
+		NewClient:      factory.newClient,
 	})
 
 	err := runtimeClient.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &graphql.Response{})
@@ -325,12 +328,13 @@ func Test_CommandRuntime_wraps_auth_failure_after_pre_request_recovery(t *testin
 	)}
 	factory := &recordingRuntimeClientFactory{errors: []error{client.ErrAuthFailed}}
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
-		Token:       token,
-		App:         app,
-		Store:       persistedRuntimeStore(t, "", token),
-		Logger:      discardLogger,
-		OAuthClient: fakeOAuth,
-		NewClient:   factory.newClient,
+		CredentialKind: auth.CredentialKindClientCredentials,
+		Token:          token,
+		App:            app,
+		Store:          persistedRuntimeStore(t, "", token),
+		Logger:         discardLogger,
+		OAuthClient:    fakeOAuth,
+		NewClient:      factory.newClient,
 	})
 
 	err := runtimeClient.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &graphql.Response{})
@@ -345,10 +349,11 @@ func Test_CommandRuntime_returns_non_auth_error_without_recovery(t *testing.T) {
 	boom := errors.New("linear unavailable")
 	factory := &recordingRuntimeClientFactory{errors: []error{boom}}
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
-		Token:     auth.TokenState{AccessToken: "access-token"},
-		App:       auth.AppConfig{ClientID: "client-id", ClientSecret: "client-secret"},
-		Store:     auth.NewStore(cliAuthTestPaths(t)),
-		NewClient: factory.newClient,
+		CredentialKind: auth.CredentialKindLocalAccessToken,
+		Token:          auth.TokenState{AccessToken: "access-token"},
+		App:            auth.AppConfig{ClientID: "client-id", ClientSecret: "client-secret"},
+		Store:          auth.NewStore(cliAuthTestPaths(t)),
+		NewClient:      factory.newClient,
 	})
 
 	err := runtimeClient.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &graphql.Response{})
@@ -405,6 +410,7 @@ func Test_CommandRuntime_reports_token_persist_error_after_recovery(t *testing.T
 		[]string{"read"},
 	)}
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
+		CredentialKind: auth.CredentialKindClientCredentials,
 		Token: auth.TokenState{
 			AccessToken: "expired-app-token",
 			Scopes:      []string{"read"},
@@ -450,12 +456,13 @@ func Test_CommandRuntime_reacquires_client_credentials_token_after_401_once(t *t
 	)}
 	factory := &recordingRuntimeClientFactory{errors: []error{client.ErrAuthFailed, nil}}
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
-		Token:       token,
-		App:         app,
-		Store:       store,
-		Logger:      discardLogger,
-		OAuthClient: fakeOAuth,
-		NewClient:   factory.newClient,
+		CredentialKind: auth.CredentialKindClientCredentials,
+		Token:          token,
+		App:            app,
+		Store:          store,
+		Logger:         discardLogger,
+		OAuthClient:    fakeOAuth,
+		NewClient:      factory.newClient,
 	})
 
 	err := runtimeClient.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &graphql.Response{})
@@ -486,12 +493,13 @@ func Test_CommandRuntime_logs_auth_failure_token_recovery_without_secrets(t *tes
 	factory := &recordingRuntimeClientFactory{errors: []error{client.ErrAuthFailed, nil}}
 	var logs bytes.Buffer
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
-		Token:       token,
-		App:         app,
-		Store:       store,
-		Logger:      newDiagnosticLogger(true, false, &logs),
-		OAuthClient: fakeOAuth,
-		NewClient:   factory.newClient,
+		CredentialKind: auth.CredentialKindClientCredentials,
+		Token:          token,
+		App:            app,
+		Store:          store,
+		Logger:         newDiagnosticLogger(true, false, &logs),
+		OAuthClient:    fakeOAuth,
+		NewClient:      factory.newClient,
 	})
 
 	err := runtimeClient.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &graphql.Response{})
@@ -527,12 +535,13 @@ func Test_CommandRuntime_returns_AUTH_REAUTH_REQUIRED_when_retried_token_is_reje
 	)}
 	factory := &recordingRuntimeClientFactory{errors: []error{client.ErrAuthFailed, client.ErrAuthFailed}}
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
-		Token:       token,
-		App:         app,
-		Store:       store,
-		Logger:      discardLogger,
-		OAuthClient: fakeOAuth,
-		NewClient:   factory.newClient,
+		CredentialKind: auth.CredentialKindClientCredentials,
+		Token:          token,
+		App:            app,
+		Store:          store,
+		Logger:         discardLogger,
+		OAuthClient:    fakeOAuth,
+		NewClient:      factory.newClient,
 	})
 
 	err := runtimeClient.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &graphql.Response{})
@@ -554,12 +563,13 @@ func Test_CommandRuntime_returns_AUTH_REFRESH_FAILED_when_refresh_fails_without_
 	fakeOAuth := &fakeOAuthTokenClient{err: errors.New("token endpoint unavailable")}
 	factory := &recordingRuntimeClientFactory{}
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
-		Token:       token,
-		App:         auth.AppConfig{ClientID: "client-id"},
-		Store:       persistedRuntimeStore(t, "", token),
-		Logger:      discardLogger,
-		OAuthClient: fakeOAuth,
-		NewClient:   factory.newClient,
+		CredentialKind: auth.CredentialKindAuthorizationCode,
+		Token:          token,
+		App:            auth.AppConfig{ClientID: "client-id"},
+		Store:          persistedRuntimeStore(t, "", token),
+		Logger:         discardLogger,
+		OAuthClient:    fakeOAuth,
+		NewClient:      factory.newClient,
 	})
 
 	err := runtimeClient.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &graphql.Response{})
@@ -594,13 +604,14 @@ func Test_CommandRuntime_logs_expired_token_recovery_without_secrets(t *testing.
 	)}
 	var logs bytes.Buffer
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
-		Token:       token,
-		App:         app,
-		Store:       persistedRuntimeStore(t, "work", token),
-		Profile:     "work",
-		Logger:      newDiagnosticLogger(true, false, &logs),
-		OAuthClient: fakeOAuth,
-		NewClient:   (&recordingRuntimeClientFactory{}).newClient,
+		CredentialKind: auth.CredentialKindAuthorizationCode,
+		Token:          token,
+		App:            app,
+		Store:          persistedRuntimeStore(t, "work", token),
+		Profile:        "work",
+		Logger:         newDiagnosticLogger(true, false, &logs),
+		OAuthClient:    fakeOAuth,
+		NewClient:      (&recordingRuntimeClientFactory{}).newClient,
 	})
 
 	err := runtimeClient.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &graphql.Response{})
@@ -631,12 +642,13 @@ func Test_CommandRuntime_logs_token_recovery_failure_without_error_details(t *te
 	fakeOAuth := &fakeOAuthTokenClient{err: errors.New("token endpoint unavailable")}
 	var logs bytes.Buffer
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
-		Token:       token,
-		App:         auth.AppConfig{ClientID: "client-id"},
-		Store:       persistedRuntimeStore(t, "", token),
-		Logger:      newDiagnosticLogger(true, false, &logs),
-		OAuthClient: fakeOAuth,
-		NewClient:   (&recordingRuntimeClientFactory{}).newClient,
+		CredentialKind: auth.CredentialKindAuthorizationCode,
+		Token:          token,
+		App:            auth.AppConfig{ClientID: "client-id"},
+		Store:          persistedRuntimeStore(t, "", token),
+		Logger:         newDiagnosticLogger(true, false, &logs),
+		OAuthClient:    fakeOAuth,
+		NewClient:      (&recordingRuntimeClientFactory{}).newClient,
 	})
 
 	err := runtimeClient.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &graphql.Response{})
@@ -664,12 +676,13 @@ func Test_CommandRuntime_returns_AUTH_REAUTH_REQUIRED_when_app_reacquire_fails_w
 	fakeOAuth := &fakeOAuthTokenClient{err: errors.New("token endpoint unavailable")}
 	factory := &recordingRuntimeClientFactory{}
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
-		Token:       token,
-		App:         auth.AppConfig{ClientID: "client-id", ClientSecret: "client-secret"},
-		Store:       persistedRuntimeStore(t, "", token),
-		Logger:      discardLogger,
-		OAuthClient: fakeOAuth,
-		NewClient:   factory.newClient,
+		CredentialKind: auth.CredentialKindClientCredentials,
+		Token:          token,
+		App:            auth.AppConfig{ClientID: "client-id", ClientSecret: "client-secret"},
+		Store:          persistedRuntimeStore(t, "", token),
+		Logger:         discardLogger,
+		OAuthClient:    fakeOAuth,
+		NewClient:      factory.newClient,
 	})
 
 	err := runtimeClient.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &graphql.Response{})
@@ -684,6 +697,7 @@ func Test_CommandRuntime_returns_recovery_error_after_401(t *testing.T) {
 	fakeOAuth := &fakeOAuthTokenClient{err: errors.New("token endpoint unavailable")}
 	factory := &recordingRuntimeClientFactory{errors: []error{client.ErrAuthFailed}}
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
+		CredentialKind: auth.CredentialKindClientCredentials,
 		Token: auth.TokenState{
 			AccessToken: "stale-app-token",
 			Scopes:      []string{"read"},
@@ -717,12 +731,13 @@ func Test_CommandRuntime_requires_login_when_an_expired_authorization_code_token
 	fakeOAuth := &fakeOAuthTokenClient{}
 	factory := &recordingRuntimeClientFactory{}
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
-		Token:       token,
-		App:         auth.AppConfig{ClientID: "client-id"},
-		Store:       persistedRuntimeStore(t, "", token),
-		Logger:      discardLogger,
-		OAuthClient: fakeOAuth,
-		NewClient:   factory.newClient,
+		CredentialKind: auth.CredentialKindAuthorizationCode,
+		Token:          token,
+		App:            auth.AppConfig{ClientID: "client-id"},
+		Store:          persistedRuntimeStore(t, "", token),
+		Logger:         discardLogger,
+		OAuthClient:    fakeOAuth,
+		NewClient:      factory.newClient,
 	})
 
 	err := runtimeClient.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &graphql.Response{})
@@ -752,12 +767,13 @@ func Test_CommandRuntime_keeps_the_refresh_token_when_the_endpoint_omits_one(t *
 	)}
 	factory := &recordingRuntimeClientFactory{}
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
-		Token:       token,
-		App:         auth.AppConfig{ClientID: "client-id", Scopes: []string{"read"}},
-		Store:       store,
-		Logger:      discardLogger,
-		OAuthClient: fakeOAuth,
-		NewClient:   factory.newClient,
+		CredentialKind: auth.CredentialKindAuthorizationCode,
+		Token:          token,
+		App:            auth.AppConfig{ClientID: "client-id", Scopes: []string{"read"}},
+		Store:          store,
+		Logger:         discardLogger,
+		OAuthClient:    fakeOAuth,
+		NewClient:      factory.newClient,
 	})
 
 	err := runtimeClient.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &graphql.Response{})
@@ -788,12 +804,13 @@ func Test_CommandRuntime_reports_a_refresh_that_drops_a_required_scope(t *testin
 	)}
 	factory := &recordingRuntimeClientFactory{}
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
-		Token:       token,
-		App:         auth.AppConfig{ClientID: "client-id", Scopes: []string{"read"}},
-		Store:       persistedRuntimeStore(t, "", token),
-		Logger:      discardLogger,
-		OAuthClient: fakeOAuth,
-		NewClient:   factory.newClient,
+		CredentialKind: auth.CredentialKindAuthorizationCode,
+		Token:          token,
+		App:            auth.AppConfig{ClientID: "client-id", Scopes: []string{"read"}},
+		Store:          persistedRuntimeStore(t, "", token),
+		Logger:         discardLogger,
+		OAuthClient:    fakeOAuth,
+		NewClient:      factory.newClient,
 	})
 
 	err := runtimeClient.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &graphql.Response{})
@@ -813,11 +830,12 @@ func Test_CommandRuntime_requires_app_config_to_reacquire_an_expired_app_token(t
 	fakeOAuth := &fakeOAuthTokenClient{}
 	factory := &recordingRuntimeClientFactory{}
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
-		Token:       token,
-		Store:       persistedRuntimeStore(t, "", token),
-		Logger:      discardLogger,
-		OAuthClient: fakeOAuth,
-		NewClient:   factory.newClient,
+		CredentialKind: auth.CredentialKindClientCredentials,
+		Token:          token,
+		Store:          persistedRuntimeStore(t, "", token),
+		Logger:         discardLogger,
+		OAuthClient:    fakeOAuth,
+		NewClient:      factory.newClient,
 	})
 
 	err := runtimeClient.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &graphql.Response{})
@@ -843,12 +861,13 @@ func Test_CommandRuntime_refuses_a_persisted_token_without_a_recovery_grant(t *t
 	fakeOAuth := &fakeOAuthTokenClient{}
 	factory := &recordingRuntimeClientFactory{}
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
-		Token:       observed,
-		App:         auth.AppConfig{ClientID: "client-id"},
-		Store:       persistedRuntimeStore(t, "", persisted),
-		Logger:      discardLogger,
-		OAuthClient: fakeOAuth,
-		NewClient:   factory.newClient,
+		CredentialKind: auth.CredentialKindAuthorizationCode,
+		Token:          observed,
+		App:            auth.AppConfig{ClientID: "client-id"},
+		Store:          persistedRuntimeStore(t, "", persisted),
+		Logger:         discardLogger,
+		OAuthClient:    fakeOAuth,
+		NewClient:      factory.newClient,
 	})
 
 	err := runtimeClient.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &graphql.Response{})

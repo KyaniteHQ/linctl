@@ -184,14 +184,10 @@ type recoveringGraphQLClient struct {
 }
 
 func newRecoveringGraphQLClient(config recoveringGraphQLClientConfig) *recoveringGraphQLClient {
-	credentialKind := config.CredentialKind
-	if credentialKind == auth.CredentialKindMissing {
-		credentialKind = auth.CredentialKindFromToken(config.Token)
-	}
 	recovering := &recoveringGraphQLClient{
 		state: recoveringGraphQLClientState{
 			token:          config.Token,
-			credentialKind: credentialKind,
+			credentialKind: config.CredentialKind,
 		},
 		app:         config.App,
 		store:       config.Store,
