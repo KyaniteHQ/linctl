@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"bufio"
 	"context"
 	"crypto/rand"
 	"errors"
@@ -68,7 +67,7 @@ func runAuthLogin(
 	if err := render.WriteLine(command.ErrOrStderr(), "%s\n%s", authLoginPrompt, authorizeURL); err != nil {
 		return err
 	}
-	callback, err := readAuthLoginCallback(command)
+	callback, err := readAuthLoginCallback(ctx, command.InOrStdin())
 	if err != nil {
 		return err
 	}
@@ -213,15 +212,50 @@ func normalizedAuthLoginActor(actor string) (string, error) {
 	}
 }
 
-func readAuthLoginCallback(command *cobra.Command) (string, error) {
-	line, err := bufio.NewReader(command.InOrStdin()).ReadString('\n')
-	if err != nil && !errors.Is(err, io.EOF) {
-		return "", fmt.Errorf("read oauth callback: %w", err)
+func readAuthLoginCallback(ctx context.Context, stdin io.Reader) (string, error) {
+	type lineResult struct {
+		line string
+		err  error
 	}
-	callback := strings.TrimSpace(line)
+	read := make(chan lineResult, 1)
+	go func() {
+		line, err := readLineWithoutReadAhead(stdin)
+		read <- lineResult{line: line, err: err}
+	}()
+
+	var result lineResult
+	select {
+	case <-ctx.Done():
+		return "", fmt.Errorf("read oauth callback: %w", ctx.Err())
+	case result = <-read:
+	}
+	if result.err != nil {
+		return "", fmt.Errorf("read oauth callback: %w", result.err)
+	}
+	callback := strings.TrimSpace(result.line)
 	if callback == "" {
 		return "", auth.NewError(auth.ErrorCodeReauthRequired, "missing OAuth callback code")
 	}
 
 	return callback, nil
+}
+
+func readLineWithoutReadAhead(reader io.Reader) (string, error) {
+	var line []byte
+	var next [1]byte
+	for {
+		count, err := reader.Read(next[:])
+		if count == 1 {
+			if next[0] == '\n' {
+				return string(line), nil
+			}
+			line = append(line, next[0])
+		}
+		if errors.Is(err, io.EOF) {
+			return string(line), nil
+		}
+		if err != nil {
+			return "", err
+		}
+	}
 }

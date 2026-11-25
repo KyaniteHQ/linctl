@@ -147,9 +147,26 @@ Know two facts before you parse `target --json`.
 }
 ```
 
+The example shows every key. These keys are absent when they have no value: `app.redirect_uri`,
+`app.scopes`, `token.type`, `token.expires_at`, `token.scopes`, `actor`, `scopes`, `expires_at`,
+`token_type`, `target.expected`, and `target.resolved`. `project_id` inside `expected` and
+`resolved` is absent when no project is pinned.
+
+`auth login` prints the authorization URL on stderr, then reads one line from stdin: the redirect
+URL or the authorization code. It writes AuthStatus on stdout only after the readiness check, so
+feed stdin before you wait for stdout.
+
 Auth readiness succeeds only after linctl proves the token actor, the token scopes, and the
 pinned target. linctl reports the app config and the token material as `set` or `missing`, and
 linctl never prints a secret value.
+
+`auth configure` → the `app` object of AuthStatus at the top level:
+`{ "client_id": "set"|"missing", "client_secret": "set"|"missing", "redirect_uri": string|absent, "scopes": [string]|absent }`
+
+`auth logout` → `{ "token": "removed", "app": "kept"|"forgotten", "revoked": [string]|absent, "revocation_failed": true|absent }`.
+`app` is `forgotten` with `--forget-app`. `revoked` lists the token types Linear revoked
+(`access_token`, `refresh_token`). A failed remote revocation still exits 0 and sets
+`revocation_failed`, so check that key, not only the exit code.
 
 ## WorkflowState
 
@@ -221,9 +238,9 @@ agent can then branch on a stable code instead of a parse of the prose.
 - `AUTH_NOT_CONFIGURED`: a required OAuth app state or token state is absent.
 - `AUTH_TOKEN_EXPIRED`: the saved OAuth access token expired, so linctl cannot use it directly.
 - `AUTH_REFRESH_FAILED`: an OAuth refresh request failed, or Linear rejected it.
-- `AUTH_REAUTH_REQUIRED`: linctl cannot refresh the saved OAuth state without a new login.
+- `AUTH_REAUTH_REQUIRED`: linctl cannot refresh the saved OAuth state without a new login, or the `auth login` callback was empty, had no code, or failed the state check. Run `auth login` again.
 - `MISSING_SCOPE`: the OAuth token state does not have every required scope.
-- `AUTH_ACTOR_MISMATCH`: OAuth readiness could not prove the expected actor.
+- `AUTH_ACTOR_MISMATCH`: OAuth readiness could not prove the expected actor, or `--actor` was not `app` or `user`.
 - `AUTH_TARGET_MISMATCH`: OAuth readiness could not prove that the token reaches the pinned target.
 - `AUTH_TARGET_NOT_CONFIGURED`: there is no pinned target. Set `org_id`, `team_key`, and `team_id` in `.linctl.toml`.
 - `INTERNAL`: any other error, such as a config error, an unknown command, or a decode error.

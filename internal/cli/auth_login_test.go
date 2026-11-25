@@ -3,6 +3,7 @@ package cli
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"io"
 	"net/url"
@@ -10,6 +11,7 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -28,7 +30,7 @@ func Test_AuthLogin_builds_authorization_url_with_app_actor_by_default(t *testin
 	restorePaths := useAuthPaths(t, paths)
 	defer restorePaths()
 
-	authorizeURL := startAuthLogin(t, "--json", "auth", "login")
+	authorizeURL := startAuthLogin(t, "auth", "login")
 
 	query := authorizeURL.Query()
 	require.Equal(t, "https", authorizeURL.Scheme)
@@ -51,7 +53,7 @@ func Test_AuthLogin_builds_authorization_url_with_user_actor(t *testing.T) {
 	restorePaths := useAuthPaths(t, paths)
 	defer restorePaths()
 
-	query := startAuthLogin(t, "--json", "auth", "login", "--actor", "user").Query()
+	query := startAuthLogin(t, "auth", "login", "--actor", "user").Query()
 
 	require.Equal(t, "user", query.Get("actor"))
 }
@@ -74,7 +76,7 @@ func Test_AuthLogin_requests_initiative_scopes_only_for_the_app_actor_by_default
 			restorePaths := useAuthPaths(t, paths)
 			defer restorePaths()
 
-			query := startAuthLogin(t, "--json", "auth", "login", "--actor", test.actor).Query()
+			query := startAuthLogin(t, "auth", "login", "--actor", test.actor).Query()
 
 			scopes := strings.Split(query.Get("scope"), ",")
 			require.Contains(t, scopes, "read")
@@ -118,7 +120,7 @@ func Test_AuthLogin_generates_fresh_state_and_pkce_per_run(t *testing.T) {
 	restorePaths := useAuthPaths(t, paths)
 	defer restorePaths()
 	start := func() url.Values {
-		return startAuthLogin(t, "--json", "auth", "login").Query()
+		return startAuthLogin(t, "auth", "login").Query()
 	}
 
 	first := start()
@@ -239,6 +241,25 @@ func Test_AuthLogin_callback_url_exchanges_and_saves_after_readiness(t *testing.
 	require.Equal(t, "oauth-access-token", fakeReadiness.accessToken)
 	require.Equal(t, "app", fakeReadiness.expectedActor)
 	require.Equal(t, []string{"read", "write"}, fakeReadiness.requiredScopes)
+	var status struct {
+		Actor string `json:"actor"`
+		Token struct {
+			Status string `json:"status"`
+		} `json:"token"`
+		Target struct {
+			Status string `json:"status"`
+		} `json:"target"`
+	}
+	require.NoError(t, json.Unmarshal(stdout.Bytes(), &status))
+	require.Equal(t, "app", status.Actor)
+	require.Equal(t, "set", status.Token.Status)
+	require.Equal(t, "ready", status.Target.Status)
+	promptLines := strings.Split(strings.TrimSuffix(stderr.String(), "\n"), "\n")
+	require.Len(t, promptLines, 2)
+	require.Equal(t,
+		"Open this URL in a browser, approve linctl, then paste the redirect URL or the authorization code here and press Enter:",
+		promptLines[0])
+	require.True(t, strings.HasPrefix(promptLines[1], "https://linear.app/oauth/authorize?"))
 	require.NotContains(t, stdout.String(), "oauth-access-token")
 	require.NotContains(t, stdout.String(), "oauth-refresh-token")
 	require.NotContains(t, stdout.String(), "client-secret")
@@ -254,35 +275,77 @@ func Test_AuthLogin_callback_url_exchanges_and_saves_after_readiness(t *testing.
 }
 
 func Test_AuthLogin_exchanges_a_raw_code_read_from_the_first_stdin_line(t *testing.T) {
+	tests := []struct {
+		name          string
+		input         string
+		wantRemaining string
+	}{
+		{name: "leaves later input unread", input: "manual-code-123\nsecond line\n", wantRemaining: "second line\n"},
+		{name: "accepts a last line without newline", input: "manual-code-123"},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			paths := cliAuthTestPaths(t)
+			saveAuthLoginApp(t, paths)
+			fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
+				"oauth-access-token",
+				"oauth-refresh-token",
+				"Bearer",
+				time.Now().Add(time.Hour),
+				[]string{"read", "write"},
+			)}
+			restore := useAuthCommandHooks(t, paths, fakeOAuth, &fakeAuthReadinessChecker{report: readyAuthReport("app")})
+			defer restore()
+			stdin := strings.NewReader(test.input)
+
+			err := execute(context.Background(), BuildInfo{}, stdin, &bytes.Buffer{}, &bytes.Buffer{}, []string{
+				"--org", "org-id",
+				"--team", "LIT",
+				"--team-id", "team-id",
+				"auth",
+				"login",
+			})
+
+			require.NoError(t, err)
+			require.Equal(t, 1, fakeOAuth.authorizationCodeCalls)
+			require.Equal(t, "manual-code-123", fakeOAuth.authorizationCodeRequest.Code)
+			remaining, readErr := io.ReadAll(stdin)
+			require.NoError(t, readErr)
+			require.Equal(t, test.wantRemaining, string(remaining))
+			got, loadErr := auth.NewStore(paths).Load(context.Background())
+			require.NoError(t, loadErr)
+			require.Equal(t, "oauth-access-token", got.Token.AccessToken)
+			require.Equal(t, "authorization_code", got.Token.GrantType)
+		})
+	}
+}
+
+func Test_AuthLogin_stops_waiting_for_the_callback_when_cancelled(t *testing.T) {
 	paths := cliAuthTestPaths(t)
 	saveAuthLoginApp(t, paths)
-	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
-		"oauth-access-token",
-		"oauth-refresh-token",
-		"Bearer",
-		time.Now().Add(time.Hour),
-		[]string{"read", "write"},
-	)}
+	fakeOAuth := &fakeOAuthTokenClient{}
 	restore := useAuthCommandHooks(t, paths, fakeOAuth, &fakeAuthReadinessChecker{report: readyAuthReport("app")})
 	defer restore()
+	stdin, stdinWriter := io.Pipe()
+	defer stdinWriter.Close()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	prompted := &signalingWriter{written: make(chan struct{})}
+	result := make(chan error, 1)
 
-	stdin := strings.NewReader("manual-code-123\nsecond line\n")
+	go func() {
+		result <- execute(ctx, BuildInfo{}, stdin, &bytes.Buffer{}, prompted, []string{"auth", "login"})
+	}()
+	<-prompted.written
+	cancel()
 
-	err := execute(context.Background(), BuildInfo{}, stdin, &bytes.Buffer{}, &bytes.Buffer{}, []string{
-		"--org", "org-id",
-		"--team", "LIT",
-		"--team-id", "team-id",
-		"auth",
-		"login",
-	})
-
-	require.NoError(t, err)
-	require.Equal(t, 1, fakeOAuth.authorizationCodeCalls)
-	require.Equal(t, "manual-code-123", fakeOAuth.authorizationCodeRequest.Code)
-	got, loadErr := auth.NewStore(paths).Load(context.Background())
-	require.NoError(t, loadErr)
-	require.Equal(t, "oauth-access-token", got.Token.AccessToken)
-	require.Equal(t, "authorization_code", got.Token.GrantType)
+	select {
+	case err := <-result:
+		require.ErrorIs(t, err, context.Canceled)
+	case <-time.After(5 * time.Second):
+		require.FailNow(t, "auth login kept waiting for stdin after cancellation")
+	}
+	require.Zero(t, fakeOAuth.authorizationCodeCalls)
 }
 
 func Test_AuthLogin_reports_callback_read_errors(t *testing.T) {
@@ -544,6 +607,17 @@ type failingReader struct {
 
 func (reader failingReader) Read(_ []byte) (int, error) {
 	return 0, reader.err
+}
+
+type signalingWriter struct {
+	once    sync.Once
+	written chan struct{}
+}
+
+func (writer *signalingWriter) Write(data []byte) (int, error) {
+	writer.once.Do(func() { close(writer.written) })
+
+	return len(data), nil
 }
 
 type failingWriter struct {

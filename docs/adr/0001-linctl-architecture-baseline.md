@@ -58,7 +58,7 @@ The app actor is the default OAuth actor. Browser login sends `actor=app` unless
 
 Setup and status commands must prove readiness before reporting success. Saving token bytes is not enough. linctl must verify the expected actor when available from the readiness path, required scopes from token state, and the Resolved Target before treating auth as usable.
 
-### 5. Browser Login Uses PKCE And Manual Callback Fallback
+### 5. Browser Login Uses PKCE And A Pasted Callback
 
 Authorization-code login always uses PKCE with an S256 challenge. `linctl auth login` prints a Linear authorization URL on stderr and, in the same run, reads one line from stdin: the callback URL or the raw authorization code. The OAuth state and PKCE verifier live only in that run, so a login cannot be finished by a later command.
 
