@@ -24,6 +24,7 @@ func Test_SelectSession_resolves_local_auth_state(t *testing.T) {
 	}))
 
 	session, err := SelectSession(context.Background(), SessionRequest{
+		Env:   staticEnv{},
 		Store: NewStore(paths),
 	})
 
@@ -106,6 +107,7 @@ func Test_SelectSession_reports_missing_token_source(t *testing.T) {
 	t.Parallel()
 
 	session, err := SelectSession(context.Background(), SessionRequest{
+		Env:   staticEnv{},
 		Store: NewStore(testPaths(t)),
 	})
 
@@ -145,6 +147,7 @@ func Test_SelectSession_rejects_personal_api_key_shapes(t *testing.T) {
 		},
 		{
 			name:  "local token",
+			env:   staticEnv{},
 			state: State{Token: TokenState{AccessToken: "lin_api_personal_key"}},
 		},
 	} {
@@ -179,6 +182,7 @@ func Test_SelectSession_reports_context_and_store_errors(t *testing.T) {
 		require.NoError(t, os.Mkdir(appConfigPath, 0o700))
 
 		_, err := SelectSession(context.Background(), SessionRequest{
+			Env: staticEnv{},
 			Store: NewStore(Paths{
 				AppConfigPath: appConfigPath,
 				TokenPath:     filepath.Join(root, "auth-token.json"),
