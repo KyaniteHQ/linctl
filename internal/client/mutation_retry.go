@@ -7,16 +7,10 @@ package client
 // state change.
 type MutationRetryClass string
 
-const (
-	// MutationRetryIdempotent means the same input can be sent again.
-	MutationRetryIdempotent MutationRetryClass = "idempotent"
-	// MutationRetryReconcile means an ambiguous result must be read back
-	// before another write. That is the class for issue state assignment
-	// and issueRelationCreate.
-	MutationRetryReconcile MutationRetryClass = "reconcile-before-retry"
-	// MutationRetryNever means the caller must not send the mutation again.
-	MutationRetryNever MutationRetryClass = "never-retry"
-)
+// MutationRetryReconcile means an ambiguous result must be read back
+// before another write. That is the class for issue state assignment
+// and issueRelationCreate.
+const MutationRetryReconcile MutationRetryClass = "reconcile-before-retry"
 
 // IssueStateWriteRetryClass is the retry class for issue state assignment.
 func IssueStateWriteRetryClass() MutationRetryClass {

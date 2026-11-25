@@ -266,6 +266,8 @@ func jsonFieldRawValueByPath(value any, field string, parts []string) (any, erro
 
 func normalizedHumanFormat(options *rootOptions) (string, error) {
 	switch options.format {
+	case "":
+		return "compact", nil
 	case "minimal", "compact", "full":
 		return options.format, nil
 	default:
