@@ -186,7 +186,7 @@ Success is pass/fail:
 
 36. Cycle list
    - Success: `linctl cycle list --limit N` lists Cycles for the resolved team through the public CLI and JSON output controls.
-   - Evidence: `go test ./internal/cli`, `Test_CycleCommandFlows_list_cycles`;
+   - Evidence: `go test ./internal/cli`, `Test_CycleCommandFlows_list_cycles_notes_truncation`, `Test_CycleCommandFlows_list_cycles_json`;
      `go test ./internal/client`, `Test_ListCyclesByTeam_returns_cycle_page`.
 
 37. Cycle get

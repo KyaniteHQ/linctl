@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/spf13/cobra"
@@ -14,156 +15,6 @@ import (
 	"github.com/KyaniteHQ/linctl/internal/client"
 	"github.com/KyaniteHQ/linctl/internal/config"
 )
-
-func Test_ListCommand_covers_pipeline_branches(t *testing.T) {
-	type item struct {
-		ID string `json:"id"`
-	}
-	type list struct {
-		Items []item `json:"items"`
-		client.Page
-	}
-
-	tests := []struct {
-		name        string
-		options     rootOptions
-		load        readListLoader[list]
-		writeItem   readListItemWriter[item]
-		requirement func(*testing.T, string, error)
-	}{
-		{
-			name: "runtime error",
-			load: func(context.Context, commandRuntime, []string, int) (list, error) {
-				return list{}, nil
-			},
-			writeItem: func(*cobra.Command, *rootOptions, item) error {
-				return nil
-			},
-			requirement: func(t *testing.T, _ string, err error) {
-				require.ErrorContains(t, err, "runtime failed")
-			},
-		},
-		{
-			name: "load error",
-			load: func(context.Context, commandRuntime, []string, int) (list, error) {
-				return list{}, errors.New("fetch failed")
-			},
-			writeItem: func(*cobra.Command, *rootOptions, item) error {
-				return nil
-			},
-			requirement: func(t *testing.T, _ string, err error) {
-				require.ErrorContains(t, err, "fetch failed")
-			},
-		},
-		{
-			name:    "empty error",
-			options: rootOptions{failOnEmpty: true},
-			load: func(context.Context, commandRuntime, []string, int) (list, error) {
-				return list{}, nil
-			},
-			writeItem: func(*cobra.Command, *rootOptions, item) error {
-				return nil
-			},
-			requirement: func(t *testing.T, _ string, err error) {
-				require.ErrorContains(t, err, "empty result")
-			},
-		},
-		{
-			name:    "sort error",
-			options: rootOptions{sortField: "missing"},
-			load: func(context.Context, commandRuntime, []string, int) (list, error) {
-				items := []item{{ID: "item-id"}}
-				return list{Items: items}, nil
-			},
-			writeItem: func(*cobra.Command, *rootOptions, item) error {
-				return nil
-			},
-			requirement: func(t *testing.T, _ string, err error) {
-				require.ErrorContains(t, err, `sort field "missing" is not present`)
-			},
-		},
-		{
-			name:    "sorting nil items keeps them empty",
-			options: rootOptions{json: true, sortField: "id"},
-			load: func(context.Context, commandRuntime, []string, int) (list, error) {
-				return list{}, nil
-			},
-			writeItem: func(*cobra.Command, *rootOptions, item) error {
-				return nil
-			},
-			requirement: func(t *testing.T, output string, err error) {
-				require.NoError(t, err)
-				require.JSONEq(t, `{"items":null,"has_next_page":false}`, output)
-			},
-		},
-		{
-			name:    "json output",
-			options: rootOptions{json: true},
-			load: func(context.Context, commandRuntime, []string, int) (list, error) {
-				items := []item{{ID: "item-id"}}
-				return list{Items: items}, nil
-			},
-			writeItem: func(*cobra.Command, *rootOptions, item) error {
-				return nil
-			},
-			requirement: func(t *testing.T, output string, err error) {
-				require.NoError(t, err)
-				require.JSONEq(t, `{"items":[{"id":"item-id"}],"has_next_page":false}`, output)
-			},
-		},
-		{
-			name: "write error",
-			load: func(context.Context, commandRuntime, []string, int) (list, error) {
-				items := []item{{ID: "item-id"}}
-				return list{Items: items}, nil
-			},
-			writeItem: func(*cobra.Command, *rootOptions, item) error {
-				return errors.New("write failed")
-			},
-			requirement: func(t *testing.T, _ string, err error) {
-				require.ErrorContains(t, err, "write failed")
-			},
-		},
-	}
-
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			output := bytes.Buffer{}
-			root := &cobra.Command{Use: "root"}
-			options := test.options
-			if options.sortOrder == "" {
-				options.sortOrder = "asc"
-			}
-			originalBuildCommandRuntime := buildCommandRuntime
-			if test.name == "runtime error" {
-				buildCommandRuntime = func(context.Context, *rootOptions) (commandRuntime, error) {
-					return commandRuntime{}, errors.New("runtime failed")
-				}
-			} else {
-				buildCommandRuntime = func(context.Context, *rootOptions) (commandRuntime, error) {
-					return commandRuntime{}, nil
-				}
-			}
-			t.Cleanup(func() {
-				buildCommandRuntime = originalBuildCommandRuntime
-			})
-			addListCommand(context.Background(), root, &options, listCommandSpec[list, item]{
-				Use:       "children PROJECT_ID",
-				Short:     "List children",
-				LimitHelp: "children",
-				Args:      cobra.ExactArgs(1),
-				Load:      test.load,
-				WriteItem: test.writeItem,
-			})
-			root.SetOut(&output)
-			root.SetArgs([]string{"children", "project-id"})
-
-			err := root.ExecuteContext(context.Background())
-
-			test.requirement(t, output.String(), err)
-		})
-	}
-}
 
 func Test_ProjectHistoryWriter_covers_output_modes(t *testing.T) {
 	history := client.ProjectHistorySummary{
@@ -488,23 +339,53 @@ func (writer *countFailingWriter) Write(content []byte) (int, error) {
 	return len(content), nil
 }
 
-func Test_CliHelpers_resolve_target_overrides_and_project_ids(t *testing.T) {
-	options := rootOptions{
+func Test_ResolveConfig_applies_every_target_override_flag(t *testing.T) {
+	dir := t.TempDir()
+	t.Chdir(dir)
+	configureTestAuthEnvironment(t)
+	require.NoError(t, os.WriteFile(".linctl.toml", []byte(`
+[target]
+org_id = "configured-org"
+team_key = "CFG"
+team_id = "configured-team-id"
+project_id = "configured-project-id"
+`), 0o600))
+
+	resolved, err := resolveConfig(context.Background(), &rootOptions{
 		orgID:   "org-id",
 		team:    "LIT",
 		teamID:  "team-id",
 		project: "project-id",
+	})
+
+	require.NoError(t, err)
+	require.Equal(t, config.Target{
+		OrgID:     "org-id",
+		TeamKey:   "LIT",
+		TeamID:    "team-id",
+		ProjectID: "project-id",
+	}, resolved.Target)
+}
+
+func Test_Target_prints_an_empty_project_when_none_is_pinned(t *testing.T) {
+	original := buildCommandRuntime
+	buildCommandRuntime = func(context.Context, *rootOptions) (commandRuntime, error) {
+		runtime := testCommandRuntime(commandFlowFakeClient{})
+		runtime.config.Target.ProjectID = ""
+		return runtime, nil
 	}
+	t.Cleanup(func() {
+		buildCommandRuntime = original
+	})
+	output := bytes.Buffer{}
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"target"})
 
-	target := targetOverride(&options)
+	err := command.ExecuteContext(context.Background())
 
-	require.Equal(t, "org-id", target.OrgID)
-	require.Equal(t, "LIT", target.TeamKey)
-	require.Equal(t, "team-id", target.TeamID)
-	require.Equal(t, "project-id", target.ProjectID)
-	require.Empty(t, projectID(nil))
-	require.Equal(t, "project-id", projectID(&client.ResolvedProject{ID: "project-id"}))
-	require.NotEmpty(t, defaultGlobalConfigPath())
+	require.NoError(t, err)
+	require.Equal(t, "org org-id team LIT/team-id project  confirmed true\n", output.String())
 }
 
 func Test_CliHelpers_clear_config_team_id_when_org_or_team_override_changes_target(t *testing.T) {
@@ -570,17 +451,32 @@ func Test_CommandRuntime_reports_config_load_errors(t *testing.T) {
 	require.ErrorContains(t, err, "parse config")
 }
 
-func Test_DefaultGlobalConfigPath_returns_empty_when_home_is_unset(t *testing.T) {
+func Test_ResolveConfig_skips_the_global_config_when_home_is_unset(t *testing.T) {
+	dir := t.TempDir()
+	t.Chdir(dir)
 	t.Setenv("HOME", "")
-	t.Setenv("USERPROFILE", "") // Windows resolves the home dir from USERPROFILE, not HOME.
+	t.Setenv("USERPROFILE", "")
+	require.NoError(t, os.WriteFile(".linctl.toml", []byte(`
+[target]
+org_id = "org-id"
+team_key = "LIT"
+team_id = "team-id"
+project_id = "project-id"
+`), 0o600))
+	require.NoError(t, os.MkdirAll(filepath.Join(".config", "linctl"), 0o750))
+	require.NoError(t, os.WriteFile(filepath.Join(".config", "linctl", "config.toml"), []byte("[target\n"), 0o600))
 
-	require.Empty(t, defaultGlobalConfigPath())
+	resolved, err := resolveConfig(context.Background(), &rootOptions{})
+
+	require.NoError(t, err)
+	require.Equal(t, "project-id", resolved.Target.ProjectID)
 }
 
-func Test_WriteUsage_reports_unknown_topics(t *testing.T) {
-	command := &cobra.Command{}
+func Test_Usage_reports_unknown_topics(t *testing.T) {
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetArgs([]string{"usage", "missing"})
 
-	err := writeUsage(command, &rootOptions{}, "missing")
+	err := command.ExecuteContext(context.Background())
 
 	require.ErrorContains(t, err, `unknown usage topic "missing"`)
 }
