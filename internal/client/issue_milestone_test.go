@@ -71,6 +71,5 @@ func Test_UpdateIssue_refuses_milestone_from_a_different_project(t *testing.T) {
 		ProjectMilestoneID: "project-milestone-id",
 	})
 
-	require.Error(t, err)
 	require.ErrorIs(t, err, ErrTargetMismatch)
 }

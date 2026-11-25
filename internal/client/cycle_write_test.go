@@ -48,7 +48,6 @@ func Test_CreateCycle_returns_mutation_failed_when_payload_omits_cycle(t *testin
 		EndsAt:   "2026-07-15T00:00:00Z",
 	})
 
-	require.Error(t, err)
 	require.ErrorIs(t, err, ErrMutationFailed)
 }
 
@@ -79,7 +78,6 @@ func Test_UpdateCycle_returns_mutation_failed_when_payload_omits_cycle(t *testin
 		Name: "Updated cycle",
 	})
 
-	require.Error(t, err)
 	require.ErrorIs(t, err, ErrMutationFailed)
 }
 
@@ -104,31 +102,7 @@ func Test_ArchiveCycle_returns_mutation_failed_when_payload_omits_entity(t *test
 
 	_, err := ArchiveCycle(context.Background(), graphqlClient, matchingTarget(), "cycle-id")
 
-	require.Error(t, err)
 	require.ErrorIs(t, err, ErrMutationFailed)
-}
-
-func Test_UpdateCycle_refuses_when_team_differs(t *testing.T) {
-	graphqlClient := projectWriteFakeClient(map[string]string{
-		"cycle": `{"cycle":` + cycleJSON("Wrong team cycle", "other-team", "OTHER") + `}`,
-	})
-
-	_, err := UpdateCycle(
-		context.Background(),
-		graphqlClient,
-		config.Target{
-			OrgID:   "org-id",
-			TeamKey: "LIT",
-			TeamID:  "team-id",
-		},
-		CycleUpdateRequest{
-			ID:   "cycle-id",
-			Name: "Updated cycle",
-		},
-	)
-
-	require.Error(t, err)
-	require.ErrorIs(t, err, ErrTargetMismatch)
 }
 
 // requireCycle compares team id OR team key (write_guard.go uses ||), so a

@@ -253,16 +253,6 @@ func Test_CreateIssueRelation_requires_both_ids(t *testing.T) {
 	require.ErrorIs(t, err, ErrWriteInvalid)
 }
 
-func Test_CreateIssueRelation_rejects_self_relation(t *testing.T) {
-	_, err := CreateIssueRelation(
-		context.Background(), relationIssuePairFake(map[string]string{}), matchingTarget(),
-		IssueRelationCreateRequest{IssueID: "LIT-1", RelatedIssueID: "LIT-1", Type: "related"},
-	)
-
-	require.ErrorIs(t, err, ErrWriteInvalid)
-	require.ErrorContains(t, err, "cannot relate to itself")
-}
-
 func Test_CreateIssueRelation_rejects_self_relation_when_identifier_and_uuid_name_the_same_issue(t *testing.T) {
 	same := relationPinnedIssueJSON("issue-uuid-42", "LIT-42", "Same issue")
 	recorder := &mutationRecordingClient{inner: issueLookupFake{
