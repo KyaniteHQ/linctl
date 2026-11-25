@@ -60,7 +60,7 @@ Setup and status commands must prove readiness before reporting success. Saving 
 
 ### 5. Browser Login Uses PKCE And Manual Callback Fallback
 
-Authorization-code login always uses PKCE with an S256 challenge. The CLI prints or returns a Linear authorization URL and then accepts either a callback URL or raw authorization code through `--callback`; `--callback -` reads the callback from stdin.
+Authorization-code login always uses PKCE with an S256 challenge. `linctl auth login` prints a Linear authorization URL on stderr and, in the same run, reads one line from stdin: the callback URL or the raw authorization code. The OAuth state and PKCE verifier live only in that run, so a login cannot be finished by a later command.
 
 Ordinary commands do not auto-launch browser reauthorization when scopes are missing. They fail with a structured missing-scope error and show the reauthorization path. Scope escalation stays deliberate and scriptable.
 
@@ -186,4 +186,4 @@ go tool task browser-login-smoke-check
 go tool task live-oauth
 ```
 
-`browser-login-smoke-check` is deterministic and non-live. `live-oauth` requires fixture env and should be skipped when the fixture is absent. Browser login remains a manual smoke check around `linctl auth login --callback -`.
+`browser-login-smoke-check` is deterministic and non-live. `live-oauth` requires fixture env and should be skipped when the fixture is absent. Browser login remains a manual smoke check around `linctl auth login`.

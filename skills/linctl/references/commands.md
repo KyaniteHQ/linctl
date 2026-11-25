@@ -516,8 +516,7 @@ linctl auth login [flags]
 Flags:
 
 ```
-      --actor string      OAuth actor: app or user (default "app")
-      --callback string   OAuth callback URL, OAuth authorization code, or - to read the value from stdin
+      --actor string   OAuth actor: app or user (default "app")
 ```
 
 ### linctl auth logout

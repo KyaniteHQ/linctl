@@ -129,7 +129,7 @@ Know two facts before you parse `target --json`.
 
 ## Auth
 
-`auth app` · `auth login --callback ...` · `auth status` · `auth refresh` → **AuthStatus**:
+`auth app` · `auth login` · `auth status` · `auth refresh` → **AuthStatus**:
 
 ```json
 {

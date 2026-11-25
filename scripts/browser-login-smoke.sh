@@ -610,7 +610,7 @@ read_manual_callback() {
   fi
 
   coproc AUTH_LOGIN {
-    "$binary" --json auth login --actor "$actor" --callback - >"$login_output" 2>"$login_error"
+    "$binary" --json auth login --actor "$actor" >"$login_output" 2>"$login_error"
   }
   auth_login_stdin="${AUTH_LOGIN[1]}"
 
