@@ -56,7 +56,7 @@ func linearOAuthServerClient(server *httptest.Server) *http.Client {
 	transport := server.Client().Transport
 
 	return &http.Client{Transport: roundTripFunc(func(request *http.Request) (*http.Response, error) {
-		redirected := request.Clone(context.Background())
+		redirected := request.Clone(request.Context())
 		redirected.URL.Scheme = "http"
 		redirected.URL.Host = server.Listener.Addr().String()
 
@@ -513,6 +513,7 @@ func Test_NewClient_defaults_to_linear_token_and_revocation_endpoints(t *testing
 	require.ErrorAs(t, revokeErr, &revokeURLErr)
 	require.Equal(t, "https://api.linear.app/oauth/revoke", revokeURLErr.URL)
 	require.ErrorIs(t, revokeErr, context.Canceled)
+	require.ErrorContains(t, revokeErr, "request oauth revoke")
 }
 
 func Test_Client_token_response_scope_null_and_non_string_values(t *testing.T) {
