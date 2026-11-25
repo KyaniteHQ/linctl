@@ -99,11 +99,8 @@ func validateLimitFlag(command *cobra.Command) error {
 		return nil
 	}
 	limit, err := command.Flags().GetInt("limit")
-	if err != nil {
-		return fmt.Errorf("read --limit: %w", err)
-	}
-	if limit <= 0 {
-		return fmt.Errorf("invalid --limit %d: must be greater than 0", limit)
+	if err != nil || limit <= 0 {
+		return fmt.Errorf("invalid --limit %s: must be greater than 0", command.Flags().Lookup("limit").Value)
 	}
 
 	return nil

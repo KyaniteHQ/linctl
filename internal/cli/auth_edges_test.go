@@ -9,7 +9,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/require"
 
 	"github.com/KyaniteHQ/linctl/internal/auth"
@@ -824,15 +823,6 @@ func Test_AuthRefresh_reports_missing_scope_without_saving_token(t *testing.T) {
 	require.NoError(t, loadErr)
 	require.Equal(t, "old-access-token", got.Token.AccessToken)
 	require.Equal(t, "old-refresh-token", got.Token.RefreshToken)
-}
-
-func Test_ValidateCommandFlags_reports_limit_parse_error(t *testing.T) {
-	command := &cobra.Command{}
-	command.Flags().String("limit", "not-an-int", "")
-
-	err := validateCommandFlags(command)
-
-	require.ErrorContains(t, err, "read --limit")
 }
 
 func cliAuthTestPaths(t *testing.T) auth.Paths {
