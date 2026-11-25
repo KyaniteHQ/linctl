@@ -32,10 +32,17 @@ team_id = "team-id"
 project_id = "project-id"
 `), 0o600))
 
+	linear := useLinearGraphQL(t, false, true)
+
 	runtime, err := newCommandRuntime(context.Background(), &rootOptions{timeout: time.Second})
 
 	require.NoError(t, err)
-	require.Equal(t, "Bearer test-token", runtimeGraphQLAuthorizationHeader(t, runtime))
+	require.NoError(t, runtime.graphqlClient.MakeRequest(
+		context.Background(),
+		&graphql.Request{OpName: "Viewer", Query: "query Viewer { viewer { id } }"},
+		&graphql.Response{},
+	))
+	require.Equal(t, []string{"Bearer test-token"}, linear.authorizations)
 }
 
 func Test_CommandRuntime_reads_oauth_token_from_local_auth_state(t *testing.T) {
@@ -55,10 +62,17 @@ team_id = "team-id"
 project_id = "project-id"
 `), 0o600))
 
+	linear := useLinearGraphQL(t, false, true)
+
 	runtime, err := newCommandRuntime(context.Background(), &rootOptions{timeout: time.Second})
 
 	require.NoError(t, err)
-	require.Equal(t, "Bearer local-oauth-token", runtimeGraphQLAuthorizationHeader(t, runtime))
+	require.NoError(t, runtime.graphqlClient.MakeRequest(
+		context.Background(),
+		&graphql.Request{OpName: "Viewer", Query: "query Viewer { viewer { id } }"},
+		&graphql.Response{},
+	))
+	require.Equal(t, []string{"Bearer local-oauth-token"}, linear.authorizations)
 }
 
 func Test_CommandRuntime_reports_auth_default_paths_error(t *testing.T) {
@@ -166,10 +180,17 @@ func Test_CommandRuntime_does_not_load_local_auth_state_for_env_token(t *testing
 	require.NoError(t, os.MkdirAll(filepath.Dir(paths.AppConfigPath), 0o700))
 	require.NoError(t, os.Mkdir(paths.AppConfigPath, 0o700))
 
+	linear := useLinearGraphQL(t, false, true)
+
 	runtime, err := newCommandRuntime(context.Background(), &rootOptions{timeout: time.Second})
 
 	require.NoError(t, err)
-	require.Equal(t, "Bearer env-oauth-token", runtimeGraphQLAuthorizationHeader(t, runtime))
+	require.NoError(t, runtime.graphqlClient.MakeRequest(
+		context.Background(),
+		&graphql.Request{OpName: "Viewer", Query: "query Viewer { viewer { id } }"},
+		&graphql.Response{},
+	))
+	require.Equal(t, []string{"Bearer env-oauth-token"}, linear.authorizations)
 }
 
 func Test_CommandRuntime_reports_local_auth_state_load_error_without_env_token(t *testing.T) {
@@ -876,15 +897,6 @@ func Test_CommandRuntime_refuses_a_persisted_token_without_a_recovery_grant(t *t
 	require.Equal(t, string(auth.ErrorCodeReauthRequired), errorCode(err))
 	require.Zero(t, fakeOAuth.refreshTokenCalls)
 	require.Zero(t, factory.requestCalls)
-}
-
-func runtimeGraphQLAuthorizationHeader(t *testing.T, runtime commandRuntime) string {
-	t.Helper()
-
-	recovering, ok := runtime.graphqlClient.(*recoveringGraphQLClient)
-	require.True(t, ok)
-
-	return "Bearer " + recovering.state.token.AccessToken
 }
 
 func configureTestAuthEnvironment(t *testing.T) auth.Paths {
