@@ -117,29 +117,30 @@ func agentActivitySummary(fields gql.AgentActivitySummaryFields) AgentActivitySu
 func agentActivityContentSummary(
 	content gql.AgentActivitySummaryFieldsContentAgentActivityContent,
 ) AgentActivityContentSummary {
+	var summary AgentActivityContentSummary
 	switch value := content.(type) {
 	case *gql.AgentActivitySummaryFieldsContentAgentActivityActionContent:
-		return AgentActivityContentSummary{
+		summary = AgentActivityContentSummary{
 			Type:      string(value.Type),
 			Action:    value.Action,
 			Parameter: value.Parameter,
 			Result:    stringValue(value.Result),
 		}
 	case *gql.AgentActivitySummaryFieldsContentAgentActivityElicitationContent:
-		return AgentActivityContentSummary{Type: string(value.Type), Body: value.Body}
+		summary = AgentActivityContentSummary{Type: string(value.Type), Body: value.Body}
 	case *gql.AgentActivitySummaryFieldsContentAgentActivityErrorContent:
-		return AgentActivityContentSummary{
+		summary = AgentActivityContentSummary{
 			Type:       string(value.Type),
 			Body:       value.Body,
 			ReasonCode: stringValue(value.ReasonCode),
 		}
 	case *gql.AgentActivitySummaryFieldsContentAgentActivityPromptContent:
-		return AgentActivityContentSummary{Type: string(value.Type), Body: value.Body}
+		summary = AgentActivityContentSummary{Type: string(value.Type), Body: value.Body}
 	case *gql.AgentActivitySummaryFieldsContentAgentActivityResponseContent:
-		return AgentActivityContentSummary{Type: string(value.Type), Body: value.Body}
+		summary = AgentActivityContentSummary{Type: string(value.Type), Body: value.Body}
 	case *gql.AgentActivitySummaryFieldsContentAgentActivityThoughtContent:
-		return AgentActivityContentSummary{Type: string(value.Type), Body: value.Body}
-	default:
-		return AgentActivityContentSummary{}
+		summary = AgentActivityContentSummary{Type: string(value.Type), Body: value.Body}
 	}
+
+	return summary
 }

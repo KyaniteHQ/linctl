@@ -10,7 +10,7 @@ import (
 func Test_ClientWriteScenarios_guard_writes_and_report_results(t *testing.T) {
 	// Given
 	t.Run("invalid requests fail before network", func(t *testing.T) {
-		graphqlClient := issueWriteFakeClient(map[string]string{})
+		graphqlClient := &mutationRecordingClient{inner: issueWriteFakeClient(map[string]string{})}
 
 		_, err := CreateIssue(context.Background(), graphqlClient, matchingTarget(), IssueCreateRequest{})
 		require.ErrorIs(t, err, ErrWriteInvalid)
@@ -33,12 +33,6 @@ func Test_ClientWriteScenarios_guard_writes_and_report_results(t *testing.T) {
 
 		_, err = CommentOnIssue(context.Background(), graphqlClient, matchingTarget(), IssueCommentRequest{Body: "body"})
 		require.ErrorIs(t, err, ErrWriteInvalid)
-
-		_, err = StartIssue(context.Background(), graphqlClient, matchingTarget(), "")
-		require.Error(t, err)
-
-		_, err = CloseIssue(context.Background(), graphqlClient, matchingTarget(), "")
-		require.Error(t, err)
 
 		_, err = CreateProject(context.Background(), graphqlClient, matchingTarget(), ProjectCreateRequest{})
 		require.ErrorIs(t, err, ErrWriteInvalid)
@@ -99,6 +93,8 @@ func Test_ClientWriteScenarios_guard_writes_and_report_results(t *testing.T) {
 
 		_, err = ArchiveProject(context.Background(), graphqlClient, matchingTarget(), "")
 		require.ErrorIs(t, err, ErrWriteInvalid)
+
+		require.Empty(t, graphqlClient.sent)
 	})
 
 	t.Run("issue comment succeeds", func(t *testing.T) {

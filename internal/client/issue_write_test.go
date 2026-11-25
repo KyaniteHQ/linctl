@@ -76,6 +76,41 @@ func Test_UpdateIssue_refuses_label_from_another_team(t *testing.T) {
 	require.False(t, recorder.sentOperation("IssueUpdate"))
 }
 
+func Test_UpdateIssue_refuses_when_issue_team_differs_from_pin(t *testing.T) {
+	testCases := []struct {
+		name    string
+		teamID  string
+		teamKey string
+	}{
+		{name: "pinned team id with another key", teamID: "team-id", teamKey: "ABC"},
+		{name: "pinned team key with another id", teamID: "other-team", teamKey: "LIT"},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			recorder := &mutationRecordingClient{inner: issueWriteFakeClient(map[string]string{
+				"issue": `{"issue":` + issueJSONWithTeam(issueFixture{
+					Identifier: "LIT-3",
+					Title:      "wrong team",
+					ProjectID:  "project-id",
+					Project:    "fixture",
+					StateID:    "state-id",
+					State:      "Todo",
+					StateType:  "unstarted",
+				}, testCase.teamID, testCase.teamKey) + `}`,
+			})}
+
+			_, err := UpdateIssue(context.Background(), recorder, matchingTarget(), IssueUpdateRequest{
+				ID:    "LIT-3",
+				Title: "new title",
+			})
+
+			require.ErrorIs(t, err, ErrTargetMismatch)
+			require.False(t, recorder.sentOperation("IssueUpdate"))
+		})
+	}
+}
+
 func Test_UpdateIssue_refuses_when_issue_project_does_not_match_pinned_project(t *testing.T) {
 	// Given
 	graphqlClient := issueWriteFakeClient(map[string]string{
