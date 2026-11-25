@@ -174,18 +174,14 @@ func (guard *guardedClient) reconcileIssueRelation(
 		return IssueRelationWriteResult{}, withMutationError(err, writeErr)
 	}
 	if !found {
-		return applyMutationRetryClass(
-			IssueRelationCreateRetryClass(), IssueRelationWriteResult{}, false, writeErr,
-		)
+		return IssueRelationWriteResult{}, writeErr
 	}
 	result, readErr := guard.readIssueRelationResult(ctx, existing, issue, related)
 	if readErr != nil {
 		return IssueRelationWriteResult{}, withMutationError(readErr, writeErr)
 	}
 
-	return applyMutationRetryClass(
-		IssueRelationCreateRetryClass(), result, true, writeErr,
-	)
+	return result, nil
 }
 
 func (guard *guardedClient) readIssueRelationResult(

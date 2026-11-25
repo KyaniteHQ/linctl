@@ -50,12 +50,6 @@ func (guard *guardedClient) finishStateWrite(
 		return IssueSummary{}, err
 	}
 	if observed.Summary.StateID == wantStateID {
-		if writeErr != nil {
-			return applyMutationRetryClass(
-				IssueStateWriteRetryClass(), observed.Summary, true, writeErr,
-			)
-		}
-
 		return observed.Summary, nil
 	}
 	if landed {

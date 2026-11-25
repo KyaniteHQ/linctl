@@ -180,7 +180,6 @@ func (guard *guardedClient) finishTemplateWrite(
 	}
 
 	return finishReconciledWrite(
-		TemplateWriteRetryClass(),
 		observed,
 		readErr,
 		writeErr,
