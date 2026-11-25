@@ -69,6 +69,7 @@ func Test_Execute_writes_debug_diagnostics_to_its_stderr(t *testing.T) {
 	t.Chdir(t.TempDir())
 	configureTestAuthEnvironment(t)
 	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "test-token")
+	t.Setenv("LINCTL_DEBUG_JSON", "")
 	require.NoError(t, os.WriteFile(".linctl.toml", []byte(`
 [target]
 org_id = "org-id"
@@ -83,6 +84,7 @@ team_id = "team-id"
 	)
 
 	require.ErrorContains(t, err, "not a regular file")
+	require.Contains(t, stderr.String(), "level=DEBUG")
 	require.Contains(t, stderr.String(), `msg="runtime ready"`)
 	require.Contains(t, stderr.String(), "team_key=LIT")
 	require.NotContains(t, stderr.String(), "test-token")

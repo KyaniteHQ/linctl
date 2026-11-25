@@ -6,10 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// Test_projectJSONFields_projects_list_envelopes guards that --json --fields
-// projects per item of the collection named by a command's annotated
-// collection key.
-func Test_projectJSONFields_projects_list_envelopes(t *testing.T) {
+func Test_projectJSONFieldsWithCollectionKey_projects_list_envelopes(t *testing.T) {
 	envelope := map[string]any{
 		"favorites": []any{
 			map[string]any{"id": "id-1", "name": "first", "extra": "drop"},
@@ -24,10 +21,7 @@ func Test_projectJSONFields_projects_list_envelopes(t *testing.T) {
 	}, projected)
 }
 
-// Test_projectJSONFields_leaves_detail_arrays_whole guards that a command
-// without an annotated collection key projects the whole object: a detail
-// object's embedded array is never mistaken for a projection collection.
-func Test_projectJSONFields_leaves_detail_arrays_whole(t *testing.T) {
+func Test_projectJSONFieldsWithCollectionKey_leaves_detail_arrays_whole(t *testing.T) {
 	detail := map[string]any{
 		"id":      "schedule-1",
 		"name":    "On call",
