@@ -12,7 +12,7 @@ Run the complete local gate for the linctl repo and report each step's result. `
 Run these in order, capturing pass/fail and key output for each. Do not stop at the first failure — run all, then report.
 
 1. **`go tool task ci`** — deps-check, fmt-check, generate-check (generated client, command reference, upstream schema/coverage-ledger checks), domain-language-check, browser-login-smoke-check, vet, test, build, smoke-run, lint, shellcheck, actionlint, vuln.
-2. **`go tool task coverage`** (separate from `ci`) — enforces 100% hand-written statement coverage; generated.go, cmd/linctl/main.go, and scripts/ are excluded. Fails with the uncovered file:line.
+2. **`go tool task coverage`** (separate from `ci`) — enforces 100% hand-written statement coverage; internal/client/internal/gql/generated.go, internal/client/internal/gql/exports.go, cmd/linctl/main.go, and scripts/ are excluded. Fails with the uncovered file:line.
 
 The upstream schema/coverage-ledger checks in `ci` need network access to `github.com/linear/linear` unless a reusable checkout is already prepared. Use `LINCTL_LINEAR_SDK_UPSTREAM=/path/to/linear` to point at one, and `LINCTL_LINEAR_SDK_OFFLINE=1` to skip the refresh fetch against it (fails loud if the checkout doesn't exist).
 
