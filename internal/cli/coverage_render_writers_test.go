@@ -895,7 +895,7 @@ func Test_CliRenderHelpers_write_text_output(t *testing.T) {
 			output := bytes.Buffer{}
 			command := &cobra.Command{}
 			command.SetOut(&output)
-			require.NoError(t, test.write(command, &rootOptions{}))
+			require.NoError(t, test.write(command, &rootOptions{format: "compact"}))
 			require.Equal(t, test.text, output.String())
 		})
 	}

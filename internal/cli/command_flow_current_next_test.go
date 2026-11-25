@@ -266,7 +266,7 @@ func Test_runNextWithPicker_notes_truncated_ranking(t *testing.T) {
 	err := runNextWithPicker(
 		context.Background(),
 		command,
-		&rootOptions{},
+		&rootOptions{format: "compact"},
 		port,
 		nextFlags{dryRun: true, limit: 20},
 	)
@@ -326,7 +326,7 @@ func Test_runNextWithPicker_surfaces_truncated_ranking_note_writer_errors(t *tes
 	err := runNextWithPicker(
 		context.Background(),
 		command,
-		&rootOptions{},
+		&rootOptions{format: "compact"},
 		port,
 		nextFlags{dryRun: true, limit: 20},
 	)
@@ -352,7 +352,7 @@ func Test_runNextWithPicker_reads_and_starts_through_the_port(t *testing.T) {
 	err := runNextWithPicker(
 		context.Background(),
 		command,
-		&rootOptions{},
+		&rootOptions{format: "compact"},
 		port,
 		nextFlags{limit: 7},
 	)
