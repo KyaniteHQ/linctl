@@ -9,8 +9,8 @@ import (
 
 func Test_UpdateIssue_matches_state_name_without_regard_to_case(t *testing.T) {
 	after := b1IssueFixture("LIT-1")
-	after.StateID = "in-review-state"
-	after.State = "In Review"
+	after.StateID = "started-state"
+	after.State = "Started"
 	after.StateType = "started"
 	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"issue":                `{"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}`,
@@ -19,10 +19,10 @@ func Test_UpdateIssue_matches_state_name_without_regard_to_case(t *testing.T) {
 	})}
 
 	_, err := UpdateIssue(context.Background(), withIssueAfterWrite(recorder, after), matchingTarget(),
-		IssueUpdateRequest{ID: "LIT-1", StateSelector: "in review"})
+		IssueUpdateRequest{ID: "LIT-1", StateSelector: "sTarted"})
 
 	require.NoError(t, err)
-	require.JSONEq(t, `{"id": "LIT-1", "input": {"stateId": "in-review-state"}}`,
+	require.JSONEq(t, `{"id": "LIT-1", "input": {"stateId": "started-state"}}`,
 		string(recorder.variablesFor(t, "IssueUpdate")))
 }
 
