@@ -21,13 +21,12 @@ func addUserSettingsCommand(ctx context.Context, root *cobra.Command, options *r
 	addUserSettingsMobileDeliveryCommand(ctx, settingsCommand, options)
 	addUserSettingsMobileScheduleCommand(ctx, settingsCommand, options)
 	addUserSettingsMobileScheduleDayCommand(ctx, settingsCommand, options)
-	addUserSettingsThemeCommand(ctx, settingsCommand, options, "theme", readUserSettingsTheme(client.GetUserSettingsTheme))
-	addUserSettingsThemeCommand(
-		ctx, settingsCommand, options, "custom-theme", readUserSettingsTheme(client.GetUserSettingsCustomTheme),
-	)
-	addUserSettingsThemeCommand(
-		ctx, settingsCommand, options, "custom-sidebar-theme", readUserSettingsTheme(client.GetUserSettingsCustomSidebarTheme),
-	)
+	addUserSettingsThemeCommand(ctx, settingsCommand, options, "theme",
+		readUserSettingsTheme(client.GetUserSettingsTheme))
+	addUserSettingsThemeCommand(ctx, settingsCommand, options, "custom-theme",
+		readUserSettingsTheme(client.GetUserSettingsCustomTheme))
+	addUserSettingsThemeCommand(ctx, settingsCommand, options, "custom-sidebar-theme",
+		readUserSettingsTheme(client.GetUserSettingsCustomSidebarTheme))
 	root.AddCommand(settingsCommand)
 }
 
@@ -245,9 +244,9 @@ func addUserSettingsThemeCommand(
 			if err != nil {
 				return err
 			}
-			return read(
-				ctx, command, options, runtime.graphqlClient, deviceType, mode, userSettingsThemeText(name, deviceType, mode),
-			)
+			human := userSettingsThemeText(name, deviceType, mode)
+
+			return read(ctx, command, options, runtime.graphqlClient, deviceType, mode, human)
 		},
 	}
 	command.Flags().StringVar(

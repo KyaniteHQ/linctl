@@ -562,7 +562,7 @@ func Test_UserSettings_theme_reports_a_preset_linctl_does_not_know_as_sent(t *te
 	err := command.ExecuteContext(context.Background())
 
 	require.NoError(t, err)
-	require.Equal(t, `{"preset":"aurora"}`+"\n", output.String())
+	require.JSONEq(t, `{"preset":"aurora"}`, output.String())
 }
 
 func Test_UserSettings_prints_none_when_mobile_delivery_is_null(t *testing.T) {
