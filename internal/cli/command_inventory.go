@@ -158,7 +158,7 @@ func commandInfo(command *cobra.Command) CommandInfo {
 		WriteEffect:   commandWriteEffect(command),
 		Irreversible:  commandIrreversible(command),
 		CollectionKey: commandCollectionKey(command),
-		DocCategory:   commandDocCategory(command),
+		DocCategory:   commandEntity(command),
 	}
 }
 
@@ -254,12 +254,6 @@ func commandEntity(command *cobra.Command) string {
 	entity, _, _ := strings.Cut(CommandPath(command), " ")
 
 	return entity
-}
-
-func commandDocCategory(command *cobra.Command) string {
-	category, _, _ := strings.Cut(CommandPath(command), " ")
-
-	return category
 }
 
 func commandTargetArgs(command *cobra.Command) []string {
