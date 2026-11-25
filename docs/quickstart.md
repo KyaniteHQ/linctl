@@ -55,7 +55,9 @@ because Linear refuses Initiative reads and writes by an app actor without them.
 replaces these defaults, so a login configured with an older list keeps it: run `linctl auth configure`
 again without `--scopes`, then log in again.
 
-Now log in. This command opens a browser.
+Now log in. linctl prints a Linear authorization URL and waits. Open the URL in a browser and
+approve linctl. Linear then redirects to your redirect URI. Copy the full redirect URL from the
+address bar, paste it into the terminal, and press Enter.
 
 ```bash
 linctl auth login
@@ -223,7 +225,8 @@ into the repo.
 
 ## Run linctl without a browser (CI, containers, agents)
 
-`linctl auth login` opens a browser, which does not work in CI. Two other paths do work.
+`linctl auth login` needs a person to approve linctl in a browser and paste the redirect URL into
+the terminal, which does not work in CI. Two other paths do work.
 
 **Authorize as the application.** This needs a client secret. It gives you an app actor instead
 of a user actor, so Linear attributes each change to the application.

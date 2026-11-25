@@ -3,10 +3,10 @@ package cli
 import (
 	"context"
 	"crypto/rand"
+	"errors"
 	"fmt"
 	"io"
 	"net/url"
-	"slices"
 	"strings"
 	"time"
 
@@ -22,38 +22,23 @@ const (
 	userActor               = "user"
 )
 
-var generateAuthLoginState = rand.Text
-
-type authLoginFlags struct {
-	actor    string
-	callback string
-}
-
-type authLoginStartReport struct {
-	AuthorizeURL string   `json:"authorize_url"`
-	Actor        string   `json:"actor"`
-	RedirectURI  string   `json:"redirect_uri"`
-	Scopes       []string `json:"scopes"`
-}
+const authLoginPrompt = "Open this URL in a browser, approve linctl, " +
+	"then paste the redirect URL or the authorization code here and press Enter:"
 
 func addAuthLoginCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	var flags authLoginFlags
+	var actor string
 	command := &cobra.Command{
 		Use:   "login",
 		Short: "Authorize with OAuth browser login",
-		Args:  cobra.NoArgs,
+		Long: "Print a Linear authorization URL on stderr, then read the redirect URL or the " +
+			"authorization code as one line from stdin and save the token after a live readiness check.",
+		Args: cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
-			return runAuthLogin(ctx, command, options, flags)
+			return runAuthLogin(ctx, command, options, actor)
 		},
 	}
 	annotateCommand(command, commandSafetyAnnotation, string(CommandSafetyLocal))
-	command.Flags().StringVar(&flags.actor, "actor", appActor, "OAuth actor: app or user")
-	command.Flags().StringVar(
-		&flags.callback,
-		"callback",
-		"",
-		"OAuth callback URL, OAuth authorization code, or - to read the value from stdin",
-	)
+	command.Flags().StringVar(&actor, "actor", appActor, "OAuth actor: app or user")
 	root.AddCommand(command)
 }
 
@@ -61,7 +46,7 @@ func runAuthLogin(
 	ctx context.Context,
 	command *cobra.Command,
 	options *rootOptions,
-	flags authLoginFlags,
+	requestedActor string,
 ) error {
 	authContext, err := loadAuthCommandContext(ctx, command, options)
 	if err != nil {
@@ -71,20 +56,20 @@ func runAuthLogin(
 	if err != nil {
 		return err
 	}
-	actor, err := normalizedAuthLoginActor(flags.actor)
+	actor, err := normalizedAuthLoginActor(requestedActor)
 	if err != nil {
 		return err
 	}
 	pkce := oauth.GeneratePKCE()
-	state := generateAuthLoginState()
+	state := rand.Text()
 	scopes := requiredScopes(app, actor)
-	report := newAuthLoginStartReport(app, actor, scopes, state, pkce)
-	callback, err := authLoginCallback(command, options, strings.TrimSpace(flags.callback), report)
-	if err != nil {
+	authorizeURL := buildAuthLoginAuthorizeURL(app, actor, scopes, state, pkce)
+	if err := render.WriteLine(command.ErrOrStderr(), "%s\n%s", authLoginPrompt, authorizeURL); err != nil {
 		return err
 	}
-	if callback == "" {
-		return writeAuthLoginStart(command, options, report)
+	callback, err := readAuthLoginCallback(ctx, command.InOrStdin())
+	if err != nil {
+		return err
 	}
 
 	token, readiness, err := completeAuthLogin(ctx, authContext, authLoginCompletionRequest{
@@ -122,39 +107,6 @@ func authLoginApp(authContext authCommandContext) (auth.AppConfig, error) {
 	}
 
 	return app, nil
-}
-
-func newAuthLoginStartReport(
-	app auth.AppConfig,
-	actor string,
-	scopes []string,
-	state string,
-	pkce oauth.PKCE,
-) authLoginStartReport {
-	return authLoginStartReport{
-		AuthorizeURL: buildAuthLoginAuthorizeURL(app, actor, scopes, state, pkce),
-		Actor:        actor,
-		RedirectURI:  app.RedirectURI,
-		Scopes:       slices.Clone(scopes),
-	}
-}
-
-func authLoginCallback(
-	command *cobra.Command,
-	options *rootOptions,
-	callback string,
-	report authLoginStartReport,
-) (string, error) {
-	if callback != "-" {
-		return callback, nil
-	}
-	if !options.quiet {
-		if err := render.WriteLine(command.ErrOrStderr(), "%s", report.AuthorizeURL); err != nil {
-			return "", err
-		}
-	}
-
-	return readAuthLoginCallback(command)
 }
 
 type authLoginCompletionRequest struct {
@@ -260,26 +212,50 @@ func normalizedAuthLoginActor(actor string) (string, error) {
 	}
 }
 
-func writeAuthLoginStart(command *cobra.Command, options *rootOptions, report authLoginStartReport) error {
-	if options.quiet {
-		return nil
+func readAuthLoginCallback(ctx context.Context, stdin io.Reader) (string, error) {
+	type lineResult struct {
+		line string
+		err  error
 	}
-	if options.json {
-		return writeJSONValue(command, options, report)
-	}
+	read := make(chan lineResult, 1)
+	go func() {
+		line, err := readLineWithoutReadAhead(stdin)
+		read <- lineResult{line: line, err: err}
+	}()
 
-	return render.WriteLine(command.OutOrStdout(), "%s", report.AuthorizeURL)
-}
-
-func readAuthLoginCallback(command *cobra.Command) (string, error) {
-	data, err := io.ReadAll(command.InOrStdin())
-	if err != nil {
-		return "", fmt.Errorf("read oauth callback: %w", err)
+	var result lineResult
+	select {
+	case <-ctx.Done():
+		return "", fmt.Errorf("read oauth callback: %w", ctx.Err())
+	case result = <-read:
 	}
-	callback := strings.TrimSpace(string(data))
+	if result.err != nil {
+		return "", fmt.Errorf("read oauth callback: %w", result.err)
+	}
+	callback := strings.TrimSpace(result.line)
 	if callback == "" {
 		return "", auth.NewError(auth.ErrorCodeReauthRequired, "missing OAuth callback code")
 	}
 
 	return callback, nil
+}
+
+func readLineWithoutReadAhead(reader io.Reader) (string, error) {
+	var line []byte
+	var next [1]byte
+	for {
+		count, err := reader.Read(next[:])
+		if count == 1 {
+			if next[0] == '\n' {
+				return string(line), nil
+			}
+			line = append(line, next[0])
+		}
+		if errors.Is(err, io.EOF) {
+			return string(line), nil
+		}
+		if err != nil {
+			return "", err
+		}
+	}
 }

@@ -36,9 +36,9 @@ _Avoid_: Default actor, app actor
 The OAuth authorization-code flow where a Linear user approves linctl in the browser and linctl stores renewable OAuth tokens for later commands.
 _Avoid_: Device login, API-key setup, manual token paste
 
-**Manual Callback Fallback**:
-The browser login fallback where linctl prints an OAuth authorization URL and accepts the returned callback or authorization code from the user.
-_Avoid_: Device flow, token paste, API-key fallback
+**Pasted Callback**:
+The browser login step where linctl prints an OAuth authorization URL on stderr and, in the same run, reads the redirect URL or authorization code that the user pastes as one line on stdin.
+_Avoid_: Manual callback fallback, two-step login, device flow, token paste
 
 **PKCE Login**:
 The authorization-code login behavior that always uses a generated PKCE verifier and S256 challenge.

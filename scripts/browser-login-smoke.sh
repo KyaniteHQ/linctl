@@ -610,11 +610,13 @@ read_manual_callback() {
   fi
 
   coproc AUTH_LOGIN {
-    "$binary" --json auth login --actor "$actor" --callback - >"$login_output" 2>"$login_error"
+    "$binary" --json auth login --actor "$actor" >"$login_output" 2>"$login_error"
   }
   auth_login_stdin="${AUTH_LOGIN[1]}"
 
   if ! authorize_url="$(wait_for_authorize_url "$login_error" "$AUTH_LOGIN_PID")"; then
+    exec {auth_login_stdin}>&-
+    kill "$AUTH_LOGIN_PID" 2>/dev/null || true
     wait "$AUTH_LOGIN_PID" || true
     cat "$login_error" >&2
     exit 1

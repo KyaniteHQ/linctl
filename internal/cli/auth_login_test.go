@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -28,19 +29,9 @@ func Test_AuthLogin_builds_authorization_url_with_app_actor_by_default(t *testin
 	saveAuthLoginApp(t, paths)
 	restorePaths := useAuthPaths(t, paths)
 	defer restorePaths()
-	restoreLogin := useAuthLoginGeneratedValues(t)
-	defer restoreLogin()
-	var stdout bytes.Buffer
 
-	err := execute(context.Background(), BuildInfo{}, nil, &stdout, &bytes.Buffer{}, []string{
-		"--json",
-		"auth",
-		"login",
-	})
+	authorizeURL := startAuthLogin(t, "auth", "login")
 
-	require.NoError(t, err)
-	report := decodeAuthLoginStartReport(t, stdout.Bytes())
-	authorizeURL := authLoginAuthorizeURL(t, report.AuthorizeURL)
 	query := authorizeURL.Query()
 	require.Equal(t, "https", authorizeURL.Scheme)
 	require.Equal(t, "linear.app", authorizeURL.Host)
@@ -49,7 +40,7 @@ func Test_AuthLogin_builds_authorization_url_with_app_actor_by_default(t *testin
 	require.Equal(t, "client-id", query.Get("client_id"))
 	require.Equal(t, "http://127.0.0.1:8484/callback", query.Get("redirect_uri"))
 	require.Equal(t, "read,write", query.Get("scope"))
-	require.Equal(t, "state-123", query.Get("state"))
+	require.NotEmpty(t, query.Get("state"))
 	require.Regexp(t, `^[A-Za-z0-9_-]{43}$`, query.Get("code_challenge"))
 	require.Equal(t, "S256", query.Get("code_challenge_method"))
 	require.Equal(t, "app", query.Get("actor"))
@@ -61,19 +52,9 @@ func Test_AuthLogin_builds_authorization_url_with_user_actor(t *testing.T) {
 	saveAuthLoginApp(t, paths)
 	restorePaths := useAuthPaths(t, paths)
 	defer restorePaths()
-	restoreLogin := useAuthLoginGeneratedValues(t)
-	defer restoreLogin()
-	var stdout bytes.Buffer
 
-	err := execute(context.Background(), BuildInfo{}, nil, &stdout, &bytes.Buffer{}, []string{
-		"--json",
-		"auth",
-		"login",
-		"--actor", "user",
-	})
+	query := startAuthLogin(t, "auth", "login", "--actor", "user").Query()
 
-	require.NoError(t, err)
-	query := authLoginAuthorizeURL(t, decodeAuthLoginStartReport(t, stdout.Bytes()).AuthorizeURL).Query()
 	require.Equal(t, "user", query.Get("actor"))
 }
 
@@ -94,19 +75,9 @@ func Test_AuthLogin_requests_initiative_scopes_only_for_the_app_actor_by_default
 			}))
 			restorePaths := useAuthPaths(t, paths)
 			defer restorePaths()
-			restoreLogin := useAuthLoginGeneratedValues(t)
-			defer restoreLogin()
-			var stdout bytes.Buffer
 
-			err := execute(context.Background(), BuildInfo{}, nil, &stdout, &bytes.Buffer{}, []string{
-				"--json",
-				"auth",
-				"login",
-				"--actor", test.actor,
-			})
+			query := startAuthLogin(t, "auth", "login", "--actor", test.actor).Query()
 
-			require.NoError(t, err)
-			query := authLoginAuthorizeURL(t, decodeAuthLoginStartReport(t, stdout.Bytes()).AuthorizeURL).Query()
 			scopes := strings.Split(query.Get("scope"), ",")
 			require.Contains(t, scopes, "read")
 			require.Equal(t, test.wantsInitiativeScopes, slices.Contains(scopes, "initiative:read"))
@@ -115,44 +86,15 @@ func Test_AuthLogin_requests_initiative_scopes_only_for_the_app_actor_by_default
 	}
 }
 
-func Test_AuthLogin_quiet_start_prints_nothing(t *testing.T) {
+func Test_AuthLogin_prints_the_authorization_url_even_when_quiet(t *testing.T) {
 	paths := cliAuthTestPaths(t)
 	saveAuthLoginApp(t, paths)
 	restorePaths := useAuthPaths(t, paths)
 	defer restorePaths()
-	restoreLogin := useAuthLoginGeneratedValues(t)
-	defer restoreLogin()
-	var stdout bytes.Buffer
-	var stderr bytes.Buffer
 
-	err := execute(context.Background(), BuildInfo{}, nil, &stdout, &stderr, []string{
-		"--quiet",
-		"auth",
-		"login",
-	})
+	authorizeURL := startAuthLogin(t, "--quiet", "auth", "login")
 
-	require.NoError(t, err)
-	require.Empty(t, stdout.String())
-	require.Empty(t, stderr.String())
-}
-
-func Test_AuthLogin_human_start_prints_authorization_url(t *testing.T) {
-	paths := cliAuthTestPaths(t)
-	saveAuthLoginApp(t, paths)
-	restorePaths := useAuthPaths(t, paths)
-	defer restorePaths()
-	restoreLogin := useAuthLoginGeneratedValues(t)
-	defer restoreLogin()
-	var stdout bytes.Buffer
-
-	err := execute(context.Background(), BuildInfo{}, nil, &stdout, &bytes.Buffer{}, []string{
-		"auth",
-		"login",
-	})
-
-	require.NoError(t, err)
-	require.Contains(t, stdout.String(), "https://linear.app/oauth/authorize")
-	require.Contains(t, stdout.String(), "actor=app")
+	require.Equal(t, "linear.app", authorizeURL.Host)
 }
 
 func Test_AuthLogin_rejects_invalid_actor(t *testing.T) {
@@ -160,8 +102,6 @@ func Test_AuthLogin_rejects_invalid_actor(t *testing.T) {
 	saveAuthLoginApp(t, paths)
 	restorePaths := useAuthPaths(t, paths)
 	defer restorePaths()
-	restoreLogin := useAuthLoginGeneratedValues(t)
-	defer restoreLogin()
 	var stderr bytes.Buffer
 
 	err := execute(context.Background(), BuildInfo{}, nil, &bytes.Buffer{}, &stderr, []string{
@@ -180,11 +120,7 @@ func Test_AuthLogin_generates_fresh_state_and_pkce_per_run(t *testing.T) {
 	restorePaths := useAuthPaths(t, paths)
 	defer restorePaths()
 	start := func() url.Values {
-		var stdout bytes.Buffer
-		err := execute(context.Background(), BuildInfo{}, nil, &stdout, &bytes.Buffer{}, []string{"--json", "auth", "login"})
-		require.NoError(t, err)
-
-		return authLoginAuthorizeURL(t, decodeAuthLoginStartReport(t, stdout.Bytes()).AuthorizeURL).Query()
+		return startAuthLogin(t, "auth", "login").Query()
 	}
 
 	first := start()
@@ -244,15 +180,10 @@ func Test_AuthLogin_state_mismatch_refuses_exchange_and_save(t *testing.T) {
 	)}
 	restore := useAuthCommandHooks(t, paths, fakeOAuth, &fakeAuthReadinessChecker{report: readyAuthReport("app")})
 	defer restore()
-	restoreLogin := useAuthLoginGeneratedValues(t)
-	defer restoreLogin()
 	var stderr bytes.Buffer
+	stdin := strings.NewReader("http://127.0.0.1:8484/callback?code=code-123&state=wrong-state\n")
 
-	err := execute(context.Background(), BuildInfo{}, nil, &bytes.Buffer{}, &stderr, []string{
-		"auth",
-		"login",
-		"--callback", "http://127.0.0.1:8484/callback?code=code-123&state=wrong-state",
-	})
+	err := execute(context.Background(), BuildInfo{}, stdin, &bytes.Buffer{}, &stderr, []string{"auth", "login"})
 
 	require.Error(t, err)
 	require.Contains(t, stderr.String(), `"error_code":"AUTH_REAUTH_REQUIRED"`)
@@ -282,25 +213,24 @@ func Test_AuthLogin_callback_url_exchanges_and_saves_after_readiness(t *testing.
 	}
 	restore := useAuthCommandHooks(t, paths, fakeOAuth, fakeReadiness)
 	defer restore()
-	restoreLogin := useAuthLoginGeneratedValues(t)
-	defer restoreLogin()
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
 
-	err := execute(context.Background(), BuildInfo{}, nil, &stdout, &stderr, []string{
+	err := execute(context.Background(), BuildInfo{}, answerAuthLoginPrompt(t, &stderr, "code-123"), &stdout, &stderr, []string{
 		"--json",
 		"--org", "org-id",
 		"--team", "LIT",
 		"--team-id", "team-id",
 		"auth",
 		"login",
-		"--callback", "http://127.0.0.1:8484/callback?code=code-123&state=state-123",
 	})
 
 	require.NoError(t, err)
 	require.Equal(t, 1, fakeOAuth.authorizationCodeCalls)
 	exchange := fakeOAuth.authorizationCodeRequest
-	require.Regexp(t, `^[A-Za-z0-9_-]{43}$`, exchange.CodeVerifier)
+	require.Equal(t,
+		printedAuthorizeURL(t, stderr.String()).Query().Get("code_challenge"),
+		oauth.CodeChallengeS256(exchange.CodeVerifier))
 	exchange.CodeVerifier = ""
 	require.Equal(t, oauth.AuthorizationCodeRequest{
 		Code:         "code-123",
@@ -311,6 +241,25 @@ func Test_AuthLogin_callback_url_exchanges_and_saves_after_readiness(t *testing.
 	require.Equal(t, "oauth-access-token", fakeReadiness.accessToken)
 	require.Equal(t, "app", fakeReadiness.expectedActor)
 	require.Equal(t, []string{"read", "write"}, fakeReadiness.requiredScopes)
+	var status struct {
+		Actor string `json:"actor"`
+		Token struct {
+			Status string `json:"status"`
+		} `json:"token"`
+		Target struct {
+			Status string `json:"status"`
+		} `json:"target"`
+	}
+	require.NoError(t, json.Unmarshal(stdout.Bytes(), &status))
+	require.Equal(t, "app", status.Actor)
+	require.Equal(t, "set", status.Token.Status)
+	require.Equal(t, "ready", status.Target.Status)
+	promptLines := strings.Split(strings.TrimSuffix(stderr.String(), "\n"), "\n")
+	require.Len(t, promptLines, 2)
+	require.Equal(t,
+		"Open this URL in a browser, approve linctl, then paste the redirect URL or the authorization code here and press Enter:",
+		promptLines[0])
+	require.True(t, strings.HasPrefix(promptLines[1], "https://linear.app/oauth/authorize?"))
 	require.NotContains(t, stdout.String(), "oauth-access-token")
 	require.NotContains(t, stdout.String(), "oauth-refresh-token")
 	require.NotContains(t, stdout.String(), "client-secret")
@@ -325,81 +274,78 @@ func Test_AuthLogin_callback_url_exchanges_and_saves_after_readiness(t *testing.
 	require.Equal(t, "authorization_code", got.Token.GrantType)
 }
 
-func Test_AuthLogin_raw_code_fallback_uses_authorization_code_exchange(t *testing.T) {
-	paths := cliAuthTestPaths(t)
-	saveAuthLoginApp(t, paths)
-	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
-		"oauth-access-token",
-		"oauth-refresh-token",
-		"Bearer",
-		time.Now().Add(time.Hour),
-		[]string{"read", "write"},
-	)}
-	restore := useAuthCommandHooks(t, paths, fakeOAuth, &fakeAuthReadinessChecker{report: readyAuthReport("app")})
-	defer restore()
-	restoreLogin := useAuthLoginGeneratedValues(t)
-	defer restoreLogin()
+func Test_AuthLogin_exchanges_a_raw_code_read_from_the_first_stdin_line(t *testing.T) {
+	tests := []struct {
+		name          string
+		input         string
+		wantRemaining string
+	}{
+		{name: "leaves later input unread", input: "manual-code-123\nsecond line\n", wantRemaining: "second line\n"},
+		{name: "accepts a last line without newline", input: "manual-code-123"},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			paths := cliAuthTestPaths(t)
+			saveAuthLoginApp(t, paths)
+			fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
+				"oauth-access-token",
+				"oauth-refresh-token",
+				"Bearer",
+				time.Now().Add(time.Hour),
+				[]string{"read", "write"},
+			)}
+			restore := useAuthCommandHooks(t, paths, fakeOAuth, &fakeAuthReadinessChecker{report: readyAuthReport("app")})
+			defer restore()
+			stdin := strings.NewReader(test.input)
 
-	err := execute(context.Background(), BuildInfo{}, nil, &bytes.Buffer{}, &bytes.Buffer{}, []string{
-		"--org", "org-id",
-		"--team", "LIT",
-		"--team-id", "team-id",
-		"auth",
-		"login",
-		"--callback", "manual-code-123",
-	})
+			err := execute(context.Background(), BuildInfo{}, stdin, &bytes.Buffer{}, &bytes.Buffer{}, []string{
+				"--org", "org-id",
+				"--team", "LIT",
+				"--team-id", "team-id",
+				"auth",
+				"login",
+			})
 
-	require.NoError(t, err)
-	require.Equal(t, 1, fakeOAuth.authorizationCodeCalls)
-	require.Equal(t, "manual-code-123", fakeOAuth.authorizationCodeRequest.Code)
-	got, loadErr := auth.NewStore(paths).Load(context.Background())
-	require.NoError(t, loadErr)
-	require.Equal(t, "oauth-access-token", got.Token.AccessToken)
-	require.Equal(t, "authorization_code", got.Token.GrantType)
+			require.NoError(t, err)
+			require.Equal(t, 1, fakeOAuth.authorizationCodeCalls)
+			require.Equal(t, "manual-code-123", fakeOAuth.authorizationCodeRequest.Code)
+			remaining, readErr := io.ReadAll(stdin)
+			require.NoError(t, readErr)
+			require.Equal(t, test.wantRemaining, string(remaining))
+			got, loadErr := auth.NewStore(paths).Load(context.Background())
+			require.NoError(t, loadErr)
+			require.Equal(t, "oauth-access-token", got.Token.AccessToken)
+			require.Equal(t, "authorization_code", got.Token.GrantType)
+		})
+	}
 }
 
-func Test_AuthLogin_reads_manual_callback_from_stdin_with_same_state(t *testing.T) {
+func Test_AuthLogin_stops_waiting_for_the_callback_when_cancelled(t *testing.T) {
 	paths := cliAuthTestPaths(t)
 	saveAuthLoginApp(t, paths)
-	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
-		"oauth-access-token",
-		"oauth-refresh-token",
-		"Bearer",
-		time.Now().Add(time.Hour),
-		[]string{"read", "write"},
-	)}
+	fakeOAuth := &fakeOAuthTokenClient{}
 	restore := useAuthCommandHooks(t, paths, fakeOAuth, &fakeAuthReadinessChecker{report: readyAuthReport("app")})
 	defer restore()
-	restoreLogin := useAuthLoginGeneratedValues(t)
-	defer restoreLogin()
-	stdin := strings.NewReader("http://127.0.0.1:8484/callback?code=stdin-code&state=state-123\n")
-	var stdout bytes.Buffer
-	var stderr bytes.Buffer
+	stdin, stdinWriter := io.Pipe()
+	defer func() { require.NoError(t, stdinWriter.Close()) }()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	prompted := &signalingWriter{written: make(chan struct{})}
+	result := make(chan error, 1)
 
-	err := execute(context.Background(), BuildInfo{}, stdin, &stdout, &stderr, []string{
-		"--json",
-		"--org", "org-id",
-		"--team", "LIT",
-		"--team-id", "team-id",
-		"auth",
-		"login",
-		"--callback", "-",
-	})
+	go func() {
+		result <- execute(ctx, BuildInfo{}, stdin, &bytes.Buffer{}, prompted, []string{"auth", "login"})
+	}()
+	<-prompted.written
+	cancel()
 
-	require.NoError(t, err)
-	require.Equal(t, 1, fakeOAuth.authorizationCodeCalls)
-	require.Equal(t, "stdin-code", fakeOAuth.authorizationCodeRequest.Code)
-	authorizeURL := authLoginAuthorizeURL(t, strings.TrimSpace(stderr.String()))
-	require.Equal(t, "state-123", authorizeURL.Query().Get("state"))
-	require.Equal(t,
-		oauth.CodeChallengeS256(fakeOAuth.authorizationCodeRequest.CodeVerifier),
-		authorizeURL.Query().Get("code_challenge"))
-	require.NotContains(t, stdout.String(), "oauth-access-token")
-	require.NotContains(t, stdout.String(), "oauth-refresh-token")
-	require.NotContains(t, stderr.String(), "client-secret")
-	got, loadErr := auth.NewStore(paths).Load(context.Background())
-	require.NoError(t, loadErr)
-	require.Equal(t, "oauth-access-token", got.Token.AccessToken)
+	select {
+	case err := <-result:
+		require.ErrorIs(t, err, context.Canceled)
+	case <-time.After(5 * time.Second):
+		require.FailNow(t, "auth login kept waiting for stdin after cancellation")
+	}
+	require.Zero(t, fakeOAuth.authorizationCodeCalls)
 }
 
 func Test_AuthLogin_reports_callback_read_errors(t *testing.T) {
@@ -407,8 +353,6 @@ func Test_AuthLogin_reports_callback_read_errors(t *testing.T) {
 	saveAuthLoginApp(t, paths)
 	restorePaths := useAuthPaths(t, paths)
 	defer restorePaths()
-	restoreLogin := useAuthLoginGeneratedValues(t)
-	defer restoreLogin()
 
 	err := execute(
 		context.Background(),
@@ -416,7 +360,7 @@ func Test_AuthLogin_reports_callback_read_errors(t *testing.T) {
 		failingReader{err: errors.New("stdin closed")},
 		&bytes.Buffer{},
 		&bytes.Buffer{},
-		[]string{"auth", "login", "--callback", "-"},
+		[]string{"auth", "login"},
 	)
 
 	require.ErrorContains(t, err, "read oauth callback")
@@ -427,8 +371,6 @@ func Test_AuthLogin_reports_empty_callback_from_stdin(t *testing.T) {
 	saveAuthLoginApp(t, paths)
 	restorePaths := useAuthPaths(t, paths)
 	defer restorePaths()
-	restoreLogin := useAuthLoginGeneratedValues(t)
-	defer restoreLogin()
 	var stderr bytes.Buffer
 
 	err := execute(
@@ -437,7 +379,7 @@ func Test_AuthLogin_reports_empty_callback_from_stdin(t *testing.T) {
 		strings.NewReader(" \n"),
 		&bytes.Buffer{},
 		&stderr,
-		[]string{"auth", "login", "--callback", "-"},
+		[]string{"auth", "login"},
 	)
 
 	require.Error(t, err)
@@ -449,8 +391,6 @@ func Test_AuthLogin_reports_authorization_url_write_error_before_reading_stdin(t
 	saveAuthLoginApp(t, paths)
 	restorePaths := useAuthPaths(t, paths)
 	defer restorePaths()
-	restoreLogin := useAuthLoginGeneratedValues(t)
-	defer restoreLogin()
 
 	err := execute(
 		context.Background(),
@@ -458,7 +398,7 @@ func Test_AuthLogin_reports_authorization_url_write_error_before_reading_stdin(t
 		failingReader{err: errors.New("stdin must not be read")},
 		&bytes.Buffer{},
 		failingWriter{err: errors.New("stderr closed")},
-		[]string{"auth", "login", "--callback", "-"},
+		[]string{"auth", "login"},
 	)
 
 	require.ErrorContains(t, err, "stderr closed")
@@ -509,16 +449,15 @@ func Test_AuthLogin_callback_failures_save_no_token(t *testing.T) {
 			saveAuthLoginApp(t, paths)
 			restore := useAuthCommandHooks(t, paths, test.oauth, test.readiness)
 			defer restore()
-			restoreLogin := useAuthLoginGeneratedValues(t)
-			defer restoreLogin()
 
-			err := execute(context.Background(), BuildInfo{}, nil, &bytes.Buffer{}, &bytes.Buffer{}, []string{
+			var stderr bytes.Buffer
+
+			err := execute(context.Background(), BuildInfo{}, answerAuthLoginPrompt(t, &stderr, "code-123"), &bytes.Buffer{}, &stderr, []string{
 				"--org", "org-id",
 				"--team", "LIT",
 				"--team-id", "team-id",
 				"auth",
 				"login",
-				"--callback", "http://127.0.0.1:8484/callback?code=code-123&state=state-123",
 			})
 
 			require.Error(t, err)
@@ -556,13 +495,12 @@ func Test_AuthLogin_reports_token_state_save_error_after_callback(t *testing.T) 
 		},
 	})
 	defer restore()
-	restoreLogin := useAuthLoginGeneratedValues(t)
-	defer restoreLogin()
 
-	err := execute(context.Background(), BuildInfo{}, nil, &bytes.Buffer{}, &bytes.Buffer{}, []string{
+	var stderr bytes.Buffer
+
+	err := execute(context.Background(), BuildInfo{}, answerAuthLoginPrompt(t, &stderr, "code-123"), &bytes.Buffer{}, &stderr, []string{
 		"auth",
 		"login",
-		"--callback", "http://127.0.0.1:8484/callback?code=code-123&state=state-123",
 	})
 
 	require.ErrorContains(t, err, "read auth token state")
@@ -585,15 +523,11 @@ func Test_AuthLogin_refuses_callbacks_without_a_code(t *testing.T) {
 			fakeOAuth := &fakeOAuthTokenClient{}
 			restore := useAuthCommandHooks(t, paths, fakeOAuth, &fakeAuthReadinessChecker{report: readyAuthReport("app")})
 			defer restore()
-			restoreLogin := useAuthLoginGeneratedValues(t)
-			defer restoreLogin()
 			var stderr bytes.Buffer
 
-			err := execute(context.Background(), BuildInfo{}, nil, &bytes.Buffer{}, &stderr, []string{
-				"auth",
-				"login",
-				"--callback", tt.callback,
-			})
+			stdin := strings.NewReader(tt.callback + "\n")
+
+			err := execute(context.Background(), BuildInfo{}, stdin, &bytes.Buffer{}, &stderr, []string{"auth", "login"})
 
 			require.Error(t, err)
 			require.Equal(t, "AUTH_REAUTH_REQUIRED", errorCode(err))
@@ -613,32 +547,58 @@ func saveAuthLoginApp(t *testing.T, paths auth.Paths) {
 	}))
 }
 
-func useAuthLoginGeneratedValues(t *testing.T) func() {
+func startAuthLogin(t *testing.T, args ...string) *url.URL {
 	t.Helper()
-	originalState := generateAuthLoginState
-	generateAuthLoginState = func() string {
-		return "state-123"
-	}
+	var stderr bytes.Buffer
 
-	return func() {
-		generateAuthLoginState = originalState
-	}
+	err := execute(context.Background(), BuildInfo{}, strings.NewReader(""), &bytes.Buffer{}, &stderr, args)
+
+	require.ErrorContains(t, err, "missing OAuth callback code")
+
+	return printedAuthorizeURL(t, stderr.String())
 }
 
-func decodeAuthLoginStartReport(t *testing.T, data []byte) authLoginStartReport {
+func printedAuthorizeURL(t *testing.T, stderr string) *url.URL {
 	t.Helper()
-	var report authLoginStartReport
-	require.NoError(t, json.Unmarshal(data, &report))
+	for line := range strings.Lines(stderr) {
+		if strings.HasPrefix(line, linearAuthorizeEndpoint) {
+			parsed, err := url.Parse(strings.TrimSpace(line))
+			require.NoError(t, err)
 
-	return report
+			return parsed
+		}
+	}
+	require.FailNow(t, "auth login printed no authorization URL", stderr)
+
+	return nil
 }
 
-func authLoginAuthorizeURL(t *testing.T, rawURL string) *url.URL {
+func answerAuthLoginPrompt(t *testing.T, stderr *bytes.Buffer, code string) io.Reader {
 	t.Helper()
-	parsed, err := url.Parse(rawURL)
-	require.NoError(t, err)
 
-	return parsed
+	return &authLoginPromptAnswer{t: t, stderr: stderr, code: code}
+}
+
+type authLoginPromptAnswer struct {
+	t      *testing.T
+	stderr *bytes.Buffer
+	code   string
+	answer io.Reader
+}
+
+func (prompt *authLoginPromptAnswer) Read(data []byte) (int, error) {
+	if prompt.answer == nil {
+		state := printedAuthorizeURL(prompt.t, prompt.stderr.String()).Query().Get("state")
+		callback := url.URL{
+			Scheme:   "http",
+			Host:     "127.0.0.1:8484",
+			Path:     "/callback",
+			RawQuery: url.Values{"code": {prompt.code}, "state": {state}}.Encode(),
+		}
+		prompt.answer = strings.NewReader(callback.String() + "\n")
+	}
+
+	return prompt.answer.Read(data)
 }
 
 type failingReader struct {
@@ -647,6 +607,17 @@ type failingReader struct {
 
 func (reader failingReader) Read(_ []byte) (int, error) {
 	return 0, reader.err
+}
+
+type signalingWriter struct {
+	once    sync.Once
+	written chan struct{}
+}
+
+func (writer *signalingWriter) Write(data []byte) (int, error) {
+	writer.once.Do(func() { close(writer.written) })
+
+	return len(data), nil
 }
 
 type failingWriter struct {
