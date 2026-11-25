@@ -76,7 +76,7 @@ func addIssueListCommand(ctx context.Context, root *cobra.Command, options *root
 	}
 	bindIssueListFlags(command, &limit, &flags)
 	command.Flags().StringVar(&status, "status", "", "alias for --state")
-	annotateReadCollectionCommand(command, collectionKeyForPage[client.IssueList]())
+	annotateReadCollectionCommand(command, mustCollectionKeyForList[client.IssueList, client.IssueSummary]())
 	registerStateCompletion(ctx, command, options, workflowStateTypeCandidates)
 	registerFlagCompletion(command, "project", flagCompletion(ctx, options, projectIDCandidates))
 	root.AddCommand(command)
@@ -263,7 +263,7 @@ func addIssueSearchCommand(ctx context.Context, root *cobra.Command, options *ro
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum issues to return")
-	annotateReadCollectionCommand(command, collectionKeyForPage[client.IssueList]())
+	annotateReadCollectionCommand(command, mustCollectionKeyForList[client.IssueList, client.IssueSummary]())
 	root.AddCommand(command)
 }
 

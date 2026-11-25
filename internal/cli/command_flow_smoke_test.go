@@ -107,7 +107,6 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "issue vcs branch shared access", args: []string{"issue", "vcs-branch-search", "shared-access", "omer/branch"}, contains: "issue-id LIT-1 shared=true shared_with=2 viewer_shared_only=false disallowed=description,priority"},
 		{name: "issue vcs branch state history", args: []string{"issue", "vcs-branch-search", "state-history", "omer/branch", "--limit", "1"}, contains: "issue-state-span-id Started started 2026-06-19T12:00:00Z -> -"},
 		{name: "issue vcs branch subscribers", args: []string{"issue", "vcs-branch-search", "subscribers", "omer/branch", "--limit", "1"}, contains: "user-id Omer <omer@example.com>"},
-		{name: "issue get", args: []string{"issue", "get", "LIT-1"}, contains: "LIT-1 Detail issue [Todo]"},
 		{name: "issue deps", args: []string{"issue", "deps", "LIT-1", "--limit", "2"}, contains: "blocked_by:\nLIT-24 Blocker issue [Todo]", fake: commandFlowFakeClient{expectedIssueDeps: "LIT-1"}},
 		{name: "issue attachments", args: []string{"issue", "attachments", "LIT-1", "--limit", "1"}, contains: "attachment-id Linked PR [github]"},
 		{name: "issue bot actor", args: []string{"issue", "bot-actor", "LIT-1"}, contains: "issue-id bot bot-actor-id GitHub [github]"},

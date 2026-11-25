@@ -184,8 +184,6 @@ func commandFlowIssueRelationPayload(operation string) (string, bool) {
 			`"relatedIssue":{"id":"related-issue-id","identifier":"LIT-2","title":"Related issue"}}}}`, true
 	case "IssueRelationDelete":
 		return `{"issueRelationDelete":{"success":true,"entityId":"issue-relation-id"}}`, true
-	case "issue_relations":
-		return `{"issue":{"relations":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	default:
 		return "", false
 	}
