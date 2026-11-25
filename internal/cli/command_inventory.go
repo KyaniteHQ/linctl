@@ -216,9 +216,6 @@ func addWriteCommand(root *cobra.Command, effect CommandWriteEffect, command *co
 }
 
 func annotateCommand(command *cobra.Command, key string, value string) {
-	if value == "" {
-		return
-	}
 	if command.Annotations == nil {
 		command.Annotations = map[string]string{}
 	}
@@ -244,35 +241,25 @@ func commandIrreversible(command *cobra.Command) bool {
 
 // commandSafety reads the safety class stamped at registration. Every linctl
 // command carries the annotation, so the prose of a Short string can never
-// reclassify a command. Only the cobra-generated completion subcommands, which
-// linctl does not register, reach the path check.
+// reclassify a command.
 func commandSafety(command *cobra.Command) CommandSafety {
 	if safety, stamped := command.Annotations[commandSafetyAnnotation]; stamped {
 		return CommandSafety(safety)
-	}
-	if strings.HasPrefix(CommandPath(command), "completion ") {
-		return CommandSafetyLocal
 	}
 
 	return CommandSafetyUnknown
 }
 
 func commandEntity(command *cobra.Command) string {
-	fields := strings.Fields(CommandPath(command))
-	if len(fields) == 0 {
-		return ""
-	}
+	entity, _, _ := strings.Cut(CommandPath(command), " ")
 
-	return fields[0]
+	return entity
 }
 
 func commandDocCategory(command *cobra.Command) string {
-	fields := strings.Fields(CommandPath(command))
-	if len(fields) == 0 {
-		return ""
-	}
+	category, _, _ := strings.Cut(CommandPath(command), " ")
 
-	return fields[0]
+	return category
 }
 
 func commandTargetArgs(command *cobra.Command) []string {
@@ -286,16 +273,6 @@ func commandTargetArgs(command *cobra.Command) []string {
 	}
 
 	return targets
-}
-
-func collectionKeyForPage[Page any]() string {
-	pageType := reflect.TypeOf((*Page)(nil)).Elem()
-	field, err := pageCollectionField(pageType)
-	if err != nil {
-		return ""
-	}
-
-	return jsonFieldName(field)
 }
 
 // mustCollectionFieldForList resolves the single collection field of Page and
