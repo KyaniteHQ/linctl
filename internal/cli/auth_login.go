@@ -3,7 +3,6 @@ package cli
 import (
 	"context"
 	"crypto/rand"
-	"encoding/base64"
 	"fmt"
 	"io"
 	"net/url"
@@ -25,8 +24,7 @@ const (
 
 var (
 	generateAuthLoginPKCE  = oauth.GeneratePKCE
-	generateAuthLoginState = generateOAuthState
-	authLoginRandomReader  = rand.Reader
+	generateAuthLoginState = rand.Text
 )
 
 type authLoginFlags struct {
@@ -136,12 +134,8 @@ func newAuthLoginProof() (oauth.PKCE, string, error) {
 	if err != nil {
 		return oauth.PKCE{}, "", err
 	}
-	state, err := generateAuthLoginState()
-	if err != nil {
-		return oauth.PKCE{}, "", err
-	}
 
-	return pkce, state, nil
+	return pkce, generateAuthLoginState(), nil
 }
 
 func newAuthLoginStartReport(
@@ -249,9 +243,6 @@ func buildAuthLoginAuthorizeURL(
 
 func authorizationCodeFromCallback(callback string, expectedState string) (string, error) {
 	callback = strings.TrimSpace(callback)
-	if callback == "" {
-		return "", auth.NewError(auth.ErrorCodeReauthRequired, "missing OAuth callback code")
-	}
 	parsed, err := url.Parse(callback)
 	if err == nil && parsed.RawQuery != "" {
 		query := parsed.Query()
@@ -281,15 +272,6 @@ func normalizedAuthLoginActor(actor string) (string, error) {
 	default:
 		return "", auth.NewError(auth.ErrorCodeActorMismatch, "OAuth actor must be app or user")
 	}
-}
-
-func generateOAuthState() (string, error) {
-	random := make([]byte, 32)
-	if _, err := io.ReadFull(authLoginRandomReader, random); err != nil {
-		return "", fmt.Errorf("generate oauth state: %w", err)
-	}
-
-	return base64.RawURLEncoding.EncodeToString(random), nil
 }
 
 func writeAuthLoginStart(command *cobra.Command, options *rootOptions, report authLoginStartReport) error {

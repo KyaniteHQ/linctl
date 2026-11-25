@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"bytes"
 	"context"
 	"testing"
 	"time"
@@ -10,11 +11,18 @@ import (
 	"github.com/KyaniteHQ/linctl/internal/auth"
 )
 
-// Test_refreshAuthorizationCodeToken_preserves_refresh_token_when_endpoint_omits_one
-// pins the same rotation guarantee the recovering runtime client has: when the
-// OAuth refresh response carries no refresh_token, the stored one must survive
-// so a later `linctl auth refresh` does not strand the profile.
-func Test_refreshAuthorizationCodeToken_preserves_refresh_token_when_endpoint_omits_one(t *testing.T) {
+func Test_AuthRefresh_keeps_the_saved_refresh_token_when_linear_does_not_rotate_it(t *testing.T) {
+	paths := cliAuthTestPaths(t)
+	require.NoError(t, auth.NewStore(paths).Save(context.Background(), auth.State{
+		App: auth.AppConfig{ClientID: "client-id", Scopes: []string{"read"}},
+		Token: auth.TokenState{
+			AccessToken:  "old-access-token",
+			RefreshToken: "old-refresh-token",
+			Scopes:       []string{"read"},
+			Actor:        "user",
+			GrantType:    authGrantAuthorizationCode,
+		},
+	}))
 	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
 		"new-access-token",
 		"",
@@ -22,13 +30,22 @@ func Test_refreshAuthorizationCodeToken_preserves_refresh_token_when_endpoint_om
 		time.Now().Add(time.Hour),
 		[]string{"read"},
 	)}
-	app := auth.AppConfig{ClientID: "client-id", Scopes: []string{"read"}}
-	previous := auth.TokenState{RefreshToken: "old-refresh-token", Actor: "user"}
+	restore := useAuthCommandHooks(t, paths, fakeOAuth, &fakeAuthReadinessChecker{report: readyAuthReport("user")})
+	defer restore()
 
-	token, err := refreshAuthorizationCodeToken(context.Background(), fakeOAuth, app, previous, requiredScopes(app, previous.Actor))
+	err := execute(context.Background(), BuildInfo{}, nil, &bytes.Buffer{}, &bytes.Buffer{}, []string{
+		"--org", "org-id",
+		"--team", "LIT",
+		"--team-id", "team-id",
+		"auth",
+		"refresh",
+	})
 
 	require.NoError(t, err)
-	require.Equal(t, "old-refresh-token", token.RefreshToken)
-	require.Equal(t, "user", token.Actor)
-	require.Equal(t, authGrantAuthorizationCode, token.GrantType)
+	got, err := auth.NewStore(paths).Load(context.Background())
+	require.NoError(t, err)
+	require.Equal(t, "new-access-token", got.Token.AccessToken)
+	require.Equal(t, "old-refresh-token", got.Token.RefreshToken)
+	require.Equal(t, "user", got.Token.Actor)
+	require.Equal(t, authGrantAuthorizationCode, got.Token.GrantType)
 }

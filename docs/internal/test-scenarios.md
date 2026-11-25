@@ -1158,7 +1158,7 @@ Success is pass/fail:
      `Test_UpdateIssue_returns_state_mismatch_when_write_fails_and_readback_is_wrong`,
      `Test_selectWorkflowStateID_does_not_fall_back_to_type`,
      `Test_StartIssue_selects_lowest_position_started_type_not_name_started`;
-     `go test ./internal/cli`, `Test_importRowToRequest_keeps_exact_state_name`,
+     `go test ./internal/cli`, `Test_importRowToRequest_does_not_map_state_name_to_type`,
      `Test_CommandFlows_issue_import_selects_exact_state_name`.
 
 219. Cross-project related relation

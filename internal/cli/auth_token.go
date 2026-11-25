@@ -229,12 +229,6 @@ func refreshAuthToken(
 	token auth.TokenState,
 	timeout time.Duration,
 ) (auth.TokenState, error) {
-	if token.AccessToken == "" && token.RefreshToken == "" {
-		return auth.TokenState{}, auth.NewError(
-			auth.ErrorCodeNotConfigured,
-			"missing OAuth token state: run linctl auth login or linctl auth app",
-		)
-	}
 	if token.GrantType == authGrantClientCredentials {
 		if app.ClientID == "" || app.ClientSecret == "" {
 			return auth.TokenState{}, auth.NewError(
@@ -330,9 +324,6 @@ func revokeTokenState(
 	oauthClient authOAuthClient,
 	token auth.TokenState,
 ) ([]string, bool) {
-	if logger == nil {
-		logger = discardLogger
-	}
 	revoked := []string{}
 	failed := false
 	for _, request := range []oauth.RevocationRequest{
