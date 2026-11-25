@@ -252,13 +252,6 @@ func renderWriterCases() []renderWriterCase {
 		SLAType:    "all",
 		RemovesSLA: false,
 	}
-	semanticSearchResult := client.SemanticSearchResultSummary{
-		Type:  "issue",
-		ID:    "issue-id",
-		Key:   "LIT-3",
-		Title: "Search result",
-		URL:   "https://linear.app/kyanite/issue/LIT-3",
-	}
 	customer := client.CustomerSummary{
 		ID:                   "customer-id",
 		Name:                 "Acme",
@@ -876,26 +869,16 @@ func renderWriterCases() []renderWriterCase {
 			},
 			text: "release-note-id Launch notes pipeline Production releases 2\n",
 		},
-		{
-			name: "SemanticSearchResult",
-			write: func(command *cobra.Command, options *rootOptions) error {
-				return writeSemanticSearchResult(command, options, semanticSearchResult)
-			},
-		},
 	}
 }
 
-// Each render writer emits its documented human line in text mode.
 func Test_CliRenderHelpers_write_text_output(t *testing.T) {
 	for _, test := range renderWriterCases() {
-		if test.text == "" {
-			continue
-		}
 		t.Run(test.name, func(t *testing.T) {
 			output := bytes.Buffer{}
 			command := &cobra.Command{}
 			command.SetOut(&output)
-			require.NoError(t, test.write(command, &rootOptions{format: "compact"}))
+			require.NoError(t, test.write(command, &rootOptions{}))
 			require.Equal(t, test.text, output.String())
 		})
 	}

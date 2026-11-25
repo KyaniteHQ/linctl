@@ -237,7 +237,7 @@ func Test_CommandFlows_cover_issue_deps_writer_error(t *testing.T) {
 		command.SetOut(commandFailingWriter{})
 		dependencies := client.IssueDependencyGraph{Identifier: "LIT-1"}
 
-		err := writeIssueDependencies(command, &rootOptions{format: "compact"}, dependencies)
+		err := writeIssueDependencies(command, &rootOptions{}, dependencies)
 
 		require.ErrorContains(t, err, "write line")
 	})
@@ -246,7 +246,7 @@ func Test_CommandFlows_cover_issue_deps_writer_error(t *testing.T) {
 		command := &cobra.Command{}
 		command.SetOut(commandFailingWriter{})
 
-		err := writeIssueDependencySection(command, &rootOptions{format: "compact"}, "children", nil)
+		err := writeIssueDependencySection(command, &rootOptions{}, "children", nil)
 
 		require.ErrorContains(t, err, "write line")
 	})
@@ -257,7 +257,7 @@ func Test_CommandFlows_cover_issue_deps_writer_error(t *testing.T) {
 		parent := client.IssueSummary{Identifier: "LIT-2", Title: "Parent", State: "Todo"}
 		dependencies := client.IssueDependencyGraph{Identifier: "LIT-1", Parent: &parent}
 
-		err := writeIssueDependencies(command, &rootOptions{format: "compact"}, dependencies)
+		err := writeIssueDependencies(command, &rootOptions{}, dependencies)
 
 		require.ErrorContains(t, err, "write line")
 	})
@@ -267,7 +267,7 @@ func Test_CommandFlows_cover_issue_deps_writer_error(t *testing.T) {
 		command.SetOut(&countFailingWriter{failAt: 2})
 		dependencies := client.IssueDependencyGraph{Identifier: "LIT-1"}
 
-		err := writeIssueDependencies(command, &rootOptions{format: "compact"}, dependencies)
+		err := writeIssueDependencies(command, &rootOptions{}, dependencies)
 
 		require.ErrorContains(t, err, "write line")
 	})
@@ -277,7 +277,7 @@ func Test_CommandFlows_cover_issue_deps_writer_error(t *testing.T) {
 		command.SetOut(&countFailingWriter{failAt: 3})
 		dependencies := client.IssueDependencyGraph{Identifier: "LIT-1"}
 
-		err := writeIssueDependencies(command, &rootOptions{format: "compact"}, dependencies)
+		err := writeIssueDependencies(command, &rootOptions{}, dependencies)
 
 		require.ErrorContains(t, err, "write line")
 	})
@@ -296,7 +296,7 @@ func Test_CommandFlows_cover_rate_limit_writer_errors(t *testing.T) {
 		command := &cobra.Command{}
 		command.SetOut(commandFailingWriter{})
 
-		err := writeRateLimitStatus(command, &rootOptions{format: "compact"}, status)
+		err := writeRateLimitStatus(command, &rootOptions{}, status)
 
 		require.ErrorContains(t, err, "write line")
 	})
@@ -305,7 +305,7 @@ func Test_CommandFlows_cover_rate_limit_writer_errors(t *testing.T) {
 		command := &cobra.Command{}
 		command.SetOut(&countFailingWriter{failAt: 2})
 
-		err := writeRateLimitStatus(command, &rootOptions{format: "compact"}, status)
+		err := writeRateLimitStatus(command, &rootOptions{}, status)
 
 		require.ErrorContains(t, err, "write line")
 	})
@@ -320,7 +320,7 @@ func Test_CommandFlows_cover_audit_entry_type_writer_errors(t *testing.T) {
 		},
 	}
 
-	err := writeAuditEntryTypes(command, &rootOptions{format: "compact"}, types)
+	err := writeAuditEntryTypes(command, &rootOptions{}, types)
 
 	require.ErrorContains(t, err, "write line")
 }
@@ -422,19 +422,19 @@ team_id = "team-id"
 project_id = "project-id"
 `), 0o600))
 
-	_, err := newCommandRuntime(context.Background(), &rootOptions{format: "compact"})
+	_, err := newCommandRuntime(context.Background(), &rootOptions{})
 	require.Error(t, err)
 	require.Equal(t, string(auth.ErrorCodeNotConfigured), errorCode(err))
 	require.ErrorContains(t, err, "run linctl auth configure")
 
 	t.Setenv("LINCTL_TOKEN", "test-token")
-	_, err = newCommandRuntime(context.Background(), &rootOptions{format: "compact"})
+	_, err = newCommandRuntime(context.Background(), &rootOptions{})
 	require.Error(t, err)
 	require.Equal(t, string(auth.ErrorCodeNotConfigured), errorCode(err))
 	require.ErrorContains(t, err, "run linctl auth configure")
 
 	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "test-token")
-	runtime, err := newCommandRuntime(context.Background(), &rootOptions{format: "compact"})
+	runtime, err := newCommandRuntime(context.Background(), &rootOptions{})
 	require.NoError(t, err)
 	require.Equal(t, "project-id", runtime.config.Target.ProjectID)
 	require.NotNil(t, runtime.graphqlClient)
@@ -446,7 +446,7 @@ func Test_CommandRuntime_reports_config_load_errors(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
 	require.NoError(t, os.WriteFile(".linctl.toml", []byte("[target\n"), 0o600))
 
-	_, err := newCommandRuntime(context.Background(), &rootOptions{format: "compact"})
+	_, err := newCommandRuntime(context.Background(), &rootOptions{})
 
 	require.ErrorContains(t, err, "parse config")
 }
@@ -466,10 +466,36 @@ project_id = "project-id"
 	require.NoError(t, os.MkdirAll(filepath.Join(".config", "linctl"), 0o750))
 	require.NoError(t, os.WriteFile(filepath.Join(".config", "linctl", "config.toml"), []byte("[target\n"), 0o600))
 
-	resolved, err := resolveConfig(context.Background(), &rootOptions{format: "compact"})
+	resolved, err := resolveConfig(context.Background(), &rootOptions{})
 
 	require.NoError(t, err)
 	require.Equal(t, "project-id", resolved.Target.ProjectID)
+}
+
+func Test_ResolveConfig_reads_the_global_config_under_home(t *testing.T) {
+	t.Chdir(t.TempDir())
+	configureTestAuthEnvironment(t)
+	home := t.TempDir()
+	t.Setenv("HOME", home)
+	t.Setenv("USERPROFILE", home)
+	require.NoError(t, os.MkdirAll(filepath.Join(home, ".config", "linctl"), 0o750))
+	require.NoError(t, os.WriteFile(filepath.Join(home, ".config", "linctl", "config.toml"), []byte(`
+[target]
+org_id = "global-org"
+team_key = "GLB"
+team_id = "global-team"
+project_id = "global-project"
+`), 0o600))
+
+	resolved, err := resolveConfig(context.Background(), &rootOptions{})
+
+	require.NoError(t, err)
+	require.Equal(t, config.Target{
+		OrgID:     "global-org",
+		TeamKey:   "GLB",
+		TeamID:    "global-team",
+		ProjectID: "global-project",
+	}, resolved.Target)
 }
 
 func Test_Usage_reports_unknown_topics(t *testing.T) {

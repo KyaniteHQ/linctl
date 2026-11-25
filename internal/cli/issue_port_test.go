@@ -192,7 +192,7 @@ func Test_runIssueSearch_uses_the_resolved_team(t *testing.T) {
 		}},
 	}
 
-	err := runIssueSearch(context.Background(), command, &rootOptions{format: "compact"}, workflow, "needle", 7)
+	err := runIssueSearch(context.Background(), command, &rootOptions{}, workflow, "needle", 7)
 
 	require.NoError(t, err)
 	require.Equal(t, 1, workflow.searchCalls)
