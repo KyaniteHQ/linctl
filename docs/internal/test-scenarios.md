@@ -235,7 +235,8 @@ Success is pass/fail:
    - Success: `linctl cycle update CYCLE_ID --name NAME` updates a Cycle only after resolving and comparing its team.
    - Evidence: `go test ./internal/cli`, `Test_CycleCommandFlows_write_cycles/update`;
      `go test ./internal/client`, `Test_UpdateCycle_returns_updated_cycle_when_target_matches`,
-     `Test_UpdateCycle_refuses_when_team_differs`.
+     `Test_UpdateCycle_refuses_when_only_team_id_differs`,
+     `Test_UpdateCycle_refuses_when_only_team_key_differs`.
 
 46. Cycle archive
    - Success: `linctl cycle archive CYCLE_ID` archives a Cycle only after resolving and comparing its team.
@@ -305,7 +306,7 @@ Success is pass/fail:
 59. WorkflowState list
    - Success: `linctl workflow-state list --limit N` lists visible WorkflowStates through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/workflow_state_list`;
-     `Test_CommandFlows_print_workflow_state_list_as_json`;
+     `Test_CommandFlows_print_workflow_state_pages_as_json`;
      `go test ./internal/client`, `Test_ClientReadIssueAndProjectScenarios_return_compact_lists_details_and_members`.
 
 60. WorkflowState get
@@ -381,7 +382,7 @@ Success is pass/fail:
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/doctor`;
      `Test_CommandFlows_print_json_for_read_and_comment_commands/--json/doctor`;
      `Test_ResolveConfig_uses_explicit_repo_config_outside_its_directory`;
-     `Test_ResolveConfig_refuses_missing_explicit_repo_config`;
+     `Test_RootCommand_treats_explicit_empty_config_flag_as_missing_error`;
      `Test_SelectRepoConfig_reports_missing_default_in_current_directory`.
 
 73. File-backed issue text
@@ -1100,7 +1101,7 @@ Success is pass/fail:
 
 205. OAuth-only product auth direction
    - Success: user-facing setup docs describe OAuth app auth setup, runtime missing-auth errors point to `linctl auth configure` followed by `linctl auth app` or `linctl auth login`, legacy API-key env vars and config token fields remain ignored by product auth, and stale API-key setup guidance is absent from public docs.
-   - Evidence: `go test ./internal/config ./internal/cli`, `Test_Load_ignores_legacy_config_token_without_permission_gate`, `Test_Load_ignores_legacy_config_tokens_for_product_auth`, `Test_CommandRuntime_loads_config_and_requires_token`; `rg -n "LINEAR_OAUTH|LINCTL_TOKEN|LINEAR_API_KEY|lin_api_|Credential precedence|personal API|API key" README.md CLAUDE.md skills/linctl/SKILL.md`.
+   - Evidence: `go test ./internal/cli`, `Test_CommandRuntime_loads_config_and_requires_token`; `rg -n "LINEAR_OAUTH|LINCTL_TOKEN|LINEAR_API_KEY|lin_api_|Credential precedence|personal API|API key" README.md CLAUDE.md skills/linctl/SKILL.md`.
 
 206. OAuth live gate
    - Success: `task live-oauth` requires the dedicated OAuth fixture env, runs `linctl auth configure`, `linctl auth app`, and `linctl auth status` against the pinned target, asserts app actor readiness, and reports only redacted auth status. Push CI runs the same `live-oauth` gate when the fixture secrets are present, and the scheduled/manual integration workflow runs `live-oauth`, integration tests, and live smoke. `task live-smoke` bootstraps temporary OAuth auth state through the same harness before the live smoke commands. GitHub Actions skips live steps when OAuth fixture env is absent.
@@ -1140,7 +1141,7 @@ Success is pass/fail:
 
 215. InitiativeLabel taxonomy writes
    - Success: `initiative-label retire`/`restore` are Org-Scoped Writes; InitiativeLabel has no team scope, so `--org-wide` is required and every command refuses to run without it, naming the flag in the error. Both commands resolve the existing InitiativeLabel through `requireInitiativeLabel` and compare its organization, failing closed as Target Mismatch when the resolved label belongs to a different organization. A pinned `project_id` does not block these writes. No command exposes `--force` or `--confirm`.
-   - Evidence: `go test ./internal/client`, `Test_RetireInitiativeLabel_refuses_without_org_wide`, `Test_RetireInitiativeLabel_refuses_when_organization_differs`, `Test_RetireInitiativeLabel_proceeds_when_pinned_project_present`, `Test_RestoreInitiativeLabel_refuses_without_org_wide`, `Test_RestoreInitiativeLabel_refuses_when_organization_differs`; `go test ./internal/cli`, `Test_InitiativeLabelFamilyCommands_require_org_wide`, `Test_InitiativeLabelRetire_emits_stable_target_mismatch_output`, `Test_InitiativeLabelFamilyCommands_have_no_bypass_flags`.
+   - Evidence: `go test ./internal/client`, `Test_RetireInitiativeLabel_refuses_without_org_wide`, `Test_RetireInitiativeLabel_refuses_when_organization_differs`, `Test_RetireInitiativeLabel_retires_label_when_organization_matches`, `Test_RestoreInitiativeLabel_refuses_without_org_wide`, `Test_RestoreInitiativeLabel_refuses_when_organization_differs`; `go test ./internal/cli`, `Test_InitiativeLabelFamilyCommands_require_org_wide`, `Test_InitiativeLabelRetire_emits_stable_target_mismatch_output`, `Test_InitiativeLabelFamilyCommands_have_no_bypass_flags`.
 
 216. Notification unread count
    - Success: `linctl notification unread-count` prints the authenticated user's unread notification count as a bare integer, supports `--json` and `--quiet`, and returns operation failures without changing exit-code semantics.
@@ -1168,7 +1169,7 @@ Success is pass/fail:
      `Test_CreateIssueRelation_refuses_project_outside_allowlist_before_mutation`,
      `Test_CreateIssueRelation_refuses_cross_project_on_team_only_pin_without_allowlist`,
      `Test_CreateIssueRelation_refuses_cross_organization_relation`,
-     `Test_requireIssueOnTeam_fails_closed_when_org_is_absent`,
+     `Test_CreateIssueRelation_refuses_related_issue_without_an_organization`,
      `Test_DeleteIssueRelation_removes_cross_project_relation_with_allowlist`,
      `Test_DeleteIssueRelation_refuses_cross_project_without_allowlist`,
      `Test_DeleteIssueRelation_refuses_project_outside_allowlist`.
