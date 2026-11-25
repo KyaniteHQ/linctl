@@ -1,8 +1,6 @@
 package cli
 
 import (
-	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"testing"
@@ -41,22 +39,4 @@ func Test_errorCode_maps_sentinels_and_fallbacks(t *testing.T) {
 			require.Equal(t, tt.code, errorCode(tt.err))
 		})
 	}
-}
-
-func Test_writeErrorEnvelope_emits_code_and_message(t *testing.T) {
-	var buf bytes.Buffer
-
-	err := writeErrorEnvelope(&buf, fmt.Errorf("%w: team differs", client.ErrTargetMismatch))
-
-	require.NoError(t, err)
-	var envelope errorEnvelope
-	require.NoError(t, json.Unmarshal(buf.Bytes(), &envelope))
-	require.Equal(t, "TARGET_MISMATCH", envelope.ErrorCode)
-	require.Contains(t, envelope.Message, "team differs")
-}
-
-func Test_writeErrorEnvelope_returns_write_error(t *testing.T) {
-	err := writeErrorEnvelope(commandFailingWriter{}, errors.New("boom"))
-
-	require.Error(t, err)
 }

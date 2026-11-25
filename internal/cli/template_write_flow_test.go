@@ -198,6 +198,24 @@ func Test_TemplateCreate_rejects_data_file_failures_before_mutation(t *testing.T
 	}
 }
 
+func Test_TemplateCreate_requires_a_data_file_before_mutation(t *testing.T) {
+	fake := &mutationCallCounter{inner: templateWriteFake()}
+	restore := useCommandRuntime(t, fake)
+	defer restore()
+	err := execute(
+		context.Background(),
+		BuildInfo{},
+		strings.NewReader(""),
+		&bytes.Buffer{},
+		&bytes.Buffer{},
+		[]string{"template", "create", "--id", cliTemplateID, "--name", "Bug report", "--type", "issue"},
+	)
+
+	require.ErrorIs(t, err, client.ErrWriteInvalid)
+	require.ErrorContains(t, err, "data-file is required")
+	require.Zero(t, fake.count("TemplateCreate"))
+}
+
 func Test_TemplateGet_stays_data_free(t *testing.T) {
 	restore := useCommandRuntime(t, commandFlowFakeClient{})
 	defer restore()

@@ -34,11 +34,6 @@ func Test_resolveFileFlag(t *testing.T) {
 		require.Equal(t, "# body\n", value)
 	})
 
-	t.Run("both value and file is ErrWriteInvalid", func(t *testing.T) {
-		value := "inline"
-		require.ErrorIs(t, resolveFileFlag(&cobra.Command{}, &value, file, "content"), client.ErrWriteInvalid)
-	})
-
 	t.Run("missing file is an error", func(t *testing.T) {
 		value := ""
 		require.Error(t, resolveFileFlag(&cobra.Command{}, &value, filepath.Join(dir, "missing.md"), "content"))

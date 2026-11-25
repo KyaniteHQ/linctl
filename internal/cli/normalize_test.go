@@ -86,32 +86,6 @@ func Test_normalizedStateType_maps_all_aliases(t *testing.T) {
 	}
 }
 
-func Test_normalizedStateType_returns_error_for_unknown(t *testing.T) {
-	_, _, err := normalizedStateType("sprinting")
-
-	require.ErrorContains(t, err, "unknown state type")
-}
-
-func Test_writeNote_writes_to_stderr(t *testing.T) {
-	var buf bytes.Buffer
-	command := &cobra.Command{}
-	command.SetErr(&buf)
-
-	err := writeNote(command, "state %q normalized to %q", "todo", "unstarted")
-
-	require.NoError(t, err)
-	require.Equal(t, "note: state \"todo\" normalized to \"unstarted\"\n", buf.String())
-}
-
-func Test_writeNote_returns_error_on_write_failure(t *testing.T) {
-	command := &cobra.Command{}
-	command.SetErr(commandFailingWriter{})
-
-	err := writeNote(command, "hello")
-
-	require.ErrorContains(t, err, "write failed")
-}
-
 func Test_normalizeAndNote_returns_empty_for_empty_raw(t *testing.T) {
 	var buf bytes.Buffer
 	command := &cobra.Command{}

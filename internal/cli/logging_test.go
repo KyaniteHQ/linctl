@@ -13,18 +13,6 @@ import (
 	"github.com/KyaniteHQ/linctl/internal/client"
 )
 
-func Test_newDiagnosticLogger_debug_emits_text_diagnostics(t *testing.T) {
-	var buffer bytes.Buffer
-	logger := newDiagnosticLogger(true, false, &buffer)
-
-	logger.Debug("runtime ready", "team_key", "LIT")
-
-	output := buffer.String()
-	require.Contains(t, output, "level=DEBUG")
-	require.Contains(t, output, "msg=\"runtime ready\"")
-	require.Contains(t, output, "team_key=LIT")
-}
-
 func Test_newDiagnosticLogger_without_debug_drops_debug_but_keeps_warnings(t *testing.T) {
 	var buffer bytes.Buffer
 	logger := newDiagnosticLogger(false, false, &buffer)

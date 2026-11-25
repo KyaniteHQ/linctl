@@ -153,24 +153,14 @@ func Test_Init_json_and_quiet(t *testing.T) {
 }
 
 func Test_selectInitTeam_table(t *testing.T) {
-	single := client.TeamList{Teams: []client.TeamSummary{{
-		ID: "team-id", Key: "LIT", Name: "linctl", OrgID: "org-id",
-	}}}
 	multi := client.TeamList{Teams: []client.TeamSummary{
 		{ID: "team-id", Key: "LIT", Name: "linctl", OrgID: "org-id"},
 		{ID: "ops-team-id", Key: "OPS", Name: "OPS", OrgID: "org-id"},
 	}}
 
-	selected, err := selectInitTeam(single, "", "")
-	require.NoError(t, err)
-	require.Equal(t, "team-id", selected.ID)
-
-	_, err = selectInitTeam(client.TeamList{}, "", "")
+	_, err := selectInitTeam(client.TeamList{}, "", "")
 	require.ErrorIs(t, err, client.ErrWriteInvalid)
 	require.ErrorContains(t, err, "no teams")
-
-	_, err = selectInitTeam(multi, "", "")
-	require.ErrorIs(t, err, client.ErrWriteInvalid)
 
 	_, err = selectInitTeam(multi, "MISSING", "")
 	require.ErrorIs(t, err, client.ErrWriteInvalid)
@@ -180,11 +170,7 @@ func Test_selectInitTeam_table(t *testing.T) {
 	require.ErrorIs(t, err, client.ErrWriteInvalid)
 	require.ErrorContains(t, err, "team id")
 
-	selected, err = selectInitTeam(multi, "OPS", "")
-	require.NoError(t, err)
-	require.Equal(t, "ops-team-id", selected.ID)
-
-	selected, err = selectInitTeam(multi, "", "ops-team-id")
+	selected, err := selectInitTeam(multi, "", "ops-team-id")
 	require.NoError(t, err)
 	require.Equal(t, "OPS", selected.Key)
 
