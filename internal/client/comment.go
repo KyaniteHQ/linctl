@@ -400,10 +400,6 @@ func commentMetadataSummary(comment gql.CommentMetadataFields) CommentMetadataSu
 }
 
 func actorBotSummary(fields *gql.ActorBotSummaryFields) *ActorBotSummary {
-	if fields == nil {
-		return nil
-	}
-
 	return &ActorBotSummary{
 		ID:              stringValue(fields.Id),
 		Type:            fields.Type,

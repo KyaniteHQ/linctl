@@ -479,7 +479,6 @@ func readScenarioGraphQLClient(endCursor string) fakeGraphQLClient {
 			State:      "Todo",
 			StateType:  "unstarted",
 		}) + `}`,
-		"attachmentIssue_attachments":       `{"attachmentIssue":{"attachments":{"nodes":[` + projectAttachmentJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"attachmentIssue_botActor":          `{"attachmentIssue":{"id":"issue-id","botActor":` + actorBotJSON() + `}}`,
 		"attachmentIssue_children":          `{"attachmentIssue":{"children":{"nodes":[` + issueJSON(issueFixture{Identifier: "LIT-42", Title: "attachment child issue", StateID: "todo", State: "Todo", StateType: "unstarted"}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"attachmentIssue_documents":         `{"attachmentIssue":{"documents":{"nodes":[{"id":"attachment-issue-document-id","title":"Attachment issue spec","slugId":"attachment-issue-spec","archivedAt":null,"project":null,"team":null,"issue":{"id":"issue-id","identifier":"LIT-1","title":"Detail issue"},"cycle":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
