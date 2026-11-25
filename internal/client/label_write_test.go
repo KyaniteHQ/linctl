@@ -129,12 +129,31 @@ func Test_CreateLabel_rejects_invalid_color(t *testing.T) {
 	require.ErrorContains(t, err, "color must be #RRGGBB")
 }
 
-func Test_validateLabelColor_accepts_empty_and_six_digit_hex(t *testing.T) {
-	require.NoError(t, validateLabelColor(""))
-	require.NoError(t, validateLabelColor("#123456"))
-	require.NoError(t, validateLabelColor("#AbCdEf"))
-	require.ErrorIs(t, validateLabelColor("#fff"), ErrWriteInvalid)
-	require.ErrorIs(t, validateLabelColor("123456"), ErrWriteInvalid)
+func Test_CreateLabel_rejects_short_or_unprefixed_color(t *testing.T) {
+	for _, color := range []string{"#fff", "123456"} {
+		t.Run(color, func(t *testing.T) {
+			recorder := &mutationRecordingClient{inner: issueWriteFakeClient(map[string]string{})}
+
+			_, err := CreateLabel(context.Background(), recorder, matchingTarget(),
+				LabelCreateRequest{Name: "created", Color: color})
+
+			require.ErrorIs(t, err, ErrWriteInvalid)
+			require.False(t, recorder.sentOperation("IssueLabelCreate"))
+		})
+	}
+}
+
+func Test_CreateLabel_sends_mixed_case_hex_color(t *testing.T) {
+	capture := &variableCapturingClient{inner: issueWriteFakeClient(map[string]string{
+		"IssueLabelCreate": `{"issueLabelCreate":{"success":true,"issueLabel":` +
+			issueLabelJSON("label-id", "created", "team-id", "LIT") + `}}`,
+	})}
+
+	_, err := CreateLabel(context.Background(), capture, matchingTarget(),
+		LabelCreateRequest{Name: "created", Color: "#AbCdEf"})
+
+	require.NoError(t, err)
+	require.Contains(t, capture.variables["IssueLabelCreate"], `"color":"#AbCdEf"`)
 }
 
 func Test_CreateLabel_refuses_when_target_unresolved(t *testing.T) {
@@ -308,22 +327,6 @@ func Test_UpdateLabel_refuses_org_wide_flag_on_team_scoped_label(t *testing.T) {
 
 	require.ErrorIs(t, err, ErrWriteInvalid)
 	require.False(t, recorder.sentOperation("IssueLabelUpdate"))
-}
-
-func Test_UpdateLabel_proceeds_when_pinned_project_present(t *testing.T) {
-	// matchingTarget() pins project-id; taxonomy writes compare org+team only,
-	// so a pinned project must not block this write (103 decision memo ruling).
-	graphqlClient := issueWriteFakeClient(map[string]string{
-		"issueLabel": `{"issueLabel":` + issueLabelJSON("label-id", "old", "team-id", "LIT") + `}`,
-		"IssueLabelUpdate": `{"issueLabelUpdate":{"success":true,"issueLabel":` +
-			issueLabelJSON("label-id", "renamed", "team-id", "LIT") + `}}`,
-	})
-
-	_, err := UpdateLabel(context.Background(), graphqlClient, matchingTarget(), LabelUpdateRequest{
-		ID: "label-id", Name: "renamed",
-	})
-
-	require.NoError(t, err)
 }
 
 func Test_UpdateLabel_requires_id(t *testing.T) {

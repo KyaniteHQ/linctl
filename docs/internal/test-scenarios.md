@@ -1124,11 +1124,11 @@ Success is pass/fail:
      `go test ./internal/client`, `Test_DeleteProjectMilestone_removes_milestone_when_target_matches`, `Test_DeleteProjectMilestone_refuses_when_pinned_project_differs`, `Test_DeleteProjectMilestone_refuses_when_project_team_differs`.
 211. Label taxonomy and issue/project label association writes
    - Success: `label create` sends the resolved team's id as `teamId` by default (Team-Scoped Write) and omits it under `--org-wide` (Org-Scoped Write), never sends `replaceTeamLabels: true`, and requires a `--parent` label to share the same effective scope; `label update`/`retire`/`restore` resolve the existing label and compare its team, refusing an organization-wide label (null team) unless `--org-wide` is passed and refusing `--org-wide` on a team-scoped label; `issue add-label`/`remove-label` resolve the issue through `requireIssue` and accept a label only when its team matches or it is organization-wide; `project add-label`/`remove-label` resolve the project through `requireProject` and the ProjectLabel through `requireOrganization`, proceeding even when a `project_id` is pinned. Every refusal sends no mutation.
-   - Evidence: `go test ./internal/client`, `Test_CreateLabel_creates_team_scoped_label_with_resolved_team_id`, `Test_CreateLabel_org_wide_omits_team_id`, `Test_UpdateLabel_refuses_organization_wide_label_without_org_wide_flag`, `Test_UpdateLabel_refuses_org_wide_flag_on_team_scoped_label`, `Test_UpdateLabel_proceeds_when_pinned_project_present`, `Test_AddIssueLabel_attaches_organization_wide_label`, `Test_AddProjectLabel_refuses_when_label_organization_differs`; `go test ./internal/cli`, `Test_LabelUpdate_rejects_org_wide_flag_on_a_team_scoped_label`, `Test_LabelUpdate_emits_stable_target_mismatch_output`, `Test_LabelFamilyCommands_have_no_bypass_flags`.
+   - Evidence: `go test ./internal/client`, `Test_CreateLabel_creates_team_scoped_label_with_resolved_team_id`, `Test_CreateLabel_org_wide_omits_team_id`, `Test_UpdateLabel_refuses_organization_wide_label_without_org_wide_flag`, `Test_UpdateLabel_refuses_org_wide_flag_on_team_scoped_label`, `Test_UpdateLabel_updates_team_scoped_label_when_team_matches`, `Test_AddIssueLabel_attaches_organization_wide_label`, `Test_AddProjectLabel_refuses_when_label_organization_differs`; `go test ./internal/cli`, `Test_LabelUpdate_rejects_org_wide_flag_on_a_team_scoped_label`, `Test_LabelUpdate_emits_stable_target_mismatch_output`, `Test_LabelFamilyCommands_have_no_bypass_flags`.
 
 212. ProjectLabel taxonomy writes
    - Success: `project-label create`/`update`/`retire`/`restore` are Org-Scoped Writes; ProjectLabel has no team scope, so `--org-wide` is required and every command refuses to run without it, naming the flag in the error. `update`/`retire`/`restore` resolve the existing ProjectLabel through `requireProjectLabel` and compare its organization, failing closed as Target Mismatch when the resolved label belongs to a different organization. A pinned `project_id` does not block these writes. No command exposes `--force` or `--confirm`.
-   - Evidence: `go test ./internal/client`, `Test_CreateProjectLabel_refuses_without_org_wide`, `Test_CreateProjectLabel_proceeds_when_pinned_project_present`, `Test_UpdateProjectLabel_refuses_when_organization_differs`, `Test_RetireProjectLabel_refuses_without_org_wide`, `Test_RestoreProjectLabel_refuses_when_organization_differs`; `go test ./internal/cli`, `Test_ProjectLabelFamilyCommands_require_org_wide`, `Test_ProjectLabelUpdate_emits_stable_target_mismatch_output`, `Test_ProjectLabelFamilyCommands_have_no_bypass_flags`.
+   - Evidence: `go test ./internal/client`, `Test_CreateProjectLabel_refuses_without_org_wide`, `Test_CreateProjectLabel_creates_label_when_org_wide_passed`, `Test_UpdateProjectLabel_refuses_when_organization_differs`, `Test_RetireProjectLabel_refuses_without_org_wide`, `Test_RestoreProjectLabel_refuses_when_organization_differs`; `go test ./internal/cli`, `Test_ProjectLabelFamilyCommands_require_org_wide`, `Test_ProjectLabelUpdate_emits_stable_target_mismatch_output`, `Test_ProjectLabelFamilyCommands_have_no_bypass_flags`.
 
 213. Comment thread resolve and unresolve
    - Success: `linctl comment resolve COMMENT_ID` and `linctl comment unresolve COMMENT_ID` resolve the comment, compare the pinned team through its parent issue, refuse non-issue or mismatched comments without sending a mutation, and render the returned Comment summary through standard human and machine output controls.
@@ -1156,7 +1156,7 @@ Success is pass/fail:
    - Evidence: `go test ./internal/client`, `Test_UpdateIssue_selects_exact_started_state_name`,
      `Test_UpdateIssue_refuses_when_readback_state_does_not_match`,
      `Test_UpdateIssue_returns_state_mismatch_when_write_fails_and_readback_is_wrong`,
-     `Test_selectWorkflowStateID_does_not_fall_back_to_type`,
+     `Test_UpdateIssue_state_selector_does_not_fall_back_to_type`,
      `Test_StartIssue_selects_lowest_position_started_type_not_name_started`;
      `go test ./internal/cli`, `Test_importRowToRequest_keeps_exact_state_name`,
      `Test_CommandFlows_issue_import_selects_exact_state_name`.
@@ -1236,7 +1236,7 @@ Success is pass/fail:
 228. Project pin on team administration writes
    - Success: a missing or mismatched pinned project stops target resolution before mutation. A valid pinned project still allows the team-owned WorkflowState or issue template write.
    - Evidence: `go test ./internal/client`, `Test_CreateWorkflowState_refuses_when_pinned_project_is_missing`,
-     `Test_CreateWorkflowState_allows_team_owned_write_with_valid_project_pin`,
+     `Test_CreateWorkflowState_sends_caller_id_and_resolved_team`,
      `Test_CreateWorkflowState_allows_team_only_pin`.
 
 229. Attachment delete

@@ -45,16 +45,9 @@ func applyMutationRetryClass[T any](
 	writeErr error,
 ) (T, error) {
 	var zero T
-	switch class {
-	case MutationRetryReconcile:
-		if recoveredOK {
-			return recovered, nil
-		}
-
-		return zero, writeErr
-	case MutationRetryIdempotent, MutationRetryNever:
-		return zero, writeErr
-	default:
-		return zero, requiredFieldError("mutation retry class")
+	if class == MutationRetryReconcile && recoveredOK {
+		return recovered, nil
 	}
+
+	return zero, writeErr
 }

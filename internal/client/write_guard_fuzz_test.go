@@ -1,8 +1,6 @@
 package client
 
 import (
-	"context"
-	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -56,15 +54,4 @@ func FuzzRequireTargetMatch(f *testing.F) {
 
 		require.ErrorIs(t, err, ErrTargetMismatch)
 	})
-}
-
-func Test_newGuardedClient_returns_target_resolution_error(t *testing.T) {
-	guard, err := newGuardedClient(
-		context.Background(),
-		errorGraphQLClient{err: errors.New("resolve failed")},
-		matchingTarget(),
-	)
-
-	require.ErrorContains(t, err, "resolve failed")
-	require.Nil(t, guard)
 }

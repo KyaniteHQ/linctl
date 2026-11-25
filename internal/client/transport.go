@@ -357,9 +357,6 @@ func formatGraphQLErrors(graphqlErrors gqlerror.List) error {
 // "Entity not found". Reads of a nonexistent id then map to the stable
 // NOT_FOUND error code instead of the generic GRAPHQL_ERROR.
 func graphQLErrorsSignalMissingEntity(graphqlErrors gqlerror.List) bool {
-	if len(graphqlErrors) == 0 {
-		return false
-	}
 	for _, graphqlError := range graphqlErrors {
 		if graphqlError.Extensions["code"] != "INPUT_ERROR" ||
 			!strings.Contains(graphqlError.Message, "Entity not found") {

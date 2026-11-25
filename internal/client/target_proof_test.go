@@ -9,7 +9,6 @@ import (
 	"github.com/Khan/genqlient/graphql"
 	"github.com/stretchr/testify/require"
 
-	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
@@ -91,182 +90,119 @@ func Test_ResolveTarget_key_only_mismatch_skips_direct_lookup_and_describes_team
 	require.Equal(t, len(graphqlClient.fixtures), graphqlClient.next)
 }
 
-func Test_resolveTeamDirect_rejects_mismatched_direct_lookup(t *testing.T) {
-	graphqlClient := &strictTargetGraphQLClient{fixtures: []strictTargetFixture{{
-		operation: "team",
-		variables: `{"id":"team-id"}`,
-		payload: `{
-			"team": {
-				"id": "other-team-id",
-				"key": "LIT",
-				"name": "other",
-				"organization": {"id": "org-id", "name": "Kyanite", "urlKey": "kyanite"}
-			}
-		}`,
-	}}}
+func Test_ResolveTarget_falls_back_to_scan_when_direct_lookup_returns_another_team(t *testing.T) {
+	graphqlClient := &strictTargetGraphQLClient{fixtures: []strictTargetFixture{
+		{operation: "Viewer", variables: "null", payload: targetViewerFixture},
+		directTeamLookupFixture("other-team-id"),
+		teamScanFixture("team-id"),
+	}}
 
-	team, ok := resolveTeamDirect(context.Background(), graphqlClient, config.Target{
+	target, err := ResolveTarget(context.Background(), graphqlClient, config.Target{
 		OrgID:   "org-id",
 		TeamKey: "LIT",
 		TeamID:  "team-id",
 	})
 
-	require.False(t, ok)
-	require.Empty(t, team)
+	require.NoError(t, err)
+	require.Equal(t, "team-id", target.Team.ID)
 	require.Equal(t, len(graphqlClient.fixtures), graphqlClient.next)
 }
 
-func Test_findResolvedTeam_skips_matching_key_with_mismatched_pinned_team_id(t *testing.T) {
-	team, ok := findResolvedTeam([]gql.TeamsTeamsTeamConnectionNodesTeam{{
-		Id:  "other-team-id",
-		Key: "LIT",
-		Organization: gql.TeamsTeamsTeamConnectionNodesTeamOrganization{
-			Id: "org-id",
-		},
-	}}, config.Target{
+func Test_ResolveTarget_refuses_scanned_team_with_matching_key_and_other_id(t *testing.T) {
+	graphqlClient := &strictTargetGraphQLClient{fixtures: []strictTargetFixture{
+		{operation: "Viewer", variables: "null", payload: targetViewerFixture},
+		directTeamLookupFixture("other-team-id"),
+		teamScanFixture("other-team-id"),
+	}}
+
+	_, err := ResolveTarget(context.Background(), graphqlClient, config.Target{
 		OrgID:   "org-id",
 		TeamKey: "LIT",
 		TeamID:  "team-id",
 	})
 
-	require.False(t, ok)
-	require.Empty(t, team)
+	require.ErrorIs(t, err, ErrTargetMismatch)
+	require.ErrorContains(t, err, "cannot reach team_key=LIT team_id=team-id")
+	require.Equal(t, len(graphqlClient.fixtures), graphqlClient.next)
 }
 
-func Test_resolveProject_rejects_mismatched_project_id(t *testing.T) {
-	graphqlClient := strictProjectFixtureClient("other-project-id")
+func Test_ResolveTarget_refuses_when_pinned_project_resolves_to_another_id(t *testing.T) {
+	graphqlClient := &strictTargetGraphQLClient{fixtures: []strictTargetFixture{
+		{operation: "Viewer", variables: "null", payload: targetViewerFixture},
+		directTeamLookupFixture("team-id"),
+		targetProjectFixture("null", "other-project-id", `[{"id": "team-id", "key": "LIT", "name": "linctl-it"}]`, false),
+	}}
 
-	project, ok, err := resolveProject(
-		context.Background(),
-		graphqlClient,
-		config.Target{ProjectID: "project-id"},
-		targetFixtureTeam(),
-	)
+	_, err := ResolveTarget(context.Background(), graphqlClient, matchingTarget())
 
 	require.ErrorIs(t, err, ErrTargetMismatch)
 	require.ErrorContains(t, err, "expected project_id=project-id resolved project_id=other-project-id")
-	require.False(t, ok)
-	require.Empty(t, project)
 	require.Equal(t, len(graphqlClient.fixtures), graphqlClient.next)
 }
 
-func Test_resolveProject_rejects_empty_project_id(t *testing.T) {
-	graphqlClient := strictProjectFixtureClient("")
+func Test_ResolveTarget_refuses_when_later_project_page_resolves_to_another_id(t *testing.T) {
+	graphqlClient := &strictTargetGraphQLClient{fixtures: []strictTargetFixture{
+		{operation: "Viewer", variables: "null", payload: targetViewerFixture},
+		directTeamLookupFixture("team-id"),
+		targetProjectFixture("null", "project-id", `[]`, true),
+		targetProjectFixture(
+			`"project-cursor-1"`, "other-project-id", `[{"id": "team-id", "key": "LIT", "name": "linctl-it"}]`, false,
+		),
+	}}
 
-	project, ok, err := resolveProject(
-		context.Background(),
-		graphqlClient,
-		config.Target{ProjectID: "project-id"},
-		targetFixtureTeam(),
-	)
+	_, err := ResolveTarget(context.Background(), graphqlClient, matchingTarget())
 
 	require.ErrorIs(t, err, ErrTargetMismatch)
-	require.ErrorContains(t, err, "expected project_id=project-id resolved project_id=")
-	require.False(t, ok)
-	require.Empty(t, project)
+	require.ErrorContains(t, err, "expected project_id=project-id resolved project_id=other-project-id")
 	require.Equal(t, len(graphqlClient.fixtures), graphqlClient.next)
-}
-
-func Test_resolveProject_rejects_mismatched_project_id_on_later_page(t *testing.T) {
-	for _, projectID := range []string{"", "other-project-id"} {
-		t.Run(projectID, func(t *testing.T) {
-			graphqlClient := strictLaterProjectPageFixtureClient(projectID)
-
-			project, ok, err := resolveProject(
-				context.Background(),
-				graphqlClient,
-				config.Target{ProjectID: "project-id"},
-				targetFixtureTeam(),
-			)
-
-			require.ErrorIs(t, err, ErrTargetMismatch)
-			require.ErrorContains(t, err, "expected project_id=project-id resolved project_id="+projectID)
-			require.False(t, ok)
-			require.Empty(t, project)
-			require.Equal(t, len(graphqlClient.fixtures), graphqlClient.next)
-		})
-	}
-}
-
-func Test_resolvedTargetConfig_uses_resolved_project_id(t *testing.T) {
-	resolved := resolvedTargetConfig(
-		"org-id",
-		targetFixtureTeam(),
-		ResolvedProject{ID: "resolved-project-id"},
-		true,
-	)
-
-	require.Equal(t, "resolved-project-id", resolved.ProjectID)
 }
 
 func Test_requireTargetMatch_rejects_unresolved_pinned_project(t *testing.T) {
 	expected := config.Target{OrgID: "org-id", TeamKey: "LIT", TeamID: "team-id", ProjectID: "project-id"}
-	resolved := resolvedTargetConfig("org-id", targetFixtureTeam(), ResolvedProject{}, false)
+	resolved := config.Target{OrgID: "org-id", TeamKey: "LIT", TeamID: "team-id"}
 
 	err := requireTargetMatch(expected, resolved)
 
 	require.ErrorIs(t, err, ErrTargetMismatch)
 }
 
-func strictProjectFixtureClient(projectID string) *strictTargetGraphQLClient {
-	return &strictTargetGraphQLClient{fixtures: []strictTargetFixture{{
+func directTeamLookupFixture(teamID string) strictTargetFixture {
+	return strictTargetFixture{
+		operation: "team",
+		variables: `{"id":"team-id"}`,
+		payload: fmt.Sprintf(`{"team": {
+			"id": %q, "key": "LIT", "name": "linctl-it",
+			"organization": {"id": "org-id", "name": "Kyanite", "urlKey": "kyanite"}
+		}}`, teamID),
+	}
+}
+
+func teamScanFixture(teamID string) strictTargetFixture {
+	return strictTargetFixture{
+		operation: "Teams",
+		variables: `{"first":250,"after":null,"includeArchived":true}`,
+		payload: fmt.Sprintf(`{"teams": {
+			"nodes": [{
+				"id": %q, "key": "LIT", "name": "linctl-it",
+				"organization": {"id": "org-id", "name": "Kyanite", "urlKey": "kyanite"}
+			}],
+			"pageInfo": {"hasNextPage": false, "endCursor": null}
+		}}`, teamID),
+	}
+}
+
+func targetProjectFixture(after string, projectID string, teams string, hasNextPage bool) strictTargetFixture {
+	endCursor := "null"
+	if hasNextPage {
+		endCursor = `"project-cursor-1"`
+	}
+
+	return strictTargetFixture{
 		operation: "TargetProject",
-		variables: `{"id":"project-id","first":250,"after":null}`,
-		payload: fmt.Sprintf(`{
-			"project": {
-				"id": %q,
-				"name": "fixture",
-				"teams": {
-					"nodes": [{"id": "team-id", "key": "LIT", "name": "linctl-it"}],
-					"pageInfo": {"hasNextPage": false, "endCursor": null}
-				}
-			}
-		}`, projectID),
-	}}}
-}
-
-func strictLaterProjectPageFixtureClient(projectID string) *strictTargetGraphQLClient {
-	return &strictTargetGraphQLClient{fixtures: []strictTargetFixture{
-		{
-			operation: "TargetProject",
-			variables: `{"id":"project-id","first":250,"after":null}`,
-			payload: `{
-				"project": {
-					"id": "project-id",
-					"name": "fixture",
-					"teams": {
-						"nodes": [],
-						"pageInfo": {"hasNextPage": true, "endCursor": "project-cursor-1"}
-					}
-				}
-			}`,
-		},
-		{
-			operation: "TargetProject",
-			variables: `{"id":"project-id","first":250,"after":"project-cursor-1"}`,
-			payload: fmt.Sprintf(`{
-				"project": {
-					"id": %q,
-					"name": "fixture",
-					"teams": {
-						"nodes": [{"id": "team-id", "key": "LIT", "name": "linctl-it"}],
-						"pageInfo": {"hasNextPage": false, "endCursor": null}
-					}
-				}
-			}`, projectID),
-		},
-	}}
-}
-
-func targetFixtureTeam() gql.TeamsTeamsTeamConnectionNodesTeam {
-	return gql.TeamsTeamsTeamConnectionNodesTeam{
-		Id:   "team-id",
-		Key:  "LIT",
-		Name: "linctl-it",
-		Organization: gql.TeamsTeamsTeamConnectionNodesTeamOrganization{
-			Id:     "org-id",
-			Name:   "Kyanite",
-			UrlKey: "kyanite",
-		},
+		variables: `{"id":"project-id","first":250,"after":` + after + `}`,
+		payload: fmt.Sprintf(`{"project": {
+			"id": %q, "name": "fixture",
+			"teams": {"nodes": %s, "pageInfo": {"hasNextPage": %t, "endCursor": %s}}
+		}}`, projectID, teams, hasNextPage, endCursor),
 	}
 }
