@@ -354,7 +354,7 @@ func Test_acquirePersistedClientCredentialsToken_adopts_newer_usable_token_witho
 	fakeReadiness := &fakeAuthReadinessChecker{report: readyAuthReport("app")}
 	restore := useAuthCommandHooks(t, paths, fakeOAuth, fakeReadiness)
 	defer restore()
-	authContext := authCommandContext{store: store, app: auth.AppConfig{Scopes: []string{"read"}}}
+	authContext := authCommandContext{store: store, app: auth.AppConfig{Scopes: []string{"read"}}, logger: discardLogger}
 
 	token, _, err := acquirePersistedClientCredentialsToken(
 		context.Background(),

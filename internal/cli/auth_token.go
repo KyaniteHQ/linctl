@@ -157,7 +157,7 @@ func acquireClientCredentialsToken(
 	if err != nil {
 		return auth.TokenState{}, authReadinessReport{}, err
 	}
-	readiness, err := requireLoggedAuthReadiness(ctx, authContext.log(), authReadinessRequest{
+	readiness, err := requireLoggedAuthReadiness(ctx, authContext.logger, authReadinessRequest{
 		AccessToken:    token.AccessToken,
 		TokenActor:     token.Actor,
 		TokenScopes:    token.Scopes,
@@ -270,7 +270,7 @@ func refreshedAuthReadiness(
 	timeout time.Duration,
 ) (authReadinessReport, error) {
 	actor := cmp.Or(expectedActor, appActor)
-	return requireLoggedAuthReadiness(ctx, authContext.log(), authReadinessRequest{
+	return requireLoggedAuthReadiness(ctx, authContext.logger, authReadinessRequest{
 		AccessToken:    token.AccessToken,
 		TokenActor:     token.Actor,
 		TokenScopes:    token.Scopes,

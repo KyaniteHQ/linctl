@@ -6,12 +6,15 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
 )
+
+var discardLogger = slog.New(slog.DiscardHandler)
 
 func Test_newDiagnosticLogger_without_debug_drops_debug_but_keeps_warnings(t *testing.T) {
 	var buffer bytes.Buffer
@@ -53,13 +56,6 @@ func Test_newTransportDiagnosticWriter_forwards_trimmed_lines_under_debug(t *tes
 
 func Test_newTransportDiagnosticWriter_is_nil_without_debug(t *testing.T) {
 	require.Nil(t, newTransportDiagnosticWriter(newDiagnosticLogger(false, false, io.Discard), false))
-}
-
-func Test_commandRuntime_log_falls_back_to_discard_logger(t *testing.T) {
-	require.Same(t, discardLogger, commandRuntime{}.log())
-
-	logger := newDiagnosticLogger(true, false, io.Discard)
-	require.Same(t, logger, commandRuntime{logger: logger}.log())
 }
 
 func Test_logTargetResolution_marks_target_mismatch(t *testing.T) {

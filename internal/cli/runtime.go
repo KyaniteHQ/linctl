@@ -399,7 +399,7 @@ func (recovering *recoveringGraphQLClient) reacquireClientCredentials(ctx contex
 
 func (runtime commandRuntime) resolveTarget(ctx context.Context) (client.ResolvedTarget, error) {
 	target, err := client.ResolveTarget(ctx, runtime.graphqlClient, runtime.config.Target)
-	logTargetResolution(runtime.log(), target, err)
+	logTargetResolution(runtime.logger, target, err)
 
 	return target, err
 }
