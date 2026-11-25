@@ -33,7 +33,7 @@ func CreateDocument(
 	if request.Title == "" {
 		return DocumentSummary{}, requiredFieldError("title")
 	}
-	if err := requireDocumentProjectPin(expected); err != nil {
+	if err := RequireDocumentProjectPin(expected); err != nil {
 		return DocumentSummary{}, err
 	}
 
@@ -78,7 +78,7 @@ func UpdateDocument(
 	if request.Title == "" && request.Content == "" {
 		return DocumentSummary{}, requiredFieldError("title or content")
 	}
-	if err := requireDocumentProjectPin(expected); err != nil {
+	if err := RequireDocumentProjectPin(expected); err != nil {
 		return DocumentSummary{}, err
 	}
 
@@ -94,7 +94,7 @@ func (guard *guardedClient) updateDocument(
 	ctx context.Context,
 	request DocumentUpdateRequest,
 ) (DocumentSummary, error) {
-	if err := guard.requireDocumentTarget(ctx, request.ID); err != nil {
+	if err := guard.requireDocumentInPinnedProject(ctx, request.ID); err != nil {
 		return DocumentSummary{}, err
 	}
 
@@ -112,21 +112,21 @@ func (guard *guardedClient) updateDocument(
 	return documentSummary(updated.DocumentUpdate.Document.DocumentSummaryFields), nil
 }
 
-// requireDocumentProjectPin refuses document writes without a pinned project:
+// RequireDocumentProjectPin refuses document writes without a pinned project:
 // Linear's public schema exposes no team on a document, so the pinned project
 // is the only parent the guard can prove.
-func requireDocumentProjectPin(expected config.Target) error {
+func RequireDocumentProjectPin(expected config.Target) error {
 	if expected.ProjectID == "" {
 		return fmt.Errorf(
-			"%w: document writes require a pinned project (set project_id in .linctl.toml)", ErrWriteInvalid,
+			"%w: document writes require a pinned project (set project_id in the config or pass --project)",
+			ErrWriteInvalid,
 		)
 	}
 
 	return nil
 }
 
-// requireDocumentTarget fails closed unless the document belongs to the pinned project.
-func (guard *guardedClient) requireDocumentTarget(
+func (guard *guardedClient) requireDocumentInPinnedProject(
 	ctx context.Context,
 	documentID string,
 ) error {

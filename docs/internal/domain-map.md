@@ -28,7 +28,7 @@ Schema backing:
 
 - Types: `AgentActivity`, `AgentActivityConnection`, `AgentActivityContent`
 - Reads: `Query.agentActivities`, `Query.agentActivity`
-- Writes: `Mutation.agentActivityCreate`, `Mutation.agentActivityUpdate`, `Mutation.agentActivityArchive`, prompt-specific activity mutations
+- Writes: `Mutation.agentActivityCreate`, prompt-specific activity mutations
 - Relevant fields: `AgentActivity.id`, `AgentActivity.agentSession`, `AgentActivity.content`, `AgentActivity.signal`, `AgentActivity.ephemeral`, `AgentActivity.sourceComment`, `AgentActivity.user`, `AgentActivity.createdAt`, `AgentActivity.updatedAt`
 
 Command coverage:
@@ -38,8 +38,6 @@ Command coverage:
 | `agent-activity list` | `Query.agentActivities` | Read-only |
 | `agent-activity get` | `Query.agentActivity` | Read-only |
 | `agent-activity create` | `Mutation.agentActivityCreate` | Resource-Scoped Write, additive only: the AgentSession is resolved, must be attached to an issue, and that issue is compared against the pinned team and pinned project, failing closed on mismatch. Content is one of Linear's typed activity payloads (thought, elicitation, response, error, action); prompt activities stay blocked |
-| `agent-activity update` | `Mutation.agentActivityUpdate` | Blocked: update must resolve the agent session and activity scope before mutation |
-| `agent-activity archive` | `Mutation.agentActivityArchive` | Blocked: destructive command needs explicit AgentActivity safety semantics |
 
 `agent-activity list`, `agent-activity get`, and `agent-activity create` are implemented in the current CLI. AgentActivity update and archive remain deferred until their session guard model is explicit.
 
@@ -49,7 +47,7 @@ Schema backing:
 
 - Types: `AgentSkill`, `AgentSkillConnection`
 - Reads: `Query.agentSkills`, `Query.agentSkill`
-- Writes: `Mutation.agentSkillCreate`, `Mutation.agentSkillUpdate`, `Mutation.agentSkillArchive`
+- Writes: `Mutation.agentSkillCreate`, `Mutation.agentSkillUpdate`, `Mutation.agentSkillDelete`
 - Relevant fields: `AgentSkill.id`, `AgentSkill.title`, `AgentSkill.body`, `AgentSkill.description`, `AgentSkill.slugId`, `AgentSkill.teamId`, `AgentSkill.shared`, `AgentSkill.recentUsageCount`, `AgentSkill.owner`, `AgentSkill.creator`, `AgentSkill.lastUpdatedBy`
 
 Planned commands:
@@ -60,7 +58,7 @@ Planned commands:
 | `agent-skill get` | `Query.agentSkill` | Read-only |
 | `agent-skill create` | `Mutation.agentSkillCreate` | Blocked: create can expose reusable agent instructions and needs explicit team/owner guard semantics |
 | `agent-skill update` | `Mutation.agentSkillUpdate` | Blocked: update must resolve the AgentSkill's team and ownership scope before mutation |
-| `agent-skill archive` | `Mutation.agentSkillArchive` | Blocked: destructive command needs explicit AgentSkill safety semantics |
+| `agent-skill delete` | `Mutation.agentSkillDelete` | Blocked: destructive command needs explicit AgentSkill safety semantics |
 
 Only `agent-skill list` and `agent-skill get` are implemented in the current CLI. AgentSkill writes remain deferred until their guard model is explicit.
 
@@ -70,7 +68,7 @@ Schema backing:
 
 - Types: `AgentSession`, `AgentSessionConnection`, `AgentSessionStatus`
 - Reads: `Query.agentSessions`, `Query.agentSession`
-- Writes: `Mutation.agentSessionCreateOnIssue`, `Mutation.agentSessionCreateExternal`, `Mutation.agentSessionTransitionExternal`, and prompt/sandbox session mutations
+- Writes: `Mutation.agentSessionCreateOnIssue`, `Mutation.agentSessionCreateOnComment`, `Mutation.agentSessionUpdate`, `Mutation.agentSessionUpdateExternalUrl`
 - Relevant fields: `AgentSession.id`, `AgentSession.slugId`, `AgentSession.status`, `AgentSession.summary`, `AgentSession.url`, `AgentSession.startedAt`, `AgentSession.endedAt`, `AgentSession.creator`, `AgentSession.appUser`, `AgentSession.issue`, `AgentSession.createdAt`, `AgentSession.updatedAt`
 
 Command coverage:
@@ -203,10 +201,8 @@ Planned commands:
 | `release sync` | `Mutation.releaseSync`, `Mutation.releaseSyncByAccessKey` | Blocked: sync mutates release associations and needs explicit guard semantics |
 | `release-note create` | `Mutation.releaseNoteCreate` | Blocked: create must resolve release pipeline and release range semantics before mutation |
 | `release-note update` | `Mutation.releaseNoteUpdate` | Blocked: update must resolve covered releases and pipeline before mutation |
-| `release-note archive` | `Mutation.releaseNoteArchive` | Blocked: destructive command needs explicit safety semantics |
 | `release-note delete` | `Mutation.releaseNoteDelete` | Blocked: destructive command needs explicit safety semantics |
 | `issue-to-release create` | `Mutation.issueToReleaseCreate` | Blocked: association write must compare issue and release scope before mutation |
-| `issue-to-release update` | `Mutation.issueToReleaseUpdate` | Blocked: association update must compare issue and release scope before mutation |
 | `issue-to-release delete` | `Mutation.issueToReleaseDelete` | Blocked: destructive association command needs explicit safety semantics |
 
 Release, ReleasePipeline, ReleaseStage, ReleaseNote, EntityExternalLink, and IssueToRelease read commands are implemented in the current CLI. IssueToRelease writes, sync, complete, access-key, and broader association commands remain deferred until their control-surface shape and guard model are explicit.
@@ -230,7 +226,7 @@ Planned commands:
 | `issue figma-file-key-search` | `Query.issueFigmaFileKeySearch`; returns compact issue summaries for a Figma file key | Read-only |
 | `issue priority-values` | `Query.issuePriorityValues` | Read-only |
 | `issue filter-suggestion` | `Query.issueFilterSuggestion`; returns the suggested filter JSON plus log id only | Read-only |
-| `issue title-suggestion` | `Query.issueTitleSuggestionFromCustomerRequest`; returns the suggested title plus log id only | Read-only |
+| `issue title-suggestion` | `Query.issueTitleSuggestionFromCustomerRequest`; returns the suggested title only | Read-only |
 | `issue get` | `Query.issue` | Read-only |
 | `issue deps` | `Query.issue`, `Issue.parent`, `Issue.children`, `Issue.relations`, `Issue.inverseRelations`; `IssueRelation.type == "blocks"` separates blocked issues from blockers | Read-only |
 | `issue attachments` | `Issue.attachments` via `Query.issue` | Read-only |
@@ -443,7 +439,7 @@ Schema backing:
 - Reads: `Query.projectLabels`, `Query.projectLabel`, `ProjectLabel.children`, `ProjectLabel.projects`
 - Writes: `Mutation.projectLabelCreate`, `Mutation.projectLabelUpdate`, `Mutation.projectLabelRetire`, `Mutation.projectLabelRestore`, `Mutation.projectLabelDelete`
 - Inputs: `ProjectLabelCreateInput`, `ProjectLabelUpdateInput`
-- Relevant fields: `ProjectLabel.id`, `ProjectLabel.name`, `ProjectLabel.description`, `ProjectLabel.color`, `ProjectLabel.isGroup`, `ProjectLabel.parent`, `ProjectLabel.retiredAt`, `ProjectLabel.archivedAt`, `ProjectLabel.organization`
+- Relevant fields: `ProjectLabel.id`, `ProjectLabel.name`, `ProjectLabel.description`, `ProjectLabel.color`, `ProjectLabel.isGroup`, `ProjectLabel.parent`, `ProjectLabel.archivedAt`, `ProjectLabel.organization`
 
 Planned commands:
 
@@ -554,7 +550,7 @@ Planned commands:
 Schema backing:
 
 - Types: `Document`, `DocumentConnection`
-- Reads: `Query.documents`, `Query.document`, `Document.comments`, `Project.documents`, `Team.documents`, `Issue.documents`, `Cycle.documents`
+- Reads: `Query.documents`, `Query.document`, `Document.comments`, `Project.documents`, `Issue.documents`
 - Writes: `Mutation.documentCreate`, `Mutation.documentUpdate`, `Mutation.documentDelete`
 - Inputs: `DocumentCreateInput`, `DocumentUpdateInput`
 - Relevant fields: `Document.id`, `Document.title`, `Document.slugId`, `Document.archivedAt`, `Document.project`, `Document.issue`
@@ -570,7 +566,7 @@ Planned commands:
 | `document update` | `Mutation.documentUpdate`; resolves the existing document via `Query.document` and compares its `project` with the pinned project before mutating | Resource-scoped, requires and compares the pinned project |
 | `document delete` | `Mutation.documentDelete` | Blocked: destructive command needs explicit safety semantics |
 
-`document list`, `document get`, `document comments`, `document create`, and `document update` are implemented in the current CLI. Document comment reads omit comment body content by default. Linear's public schema has no `Document.team` and no `DocumentCreateInput.teamId`, so the pinned project is the only parent a document write can prove: `document create` and `document update` refuse before any Linear request when `.linctl.toml` pins no `project_id`, `document create` places the document in the pinned project, and `document update` fails closed unless the existing document belongs to the pinned project. Document delete stays deferred.
+`document list`, `document get`, `document comments`, `document create`, and `document update` are implemented in the current CLI. Document comment reads omit comment body content by default. Linear's public schema has no `Document.team` and no `DocumentCreateInput.teamId`, so the pinned project is the only parent a document write can prove: `document create` and `document update` refuse before any Linear request when the effective pinned target (config file, profile, or `--project`) has no project id, `document create` places the document in the pinned project, and `document update` fails closed unless the existing document belongs to the pinned project. Document delete stays deferred.
 
 ## Label
 
@@ -616,9 +612,9 @@ Planned commands:
 | --- | --- | --- |
 | `team list` | `Query.teams` | Read-only |
 | `team get` | `Query.team` | Read-only |
-| `team create` | `Mutation.teamCreate` | Org-Scoped Write, additive only: `--org-wide` required, and the created Team's organization is compared against the Resolved Target's organization, failing closed on mismatch. A Team is what a pin names, so there is no team comparison to make. `--parent` resolves the parent and compares its organization, and the created Team's parent is compared against the request; `--inherit-workflow-states` (a field Linear marks internal in its schema) and `--triage` ride on the same create. Membership and metadata writes stay blocked |
+| `team create` | `Mutation.teamCreate` | Org-Scoped Write, additive only: `--org-wide` required, and the created Team's organization is compared against the Resolved Target's organization, failing closed on mismatch. A Team is what a pin names, so there is no team comparison to make. `--parent` resolves the parent and compares its organization, and the created Team's parent is compared against the request; `--triage` rides on the same create. Membership and metadata writes stay blocked |
 | `team update` | `Mutation.teamUpdate` | Blocked: team metadata writes need stronger authority checks than ordinary target comparison |
-| `team settings` | `Mutation.teamUpdate` with `triageEnabled`, `defaultIssueStateId`, `inheritWorkflowStatuses` only | Org-Scoped Write: `--org-wide` required, the Team is resolved and its organization compared against the Resolved Target's organization, and a default state must belong to the Team or to the parent it inherits from. Name, key, and description are not reachable |
+| `team settings` | `Mutation.teamUpdate` with `triageEnabled` and `defaultIssueStateId` only | Org-Scoped Write: `--org-wide` required, the Team is resolved and its organization compared against the Resolved Target's organization, and a default state must belong to the Team or to the parent it inherits from. Name, key, and description are not reachable |
 | `team delete` | `Mutation.teamDelete` | Org-Scoped Write, irreversible: `--org-wide` required, the Team is resolved and its organization compared against the Resolved Target's organization, and the pinned Team itself is refused. Linear archives the Team and schedules its data for deletion; linctl has no restore path |
 | `team cycles` | `Team.cycles` | Read-only |
 | `team issues` | `Team.issues` | Read-only |
@@ -846,7 +842,7 @@ Schema backing:
 
 - Types: `Initiative`, `InitiativeConnection`, `InitiativeHistory`, `InitiativeUpdate`, `EntityExternalLink`, `Document`, `Project`
 - Reads: `Query.initiatives`, `Query.initiative`, `Initiative.history`, `Initiative.links`, `Initiative.subInitiatives`, `Initiative.initiativeUpdates`, `Initiative.documents`, `Initiative.projects`
-- Writes: `Mutation.createInitiative`, `Mutation.updateInitiative`, `Mutation.archiveInitiative`, `Mutation.deleteInitiative`
+- Writes: `Mutation.initiativeCreate`, `Mutation.initiativeUpdate`, `Mutation.initiativeArchive`, `Mutation.initiativeDelete`
 - Inputs: `InitiativeCreateInput`, `InitiativeUpdateInput`
 - Relevant fields: `Initiative.id`, `Initiative.name`, `Initiative.description`, `Initiative.status`, `Initiative.priority`, `Initiative.targetDate`, `Initiative.slugId`, `Initiative.url`, compact `Document` identity and parent fields, compact `Project` identity, status, lead, and team fields
 
@@ -863,8 +859,8 @@ Planned commands:
 | `initiative documents` | `Initiative.documents` via `Query.initiative` | Read-only |
 | `initiative projects` | `Initiative.projects` via `Query.initiative` | Read-only direct projects |
 | `initiative create` | `Mutation.initiativeCreate` | Org-Scoped Write, additive only: `--org-wide` required, and the created Initiative's organization is compared against the Resolved Target's organization, failing closed on mismatch. An Initiative sits above every team, so there is no team comparison to make; update and archive stay blocked |
-| `initiative update` | `Mutation.updateInitiative` | Blocked: update must resolve and compare the owning organization before mutation |
-| `initiative archive` | `Mutation.archiveInitiative` | Blocked: destructive command needs explicit safety semantics |
+| `initiative update` | `Mutation.initiativeUpdate` | Blocked: update must resolve and compare the owning organization before mutation |
+| `initiative archive` | `Mutation.initiativeArchive` | Blocked: destructive command needs explicit safety semantics |
 
 Initiative update and archive are deferred as organization-scoped planning surface.
 
@@ -877,7 +873,7 @@ Schema backing:
 - Types: `InitiativeLabel`, `InitiativeLabelConnection`
 - Reads: `Query.initiativeLabels`, `Query.initiativeLabel`
 - Writes: `Mutation.initiativeLabelCreate`, `Mutation.initiativeLabelUpdate`, `Mutation.initiativeLabelDelete`, `Mutation.initiativeLabelRestore`, `Mutation.initiativeLabelRetire`
-- Relevant fields: `InitiativeLabel.id`, `InitiativeLabel.name`, `InitiativeLabel.description`, `InitiativeLabel.color`, `InitiativeLabel.isGroup`, `InitiativeLabel.parent`, `InitiativeLabel.lastAppliedAt`, `InitiativeLabel.retiredAt`, `InitiativeLabel.archivedAt`, `InitiativeLabel.createdAt`, `InitiativeLabel.updatedAt`
+- Relevant fields: `InitiativeLabel.id`, `InitiativeLabel.name`, `InitiativeLabel.description`, `InitiativeLabel.color`, `InitiativeLabel.isGroup`, `InitiativeLabel.parent`, `InitiativeLabel.lastAppliedAt`, `InitiativeLabel.archivedAt`, `InitiativeLabel.createdAt`, `InitiativeLabel.updatedAt`
 
 Command status:
 
@@ -1024,10 +1020,10 @@ Use the schema name `CustomView` in code and docs. It is Linear's saved view ove
 Schema backing:
 
 - Types: `CustomView`, `CustomViewConnection`
-- Reads: `Query.customViews`, `Query.customView`, `Query.customViewHasSubscribers`, `Query.customView_initiatives`,
-  `Query.customView_organizationViewPreferences`, `Query.customView_organizationViewPreferences_preferences`,
-  `Query.customView_viewPreferencesValues`
-- Writes: `Mutation.createCustomView`, `Mutation.updateCustomView`, `Mutation.deleteCustomView`
+- Reads: `Query.customViews`, `Query.customView`, `Query.customViewHasSubscribers`, `CustomView.initiatives`,
+  `CustomView.organizationViewPreferences`, `ViewPreferences.preferences` via `CustomView.organizationViewPreferences`,
+  `CustomView.viewPreferencesValues`
+- Writes: `Mutation.customViewCreate`, `Mutation.customViewUpdate`, `Mutation.customViewDelete`
 - Inputs: `CustomViewCreateInput`, `CustomViewUpdateInput`
 - Relevant fields: `CustomView.id`, `CustomView.name`, `CustomView.description`, `CustomView.modelName`, `CustomView.shared`, `CustomView.color`, `CustomView.slugId`
 
@@ -1038,17 +1034,17 @@ Planned commands:
 | `custom-view list` | `Query.customViews` | Read-only |
 | `custom-view subscribers` | `Query.customViewHasSubscribers` | Read-only |
 | `custom-view get` | `Query.customView` | Read-only |
-| `custom-view initiatives` | `Query.customView_initiatives` | Read-only |
-| `custom-view issues` | `Query.customView_issues` | Read-only |
-| `custom-view organization-preferences` | `Query.customView_organizationViewPreferences` | Read-only |
-| `custom-view organization-preferences values` | `Query.customView_organizationViewPreferences_preferences` | Read-only |
-| `custom-view projects` | `Query.customView_projects` | Read-only |
-| `custom-view user-preferences` | `Query.customView_userViewPreferences` | Read-only |
-| `custom-view user-preferences values` | `Query.customView_userViewPreferences_preferences` | Read-only |
-| `custom-view preference-values` | `Query.customView_viewPreferencesValues` | Read-only |
-| `custom-view create` | `Mutation.createCustomView` | Blocked: custom view create needs an explicit organization-scoped safety model |
-| `custom-view update` | `Mutation.updateCustomView` | Blocked: update must resolve and compare the owning organization before mutation |
-| `custom-view delete` | `Mutation.deleteCustomView` | Blocked: destructive command needs explicit safety semantics |
+| `custom-view initiatives` | `CustomView.initiatives` | Read-only |
+| `custom-view issues` | `CustomView.issues` | Read-only |
+| `custom-view organization-preferences` | `CustomView.organizationViewPreferences` | Read-only |
+| `custom-view organization-preferences values` | `ViewPreferences.preferences` via `CustomView.organizationViewPreferences` | Read-only |
+| `custom-view projects` | `CustomView.projects` | Read-only |
+| `custom-view user-preferences` | `CustomView.userViewPreferences` | Read-only |
+| `custom-view user-preferences values` | `ViewPreferences.preferences` via `CustomView.userViewPreferences` | Read-only |
+| `custom-view preference-values` | `CustomView.viewPreferencesValues` | Read-only |
+| `custom-view create` | `Mutation.customViewCreate` | Blocked: custom view create needs an explicit organization-scoped safety model |
+| `custom-view update` | `Mutation.customViewUpdate` | Blocked: update must resolve and compare the owning organization before mutation |
+| `custom-view delete` | `Mutation.customViewDelete` | Blocked: destructive command needs explicit safety semantics |
 
 Only CustomView reads are implemented in the current CLI. CustomView writes are deferred as organization-scoped view configuration surface.
 
@@ -1060,7 +1056,7 @@ Schema backing:
 
 - Types: `Customer`, `CustomerConnection`, `CustomerNeed`, `CustomerNeedConnection`, `CustomerStatus`, `CustomerStatusConnection`, `CustomerTier`, `CustomerTierConnection`
 - Reads: `Query.customers`, `Query.customer`, `Query.customerNeeds`, `Query.customerNeed`, `CustomerNeed.projectAttachment`, `Query.customerStatuses`, `Query.customerStatus`, `Query.customerTiers`, `Query.customerTier`
-- Writes: `Mutation.customerCreate`, `Mutation.customerUpdate`, `Mutation.customerArchive`, `Mutation.customerNeedCreate`, `Mutation.customerNeedUpdate`, `Mutation.customerNeedArchive`, `Mutation.customerNeedDelete`, `Mutation.customerStatusCreate`, `Mutation.customerStatusUpdate`, `Mutation.customerStatusDelete`, `Mutation.customerTierCreate`, `Mutation.customerTierUpdate`, `Mutation.customerTierDelete`
+- Writes: `Mutation.customerCreate`, `Mutation.customerUpdate`, `Mutation.customerDelete`, `Mutation.customerNeedCreate`, `Mutation.customerNeedUpdate`, `Mutation.customerNeedArchive`, `Mutation.customerNeedDelete`, `Mutation.customerStatusCreate`, `Mutation.customerStatusUpdate`, `Mutation.customerStatusDelete`, `Mutation.customerTierCreate`, `Mutation.customerTierUpdate`, `Mutation.customerTierDelete`
 - Inputs: `CustomerCreateInput`, `CustomerUpdateInput`, `CustomerNeedCreateInput`, `CustomerNeedUpdateInput`, `CustomerStatusCreateInput`, `CustomerStatusUpdateInput`, `CustomerTierCreateInput`, `CustomerTierUpdateInput`
 - Relevant fields: `Customer.id`, `Customer.name`, `Customer.domains`, `Customer.externalIds`, `Customer.status`, `Customer.tier`, `Customer.owner`, `Customer.approximateNeedCount`, `Customer.slugId`, `Customer.url`, `CustomerNeed.id`, `CustomerNeed.customer`, `CustomerNeed.issue`, `CustomerNeed.project`, `CustomerNeed.priority`, `CustomerNeed.content`, `CustomerStatus.id`, `CustomerStatus.displayName`, `CustomerStatus.color`, `CustomerStatus.position`, `CustomerTier.id`, `CustomerTier.displayName`, `CustomerTier.color`, `CustomerTier.position`
 
@@ -1079,7 +1075,7 @@ Command status:
 | `customer-tier get` | `Query.customerTier` | Read-only |
 | `customer create` | `Mutation.customerCreate` | Blocked: customer create needs an explicit organization-scoped safety model |
 | `customer update` | `Mutation.customerUpdate` | Blocked: update must resolve and compare the owning organization before mutation |
-| `customer archive` | `Mutation.customerArchive` | Blocked: destructive command needs explicit safety semantics |
+| `customer delete` | `Mutation.customerDelete` | Blocked: destructive command needs explicit safety semantics |
 | `customer-need create` | `Mutation.customerNeedCreate` | Blocked: need creation must prove the linked issue, project, or customer target before mutation |
 | `customer-need update` | `Mutation.customerNeedUpdate` | Blocked: update must resolve the need and compare the linked issue or project target before mutation |
 | `customer-need archive` | `Mutation.customerNeedArchive` | Blocked: destructive command needs explicit safety semantics |
@@ -1101,7 +1097,7 @@ Schema backing:
 
 - Types: `Favorite`, `FavoriteConnection`
 - Reads: `Query.favorites`, `Query.favorite`, `Favorite.children`
-- Writes: `Mutation.createFavorite`, `Mutation.updateFavorite`, `Mutation.deleteFavorite`
+- Writes: `Mutation.favoriteCreate`, `Mutation.favoriteUpdate`, `Mutation.favoriteDelete`
 - Inputs: `FavoriteCreateInput`, `FavoriteUpdateInput`
 - Relevant fields: `Favorite.id`, `Favorite.type`, `Favorite.folderName`, `Favorite.url`
 
@@ -1112,9 +1108,9 @@ Planned commands:
 | `favorite list` | `Query.favorites` | Read-only |
 | `favorite children` | `Favorite.children` via `Query.favorite` | Read-only |
 | `favorite get` | `Query.favorite` | Read-only |
-| `favorite create` | `Mutation.createFavorite` | Blocked: favorite create needs an explicit viewer-scoped safety model |
-| `favorite update` | `Mutation.updateFavorite` | Blocked: update must resolve and compare the owning viewer before mutation |
-| `favorite delete` | `Mutation.deleteFavorite` | Blocked: destructive command needs explicit safety semantics |
+| `favorite create` | `Mutation.favoriteCreate` | Blocked: favorite create needs an explicit viewer-scoped safety model |
+| `favorite update` | `Mutation.favoriteUpdate` | Blocked: update must resolve and compare the owning viewer before mutation |
+| `favorite delete` | `Mutation.favoriteDelete` | Blocked: destructive command needs explicit safety semantics |
 
 Only `favorite list`, `favorite children`, and `favorite get` are implemented in the current CLI. Favorite writes are deferred as viewer-scoped personalization surface.
 
@@ -1126,7 +1122,7 @@ Schema backing:
 
 - Types: `Emoji`, `EmojiConnection`
 - Reads: `Query.emojis`, `Query.emoji`
-- Writes: `Mutation.createEmoji`, `Mutation.deleteEmoji`
+- Writes: `Mutation.emojiCreate`, `Mutation.emojiDelete`
 - Inputs: `EmojiCreateInput`
 - Relevant fields: `Emoji.id`, `Emoji.name`, `Emoji.url`, `Emoji.source`
 
@@ -1136,8 +1132,8 @@ Planned commands:
 | --- | --- | --- |
 | `emoji list` | `Query.emojis` | Read-only |
 | `emoji get` | `Query.emoji` | Read-only |
-| `emoji create` | `Mutation.createEmoji` | Blocked: emoji create needs an explicit organization-scoped safety model |
-| `emoji delete` | `Mutation.deleteEmoji` | Blocked: destructive command needs explicit safety semantics |
+| `emoji create` | `Mutation.emojiCreate` | Blocked: emoji create needs an explicit organization-scoped safety model |
+| `emoji delete` | `Mutation.emojiDelete` | Blocked: destructive command needs explicit safety semantics |
 
 Only `emoji list` and `emoji get` are implemented in the current CLI. Emoji writes are deferred as organization-scoped asset surface.
 

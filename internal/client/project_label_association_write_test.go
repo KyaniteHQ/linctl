@@ -25,20 +25,22 @@ func projectLabelWithOrgJSON(orgID string) string {
 	}`
 }
 
-func Test_AddProjectLabel_attaches_label_when_project_and_org_match(t *testing.T) {
-	graphqlClient := projectWriteFakeClient(map[string]string{
+func Test_AddProjectLabel_attaches_label_sends_the_requested_label_when_project_and_org_match(t *testing.T) {
+	recorder := &recordingGraphQLClient{inner: projectWriteFakeClient(map[string]string{
 		"project":      `{"project":` + projectJSON(projectFixture{ID: "project-id", Name: "fixture", Status: "Backlog"}) + `}`,
 		"projectLabel": `{"projectLabel":` + projectLabelWithOrgJSON("org-id") + `}`,
 		"ProjectAddLabel": `{"projectAddLabel":{"success":true,"project":` +
 			projectJSON(projectFixture{ID: "project-id", Name: "fixture", Status: "Backlog"}) + `}}`,
-	})
+	})}
 
-	project, err := AddProjectLabel(context.Background(), graphqlClient, matchingTarget(), ProjectLabelAssociationRequest{
-		ProjectID: "project-id", LabelID: "label-id",
+	project, err := AddProjectLabel(context.Background(), recorder, matchingTarget(), ProjectLabelAssociationRequest{
+		ProjectID: "project-id", LabelID: "requested-label-id",
 	})
 
 	require.NoError(t, err)
 	require.Equal(t, "project-id", project.ID)
+	require.JSONEq(t, `{"id":"requested-label-id"}`, string(recorder.variablesFor(t, "projectLabel")))
+	require.JSONEq(t, `{"id":"project-id","labelId":"requested-label-id"}`, string(recorder.variablesFor(t, "ProjectAddLabel")))
 }
 
 func Test_AddProjectLabel_refuses_when_label_organization_differs(t *testing.T) {
@@ -126,21 +128,23 @@ func Test_AddProjectLabel_fails_when_mutation_reports_no_success(t *testing.T) {
 	require.ErrorIs(t, err, ErrMutationFailed)
 }
 
-func Test_RemoveProjectLabel_detaches_label_when_project_and_org_match(t *testing.T) {
-	graphqlClient := projectWriteFakeClient(map[string]string{
+func Test_RemoveProjectLabel_detaches_label_sends_the_requested_label_when_project_and_org_match(t *testing.T) {
+	recorder := &recordingGraphQLClient{inner: projectWriteFakeClient(map[string]string{
 		"project":      `{"project":` + projectJSON(projectFixture{ID: "project-id", Name: "fixture", Status: "Backlog"}) + `}`,
 		"projectLabel": `{"projectLabel":` + projectLabelWithOrgJSON("org-id") + `}`,
 		"ProjectRemoveLabel": `{"projectRemoveLabel":{"success":true,"project":` +
 			projectJSON(projectFixture{ID: "project-id", Name: "fixture", Status: "Backlog"}) + `}}`,
-	})
+	})}
 
 	project, err := RemoveProjectLabel(
-		context.Background(), graphqlClient, matchingTarget(),
-		ProjectLabelAssociationRequest{ProjectID: "project-id", LabelID: "label-id"},
+		context.Background(), recorder, matchingTarget(),
+		ProjectLabelAssociationRequest{ProjectID: "project-id", LabelID: "requested-label-id"},
 	)
 
 	require.NoError(t, err)
 	require.Equal(t, "project-id", project.ID)
+	require.JSONEq(t, `{"id":"requested-label-id"}`, string(recorder.variablesFor(t, "projectLabel")))
+	require.JSONEq(t, `{"id":"project-id","labelId":"requested-label-id"}`, string(recorder.variablesFor(t, "ProjectRemoveLabel")))
 }
 
 func Test_RemoveProjectLabel_wraps_project_resolution_error(t *testing.T) {

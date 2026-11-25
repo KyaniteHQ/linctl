@@ -786,7 +786,26 @@ func renderWriterCases() []renderWriterCase {
 			write: func(command *cobra.Command, options *rootOptions) error {
 				return writeNotification(command, options, notification)
 			},
-			text: "notification-id issueMention [mentions] LIT-1 Mentioned you\n",
+			text: "notification-id issueMention [mentions] issue LIT-1 Mentioned you\n",
+		},
+		{
+			name: "NotificationWithDocumentTarget",
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeNotification(command, options, client.NotificationSummary{
+					ID: "notification-id", Type: "documentMention", Category: "mentions",
+					TargetType: "document", TargetID: "document-id",
+				})
+			},
+			text: "notification-id documentMention [mentions] document document-id\n",
+		},
+		{
+			name: "NotificationWithoutTarget",
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeNotification(command, options, client.NotificationSummary{
+					ID: "notification-id", Type: "pullRequestReview", Category: "reviews",
+				})
+			},
+			text: "notification-id pullRequestReview [reviews] - -\n",
 		},
 		{
 			name: "NotificationSubscription",

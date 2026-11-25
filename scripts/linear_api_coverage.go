@@ -195,7 +195,7 @@ func writeSummary(
 	)
 	fmt.Fprintf(
 		output,
-		"| Public CLI commands from command inventory | %d | %d | %d |\n\n",
+		"| Domain-map command entries, planned and blocked included (Covered/exposed: implemented) | %d | %d | %d |\n\n",
 		len(domainCommands),
 		countImplementedDomain(domainCommands, commandInventory, implementedRoots, operationRoots),
 		len(domainCommands),

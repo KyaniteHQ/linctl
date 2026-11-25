@@ -62,7 +62,7 @@ func commandFlowProjectReadPayload(operation string, fake commandFlowFakeClient)
 		return `{"project":{"id":"project-id","name":"Detail project","documents":{"nodes":[` +
 			commandDocumentJSON(
 				"Spec",
-				`"project":{"id":"project-id","name":"Pinned project"},"issue":null`,
+				`"project":{"id":"project-id","name":"Detail project"},"issue":null`,
 			) +
 			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "project_externalLinks":

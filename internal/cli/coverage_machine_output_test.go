@@ -287,12 +287,9 @@ func machineOutputCases() []machineOutputCase {
 		SourceType: "github",
 	}
 	notification := client.NotificationSummary{
-		ID:         "notification-id",
-		Type:       "issueMention",
-		Category:   "mentions",
-		TargetType: "issue",
-		TargetID:   "issue-id",
-		TargetName: "LIT-1 Mentioned you",
+		ID:       "notification-id",
+		Type:     "issueMention",
+		Category: "mentions",
 	}
 	notificationSubscription := client.NotificationSubscriptionSummary{
 		ID:         "notification-subscription-id",

@@ -54,8 +54,15 @@ func projectJSONWithContent(project projectFixture, content string) string {
 }
 
 func notificationJSON() string {
+	return notificationJSONWithTarget(
+		"IssueNotification",
+		`"issue":{"id":"issue-id","identifier":"LIT-1","title":"Mentioned you","url":"https://linear.app/kyanite/issue/LIT-1"}`,
+	)
+}
+
+func notificationJSONWithTarget(typename string, target string) string {
 	return `{
-		"__typename":"IssueNotification",
+		"__typename":"` + typename + `",
 		"id":"notification-id",
 		"type":"issueMention",
 		"category":"mentions",
@@ -69,7 +76,7 @@ func notificationJSON() string {
 		"user":{"id":"user-id","displayName":"Omer"},
 		"actor":{"id":"actor-id","displayName":"Ada"},
 		"externalUserActor":{"id":"external-user-id"},
-		"issue":{"id":"issue-id","identifier":"LIT-1","title":"Mentioned you","url":"https://linear.app/kyanite/issue/LIT-1"}
+		` + target + `
 	}`
 }
 

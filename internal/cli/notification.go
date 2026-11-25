@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"cmp"
 	"context"
 
 	"github.com/spf13/cobra"
@@ -77,8 +78,8 @@ func addNotificationArchiveCommand(ctx context.Context, root *cobra.Command, opt
 func writeNotification(command *cobra.Command, options *rootOptions, notification client.NotificationSummary) error {
 	return writeItemLine(
 		command, options, notification, notification.ID,
-		"%s %s [%s] %s", notification.ID, notification.Type, notification.Category,
-		emptyDash(notification.TargetName),
+		"%s %s [%s] %s %s", notification.ID, notification.Type, notification.Category,
+		emptyDash(notification.TargetType), emptyDash(cmp.Or(notification.TargetName, notification.TargetID)),
 	)
 }
 

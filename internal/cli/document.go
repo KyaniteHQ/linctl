@@ -48,6 +48,9 @@ func addDocumentCreateCommand(ctx context.Context, root *cobra.Command, options 
 		Run: func(
 			ctx context.Context, command *cobra.Command, runtime commandRuntime, _ []string,
 		) (client.DocumentSummary, error) {
+			if err := client.RequireDocumentProjectPin(runtime.config.Target); err != nil {
+				return client.DocumentSummary{}, err
+			}
 			if err := resolveBodyOrFileFlag(command, &request.Content, contentFile, "content"); err != nil {
 				return client.DocumentSummary{}, err
 			}
@@ -77,7 +80,9 @@ func addDocumentUpdateCommand(ctx context.Context, root *cobra.Command, options 
 			ctx context.Context, command *cobra.Command, runtime commandRuntime, args []string,
 		) (client.DocumentSummary, error) {
 			request.ID = args[0]
-
+			if err := client.RequireDocumentProjectPin(runtime.config.Target); err != nil {
+				return client.DocumentSummary{}, err
+			}
 			if err := resolveBodyOrFileFlag(command, &request.Content, contentFile, "content"); err != nil {
 				return client.DocumentSummary{}, err
 			}

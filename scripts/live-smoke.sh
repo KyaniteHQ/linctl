@@ -334,7 +334,7 @@ PY
   if [[ -n "$project_update_id" ]]; then
     "$binary" project-update comments "$project_update_id" --json --limit 5 >/dev/null
   fi
-  "$binary" project-status list --json --limit 5 >/dev/null
+  "$binary" project-status list --json --limit 5 | first_item_field project_statuses >/dev/null
   "$binary" project-label list --json --limit 5 >/dev/null
   "$binary" project-relation list --json --limit 5 >/dev/null
   document_json="$("$binary" document list --json --limit 5)"

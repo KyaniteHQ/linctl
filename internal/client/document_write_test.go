@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -96,14 +97,15 @@ func Test_CreateDocument_requires_title(t *testing.T) {
 }
 
 func Test_CreateDocument_wraps_mutation_error(t *testing.T) {
-	graphqlClient := issueWriteFakeClient(map[string]string{})
+	sentinel := errors.New("linear unavailable")
+	graphqlClient := issueWriteFakeClient(map[string]string{}).withError(sentinel)
 
 	_, err := CreateDocument(
 		context.Background(), graphqlClient, matchingTarget(), DocumentCreateRequest{Title: "x"},
 	)
 
-	require.Error(t, err)
-	require.NotErrorIs(t, err, ErrTargetMismatch)
+	require.ErrorIs(t, err, sentinel)
+	require.ErrorContains(t, err, "create document")
 }
 
 func Test_CreateDocument_fails_when_mutation_reports_no_success(t *testing.T) {
@@ -119,45 +121,50 @@ func Test_CreateDocument_fails_when_mutation_reports_no_success(t *testing.T) {
 	require.ErrorIs(t, err, ErrMutationFailed)
 }
 
-func Test_UpdateDocument_returns_updated_document_when_target_matches(t *testing.T) {
-	graphqlClient := issueWriteFakeClient(map[string]string{
+func Test_UpdateDocument_checks_and_updates_the_requested_document(t *testing.T) {
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"document":       `{"document":` + documentJSON("current", "project-id") + `}`,
 		"DocumentUpdate": `{"documentUpdate":{"success":true,"document":` + documentJSON("updated", "project-id") + `}}`,
-	})
+	})}
 
-	document, err := UpdateDocument(context.Background(), graphqlClient, matchingTarget(), DocumentUpdateRequest{
-		ID:    "document-id",
+	document, err := UpdateDocument(context.Background(), recorder, matchingTarget(), DocumentUpdateRequest{
+		ID:    "requested-document-id",
 		Title: "updated",
 	})
 
 	require.NoError(t, err)
 	require.Equal(t, "updated", document.Title)
+	require.JSONEq(t, `{"id":"requested-document-id"}`, string(recorder.variablesFor(t, "document")))
+	require.JSONEq(t, `{"id":"requested-document-id","input":{"title":"updated"}}`,
+		string(recorder.variablesFor(t, "DocumentUpdate")))
 }
 
 func Test_UpdateDocument_refuses_a_document_outside_any_project(t *testing.T) {
-	graphqlClient := issueWriteFakeClient(map[string]string{
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"document": `{"document":` + documentJSON("current", "") + `}`,
-	})
+	})}
 
-	_, err := UpdateDocument(context.Background(), graphqlClient, matchingTarget(), DocumentUpdateRequest{
+	_, err := UpdateDocument(context.Background(), recorder, matchingTarget(), DocumentUpdateRequest{
 		ID:    "document-id",
 		Title: "x",
 	})
 
 	require.ErrorIs(t, err, ErrTargetMismatch)
+	require.Zero(t, recorder.countOf("DocumentUpdate"))
 }
 
 func Test_UpdateDocument_refuses_when_project_differs(t *testing.T) {
-	graphqlClient := issueWriteFakeClient(map[string]string{
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"document": `{"document":` + documentJSON("current", "other-project") + `}`,
-	})
+	})}
 
-	_, err := UpdateDocument(context.Background(), graphqlClient, matchingTarget(), DocumentUpdateRequest{
+	_, err := UpdateDocument(context.Background(), recorder, matchingTarget(), DocumentUpdateRequest{
 		ID:      "document-id",
 		Content: "x",
 	})
 
 	require.ErrorIs(t, err, ErrTargetMismatch)
+	require.Zero(t, recorder.countOf("DocumentUpdate"))
 }
 
 func Test_UpdateDocument_requires_id(t *testing.T) {
@@ -190,27 +197,31 @@ func Test_UpdateDocument_refuses_when_target_unresolved(t *testing.T) {
 }
 
 func Test_UpdateDocument_wraps_document_read_error(t *testing.T) {
-	graphqlClient := issueWriteFakeClient(map[string]string{})
+	sentinel := errors.New("linear unavailable")
+	graphqlClient := issueWriteFakeClient(map[string]string{}).withError(sentinel)
 
 	_, err := UpdateDocument(
-		context.Background(), graphqlClient, matchingTarget(), DocumentUpdateRequest{ID: "document-id", Title: "x"},
+		context.Background(), graphqlClient, matchingTarget(),
+		DocumentUpdateRequest{ID: "requested-document-id", Title: "x"},
 	)
 
-	require.Error(t, err)
-	require.NotErrorIs(t, err, ErrTargetMismatch)
+	require.ErrorIs(t, err, sentinel)
+	require.ErrorContains(t, err, "get document requested-document-id")
 }
 
 func Test_UpdateDocument_wraps_mutation_error(t *testing.T) {
+	sentinel := errors.New("linear unavailable")
 	graphqlClient := issueWriteFakeClient(map[string]string{
 		"document": `{"document":` + documentJSON("current", "project-id") + `}`,
-	})
+	}).withError(sentinel)
 
 	_, err := UpdateDocument(
-		context.Background(), graphqlClient, matchingTarget(), DocumentUpdateRequest{ID: "document-id", Title: "x"},
+		context.Background(), graphqlClient, matchingTarget(),
+		DocumentUpdateRequest{ID: "requested-document-id", Title: "x"},
 	)
 
-	require.Error(t, err)
-	require.NotErrorIs(t, err, ErrTargetMismatch)
+	require.ErrorIs(t, err, sentinel)
+	require.ErrorContains(t, err, "update document requested-document-id")
 }
 
 func Test_UpdateDocument_fails_when_mutation_reports_no_success(t *testing.T) {

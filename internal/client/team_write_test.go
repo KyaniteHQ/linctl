@@ -26,7 +26,7 @@ func Test_CreateTeam_creates_team_when_org_wide_passed(t *testing.T) {
 	})
 
 	team, err := CreateTeam(context.Background(), graphqlClient, matchingTarget(), TeamCreateRequest{
-		Name: "Operations", Key: "OPS", Description: "ops", Private: true, OrgWide: true,
+		Name: "Operations", Key: "OPS", Description: "ops", OrgWide: true,
 	})
 
 	require.NoError(t, err)
@@ -112,7 +112,7 @@ func Test_CreateTeam_sends_every_field_it_was_given(t *testing.T) {
 	})}
 
 	_, err := CreateTeam(context.Background(), recorder, matchingTarget(), TeamCreateRequest{
-		Name: "Operations", Key: "OPS", Description: "ops", Private: true, OrgWide: true,
+		Name: "Operations", Key: "OPS", Description: "ops", OrgWide: true,
 	})
 
 	require.NoError(t, err)
@@ -120,8 +120,7 @@ func Test_CreateTeam_sends_every_field_it_was_given(t *testing.T) {
 		"input": {
 			"name": "Operations",
 			"key": "OPS",
-			"description": "ops",
-			"private": true
+			"description": "ops"
 		}
 	}`, string(recorder.variablesFor(t, "TeamCreate")))
 }
@@ -274,7 +273,7 @@ func Test_CreateTeam_creates_a_sub_team_under_a_parent_in_the_organization(t *te
 	})}
 
 	team, err := CreateTeam(context.Background(), recorder, matchingTarget(), TeamCreateRequest{
-		Name: "case", ParentID: "team-id", Inherit: true, Triage: true, OrgWide: true,
+		Name: "case", ParentID: "team-id", Triage: true, OrgWide: true,
 	})
 
 	require.NoError(t, err)
@@ -282,20 +281,8 @@ func Test_CreateTeam_creates_a_sub_team_under_a_parent_in_the_organization(t *te
 	require.Equal(t, "LIT", team.ParentKey)
 	require.True(t, team.Triage)
 	require.JSONEq(t, `{"input": {
-		"name": "case", "parentId": "team-id", "inheritWorkflowStatuses": true, "triageEnabled": true
+		"name": "case", "parentId": "team-id", "triageEnabled": true
 	}}`, string(recorder.variablesFor(t, "TeamCreate")))
-}
-
-func Test_CreateTeam_refuses_inherit_without_a_parent(t *testing.T) {
-	recorder := &mutationRecordingClient{inner: projectWriteFakeClient(map[string]string{})}
-
-	_, err := CreateTeam(context.Background(), recorder, matchingTarget(), TeamCreateRequest{
-		Name: "case", Inherit: true, OrgWide: true,
-	})
-
-	require.ErrorIs(t, err, ErrWriteInvalid)
-	require.ErrorContains(t, err, "--parent")
-	require.False(t, recorder.sentOperation("TeamCreate"))
 }
 
 func Test_CreateTeam_wraps_parent_lookup_error(t *testing.T) {

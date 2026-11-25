@@ -42,7 +42,7 @@ func Test_SummaryMappingScenarios_preserve_reference_domain_variants(t *testing.
 			"title":"Issue spec",
 			"slugId":"issue-spec",
 			"archivedAt":"2026-06-19T12:00:00Z",
-			"project":{"id":"project-id","name":"Pinned project"},
+			"project":null,
 			"issue":{"id":"issue-id","identifier":"LIT-1","title":"Issue"}
 		}}`,
 		"team": `{"team":{

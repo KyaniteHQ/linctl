@@ -56,10 +56,8 @@ func commandFlowPeopleAndReferencePayload(operation string, fake commandFlowFake
 		) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "document":
 		return `{"document":` + commandDocumentJSON(
-			"Team note",
-			`"project":{"id":"project-id","name":"Pinned project"},`+
-				`"issue":null,`+
-				`"content":"# Team note\n\nBody line."`,
+			"Project note",
+			`"project":{"id":"project-id","name":"Pinned project"},"issue":null,"content":"# Project note\n\nBody line."`,
 		) + `}`, true
 	case "DocumentCreate":
 		return `{"documentCreate":{"success":true,"document":` + commandDocumentJSON(

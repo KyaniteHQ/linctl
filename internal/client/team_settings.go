@@ -11,14 +11,12 @@ import (
 )
 
 // TeamSettingsRequest describes a guarded Team settings write. It reaches only
-// the settings a rebuild needs: triage on or off, the default state for new
-// issues, and whether a sub-team inherits its parent's workflow states. Name,
-// key, and description stay out of reach.
+// the settings a rebuild needs: triage on or off and the default state for new
+// issues. Name, key, and description stay out of reach.
 type TeamSettingsRequest struct {
 	ID             string
 	Triage         *bool
 	DefaultStateID string
-	Inherit        *bool
 	OrgWide        bool
 }
 
@@ -35,8 +33,8 @@ func UpdateTeamSettings(
 	if request.ID == "" {
 		return TeamSummary{}, requiredFieldError("team id")
 	}
-	if request.Triage == nil && request.DefaultStateID == "" && request.Inherit == nil {
-		return TeamSummary{}, requiredFieldError("triage, default state, or inherit-workflow-states")
+	if request.Triage == nil && request.DefaultStateID == "" {
+		return TeamSummary{}, requiredFieldError("triage or default state")
 	}
 	if !request.OrgWide {
 		return TeamSummary{}, fmt.Errorf(
@@ -71,9 +69,8 @@ func (guard *guardedClient) updateTeamSettings(
 	}
 
 	updated, err := gql.TeamSettingsUpdate(ctx, guard.graphqlClient, request.ID, LinearTeamSettingsInput{
-		TriageEnabled:           request.Triage,
-		DefaultIssueStateID:     optionalString(request.DefaultStateID),
-		InheritWorkflowStatuses: request.Inherit,
+		TriageEnabled:       request.Triage,
+		DefaultIssueStateID: optionalString(request.DefaultStateID),
 	})
 	if err != nil {
 		return TeamSummary{}, fmt.Errorf("update team settings %s: %w", request.ID, err)

@@ -17,9 +17,7 @@ type TeamCreateRequest struct {
 	Name        string
 	Key         string
 	Description string
-	Private     bool
 	ParentID    string
-	Inherit     bool
 	Triage      bool
 	OrgWide     bool
 }
@@ -38,11 +36,6 @@ func CreateTeam(
 ) (TeamSummary, error) {
 	if request.Name == "" {
 		return TeamSummary{}, requiredFieldError("name")
-	}
-	if request.Inherit && request.ParentID == "" {
-		return TeamSummary{}, fmt.Errorf(
-			"%w: --inherit-workflow-states needs --parent; only a sub-team inherits states", ErrWriteInvalid,
-		)
 	}
 	if !request.OrgWide {
 		return TeamSummary{}, fmt.Errorf(
@@ -73,12 +66,6 @@ func (guard *guardedClient) createTeam(
 		Key:         optionalString(request.Key),
 		Description: optionalString(request.Description),
 		ParentID:    optionalString(request.ParentID),
-	}
-	if request.Private {
-		input.Private = &request.Private
-	}
-	if request.Inherit {
-		input.InheritWorkflowStatuses = &request.Inherit
 	}
 	if request.Triage {
 		input.TriageEnabled = &request.Triage

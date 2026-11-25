@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -15,6 +14,17 @@ func Test_GetNotificationByID_reports_the_public_target_of_each_notification_typ
 		target   string
 		want     NotificationSummary
 	}{
+		{
+			name:     "issue",
+			typename: "IssueNotification",
+			target:   `"issue":{"id":"issue-id","identifier":"LIT-1","title":"Mentioned you","url":"https://linear.app/kyanite/issue/LIT-1"}`,
+			want: NotificationSummary{
+				TargetType: "issue",
+				TargetID:   "issue-id",
+				TargetName: "LIT-1 Mentioned you",
+				TargetURL:  "https://linear.app/kyanite/issue/LIT-1",
+			},
+		},
 		{
 			name:     "project",
 			typename: "ProjectNotification",
@@ -56,8 +66,7 @@ func Test_GetNotificationByID_reports_the_public_target_of_each_notification_typ
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			payload := strings.Replace(notificationJSON(), `"IssueNotification"`, `"`+test.typename+`"`, 1)
-			payload = payload[:strings.Index(payload, `"issue":`)] + test.target + "\n\t}"
+			payload := notificationJSONWithTarget(test.typename, test.target)
 			graphqlClient := projectWriteFakeClient(map[string]string{"notification": `{"notification":` + payload + `}`})
 
 			notification, err := GetNotificationByID(context.Background(), graphqlClient, "notification-id")

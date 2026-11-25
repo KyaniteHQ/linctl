@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"testing"
@@ -71,21 +72,20 @@ func (initiativeBodyFailingReader) Read([]byte) (int, error) {
 	return 0, context.DeadlineExceeded
 }
 
-func Test_CommandFlows_notification_ack_writes(t *testing.T) {
-	t.Run("mark-read", func(t *testing.T) {
-		restore := useCommandRuntime(t, notificationAckFake{})
-		defer restore()
-		command := NewRootCommand(context.Background(), BuildInfo{})
-		command.SetArgs([]string{"notification", "mark-read", "notification-id"})
-		require.NoError(t, command.ExecuteContext(context.Background()))
-	})
-	t.Run("archive", func(t *testing.T) {
-		restore := useCommandRuntime(t, notificationAckFake{})
-		defer restore()
-		command := NewRootCommand(context.Background(), BuildInfo{})
-		command.SetArgs([]string{"notification", "archive", "notification-id"})
-		require.NoError(t, command.ExecuteContext(context.Background()))
-	})
+func Test_CommandFlows_notification_ack_writes_report_the_target(t *testing.T) {
+	for _, action := range []string{"mark-read", "archive"} {
+		t.Run(action, func(t *testing.T) {
+			restore := useCommandRuntime(t, notificationAckFake{})
+			defer restore()
+			output := bytes.Buffer{}
+			command := NewRootCommand(context.Background(), BuildInfo{})
+			command.SetOut(&output)
+			command.SetArgs([]string{"notification", action, "notification-id"})
+
+			require.NoError(t, command.ExecuteContext(context.Background()))
+			require.Equal(t, "notification-id issueAssignedToYou [assignments] issue LIT-1 Assigned\n", output.String())
+		})
+	}
 }
 
 type initiativeUpdateCreateFake struct {
@@ -135,7 +135,8 @@ func (client notificationAckFake) MakeRequest(
 		"unsnoozedAt":null,
 		"user":{"id":"user-id","displayName":"Omer"},
 		"actor":null,
-		"externalUserActor":null
+		"externalUserActor":null,
+		"issue":{"id":"issue-id","identifier":"LIT-1","title":"Assigned","url":"https://linear.app/kyanite/issue/LIT-1"}
 	}`
 	switch request.OpName {
 	case "notification":
