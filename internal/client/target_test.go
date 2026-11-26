@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/Khan/genqlient/graphql"
@@ -381,6 +382,58 @@ func Test_ResolveTarget_refuses_when_project_next_page_fetch_fails(t *testing.T)
 	})
 
 	require.ErrorContains(t, err, "resolve project")
+}
+
+func Test_ResolveViewer_reports_only_the_viewer_and_organization(t *testing.T) {
+	graphqlClient := fakeGraphQLClient{
+		"Viewer": `{
+			"viewer": {
+				"id": "app-user-id",
+				"name": "linctl",
+				"displayName": "linctl bot",
+				"email": "app@example.com",
+				"app": true,
+				"isAssignable": true,
+				"organization": {"id": "org-id", "name": "Kyanite", "urlKey": "kyanite"}
+			}
+		}`,
+	}
+
+	identity, err := ResolveViewer(context.Background(), graphqlClient)
+
+	require.NoError(t, err)
+	require.Equal(t, ViewerIdentity{
+		Viewer: TargetViewer{
+			ID:          "app-user-id",
+			Name:        "linctl",
+			DisplayName: "linctl bot",
+			Email:       "app@example.com",
+			App:         true,
+			Assignable:  true,
+		},
+		Org: TargetOrg{ID: "org-id", Name: "Kyanite", URLKey: "kyanite"},
+	}, identity)
+}
+
+func Test_ResolveViewer_keeps_the_auth_failure_of_a_failed_viewer_query(t *testing.T) {
+	_, err := ResolveViewer(context.Background(), errorGraphQLClient{err: fmt.Errorf("graphql http status 401: %w", ErrAuthFailed)})
+
+	require.ErrorIs(t, err, ErrAuthFailed)
+	require.ErrorContains(t, err, "resolve viewer")
+}
+
+func Test_ResolveViewer_refuses_a_response_without_viewer_or_organization(t *testing.T) {
+	tests := map[string]string{
+		"null viewer":           `{"viewer": null}`,
+		"viewer without org id": `{"viewer": {"id": "user-id", "organization": {"id": ""}}}`,
+	}
+	for name, payload := range tests {
+		t.Run(name, func(t *testing.T) {
+			_, err := ResolveViewer(context.Background(), fakeGraphQLClient{"Viewer": payload})
+
+			require.ErrorContains(t, err, "Linear returned no viewer or organization")
+		})
+	}
 }
 
 type fakeGraphQLClient map[string]string

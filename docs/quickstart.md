@@ -71,7 +71,8 @@ linctl auth status
 
 The output shows the actor, the granted scopes, and an expiry. linctl checks this against Linear
 live, so a good status means that the credential really works. It does not only mean that a file
-exists on disk.
+exists on disk. Until you pin a target in the next step, the status reports the target as
+`not_configured`, and every write refuses.
 
 linctl never prints a secret. The auth output reports each secret as `set` or `missing`.
 
@@ -186,7 +187,7 @@ pinned team.
 ## 8. See linctl refuse a write
 
 Run the same write, but aim it at a team that your credential cannot reach. An override on the
-command line needs **both** flags, a key and an id, because a key alone does not identify a team.
+command line names the team by its key, and optionally by its id too.
 
 ```bash
 linctl issue create --title "Hello from linctl" \
@@ -207,8 +208,9 @@ flag makes this write succeed.
 This is what protects you when an agent runs with an old token, in the wrong checkout, or from a
 config that it misread.
 
-> `--team` on its own gives you `TARGET_NOT_CONFIGURED` instead, because a target override
-> without a team id is incomplete. Pass both flags, or pass neither.
+> `--team STG` on its own also works. linctl looks up that key in the pinned organization, and it
+> refuses with `TARGET_MISMATCH` (`the active credential cannot reach team_key=STG`) when the
+> credential cannot reach that team.
 
 ## 9. Give linctl to your agent
 
@@ -263,8 +265,8 @@ gets `TARGET_MISMATCH` and a non-zero exit, which is what a pipeline must do.
 
 ## Troubleshooting
 
-**`TARGET_NOT_CONFIGURED`**: there is no `.linctl.toml`, or the file has no `org_id`, no
-`team_key`, or no `team_id`. A read still works. A write does not work until you pin a target.
+**`TARGET_NOT_CONFIGURED`**: there is no `.linctl.toml`, or the file has no `org_id` or no
+`team_key`. A read still works. A write does not work until you pin a target.
 
 **`TARGET_MISMATCH` when you did not expect it**: the credential does not resolve to what you
 pinned. Run `linctl target --json` and `linctl auth status`. Usually the token belongs to a

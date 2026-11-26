@@ -274,6 +274,37 @@ func Test_AuthLogin_callback_url_exchanges_and_saves_after_readiness(t *testing.
 	require.Equal(t, "authorization_code", got.Token.GrantType)
 }
 
+func Test_AuthLogin_saves_the_token_before_a_target_is_pinned(t *testing.T) {
+	t.Chdir(t.TempDir())
+	t.Setenv("HOME", t.TempDir())
+	paths := cliAuthTestPaths(t)
+	saveAuthLoginApp(t, paths)
+	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
+		"oauth-access-token",
+		"oauth-refresh-token",
+		"Bearer",
+		time.Now().Add(time.Hour),
+		[]string{"read", "write"},
+	)}
+	restore := useAuthCommandHooks(t, paths, fakeOAuth, &fakeAuthReadinessChecker{})
+	defer restore()
+	checkAuthReadiness = defaultCheckAuthReadiness
+	useLinearGraphQL(t, true, true)
+	var stdout bytes.Buffer
+
+	err := execute(context.Background(), BuildInfo{}, strings.NewReader("raw-code\n"), &stdout, &bytes.Buffer{},
+		[]string{"--json", "auth", "login"})
+
+	require.NoError(t, err)
+	var status authStatusReport
+	require.NoError(t, json.Unmarshal(stdout.Bytes(), &status))
+	require.Equal(t, "app", status.Actor)
+	require.Equal(t, authTargetStatusReport{Status: "not_configured"}, status.Target)
+	got, loadErr := auth.NewStore(paths).Load(context.Background())
+	require.NoError(t, loadErr)
+	require.Equal(t, "oauth-access-token", got.Token.AccessToken)
+}
+
 func Test_AuthLogin_exchanges_a_raw_code_read_from_the_first_stdin_line(t *testing.T) {
 	tests := []struct {
 		name          string

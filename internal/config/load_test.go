@@ -318,3 +318,21 @@ team_id = "repo-team"
 	require.NoError(t, err)
 	require.Empty(t, resolved.Target.States.Close)
 }
+
+func Test_Target_Unpinned_only_when_no_identifier_is_set(t *testing.T) {
+	tests := map[string]struct {
+		target Target
+		want   bool
+	}{
+		"empty":         {target: Target{}, want: true},
+		"org only":      {target: Target{OrgID: "org-id"}, want: false},
+		"team key only": {target: Target{TeamKey: "LIT"}, want: false},
+		"team id only":  {target: Target{TeamID: "team-id"}, want: false},
+		"project only":  {target: Target{ProjectID: "project-id"}, want: false},
+	}
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			require.Equal(t, test.want, test.target.Unpinned())
+		})
+	}
+}

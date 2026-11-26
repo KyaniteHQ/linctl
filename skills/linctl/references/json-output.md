@@ -156,8 +156,10 @@ The example shows every key. These keys are absent when they have no value: `app
 URL or the authorization code. It writes AuthStatus on stdout only after the readiness check, so
 feed stdin before you wait for stdout.
 
-Auth readiness succeeds only after linctl proves the token actor, the token scopes, and the
-pinned target. linctl reports the app config and the token material as `set` or `missing`, and
+Auth readiness succeeds only after linctl proves the token actor, the token scopes, and, when a
+target is pinned, the pinned target. With no pinned target at all, `target` is
+`{ "status": "not_configured" }`, auth still succeeds, and guarded writes refuse until you pin a
+target (`linctl init`). linctl reports the app config and the token material as `set` or `missing`, and
 linctl never prints a secret value.
 
 `auth configure` → the `app` object of AuthStatus at the top level:
@@ -229,7 +231,7 @@ agent can then branch on a stable code instead of a parse of the prose.
 - `STATE_MISMATCH`: a state write's readback did not match the selected workflow state.
 - `TRANSITION_DENIED`: the state change is not in the `[transitions]` allowlist of `.linctl.toml`. This is a hard stop. Do not retry with another state or flag.
 - `CONFLICT`: a guarded write's stable-id readback exists but does not match the requested fields, or `issue update --if-updated-at` found that the issue changed since that time (the message names both timestamps). Do not replay; read the issue again first.
-- `TARGET_NOT_CONFIGURED`: there is no pinned target. Set `org_id`, `team_key`, and `team_id` in `.linctl.toml`.
+- `TARGET_NOT_CONFIGURED`: the pinned target is absent or incomplete. A guarded write needs `org_id` and `team_key` in `.linctl.toml`; `team_id` is optional.
 - `RATE_LIMITED`: Linear returned a rate-limit response. Wait, then retry.
 - `MUTATION_FAILED`: the mutation ran, but Linear reported no success and no entity.
 - `INVALID_WRITE`: linctl rejected the write request before any API call, because an input was absent or not valid.
@@ -242,7 +244,7 @@ agent can then branch on a stable code instead of a parse of the prose.
 - `MISSING_SCOPE`: the OAuth token state does not have every required scope.
 - `AUTH_ACTOR_MISMATCH`: OAuth readiness could not prove the expected actor, or `--actor` was not `app` or `user`.
 - `AUTH_TARGET_MISMATCH`: OAuth readiness could not prove that the token reaches the pinned target.
-- `AUTH_TARGET_NOT_CONFIGURED`: there is no pinned target. Set `org_id`, `team_key`, and `team_id` in `.linctl.toml`.
+- `AUTH_TARGET_NOT_CONFIGURED`: the pinned target is incomplete: it sets some target fields but not both `org_id` and `team_key`. Set them in `.linctl.toml`.
 - `INTERNAL`: any other error, such as a config error, an unknown command, or a decode error.
 
 When the mutation itself failed, a reconcile error such as `CONFLICT`, `STATE_MISMATCH`, or `TARGET_MISMATCH` keeps its code and its message ends with `; the mutation returned: <error>`. A `FORBIDDEN` there means the credential may not make this write, so reading again or retrying does not help.

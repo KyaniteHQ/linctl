@@ -25,8 +25,8 @@ type authReadinessRequest struct {
 }
 
 type authReadinessReport struct {
-	Actor  string                `json:"actor"`
-	Target client.ResolvedTarget `json:"target"`
+	Actor  string
+	Target *client.ResolvedTarget
 }
 
 func requireAuthReadiness(ctx context.Context, request authReadinessRequest) (authReadinessReport, error) {
@@ -75,6 +75,11 @@ func requireLoggedAuthReadiness(
 		return authReadinessReport{}, err
 	}
 
+	if readiness.Target == nil {
+		logger.DebugContext(ctx, "auth readiness check succeeded", "actor", readiness.Actor, "target", "not_configured")
+
+		return readiness, nil
+	}
 	projectID := ""
 	if readiness.Target.Project != nil {
 		projectID = readiness.Target.Project.ID
@@ -101,12 +106,20 @@ func defaultCheckAuthReadiness(ctx context.Context, request authReadinessRequest
 		Token:   client.OAuthAccessToken(request.AccessToken),
 		Timeout: request.Timeout,
 	})
+	if request.ExpectedTarget.Unpinned() {
+		identity, err := client.ResolveViewer(ctx, graphqlClient)
+		if err != nil {
+			return authReadinessReport{}, err
+		}
+
+		return authReadinessReport{Actor: actorFromViewer(identity.Viewer)}, nil
+	}
 	target, err := client.ResolveTarget(ctx, graphqlClient, request.ExpectedTarget)
 	if err != nil {
 		return authReadinessReport{}, err
 	}
 
-	return authReadinessReport{Actor: actorFromViewer(target.Viewer), Target: target}, nil
+	return authReadinessReport{Actor: actorFromViewer(target.Viewer), Target: &target}, nil
 }
 
 func actorFromViewer(viewer client.TargetViewer) string {
@@ -131,7 +144,7 @@ func mapAuthReadinessError(err error) error {
 	case errors.Is(err, client.ErrTargetNotConfigured):
 		return auth.WrapError(
 			auth.ErrorCodeTargetNotConfigured,
-			"no pinned target is configured: set org_id, team_key, and team_id in .linctl.toml",
+			"the pinned target is incomplete: set org_id and team_key in .linctl.toml",
 			err,
 		)
 	case errors.Is(err, client.ErrTargetMismatch):

@@ -16,9 +16,9 @@ const targetResolutionPageSize = 250
 // ErrTargetMismatch marks a resolved target that does not match the pinned target.
 var ErrTargetMismatch = errors.New("target mismatch")
 
-// ErrTargetNotConfigured marks a missing or incomplete pinned target (no
-// org_id/team_key/team_id). It is distinct from ErrTargetMismatch, which is a
-// auth credential that resolves to a target other than the one pinned.
+// ErrTargetNotConfigured marks a missing or incomplete pinned target (org_id and
+// team_key are both required). It is distinct from ErrTargetMismatch, which marks
+// a credential that resolves to a target other than the pinned one.
 var ErrTargetNotConfigured = errors.New("target not configured")
 
 // ResolvedTarget is the auth-resolved Linear write target.
@@ -120,6 +120,27 @@ func ResolveTarget(ctx context.Context, graphqlClient graphql.Client, expected c
 	}
 
 	return newResolvedTarget(viewer.Viewer, resolvedTeam, project, hasProject, expected, resolved), nil
+}
+
+// ViewerIdentity is the viewer and organization of the active credential. It proves
+// no team or project, so it is never a target for a guarded write.
+type ViewerIdentity struct {
+	Viewer TargetViewer
+	Org    TargetOrg
+}
+
+// ResolveViewer resolves the viewer and organization of the active credential without
+// a pinned target.
+func ResolveViewer(ctx context.Context, graphqlClient graphql.Client) (ViewerIdentity, error) {
+	viewer, err := gql.Viewer(ctx, graphqlClient)
+	if err != nil {
+		return ViewerIdentity{}, fmt.Errorf("resolve viewer: %w", err)
+	}
+	if viewer.Viewer.Id == "" || viewer.Viewer.Organization.Id == "" {
+		return ViewerIdentity{}, errors.New("resolve viewer: Linear returned no viewer or organization")
+	}
+
+	return ViewerIdentity{Viewer: targetViewer(viewer.Viewer), Org: targetOrg(viewer.Viewer)}, nil
 }
 
 // requireExpectedTarget rejects a target that names no team at all. team_id is
@@ -225,19 +246,8 @@ func newResolvedTarget(
 	resolved config.Target,
 ) ResolvedTarget {
 	return ResolvedTarget{
-		Viewer: TargetViewer{
-			ID:          viewer.Id,
-			Name:        viewer.Name,
-			DisplayName: viewer.DisplayName,
-			Email:       viewer.Email,
-			App:         viewer.App,
-			Assignable:  viewer.IsAssignable,
-		},
-		Org: TargetOrg{
-			ID:     viewer.Organization.Id,
-			Name:   viewer.Organization.Name,
-			URLKey: viewer.Organization.UrlKey,
-		},
+		Viewer: targetViewer(viewer),
+		Org:    targetOrg(viewer),
 		Team: TargetTeam{
 			ID:   team.Id,
 			Key:  team.Key,
@@ -247,6 +257,25 @@ func newResolvedTarget(
 		Expected:  expected,
 		Resolved:  resolved,
 		Confirmed: true,
+	}
+}
+
+func targetViewer(viewer gql.ViewerViewerUser) TargetViewer {
+	return TargetViewer{
+		ID:          viewer.Id,
+		Name:        viewer.Name,
+		DisplayName: viewer.DisplayName,
+		Email:       viewer.Email,
+		App:         viewer.App,
+		Assignable:  viewer.IsAssignable,
+	}
+}
+
+func targetOrg(viewer gql.ViewerViewerUser) TargetOrg {
+	return TargetOrg{
+		ID:     viewer.Organization.Id,
+		Name:   viewer.Organization.Name,
+		URLKey: viewer.Organization.UrlKey,
 	}
 }
 
