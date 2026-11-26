@@ -88,8 +88,8 @@ func newAuthStatusReport(
 	}
 }
 
-func authTargetStatus(target client.ResolvedTarget) authTargetStatusReport {
-	if !target.Confirmed {
+func authTargetStatus(target *client.ResolvedTarget) authTargetStatusReport {
+	if target == nil {
 		return authTargetStatusReport{Status: "not_configured"}
 	}
 

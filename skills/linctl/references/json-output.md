@@ -231,7 +231,7 @@ agent can then branch on a stable code instead of a parse of the prose.
 - `STATE_MISMATCH`: a state write's readback did not match the selected workflow state.
 - `TRANSITION_DENIED`: the state change is not in the `[transitions]` allowlist of `.linctl.toml`. This is a hard stop. Do not retry with another state or flag.
 - `CONFLICT`: a guarded write's stable-id readback exists but does not match the requested fields, or `issue update --if-updated-at` found that the issue changed since that time (the message names both timestamps). Do not replay; read the issue again first.
-- `TARGET_NOT_CONFIGURED`: there is no pinned target. Set `org_id`, `team_key`, and `team_id` in `.linctl.toml`.
+- `TARGET_NOT_CONFIGURED`: the pinned target is absent or incomplete. A guarded write needs `org_id` and `team_key` in `.linctl.toml`; `team_id` is optional.
 - `RATE_LIMITED`: Linear returned a rate-limit response. Wait, then retry.
 - `MUTATION_FAILED`: the mutation ran, but Linear reported no success and no entity.
 - `INVALID_WRITE`: linctl rejected the write request before any API call, because an input was absent or not valid.

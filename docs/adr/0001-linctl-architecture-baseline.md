@@ -56,7 +56,7 @@ The stable auth command surface is:
 
 The app actor is the default OAuth actor. Browser login sends `actor=app` unless the user passes `--actor user`. User attribution remains available, but it is explicit.
 
-Setup and status commands must prove readiness before reporting success. Saving token bytes is not enough. linctl must verify the expected actor when available from the readiness path, required scopes from token state, and, when a Pinned Target is set, the Resolved Target before treating auth as usable. With no pinned target at all, readiness proves actor and scopes and reports the target as not configured, so a first login can precede `linctl init`; guarded writes still refuse without a pin.
+Setup and status commands must prove readiness before reporting success. Saving token bytes is not enough. linctl must verify the expected actor when available from the readiness path, required scopes from token state, and, when a Pinned Target is set, the Resolved Target before treating auth as usable. With no pinned target at all, readiness proves actor and scopes (for an injected access token, only the viewer) and reports the target as not configured, so a first login can precede `linctl init`; guarded writes still refuse without a pin.
 
 ### 5. Browser Login Uses PKCE And A Pasted Callback
 
@@ -100,7 +100,7 @@ AUTH_TARGET_MISMATCH
 AUTH_TARGET_NOT_CONFIGURED
 ```
 
-Guarded write failures keep the write-guard code `TARGET_MISMATCH`. One exception: a relation whose endpoints are not in the pinned organization returns `CROSS_ORGANIZATION_RELATION`. That error still wraps Target Mismatch. It is a hard stop. It is not a retry path. Auth readiness mismatch uses `AUTH_TARGET_MISMATCH` so agents can tell readiness failure from a guarded mutation refusal, and `AUTH_TARGET_NOT_CONFIGURED` when no pinned target exists at all so the recovery path is configuring `.linctl.toml` rather than reauthorizing.
+Guarded write failures keep the write-guard code `TARGET_MISMATCH`. One exception: a relation whose endpoints are not in the pinned organization returns `CROSS_ORGANIZATION_RELATION`. That error still wraps Target Mismatch. It is a hard stop. It is not a retry path. Auth readiness mismatch uses `AUTH_TARGET_MISMATCH` so agents can tell readiness failure from a guarded mutation refusal, and `AUTH_TARGET_NOT_CONFIGURED` when the effective target sets some identifier but not both `org_id` and `team_key`, so the recovery path is configuring `.linctl.toml` rather than reauthorizing. An empty target is not an error: readiness reports `target.status` `not_configured`.
 
 ### 8. Output Is For Agents First
 

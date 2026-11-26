@@ -159,7 +159,7 @@ func (checker *fakeAuthReadinessChecker) check(
 func readyAuthReport(actor string) authReadinessReport {
 	return authReadinessReport{
 		Actor: actor,
-		Target: client.ResolvedTarget{
+		Target: &client.ResolvedTarget{
 			Org:       client.TargetOrg{ID: "org-id"},
 			Team:      client.TargetTeam{ID: "team-id", Key: "LIT"},
 			Expected:  config.Target{OrgID: "org-id", TeamKey: "LIT", TeamID: "team-id"},

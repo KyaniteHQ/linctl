@@ -30,6 +30,11 @@ type Target struct {
 	States States `toml:"-" json:"-"`
 }
 
+// Unpinned reports whether the target names no organization, team, or project at all.
+func (target Target) Unpinned() bool {
+	return target.OrgID == "" && target.TeamKey == "" && target.TeamID == "" && target.ProjectID == ""
+}
+
 // States holds optional state names that replace a command's default pick.
 // Close names the completed state `issue close` and `done` move an issue to;
 // empty means the team's lowest-position completed state.

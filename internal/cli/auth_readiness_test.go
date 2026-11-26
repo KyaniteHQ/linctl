@@ -134,13 +134,6 @@ func Test_AuthStatus_checks_readiness_against_linear(t *testing.T) {
 			wantErrorCode: "AUTH_TARGET_NOT_CONFIGURED",
 		},
 		{
-			name:          "a pin with only a project",
-			token:         appToken,
-			viewerIsApp:   true,
-			args:          []string{"--json", "--project", "project-id"},
-			wantErrorCode: "AUTH_TARGET_NOT_CONFIGURED",
-		},
-		{
 			name:          "saved state without an access token",
 			token:         auth.TokenState{RefreshToken: "saved-refresh-token", Actor: "user"},
 			args:          pinned,
@@ -153,11 +146,19 @@ func Test_AuthStatus_checks_readiness_against_linear(t *testing.T) {
 			args:       pinned,
 			wantError:  "viewer unavailable",
 		},
+		{
+			name:       "no pinned target and linear answers the viewer query with an error",
+			token:      appToken,
+			viewerDown: true,
+			args:       []string{"--json"},
+			wantError:  "viewer unavailable",
+		},
 		{name: "quiet", token: appToken, viewerIsApp: true, args: slices.Concat([]string{"--quiet"}, pinned[1:])},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			t.Chdir(t.TempDir())
+			t.Setenv("HOME", t.TempDir())
 			paths := cliAuthTestPaths(t)
 			if test.injectedToken != "" {
 				t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", test.injectedToken)

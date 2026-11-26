@@ -77,7 +77,7 @@ The auth status behavior that refreshes expired OAuth tokens, and saved tokens L
 _Avoid_: Local-only status, cached readiness
 
 **Auth Readiness**:
-The live proof that OAuth credentials can authenticate to Linear with the expected actor and scopes, and reach the pinned target when one is set, before linctl reports auth as usable. With no pinned target at all, readiness proves the actor and scopes and reports the target as not configured; guarded writes still refuse until a target is pinned.
+The live proof that OAuth credentials can authenticate to Linear with the expected actor and scopes, and reach the pinned target when one is set, before linctl reports auth as usable. With no pinned target at all, readiness proves the actor and scopes (for an injected access token, only the viewer) and reports the target as not configured; guarded writes still refuse until a target is pinned.
 _Avoid_: Token saved, local config present, assumed readiness
 
 **Token Refresh**:
