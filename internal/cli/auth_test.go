@@ -713,7 +713,7 @@ func Test_AuthRefresh_reacquires_client_credentials_token(t *testing.T) {
 	require.Equal(t, authGrantClientCredentials, got.Token.GrantType)
 }
 
-func Test_AuthLogout_revokes_tokens_and_clears_token_state_while_keeping_app(t *testing.T) {
+func Test_AuthLogout_revokes_the_refresh_token_once_and_clears_token_state_while_keeping_app(t *testing.T) {
 	paths := cliAuthTestPaths(t)
 	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "injected-access-token")
 	require.NoError(t, auth.NewStore(paths).Save(context.Background(), auth.State{
@@ -745,7 +745,6 @@ func Test_AuthLogout_revokes_tokens_and_clears_token_state_while_keeping_app(t *
 	require.NoError(t, err)
 	require.Equal(t, []oauth.RevocationRequest{
 		{Token: "refresh-token", TokenTypeHint: "refresh_token"},
-		{Token: "access-token", TokenTypeHint: "access_token"},
 	}, fakeOAuth.revokeTokenRequests)
 	require.NotContains(t, stdout.String(), "access-token")
 	require.NotContains(t, stdout.String(), "refresh-token")
@@ -754,13 +753,42 @@ func Test_AuthLogout_revokes_tokens_and_clears_token_state_while_keeping_app(t *
 	require.NoError(t, json.Unmarshal(stdout.Bytes(), &report))
 	require.Equal(t, "removed", report.Token)
 	require.Equal(t, "kept", report.App)
-	require.Equal(t, []string{"refresh_token", "access_token"}, report.Revoked)
+	require.Equal(t, []string{"refresh_token"}, report.Revoked)
 	require.False(t, report.RevocationFailed)
 
 	got, err := auth.NewStore(paths).Load(context.Background())
 	require.NoError(t, err)
 	require.Equal(t, "client-id", got.App.ClientID)
 	require.Empty(t, got.Token)
+}
+
+func Test_AuthLogout_revokes_the_access_token_when_the_refresh_token_revoke_fails(t *testing.T) {
+	paths := cliAuthTestPaths(t)
+	require.NoError(t, auth.NewStore(paths).Save(context.Background(), auth.State{
+		App: auth.AppConfig{ClientID: "client-id"},
+		Token: auth.TokenState{
+			AccessToken:  "access-token",
+			RefreshToken: "refresh-token",
+			Actor:        "user",
+			GrantType:    authGrantAuthorizationCode,
+		},
+	}))
+	fakeOAuth := &fakeOAuthTokenClient{revokeTokenErrs: map[string]error{"refresh_token": errors.New("revoke rejected")}}
+	restore := useAuthCommandHooks(t, paths, fakeOAuth, &fakeAuthReadinessChecker{})
+	defer restore()
+	var stdout bytes.Buffer
+
+	err := execute(context.Background(), BuildInfo{}, nil, &stdout, &bytes.Buffer{}, []string{"--json", "auth", "logout"})
+
+	require.NoError(t, err)
+	require.Equal(t, []oauth.RevocationRequest{
+		{Token: "refresh-token", TokenTypeHint: "refresh_token"},
+		{Token: "access-token", TokenTypeHint: "access_token"},
+	}, fakeOAuth.revokeTokenRequests)
+	var report authLogoutReport
+	require.NoError(t, json.Unmarshal(stdout.Bytes(), &report))
+	require.Equal(t, []string{"access_token"}, report.Revoked)
+	require.True(t, report.RevocationFailed)
 }
 
 func Test_AuthLogout_does_not_revoke_injected_token_without_local_state(t *testing.T) {
@@ -806,7 +834,7 @@ func Test_AuthLogout_forgets_app_and_clears_state_when_revocation_fails(t *testi
 			TokenType:   "Bearer",
 		},
 	}))
-	fakeOAuth := &fakeOAuthTokenClient{revokeTokenErr: errors.New("revoked already")}
+	fakeOAuth := &fakeOAuthTokenClient{revokeTokenErrs: map[string]error{"access_token": errors.New("revoked already")}}
 	restore := useAuthCommandHooks(t, paths, fakeOAuth, &fakeAuthReadinessChecker{})
 	defer restore()
 	var stdout bytes.Buffer
