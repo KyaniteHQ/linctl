@@ -13,6 +13,7 @@ import (
 
 	"github.com/KyaniteHQ/linctl/internal/auth"
 	"github.com/KyaniteHQ/linctl/internal/client"
+	"github.com/KyaniteHQ/linctl/internal/oauth"
 )
 
 func Test_AuthCommands_report_default_path_errors(t *testing.T) {
@@ -700,7 +701,7 @@ func Test_AuthLogout_quiet_and_human_output(t *testing.T) {
 		{
 			name:       "human",
 			args:       []string{"auth", "logout"},
-			wantOutput: "auth logout token removed app kept",
+			wantOutput: "auth logout token removed app kept revoked access_token revocation_failed false\n",
 		},
 	}
 
@@ -711,7 +712,8 @@ func Test_AuthLogout_quiet_and_human_output(t *testing.T) {
 				App:   auth.AppConfig{ClientID: "client-id"},
 				Token: auth.TokenState{AccessToken: "access-token"},
 			}))
-			restore := useAuthCommandHooks(t, paths, &fakeOAuthTokenClient{}, &fakeAuthReadinessChecker{})
+			fakeOAuth := &fakeOAuthTokenClient{}
+			restore := useAuthCommandHooks(t, paths, fakeOAuth, &fakeAuthReadinessChecker{})
 			defer restore()
 			var stdout bytes.Buffer
 			var stderr bytes.Buffer
@@ -719,12 +721,15 @@ func Test_AuthLogout_quiet_and_human_output(t *testing.T) {
 			err := execute(context.Background(), BuildInfo{}, nil, &stdout, &stderr, tt.args)
 
 			require.NoError(t, err)
+			require.Equal(t, []oauth.RevocationRequest{
+				{Token: "access-token", TokenTypeHint: "access_token"},
+			}, fakeOAuth.revokeTokenRequests)
 			require.NotContains(t, stdout.String(), "access-token")
 			require.NotContains(t, stderr.String(), "access-token")
 			if tt.wantOutput == "" {
 				require.Empty(t, stdout.String())
 			} else {
-				require.Contains(t, stdout.String(), tt.wantOutput)
+				require.Equal(t, tt.wantOutput, stdout.String())
 			}
 		})
 	}

@@ -67,7 +67,7 @@ type fakeOAuthTokenClient struct {
 	beforeRefresh            func()
 	revokeTokenCalls         int
 	revokeTokenRequests      []oauth.RevocationRequest
-	revokeTokenErr           error
+	revokeTokenErrs          map[string]error
 	beforeRevoke             func()
 }
 
@@ -119,11 +119,7 @@ func (client *fakeOAuthTokenClient) RevokeToken(_ context.Context, request oauth
 		client.beforeRevoke()
 		client.beforeRevoke = nil
 	}
-	if client.revokeTokenErr != nil {
-		return client.revokeTokenErr
-	}
-
-	return nil
+	return client.revokeTokenErrs[request.TokenTypeHint]
 }
 
 type fakeAuthReadinessChecker struct {

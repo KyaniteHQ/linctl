@@ -353,7 +353,8 @@ func revokeTokenState(
 			"auth token revoke succeeded",
 			"token_type", request.TokenTypeHint,
 		)
-		revoked = append(revoked, request.TokenTypeHint)
+
+		return append(revoked, request.TokenTypeHint), failed
 	}
 
 	return revoked, failed

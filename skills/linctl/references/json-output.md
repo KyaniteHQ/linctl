@@ -159,15 +159,19 @@ feed stdin before you wait for stdout.
 Auth readiness succeeds only after linctl proves the token actor, the token scopes, and, when a
 target is pinned, the pinned target. With no pinned target at all, `target` is
 `{ "status": "not_configured" }`, auth still succeeds, and guarded writes refuse until you pin a
-target (`linctl init`). linctl reports the app config and the token material as `set` or `missing`, and
-linctl never prints a secret value.
+target (`linctl init`). With an injected access token (`LINCTL_OAUTH_ACCESS_TOKEN`), linctl checks
+only the viewer and the pinned target, not the actor or the scopes. linctl reports the app config
+and the token material as `set` or `missing`, and linctl never prints a secret value.
 
 `auth configure` → the `app` object of AuthStatus at the top level:
 `{ "client_id": "set"|"missing", "client_secret": "set"|"missing", "redirect_uri": string|absent, "scopes": [string]|absent }`
 
 `auth logout` → `{ "token": "removed", "app": "kept"|"forgotten", "revoked": [string]|absent, "revocation_failed": true|absent }`.
-`app` is `forgotten` with `--forget-app`. `revoked` lists the token types Linear revoked
-(`access_token`, `refresh_token`). A failed remote revocation still exits 0 and sets
+`app` is `forgotten` with `--forget-app`. `revoked` holds the one token type linctl revoked:
+`["refresh_token"]` when the login has a refresh token (Linear then also revokes the access
+token), otherwise `["access_token"]`. If the refresh token revoke fails, linctl revokes the access
+token instead, and `revocation_failed` is still `true`. `revoked` is absent when no revoke
+succeeded or no token was stored. A failed remote revocation still exits 0 and sets
 `revocation_failed`, so check that key, not only the exit code.
 
 ## WorkflowState
